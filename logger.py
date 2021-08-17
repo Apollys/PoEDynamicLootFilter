@@ -14,5 +14,5 @@ def Log(item):
     global g_log_filename
     message: str = item if isinstance(item, str) else str(item)
     with open(g_log_filename, 'a') as log_file:
-        log_file.write(message + '\n')
+        log_file.write(message + '\n\n')
 # End Log()

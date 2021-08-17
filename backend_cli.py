@@ -16,9 +16,19 @@ Currently supported functions are:
    
 The input and output filter filepaths are specified in config.py.
 (Eventually these will be the same, but for testing they're distinct.)
+
+Error handling:  if anything goes wrong while the python script is executing,
+all relevant error messages will be written to "backend_cli.log", since the
+standard output will not be available when the scripts are run via AHK.
+For example, running the following command:
+ > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" a
+will generate the error message:
+"ValueError: invalid literal for int() with base 10: 'a'",
+which will be logged to the log file along with the stack trace.
 '''
 
 import sys
+import traceback
 from typing import List
 
 import config
@@ -55,15 +65,25 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
 # End DelegateFunctionCall
         
 def main():
-    print('sys.argv =', sys.argv)
+    # Initialize
     logger.InitializeLog(kLogFilename)
     loot_filter = LootFilter(config.kInputLootFilterFilename)
+    argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
+    print(argv_info_message)
+    logger.Log(argv_info_message)
+    # Check that there at least exists a function name in argv
     if (len(sys.argv) < 2):
         error_message: str = 'no function specified, too few command line arguments given'
         logger.Log('Error: ' + error_message)
         raise RuntimeError(error_message)
+    # Delegate function call based on name
     function_name: str = sys.argv[1]
-    DelegateFunctionCall(loot_filter, function_name, sys.argv[2:])
+    try:
+        DelegateFunctionCall(loot_filter, function_name, sys.argv[2:])
+    except Exception as e:
+        traceback_message = traceback.format_exc()
+        logger.Log(traceback_message)
+        raise e
 # End main    
 
 if (__name__ == '__main__'):
