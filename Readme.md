@@ -27,3 +27,20 @@ will modify the tier of Chromatic Orbs by -2.
  - [ ] Set size for any rule
  - [ ] Hide all maps below specified tier
  - [ ] Add "profiles" - track and encode any changes made to the current filter, so that changes can be made to the filter in FilterBlade, the filter can be redownloaded, and all PoEDynamicLootFilter modifications can be immediately applied to the newly downloaded filter 
+
+- - -
+
+### Frontend-Backend API Specification
+
+The AHK frontend calls the Python backend via:
+```
+> python3 backend_cli.py <function_name> <function_parameters...>
+```
+
+The Python backend communicates return values to AHK by writing them to the file `backed_cli.output`.
+
+**Currently Supported Functions:**
+ - `adjust_currency_tier <currency_name> <tier_delta: int> -> None`  (-> indicates return value) 
+
+**Functions To Implement**
+ - ...
