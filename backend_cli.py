@@ -12,7 +12,7 @@ so you ensure data is written before you try to read it.)
 Currently supported functions are:
  - "adjust_currency_tier": moves a given currency type by a relative tier_delta
    Paramters: base_type, tier_delta
-   Example usage: > python3 backend_cli.py "Chromatic Orb" -2
+   Example usage: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
    
 The input and output filter filepaths are specified in config.py.
 (Eventually these will be the same, but for testing they're distinct.)
