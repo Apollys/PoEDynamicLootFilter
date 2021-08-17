@@ -7,7 +7,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 ### Todo Checklists
 
 **Frontend (AHK)**
- - [ ] Verify that we can call Python scripts from within AHK
+ - [x] Verify that we can call Python scripts from within AHK
  - [ ] Add Backend requirements
 
 **Backend (Python)**
