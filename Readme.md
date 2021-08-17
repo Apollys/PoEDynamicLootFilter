@@ -4,7 +4,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
 - - -
 
-## Recent Updates
+### Recent Updates
 
 Python backend CLI now added, only supports a single function currently.  See backend_cli.py for details!
 
