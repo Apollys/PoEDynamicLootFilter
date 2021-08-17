@@ -6,7 +6,11 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
 ### Recent Updates
 
-Python backend CLI now added, only supports a single function currently.  See backend_cli.py for details!
+Python backend CLI now added, only supports a single function currently.  See backend_cli.py for details! Example usage:
+```
+> python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
+```
+will modify the tier of Chromatic Orbs by -2.
 
 - - -
 
