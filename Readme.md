@@ -4,13 +4,12 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
 - - -
 
-### Recent Updates
-
-Python backend CLI now added, only supports a single function currently.  See backend_cli.py for details! Example usage:
-```
-> python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
-```
-will modify the tier of Chromatic Orbs by -2.
+### Feature Wish List
+ - [x] Move currency from one tier to another
+ - [x] Show/hide whole currency tier
+ - [ ] Chaos recipe - show/hide by item slot
+ - [ ] Hide maps below tier
+ - [ ] Show/hide flasks by type
 
 - - -
 
