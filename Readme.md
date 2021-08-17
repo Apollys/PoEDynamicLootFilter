@@ -10,6 +10,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
  - [ ] Chaos recipe - show/hide by item slot
  - [ ] Hide maps below tier
  - [ ] Show/hide flasks by type
+ - [ ] Save profile data - persistent changes with redownloaded filter
 
 - - -
 
