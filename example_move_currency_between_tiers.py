@@ -14,7 +14,7 @@ def MoveCurrencyBetweenTiersExample(loot_filter):
     # Desperate for chromes! Move currency to specific tier
     currency_name = 'Chromatic Orb'
     target_tier = 2
-    loot_filter.MoveCurrencyToTier(currency_name, target_tier)
+    loot_filter.SetCurrencyToTier(currency_name, target_tier)
     # Save new filter (diff input and output filter to see changes)
     loot_filter.SaveToFile(config.kOutputLootFilterFilename)
 

@@ -1,0 +1,56 @@
+import random
+
+import config
+import consts
+import helper
+import logger
+from loot_filter import RuleVisibility, LootFilterRule, LootFilter
+from type_checker import CheckType
+
+kTestLogFilename = 'test_suite.log'
+kTestOutputLootFilterFilename = 'test_suite_output.filter'
+
+def TestChangeRuleVisibility():
+    print('Running TestChangeRuleVisibility...')
+    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    type_name = 'currency'
+    tier_name = consts.kCurrencyTierNames[1]
+    [rule] = loot_filter.type_tier_rule_map[type_name][tier_name]
+    rule.SetVisibility(RuleVisibility.kShow)
+    rule.SetVisibility(RuleVisibility.kHide)
+    rule.SetVisibility(RuleVisibility.kDisable)
+    loot_filter.SaveToFile(kTestOutputLootFilterFilename)
+# End TestChangeRuleVisibility
+
+def TestCurrency():
+    print('Running TestCurrency...')
+    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    type_name = 'currency'
+    for tier in range(1, 10):
+        currency_names = loot_filter.GetAllCurrencyInTier(tier)
+        # Test SetCurrencyToTier with random currency
+        currency_name = random.choice(currency_names)
+        target_tier = random.randint(1, 9)
+        loot_filter.SetCurrencyToTier(currency_name, target_tier)
+        # Test AdjustTierOfCurrency and GetTierOfCurrency with random currency
+        currency_name = random.choice(currency_names)
+        current_tier = loot_filter.GetTierOfCurrency(currency_name)
+        target_tier = random.randint(1, 9)
+        tier_delta = target_tier - current_tier
+        loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
+    loot_filter.SaveToFile(kTestOutputLootFilterFilename)
+# End TestCurrency
+
+def RunAllTests():
+    TestChangeRuleVisibility()
+    TestCurrency()
+# End RunAllTests
+
+def main():
+    logger.InitializeLog(kTestLogFilename)
+    RunAllTests()
+    print('All tests completed successfully!')
+# End main
+
+if (__name__ == '__main__'):
+    main()

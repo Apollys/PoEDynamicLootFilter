@@ -64,8 +64,8 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
     CheckType(function_params, 'function_params_list', list)
     if (function_name == 'adjust_currency_tier'):
         '''
-        adjust_currency_tier <currency_name> <tier_delta>
-         - Moves a given currency type by a relative tier_delta
+        adjust_currency_tier <currency_name: str> <tier_delta: int>
+         - Moves the given currency type by a relative tier_delta
          - Output: None
          - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
         '''
@@ -74,10 +74,22 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
         tier_delta: int = int(function_params[1])
         loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
         loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+    if (function_name == 'set_currency_tier'):
+        '''
+        set_currency_tier <currency_name: str> <tier: int>
+         - Moves the given currency type to the specified tier
+         - Output: None
+         - Example: > python3 backend_cli.py set_currency_tier "Chromatic Orb" 5
+        '''
+        CheckNumParams(function_params, 2)
+        currency_name: str = function_params[0]
+        target_tier: int = int(function_params[1])
+        loot_filter.SetCurrencyToTier(currency_name, target_tier)
+        loot_filter.SaveToFile(config.kOutputLootFilterFilename)
     elif (function_name == 'get_currency_tiers'):
         '''
         get_currency_tiers
-         - Output: newline-separated sequence of `"<currency_name>";<tier>`,
+         - Output: newline-separated sequence of `"<currency_name: str>";<tier: int>`,
            one per currency type
          - Example: > python3 backend_cli.py get_currency_tiers
         '''

@@ -278,7 +278,7 @@ class LootFilter:
         self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
     # End AdjustTierOfCurrency
         
-    def MoveCurrencyToTier(self, currency_name: str, target_tier: int):
+    def SetCurrencyToTier(self, currency_name: str, target_tier: int):
         CheckType(currency_name, 'currency_name', str)
         CheckType(target_tier, 'target_tier', int)
         original_tier: int = self.GetTierOfCurrency(currency_name)

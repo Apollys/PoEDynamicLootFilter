@@ -3,6 +3,7 @@
 
 # Ignore output files
 *.output
+*output.filter
 
 # --- The following is GitHub's base Python .gitignore ---
 
