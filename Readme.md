@@ -41,12 +41,16 @@ The Python backend communicates return values to AHK by writing them to the file
 See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py) for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
-  - `adjust_currency_tier <currency_name> <tier_delta>`
+  - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
     - Moves a given currency type by a relative tier_delta
     - Output: None
     - Example: `> python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2`
+  - set_currency_tier <currency_name: str> <tier: int>
+    - Moves the given currency type to the specified tier
+    - Output: None
+    - Example: > python3 backend_cli.py set_currency_tier "Chromatic Orb" 5
   - `get_currency_tiers`
-    - Output: newline-separated sequence of `"<currency_name>";<tier>`, one per currency type
+    - Output: newline-separated sequence of `"<currency_name: str>";<tier: int>`, one per currency type
     - Example: `> python3 backend_cli.py get_currency_tiers`
 
 **Functions To Implement**
@@ -54,14 +58,10 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
    - Processes a sequence of functions specified in the file `backend_cli.input`
    - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
    - Ouput is separated by the line `# [end_function_output]` placed after the output of each function call in `backend_cli.output`
- - XXX`set_currency_tier <currency_name> <tier: int> -> None`XXX Temporary hold, potentially uncessary
  - XXX`set_rare_status <rare_type: string> <status: bool/int> -> None`XXX Temporary hold, potentially unnecessary
  - `get_rare_status -> all chaos rare statuses in current filter`
      + Output format should be `<Rare Type>;<status>` with one entry per line. Rare Types in `consts.py`
  - `update_filter (optional <item :Rare/Currency>)-> None` reads a large number of changes from a fixed text file and performs them all
-
-\*Confused about parameter and return value, can you double check that you wrote this correctly?  What would `get_currency_tiers "Orb of Alchemy"` return?
-Removed unless I later discover this is necessary
 
 \*\*For chaos recipe item slots, let's use the categories listed in `consts.py`:
 ```python
