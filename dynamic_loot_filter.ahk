@@ -9,7 +9,7 @@ py_out_path:="backend_cli.output"
 ahk_out_path:="ahkgui.output"
 
 ; Valid item types
-curr_valid := ["""Exalted Orb""", """Orb of Alteration""" , """Blessed Orb""" , """Blacksmith's Whetstone""" , """Armourer's Scrap""" , """Glassblower's Bauble""" , """Orb of Transmutation""" , """Orb of Augmentation""" , """Scroll of Wisdom""" , """Portal Scroll""" , """Chromatic Orb""" , """Jeweller's Orb""" , """Orb of Chance""" , """Orb of Alchemy""" , """Orb of Binding""" , """Orb of Fusing""" , """Vaal Orb""" , """Orb of Horizons""" , """Cartographer's Chisel""" , """Regal Orb""" , """Orb of Regret""" , """Orb of Scouring""" , """Gemcutter's Prism""" ]
+curr_valid := ["Exalted Orb", "Orb of Alteration" , "Blessed Orb" , "Blacksmith's Whetstone" , "Armourer's Scrap" , "Glassblower's Bauble" , "Orb of Transmutation" , "Orb of Augmentation" , "Scroll of Wisdom" , "Portal Scroll" , "Chromatic Orb" , "Jeweller's Orb" , "Orb of Chance" , "Orb of Alchemy" , "Orb of Binding" , "Orb of Fusing" , "Vaal Orb" , "Orb of Horizons" , "Cartographer's Chisel" , "Regal Orb" , "Orb of Regret" , "Orb of Scouring" , "Gemcutter's Prism" ]
 validstr := ""
 for idx, val in curr_valid
 	validstr .= "|" val
