@@ -36,22 +36,23 @@ The AHK frontend calls the Python backend via:
 ```
 > python3 backend_cli.py <function_name> <function_parameters...>
 ```
-
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
+The AHK frontend will return updated filter values to Python by writing them to the files `ahkgui_rares.output` and `ahkgui_currency.output`
 
 **Currently Supported Functions:**
  - `adjust_currency_tier <currency_name> <tier_delta: int> -> None`  (-> indicates return value) 
 
 **Functions To Implement**
- - `set_currency_tier <currency_name> <tier: int> -> None`
- - `get_currency_tiers (optional, maybe: <currency_name>) -> all (or specified) currency tiers in current filter`\*
+ - XXX`set_currency_tier <currency_name> <tier: int> -> None`XXX Temporary hold, potentially uncessary
+ - `get_currency_tiers -> all currency tiers in current filter`\*
      + Output format: one line `<currency_name>;<tier: int>` for each currency type
- - `set_rare_status <rare_type: string> <status: bool/int> -> None`
- - `get_rare_status (optional : <rare_type>) -> all (or specified) chaos rare statuses in current filter`
+ - XXX`set_rare_status <rare_type: string> <status: bool/int> -> None`XXX Temporary hold, potentially unnecessary
+ - `get_rare_status -> all chaos rare statuses in current filter`
      + Output format should be `<Rare Type>;<status>` with one entry per line. Rare Types in `consts.py`
  - `update_filter (optional <item :Rare/Currency>)-> None` reads a large number of changes from a fixed text file and performs them all
 
 \*Confused about parameter and return value, can you double check that you wrote this correctly?  What would `get_currency_tiers "Orb of Alchemy"` return?
+Removed unless I later discover this is necessary
 
 \*\*For chaos recipe item slots, let's use the categories listed in `consts.py`:
 ```python
