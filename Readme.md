@@ -39,7 +39,7 @@ The AHK frontend calls the Python backend via:
 
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
 
-The AHK frontend will return updated filter values to Python by writing them to the files `ahkgui_rares.output` and `ahkgui_currency.output`
+The AHK frontend will return updated filter values to Python by writing them to the files `ahkgui.putput`.
 
 **Currently Supported Functions:**
  - `adjust_currency_tier <currency_name> <tier_delta: int> -> None`  (-> indicates return value) 
