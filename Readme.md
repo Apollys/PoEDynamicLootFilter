@@ -52,6 +52,7 @@ The Python backend communicates return values to AHK by writing them to the file
  - `batch_process`
    - Processes a sequence of functions specified in the file `backend_cli.input`
    - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
+   - Ouput is separated by the line `# [end_function_output]` placed after the output of each function call in `backend_cli.output`
  - XXX`set_currency_tier <currency_name> <tier: int> -> None`XXX Temporary hold, potentially uncessary
  - XXX`set_rare_status <rare_type: string> <status: bool/int> -> None`XXX Temporary hold, potentially unnecessary
  - `get_rare_status -> all chaos rare statuses in current filter`
