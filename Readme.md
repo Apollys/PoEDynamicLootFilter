@@ -39,8 +39,6 @@ The AHK frontend calls the Python backend via:
 
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
 
-The AHK frontend will return updated filter values to Python by writing them to the files `ahkgui.output`.
-
 **Currently Supported Functions:**
   - `adjust_currency_tier <currency_name> <tier_delta>`
     - Moves a given currency type by a relative tier_delta
@@ -51,6 +49,9 @@ The AHK frontend will return updated filter values to Python by writing them to 
     - Example: `> python3 backend_cli.py get_currency_tiers`
 
 **Functions To Implement**
+ - `batch_process`
+   - Processes a sequence of functions specified in the file `backend_cli.input`
+   - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
  - XXX`set_currency_tier <currency_name> <tier: int> -> None`XXX Temporary hold, potentially uncessary
  - XXX`set_rare_status <rare_type: string> <status: bool/int> -> None`XXX Temporary hold, potentially unnecessary
  - `get_rare_status -> all chaos rare statuses in current filter`
