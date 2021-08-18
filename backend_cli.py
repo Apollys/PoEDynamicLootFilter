@@ -71,7 +71,7 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
         tier_delta: int = int(function_params[1])
         loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
         loot_filter.SaveToFile(config.kOutputLootFilterFilename)
-    if (function_name == 'set_currency_tier'):
+    elif (function_name == 'set_currency_tier'):
         '''
         set_currency_tier <currency_name: str> <tier: int>
          - Moves the given currency type to the specified tier
@@ -97,6 +97,53 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
             output_string += ''.join((currency_name + ';' + str(tier) + '\n')
                                         for currency_name in currency_names)
         WriteOutput(output_string)
+    elif (function_name == 'set_hide_map_below_tier'):
+        '''
+        set_hide_map_below_tier <tier: int>
+         - Sets the map tier below which all will be hidden (use 0/1 to show all)
+         - Output: None
+         - Example: > python3 backend_cli.py set_hide_map_below_tier 14
+        '''
+        tier: int = int(function_params[0])
+        loot_filter.SetHideMapsBelowTierTier(tier)
+        loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+    elif (function_name == 'get_hide_map_below_tier'):
+        '''
+        get_hide_map_below_tier
+         - Output: a single number, the tier below which all maps are hidden
+         - Example: > python3 backend_cli.py get_hide_map_below_tier
+        '''
+        output_string = str(loot_filter.GetHideMapsBelowTierTier())
+        WriteOutput(output_string)
+    elif (function_name == 'set_chaos_recipe_enabled_for'):
+        '''
+        set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>
+         - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
+           "Boots", "Amulets", "Rings", "Belts"
+         - enable_flag is 1 for True (enable), 0 for False (disable)
+         - Output: None
+         - Example: > python3 backend_cli.py set_chaos_recipe_enabled_for Weapons 0
+        '''
+        item_slot: str = function_params[0]
+        enable_flag: bool = bool(int(function_params[1]))
+        loot_filter.SetChaosRecipeEnabledFor(item_slot, enable_flag)
+        loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+    elif (function_name == 'is_chaos_recipe_enabled_for'):
+        '''
+        is_chaos_recipe_enabled_for <item_slot: str>
+         - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
+           "Boots", "Amulets", "Rings", "Belts"
+         - Output: "1" if chaos recipe items are showing for the given item_slot, else "0"
+         - Example: > python3 backend_cli.py is_chaos_recipe_enabled_for "Body Armours"
+        '''
+        item_slot: str = function_params[0]
+        output_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
+        WriteOutput(output_string)
+    else:
+        error_message: str = 'Function "{}" not found'.format(function_name)
+        logger.Log('Error: ' + error_message)
+        raise RuntimeError(error_message)
+        
 # End DelegateFunctionCall
         
 def main():

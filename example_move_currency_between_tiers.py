@@ -23,6 +23,5 @@ def main():
     loot_filter = LootFilter(config.kInputLootFilterFilename)
     MoveCurrencyBetweenTiersExample(loot_filter)
     
-
 if (__name__ == '__main__'):
     main()

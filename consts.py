@@ -1,6 +1,38 @@
+import re
+
+import config
+
+def InvertedDict(input_dict):
+    return {value : key for key, value in input_dict.items()}
+
 # =================================== Misc ===================================
 
 kTableOfContentsIdentifier = '[WELCOME] TABLE OF CONTENTS'
+kDlfAddedRulesSectionGroupId = '9900'
+kDlfAddedRulesSectionGroupName = 'Dynamic Loot Filter Added Rules'
+
+kSectionGroupHeaderTemplate = \
+'''#===============================================================================================================
+# [[{}]] {}
+#==============================================================================================================='''
+
+# Note: added a few extra dashes from NeverSink's template here
+kSectionHeaderTemplate = \
+'''#------------------------------------------------
+#   [{}] {}
+#------------------------------------------------'''
+
+kSectionRePattern = re.compile(r'\[\d+\]+ .*')
+
+# ================================= Map Tier =================================
+
+# No idea if the ShapedMap matters, but NeverSink used it in his filters
+kHideMapsBelowTierRuleTemplate = \
+'''Hide $type->hide_maps_below_tier $tier->hide_maps_below_tier
+Class Maps
+ShapedMap False
+MapTier < {}'''
+
 
 # ================================= Currency =================================
 
@@ -14,12 +46,12 @@ kCurrencyTierNames = {1 : 't1exalted',
                       8 : 't8trans',
                       9 : 't9armour'}
 
-kCurrencyTierNameToNumberMap = {value : key for key, value in kCurrencyTierNames.items()}
+kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 
 # =============================== Chaos Recipe ===============================
 
 kChaosRecipeRuleTemplate = \
-'''Show $type->chaos_recipe_rare $tier->{}
+'''Show $type->chaos_recipe_rares $tier->{}
 SetBorderColor {}
 SetFontSize 40
 ItemLevel >= 60
@@ -27,14 +59,26 @@ Rarity Rare
 Class {}
 MinimapIcon {} {}'''
 
-kChaosRecipeCategories = ['Weapons',
-                          'Body Armours',
-                          'Helmets',
-                          'Gloves',
-                          'Boots',
-                          'Amulets',
-                          'Rings',
-                          'Belts']
+kChaosRecipeItemSlots = ['Weapons',
+                         'Body Armours',
+                         'Helmets',
+                         'Gloves',
+                         'Boots',
+                         'Amulets',
+                         'Rings',
+                         'Belts']
+
+# Need no spaces in tier tags
+kChaosRecipeTierTags = {'Weapons' : 'weapons',
+                        'Body Armours' : 'body_armours',
+                        'Helmets' : 'helmets',
+                        'Gloves' : 'gloves',
+                        'Boots' : 'boots',
+                        'Amulets': 'amulets',
+                        'Rings' : 'rings',
+                        'Belts' : 'belts'}
+                        
+kChaosRecipeTierToItemSlotMap = InvertedDict(kChaosRecipeTierTags)
 
 kChaosRecipeBorderColors = {'Weapons' : '200 0 0 255',
                             'Body Armours' : '255 0 255 255',
@@ -45,14 +89,16 @@ kChaosRecipeBorderColors = {'Weapons' : '200 0 0 255',
                             'Rings' : '65 0 189 255',
                             'Belts' : '0 0 200 255'}
 
-kChaosRecipeClasses = {'Weapons' : '"Daggers" "Wands"',
+kChaosRecipeWeaponClassesString = '"' + '" "'.join(config.kChaosRecipeWeaponClasses) + '"'
+
+kChaosRecipeClasses = {'Weapons' : kChaosRecipeWeaponClassesString,
                        'Body Armours' : '"Body Armours"',
                        'Helmets' : '"Helmets"',
                        'Gloves' : '"Gloves"',
                        'Boots' : '"Boots"',
                        'Amulets': '"Amulets"',
                        'Rings' : '"Rings"',
-                       'Belts' : '"Belts'}
+                       'Belts' : '"Belts"'}
 
 kChaosRecipeMinimapIconSizeColorParams = {'Weapons' : '2 Red',
                                           'Body Armours' : '2 Pink',
@@ -66,10 +112,10 @@ kChaosRecipeMinimapIconSizeColorParams = {'Weapons' : '2 Red',
 kChaosRecipeMinimapIconType = 'Moon'
 
 kChaosRecipeRuleStrings = [kChaosRecipeRuleTemplate.format(
-                                   category,
-                                   kChaosRecipeBorderColors[category],
-                                   kChaosRecipeClasses[category],
-                                   kChaosRecipeMinimapIconSizeColorParams[category],
+                                   kChaosRecipeTierTags[item_slot],
+                                   kChaosRecipeBorderColors[item_slot],
+                                   kChaosRecipeClasses[item_slot],
+                                   kChaosRecipeMinimapIconSizeColorParams[item_slot],
                                    kChaosRecipeMinimapIconType)
-                               for category in kChaosRecipeCategories]
+                               for item_slot in kChaosRecipeItemSlots]
 

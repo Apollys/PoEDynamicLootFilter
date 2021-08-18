@@ -4,6 +4,7 @@ from collections import OrderedDict
 from enum import Enum
 from typing import Dict, List, Tuple
 
+import config
 import consts
 import helper
 import logger
@@ -155,6 +156,7 @@ class LootFilter:
     '''
     Member variables:
      - self.text_lines: List[str]
+     - self.parser_index: int
      - self.section_map: OrderedDict[id: str, name: str]
      - self.inverse_section_map: Dict[name: str, id: str]
      - self.rules_start_line_index: int
@@ -188,13 +190,15 @@ class LootFilter:
                     rule = self.line_index_rule_map[line_index]
                     output_file.write(str(rule) + '\n')
                     line_index += len(rule.text_lines)
-    # End SaveToFile()
+    # End SaveToFile
     
     def GetRulesByTypeTier(self, type_name: str, tier_name: str) -> List[LootFilterRule]:
         CheckType(type_name, 'type_name', str)
         CheckType(tier_name, 'tier_name', str)
         return self.type_tier_rule_map[type_name][tier_name]
     # End GetRulesByTypeTier
+    
+    # ========================= Section-Related Functions =========================
        
     def ContainsSection(self, section_name: str) -> bool:
         CheckType(section_name, 'section_name', str)
@@ -244,6 +248,35 @@ class LootFilter:
         CheckType(rule_index, 'rule_index', int)
         self.GetSectionRules(section_name)[rule_index].SetVisibility(visibility)
     # End ChangeRuleVisibility
+    
+    # =========================== Map-Related Functions ===========================
+    
+    def GetHideMapsBelowTierTier(self) -> int:
+        type_name = 'hide_maps_below_tier'
+        tier_name = type_name
+        [rule] = self.type_tier_rule_map[type_name][tier_name]
+        for line in rule.text_lines:
+            keystring: str = 'MapTier < '
+            if (keystring in line):
+                maptier_start_index = line.find(keystring) + len(keystring)
+                return helper.ParseNumberFromString(line, maptier_start_index)
+    # End GetHideMapsBelowTierTier
+    
+    def SetHideMapsBelowTierTier(self, tier: int) -> int:
+        CheckType(tier, 'tier', int)
+        type_name = 'hide_maps_below_tier'
+        tier_name = type_name
+        [rule] = self.type_tier_rule_map[type_name][tier_name]
+        for i in range(len(rule.text_lines)):
+            line = rule.text_lines[i]
+            keystring: str = 'MapTier < '
+            if (keystring in line):
+                maptier_start_index = line.find(keystring) + len(keystring)
+                rule.text_lines[i] = line[:maptier_start_index] + str(tier)
+                break
+    # End SetHideMapsBelowTierTier
+    
+    # ========================= Currency-Related Functions =========================
     
     def GetAllCurrencyInTier(self, tier: int) -> List[str]:
         CheckType(tier, 'tier', int)
@@ -305,10 +338,32 @@ class LootFilter:
         target_currency_rule.AddBaseType(currency_name)
     # End MoveCurrencyFromTierToTier
     
-    # ======================== Private Helper Methods ========================
+    # ======================= Chaos Recipe-Related Functions =======================
+    
+    def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
+        CheckType(item_slot, 'item_slot', str)
+        type_tag: str = 'chaos_recipe_rares'
+        tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
+                         else consts.kChaosRecipeTierTags[item_slot])
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility == RuleVisibility.kShow
+    # End IsChaosRecipeItemSlotEnabled
+    
+    def SetChaosRecipeEnabledFor(self, item_slot: str, enable_flag: bool):
+        CheckType(item_slot, 'item_slot', str)
+        CheckType(enable_flag, 'enable_flag', bool)
+        type_tag: str = 'chaos_recipe_rares'
+        tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
+                         else consts.kChaosRecipeTierTags[item_slot])
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule.SetVisibility(RuleVisibility.kShow if enable_flag else RuleVisibility.kDisable)
+    # End IsChaosRecipeItemSlotEnabled
+    
+    # ======================== Private Parser Methods ========================
     
     def ParseLootFilterFile(self, loot_filter_filename: str) -> None:
-        CheckType(loot_filter_filename, 'loot_filter_filename', str)      
+        CheckType(loot_filter_filename, 'loot_filter_filename', str)
+        # Read in lines from file   
         self.text_lines: List[str] = []
         with open(loot_filter_filename) as loot_filter_file:
             for line in loot_filter_file:
@@ -316,14 +371,16 @@ class LootFilter:
         # Ensure there is a blank line at the end to make parsing algorithms cleaner
         if (self.text_lines[-1] != ''):
             self.text_lines.append('')
-        self.ParseLootFilterRules(self.text_lines)
+        self.rules_start_line_index = self.FindRulesStartLineIndex()
+        self.parser_index = self.rules_start_line_index
+        self.AddDlfRulesIfMissing()  # add DLF-specific rules like chaos recipe rules
+        self.ParseLootFilterRules()
     # End ParseLootFilterFile()
     
-    def FindRulesStartLineIndex(self, loot_filter_lines: List[str]) -> int:
-        CheckType(loot_filter_lines, 'loot_filter_lines', list)
+    def FindRulesStartLineIndex(self) -> int:
         found_table_of_contents: bool = False
-        for line_index in range(len(loot_filter_lines)):
-            line: str = loot_filter_lines[line_index]
+        for line_index in range(len(self.text_lines)):
+            line: str = self.text_lines[line_index]
             if (consts.kTableOfContentsIdentifier in line):
                 found_table_of_contents = True
             elif(not found_table_of_contents):
@@ -332,41 +389,49 @@ class LootFilter:
             elif (line == ''):
                 return line_index + 1
         return -1  # never found table of contents
+    # End FindRulesStartLineIndex
     
-    # Handles both sections and section groups (single and double bracket ids)
-    # Returns is_section_group, section_id, section_name triplet
-    # Example: "# [[1000]] High Level Crafting Bases" -> "1000", "High Level Crafting Bases"
-    # Or: "# [1234] ILVL 86" -> "1234", "ILVL 86" 
-    def ParseSectionDeclarationLine(self, line) -> Tuple[bool, str, str]:
-        CheckType(line, 'line', str)
-        first_opening_bracket_index = -1
-        id_start_index = -1
-        id_end_index = -1
-        name_start_index = -1
-        found_opening_bracket = False
-        for i in range(len(line)):
-            if (first_opening_bracket_index == -1):
-                if (line[i] == '['):
-                    first_opening_bracket_index = i
-                continue
-            elif (id_start_index == -1):
-                if (line[i].isdigit()):
-                    id_start_index = i
-                continue
-            elif (id_end_index == -1):
-                if (line[i] == ']'):
-                    id_end_index = i
-                continue
-            else:  # name_start_index == -1
-                if ((line[i] != ']') and (not line[i].isspace())):
-                    name_start_index = i
-                    break;
-        is_section_group = (id_start_index - first_opening_bracket_index) > 1
-        section_id = line[id_start_index : id_end_index]
-        section_name = line[name_start_index :]
-        return is_section_group, section_id, section_name
+    def AddDlfRulesIfMissing(self):
+        index = self.rules_start_line_index
+        for index in range(self.rules_start_line_index, len(self.text_lines)):
+            line: str = self.text_lines[index]
+            if (helper.IsSectionOrGroupDeclaration(line)):
+                _, section_id, section_name = helper.ParseSectionDeclarationLine(line)
+                if (section_id == consts.kDlfAddedRulesSectionGroupId
+                        and section_name == kDlfAddedRulesSectionGroupName):
+                    # found DLF rules, so we can just return
+                    return
+                break  # as soon as we encounter any section declaration, we're done
+        # Add DLF rules
+        to_add_string_list: List[str] = []
+        # Add section group header
+        to_add_string: str = consts.kSectionGroupHeaderTemplate.format(
+                consts.kDlfAddedRulesSectionGroupId,
+                consts.kDlfAddedRulesSectionGroupName)
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        current_section_id_int: int = int(consts.kDlfAddedRulesSectionGroupId)
+        # Add "Hide maps below tier" rule
+        current_section_id_int += 1
+        to_add_string = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Hide all maps below specified tier')
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        to_add_string = consts.kHideMapsBelowTierRuleTemplate.format(
+                config.kHideMapsBelowTier)
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        # Add chaos recipe rules
+        current_section_id_int += 1
+        to_add_string = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Chaos recipe rares')
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        for chaos_recipe_rule_string in consts.kChaosRecipeRuleStrings:
+            to_add_string_list.extend(chaos_recipe_rule_string.split('\n') + [''])
+        # Update self.text_lines to contain the newly added rules
+        # Python trick to insert one list into another: https://stackoverflow.com/a/5805910
+        insert_index: int = self.rules_start_line_index
+        self.text_lines[insert_index : insert_index] = to_add_string_list
+    # End AddDlfRulesIfMissing
     
-    def ParseLootFilterRules(self, loot_filter_lines: List[str]) -> None:
+    def ParseLootFilterRules(self) -> None:
         '''
         This function parses the rules of the loot filter into the following data structures:
          - self.section_map: OrderedDict[id: str, name: str]
@@ -378,7 +443,6 @@ class LootFilter:
            Example: self.type_tier_rule_map['currency']['t1']  
                         -> list of rules of type 'currency' and tier 't1'
         '''
-        CheckType(loot_filter_lines, 'loot_filter_lines', list)
         # Initialize data structures to store parsed data
         self.section_map: OrderedDict[str, str] = {}  # maps ids to names
         self.inverse_section_map: Dict[str, str] = {}  # maps names to ids
@@ -386,20 +450,17 @@ class LootFilter:
         self.line_index_rule_map: OrderedDict[int, LootFilterRule] = OrderedDict()
         self.type_tier_rule_map = {}
         # Set up parsing loop
-        section_re_pattern = re.compile(r'\[\d+\]+ .*')
-        self.rules_start_line_index: int = self.FindRulesStartLineIndex(loot_filter_lines)
         in_rule: bool = False
         current_rule_lines: List[str] = []
         current_section_id: str = ''
         current_section_group_prefix: str = ''
-        for line_index in range(self.rules_start_line_index, len(loot_filter_lines)):
-            line: str = loot_filter_lines[line_index]
+        for line_index in range(self.rules_start_line_index, len(self.text_lines)):
+            line: str = self.text_lines[line_index]
             if (not in_rule):
-                section_re_search_result = section_re_pattern.search(line)
                 # Case: encountered new section or section group
-                if (section_re_search_result):
+                if (helper.IsSectionOrGroupDeclaration(line)):
                     is_section_group, section_id, section_name = \
-                            self.ParseSectionDeclarationLine(line)
+                            helper.ParseSectionDeclarationLine(line)
                     if (is_section_group):
                         current_section_group_prefix = '[' + section_name + '] '
                     else:

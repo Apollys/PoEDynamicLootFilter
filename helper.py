@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple
 
+import consts
 from type_checker import CheckType
 
 # ========================== Generic Helper Methods ==========================
@@ -28,7 +29,23 @@ def MakeUniqueId(new_id: str, used_ids) -> str:
     return candidate_id
 # End MakeUniqueId()
 
+# Note: assumes number is purely composed of digits, i.e. non-negative
+def ParseNumberFromString(input_string: str, starting_index: int = 0) -> int:
+    number_string = ''
+    for c in input_string[starting_index:]:
+        if (c.isdigit()):
+            number_string += c
+        else:
+            break
+    return int(number_string)
+
 # ==================== Loot Filter Specifc Helper Methods ====================
+
+# Returns True if the given line is a section declaration or section group
+# declaration, and False otherwise.
+def IsSectionOrGroupDeclaration(line: str) -> bool:
+    CheckType(line, 'line', str)
+    return bool(consts.kSectionRePattern.search(line))    
 
 # Returns True if the given line marks the start of a rule, else returns False
 def IsRuleStart(line: str) -> bool:
@@ -37,6 +54,40 @@ def IsRuleStart(line: str) -> bool:
             line.startswith('#Show') or line.startswith('#Hide') or
             line.startswith('# Show') or line.startswith('# Hide'))
 # End IsRuleStart()
+
+# Handles both sections and section groups (single and double bracket ids)
+# Returns (is_section_group, section_id, section_name) triplet
+# Example: "# [[1000]] High Level Crafting Bases" -> "1000", "High Level Crafting Bases"
+# Or: "# [1234] ILVL 86" -> "1234", "ILVL 86" 
+def ParseSectionDeclarationLine(line) -> Tuple[bool, str, str]:
+    CheckType(line, 'line', str)
+    first_opening_bracket_index = -1
+    id_start_index = -1
+    id_end_index = -1
+    name_start_index = -1
+    found_opening_bracket = False
+    for i in range(len(line)):
+        if (first_opening_bracket_index == -1):
+            if (line[i] == '['):
+                first_opening_bracket_index = i
+            continue
+        elif (id_start_index == -1):
+            if (line[i].isdigit()):
+                id_start_index = i
+            continue
+        elif (id_end_index == -1):
+            if (line[i] == ']'):
+                id_end_index = i
+            continue
+        else:  # name_start_index == -1
+            if ((line[i] != ']') and (not line[i].isspace())):
+                name_start_index = i
+                break;
+    is_section_group = (id_start_index - first_opening_bracket_index) > 1
+    section_id = line[id_start_index : id_end_index]
+    section_name = line[name_start_index :]
+    return is_section_group, section_id, section_name
+# End ParseSectionDeclarationLine
 
 # Given the BaseType text line from a loot filter rule, return list of base type strings
 # Example: BaseType "Orb of Alchemy" "Orb of Chaos" -> ["Orb of Alchemy", "Orb of Chaos"]
