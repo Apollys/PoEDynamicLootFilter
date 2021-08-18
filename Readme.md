@@ -42,16 +42,12 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 
 **Currently Supported Functions:**
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
-    - Moves a given currency type by a relative tier_delta
-    - Output: None
-    - Example: `> python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2`
-  - set_currency_tier <currency_name: str> <tier: int>
-    - Moves the given currency type to the specified tier
-    - Output: None
-    - Example: > python3 backend_cli.py set_currency_tier "Chromatic Orb" 5
+  - `set_currency_tier <currency_name: str> <tier: int>`
   - `get_currency_tiers`
-    - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`, one per currency type
-    - Example: `> python3 backend_cli.py get_currency_tiers`
+  - `set_hide_map_below_tier <tier: int>`
+  - `get_hide_map_below_tier`
+  - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
+  - `is_chaos_recipe_enabled_for <item_slot: str>`
 
 **Functions To Implement**
  - `batch_process`
