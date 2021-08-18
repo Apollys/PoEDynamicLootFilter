@@ -27,41 +27,41 @@ Rarity Rare
 Class {}
 MinimapIcon {} {}'''
 
-kChaosRecipeCategories = ['weapons',
-                          'body_armours',
-                          'helmets',
-                          'gloves',
-                          'boots',
-                          'amulets',
-                          'rings',
-                          'belts']
+kChaosRecipeCategories = ['Weapons',
+                          'Body Armours',
+                          'Helmets',
+                          'Gloves',
+                          'Boots',
+                          'Amulets',
+                          'Rings',
+                          'Belts']
 
-kChaosRecipeBorderColors = {'weapons' : '200 0 0 255',
-                            'body_armours' : '255 0 255 255',
-                            'helmets' : '255 114 0 255',
-                            'gloves' : '255 228 0 255',
-                            'boots' : '0 255 0 255',
-                            'amulets': '0 255 255 255',
-                            'rings' : '65 0 189 255',
-                            'belts' : '0 0 200 255'}
+kChaosRecipeBorderColors = {'Weapons' : '200 0 0 255',
+                            'Body Armours' : '255 0 255 255',
+                            'Helmets' : '255 114 0 255',
+                            'Gloves' : '255 228 0 255',
+                            'Boots' : '0 255 0 255',
+                            'Amulets': '0 255 255 255',
+                            'Rings' : '65 0 189 255',
+                            'Belts' : '0 0 200 255'}
 
-kChaosRecipeClasses = {'weapons' : '"Daggers" "Wands"',
-                       'body_armours' : '"Body Armours"',
-                       'helmets' : '"Helmets"',
-                       'gloves' : '"Gloves"',
-                       'boots' : '"Boots"',
-                       'amulets': '"Amulets"',
-                       'rings' : '"Rings"',
-                       'belts' : '"Belts'}
+kChaosRecipeClasses = {'Weapons' : '"Daggers" "Wands"',
+                       'Body Armours' : '"Body Armours"',
+                       'Helmets' : '"Helmets"',
+                       'Gloves' : '"Gloves"',
+                       'Boots' : '"Boots"',
+                       'Amulets': '"Amulets"',
+                       'Rings' : '"Rings"',
+                       'Belts' : '"Belts'}
 
-kChaosRecipeMinimapIconSizeColorParams = {'weapons' : '2 Red',
-                                          'body_armours' : '2 Pink',
-                                          'helmets' : '2 Orange',
-                                          'gloves' : '2 Yellow',
-                                          'boots' : '2 Green',
-                                          'amulets': '3 Cyan',
-                                          'rings' : '3 Purple',
-                                          'belts' : '2 Blue'}
+kChaosRecipeMinimapIconSizeColorParams = {'Weapons' : '2 Red',
+                                          'Body Armours' : '2 Pink',
+                                          'Helmets' : '2 Orange',
+                                          'Gloves' : '2 Yellow',
+                                          'Boots' : '2 Green',
+                                          'Amulets': '3 Cyan',
+                                          'Rings' : '3 Purple',
+                                          'Belts' : '2 Blue'}
 
 kChaosRecipeMinimapIconType = 'Moon'
 

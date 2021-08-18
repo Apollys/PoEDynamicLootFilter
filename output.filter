@@ -5335,7 +5335,7 @@ PlayAlertSound 2 300
 
 Show # $type->currency $tier->t4chaos
 Class "Currency"
-BaseType == "Accelerating Catalyst" "Ancient Shard" "Awakened Sextant" "Blessing of Uul-Netol" "Chaos Orb" "Fertile Catalyst" "Gemcutter's Prism" "Orb of Regret" "Orb of Scouring" "Prismatic Catalyst" "Ritual Splinter" "Tempering Catalyst" "Turbulent Catalyst" "Unstable Catalyst" "Chromatic Orb"
+BaseType == "Accelerating Catalyst" "Ancient Shard" "Awakened Sextant" "Blessing of Uul-Netol" "Chaos Orb" "Fertile Catalyst" "Gemcutter's Prism" "Orb of Regret" "Orb of Scouring" "Prismatic Catalyst" "Ritual Splinter" "Tempering Catalyst" "Turbulent Catalyst" "Unstable Catalyst"
 SetFontSize 45
 SetTextColor 30 200 200 255
 SetBorderColor 30 200 200 255
@@ -5344,7 +5344,7 @@ PlayEffect Blue
 MinimapIcon 1 Blue Circle
 PlayAlertSound 2 300
 
-Show # %H5 $type->currency $tier->t5alchemy
+Hide # %H5 $type->currency $tier->t5alchemy
 Class "Currency"
 BaseType == "Abrasive Catalyst" "Annulment Shard" "Bestiary Orb" "Blessed Orb" "Cartographer's Chisel" "Enkindling Orb" "Facetor's Lens" "Glassblower's Bauble" "Harbinger's Shard" "Imbued Catalyst" "Instilling Orb" "Intrinsic Catalyst" "Noxious Catalyst" "Orb of Fusing" "Orb of Horizons" "Prime Sextant" "Stacked Deck" "Vaal Orb"
 SetFontSize 45
@@ -5357,7 +5357,7 @@ PlayAlertSound 2 300
 
 Show # %H4 $type->currency $tier->t6chrom
 Class "Currency"
-BaseType "Orb of Alteration" "Orb of Binding" "Orb of Chance" "Simple Sextant" "Orb of Alchemy" "Regal Orb"
+BaseType "Chromatic Orb" "Orb of Alteration" "Orb of Binding" "Orb of Chance" "Simple Sextant" "Orb of Alchemy" "Regal Orb"
 SetFontSize 45
 SetTextColor 30 200 200 255
 SetBorderColor 30 200 200 255
