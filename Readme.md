@@ -55,12 +55,13 @@ The Python backend communicates return values to AHK by writing them to the file
 
 \*\*For chaos recipe item slots, let's use the categories listed in `consts.py`:
 ```python
-kChaosRecipeCategories = ['weapons',
-                          'body_armours',
-                          'helmets',
-                          'gloves',
-                          'boots',
-                          'amulets',
-                          'rings',
-                          'belts']
+kChaosRecipeCategories = ['Weapons',
+                          'Body Armours',
+                          'Helmets',
+                          'Gloves',
+                          'Boots',
+                          'Amulets',
+                          'Rings',
+                          'Belts']
 ```
+These are the exact item slot names used in the drop filter syntax, except for Weapons which I added as a blanket term.
