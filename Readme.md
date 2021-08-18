@@ -48,5 +48,5 @@ The Python backend communicates return values to AHK by writing them to the file
      + Output format should be "Currency Name";tier with one entry per line (with quotes)
  - `set_rare_status <rare_type: string> <status: bool/int> -> None`
  - `get_rare_status (optional : <rare_type>) -> all (or specified) chaos rare statuses in current filter`
-     + Output format should be "Rare Type";status with one entry per line. Current Rare types are Body, Wep, Boot, Glove, Helmet, Amu, Ring, Belt (can be changed easily)
+     + Output format should be "Rare Type";status with one entry per line. Current Rare types are Body, Wep, Boot, Glove, Helm, Amu, Ring, Belt (can be changed easily)
  - Maybe in the future `update_filter -> None` reads a large number of changes from a fixed text file and performs them all
