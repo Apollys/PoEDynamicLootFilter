@@ -36,8 +36,9 @@ The AHK frontend calls the Python backend via:
 ```
 > python3 backend_cli.py <function_name> <function_parameters...>
 ```
-
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
+
+See `backend_cli.py` for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
   - `adjust_currency_tier <currency_name> <tier_delta>`
