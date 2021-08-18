@@ -98,12 +98,12 @@ def DelegateFunctionCall(function_name: str, function_params):
         target_tier: int = int(function_params[1])
         loot_filter.SetCurrencyToTier(currency_name, target_tier)
         loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
-    elif (function_name == 'get_currency_tiers'):
+    elif (function_name == 'get_all_currency_tiers'):
         '''
-        get_currency_tiers
+        get_all_currency_tiers
          - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`,
            one per currency type
-         - Example: > python3 backend_cli.py get_currency_tiers
+         - Example: > python3 backend_cli.py get_all_currency_tiers
         '''
         CheckNumParams(function_params, 0)
         output_string = ''

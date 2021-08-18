@@ -76,7 +76,7 @@ def TestBackendCli():
     test_function_calls = ['import_downloaded_filter',
                            'adjust_currency_tier "Chromatic Orb" -2',
                            'set_currency_tier "Chromatic Orb" 5',
-                           'get_currency_tiers',
+                           'get_all_currency_tiers',
                            'set_hide_map_below_tier 14',
                            'get_hide_map_below_tier',
                            'set_chaos_recipe_enabled_for Weapons 0',
