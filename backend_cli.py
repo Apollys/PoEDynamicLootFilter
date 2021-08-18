@@ -39,7 +39,7 @@ from loot_filter import RuleVisibility, LootFilterRule, LootFilter
 from type_checker import CheckType
 
 kLogFilename = 'backend_cli.log'
-kReturnFilename = 'backend_cli.output'
+kOutputFilename = 'backend_cli.output'
 
 def CheckNumParams(params_list: List[str], required_num_params: int):
     CheckType(params_list, 'params_list', list)
@@ -52,16 +52,42 @@ def CheckNumParams(params_list: List[str], required_num_params: int):
         raise RuntimeError(error_message)
 # End CheckNumParams
 
+def WriteOutput(output_string: str):
+    CheckType(output_string, 'output_string', str)
+    with open(kOutputFilename, 'w') as output_file:
+        output_file.write(output_string)
+# End WriteOutput
+
 def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_params):
     CheckType(loot_filter, 'loot_filter', LootFilter)
     CheckType(function_name, 'function_name', str)
     CheckType(function_params, 'function_params_list', list)
     if (function_name == 'adjust_currency_tier'):
+        '''
+        adjust_currency_tier <currency_name> <tier_delta>
+         - Moves a given currency type by a relative tier_delta
+         - Output: None
+         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
+        '''
         CheckNumParams(function_params, 2)
         currency_name: str = function_params[0]
         tier_delta: int = int(function_params[1])
         loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
         loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+    elif (function_name == 'get_currency_tiers'):
+        '''
+        get_currency_tiers
+         - Output: newline-separated sequence of `"<currency_name>";<tier>`,
+           one per currency type
+         - Example: > python3 backend_cli.py get_currency_tiers
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = ''
+        for tier in consts.kCurrencyTierNames:
+            currency_names = loot_filter.GetAllCurrencyInTier(tier)
+            output_string += ''.join(('"' + currency_name + '";' + str(tier) + '\n')
+                                        for currency_name in currency_names)
+        WriteOutput(output_string)
 # End DelegateFunctionCall
         
 def main():

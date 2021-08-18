@@ -245,6 +245,18 @@ class LootFilter:
         self.GetSectionRules(section_name)[rule_index].SetVisibility(visibility)
     # End ChangeRuleVisibility
     
+    def GetAllCurrencyInTier(self, tier: int) -> List[str]:
+        CheckType(tier, 'tier', int)
+        if (tier not in consts.kCurrencyTierNames):
+            logger.Log('Warning: currency tier {} is outside the valid currency tier range [0, 9]'
+                        .format(tier))
+            return []
+        type_name = 'currency'
+        tier_name = consts.kCurrencyTierNames[tier]
+        [rule] = self.type_tier_rule_map[type_name][tier_name]
+        return rule.base_type_list
+    # End GetAllCurrencyInTier
+    
     # Returns the name of the tier to which the given currency belongs
     def GetTierOfCurrency(self, currency_name: str) -> int:
         CheckType(currency_name, 'currency_name', str)
