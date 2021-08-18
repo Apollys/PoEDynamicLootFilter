@@ -80,7 +80,8 @@ def TestBackendCli():
                            'set_hide_map_below_tier 14',
                            'get_hide_map_below_tier',
                            'set_chaos_recipe_enabled_for Weapons 0',
-                           'is_chaos_recipe_enabled_for "Body Armours"']
+                           'is_chaos_recipe_enabled_for "Body Armours"',
+                           'get_all_chaos_recipe_statuses']
     for function_call in test_function_calls:
         return_value = os.system('python3 backend_cli.py ' + function_call)
         CHECK(return_value == 0)

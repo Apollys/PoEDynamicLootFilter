@@ -154,6 +154,20 @@ def DelegateFunctionCall(function_name: str, function_params):
         item_slot: str = function_params[0]
         output_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
         WriteOutput(output_string)
+    elif (function_name == 'get_all_chaos_recipe_statuses'):
+        '''
+        get_all_chaos_recipe_statuses
+         - Output: one line formatted as `<item_slot>;<enabled_flag>` for each item slot
+         - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
+           "Boots", "Amulets", "Rings", "Belts"
+         - <enabled_flag> is "1" if chaos recipe items are showing for the given item_slot, else "0"
+         - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses
+        '''
+        output_string = ''
+        for item_slot in consts.kChaosRecipeItemSlots:
+            enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
+            output_string += item_slot + ';' + enabled_flag_string + '\n'
+        WriteOutput(output_string)
     else:
         error_message: str = 'Function "{}" not found'.format(function_name)
         logger.Log('Error: ' + error_message)

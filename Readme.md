@@ -33,6 +33,7 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_hide_map_below_tier`
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
   - `is_chaos_recipe_enabled_for <item_slot: str>`
+  - `get_all_chaos_recipe_statuses`
 
 **Functions To Implement**
  - `batch_process`
