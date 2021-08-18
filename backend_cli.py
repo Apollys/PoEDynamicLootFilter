@@ -9,10 +9,7 @@ formatted as specified by the frontend developer.  (Note: make sure
 calls to the cli are synchronous if return values are to be used,
 so you ensure data is written before you try to read it.)
 
-Currently supported functions are:
- - "adjust_currency_tier": moves a given currency type by a relative tier_delta
-   Paramters: base_type, tier_delta
-   Example usage: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
+Scroll down to DelegateFunctionCall() to see documentation of all supported functions.
    
 The input and output filter filepaths are specified in config.py.
 (Eventually these will be the same, but for testing they're distinct.)
@@ -89,7 +86,7 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
     elif (function_name == 'get_currency_tiers'):
         '''
         get_currency_tiers
-         - Output: newline-separated sequence of `"<currency_name: str>";<tier: int>`,
+         - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`,
            one per currency type
          - Example: > python3 backend_cli.py get_currency_tiers
         '''
@@ -97,7 +94,7 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
         output_string = ''
         for tier in consts.kCurrencyTierNames:
             currency_names = loot_filter.GetAllCurrencyInTier(tier)
-            output_string += ''.join(('"' + currency_name + '";' + str(tier) + '\n')
+            output_string += ''.join((currency_name + ';' + str(tier) + '\n')
                                         for currency_name in currency_names)
         WriteOutput(output_string)
 # End DelegateFunctionCall

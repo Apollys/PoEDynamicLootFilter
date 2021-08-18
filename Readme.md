@@ -50,7 +50,7 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
     - Output: None
     - Example: > python3 backend_cli.py set_currency_tier "Chromatic Orb" 5
   - `get_currency_tiers`
-    - Output: newline-separated sequence of `"<currency_name: str>";<tier: int>`, one per currency type
+    - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`, one per currency type
     - Example: `> python3 backend_cli.py get_currency_tiers`
 
 **Functions To Implement**
