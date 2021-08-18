@@ -38,7 +38,7 @@ The AHK frontend calls the Python backend via:
 ```
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
 
-See `backend_cli.py` for the detailed documentation of all available function calls.
+See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py) for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
   - `adjust_currency_tier <currency_name> <tier_delta>`
