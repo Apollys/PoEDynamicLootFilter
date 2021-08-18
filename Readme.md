@@ -37,10 +37,12 @@ The AHK frontend calls the Python backend via:
 > python3 backend_cli.py <function_name> <function_parameters...>
 ```
 
-The Python backend communicates return values to AHK by writing them to the file `backed_cli.output`.
+The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
 
 **Currently Supported Functions:**
  - `adjust_currency_tier <currency_name> <tier_delta: int> -> None`  (-> indicates return value) 
 
 **Functions To Implement**
- - ...
+ - `set_currency_tier <currency_name> <tier: int> -> None`
+ - `get_currency_tiers (optional: <currency_name>) -> all (or specified) currency tiers in current filter`
+     + Output format should be `"Currency Name";tier` with one entry per line
