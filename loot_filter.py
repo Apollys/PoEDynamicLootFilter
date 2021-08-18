@@ -398,7 +398,7 @@ class LootFilter:
             if (helper.IsSectionOrGroupDeclaration(line)):
                 _, section_id, section_name = helper.ParseSectionDeclarationLine(line)
                 if (section_id == consts.kDlfAddedRulesSectionGroupId
-                        and section_name == kDlfAddedRulesSectionGroupName):
+                        and section_name == consts.kDlfAddedRulesSectionGroupName):
                     # found DLF rules, so we can just return
                     return
                 break  # as soon as we encounter any section declaration, we're done

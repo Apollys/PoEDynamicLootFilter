@@ -55,11 +55,26 @@ def WriteOutput(output_string: str):
         output_file.write(output_string)
 # End WriteOutput
 
-def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_params):
-    CheckType(loot_filter, 'loot_filter', LootFilter)
+def DelegateFunctionCall(function_name: str, function_params):
     CheckType(function_name, 'function_name', str)
     CheckType(function_params, 'function_params_list', list)
-    if (function_name == 'adjust_currency_tier'):
+    input_loot_filter_fullpath = (config.kDownloadedLootFilterFullpath
+                                  if function_name == 'import_downloaded_filter'
+                                  else config.kPathOfExileLootFilterFullpath)
+    loot_filter = LootFilter(input_loot_filter_fullpath)
+    if (function_name == 'import_downloaded_filter'):
+        '''
+        import_downloaded_filter
+         - Reads the filter located in the downloads directory, applies all DLF
+           custom changes to it, and saves the result in the Path Of Exile directory.
+           See config.py to configure filter file paths and names.
+         - Output: None
+         - Example: > python3 backend_cli.py import_downloaded_filter
+        '''
+        CheckNumParams(function_params, 0)
+        # TODO: once profile saving is implemented, apply all saved changes to filter here
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+    elif (function_name == 'adjust_currency_tier'):
         '''
         adjust_currency_tier <currency_name: str> <tier_delta: int>
          - Moves the given currency type by a relative tier_delta
@@ -70,7 +85,7 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
         currency_name: str = function_params[0]
         tier_delta: int = int(function_params[1])
         loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
-        loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'set_currency_tier'):
         '''
         set_currency_tier <currency_name: str> <tier: int>
@@ -82,7 +97,7 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
         currency_name: str = function_params[0]
         target_tier: int = int(function_params[1])
         loot_filter.SetCurrencyToTier(currency_name, target_tier)
-        loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_currency_tiers'):
         '''
         get_currency_tiers
@@ -106,7 +121,7 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
         '''
         tier: int = int(function_params[0])
         loot_filter.SetHideMapsBelowTierTier(tier)
-        loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_hide_map_below_tier'):
         '''
         get_hide_map_below_tier
@@ -127,7 +142,7 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
         item_slot: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
         loot_filter.SetChaosRecipeEnabledFor(item_slot, enable_flag)
-        loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'is_chaos_recipe_enabled_for'):
         '''
         is_chaos_recipe_enabled_for <item_slot: str>
@@ -149,7 +164,6 @@ def DelegateFunctionCall(loot_filter: LootFilter, function_name: str, function_p
 def main():
     # Initialize
     logger.InitializeLog(kLogFilename)
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
     print(argv_info_message)
     logger.Log(argv_info_message)
@@ -161,7 +175,7 @@ def main():
     # Delegate function call based on name
     function_name: str = sys.argv[1]
     try:
-        DelegateFunctionCall(loot_filter, function_name, sys.argv[2:])
+        DelegateFunctionCall(function_name, sys.argv[2:])
     except Exception as e:
         traceback_message = traceback.format_exc()
         logger.Log(traceback_message)

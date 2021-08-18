@@ -25,6 +25,7 @@ The Python backend communicates return values to AHK by writing them to the file
 See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py) for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
+  - `import_downloaded_filter`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `get_currency_tiers`

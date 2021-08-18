@@ -1,3 +1,4 @@
+import os
 import random
 
 import config
@@ -17,7 +18,7 @@ def CHECK(expr: bool):
 
 def TestChangeRuleVisibility():
     print('Running TestChangeRuleVisibility...')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
     type_name = 'currency'
     tier_name = consts.kCurrencyTierNames[1]
     [rule] = loot_filter.type_tier_rule_map[type_name][tier_name]
@@ -29,7 +30,7 @@ def TestChangeRuleVisibility():
 
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
     CHECK(loot_filter.GetHideMapsBelowTierTier() == config.kHideMapsBelowTier)
     for i in range(10):
         tier = random.randint(0, 16)
@@ -40,7 +41,7 @@ def TestHideMapsBelowTier():
 
 def TestCurrency():
     print('Running TestCurrency...')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
     type_name = 'currency'
     for tier in range(1, 10):
         currency_names = loot_filter.GetAllCurrencyInTier(tier)
@@ -60,7 +61,7 @@ def TestCurrency():
 
 def TestChaosRecipe():
     print('Running TestChaosRecipe...')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
     desired_enabled_status_map = {item_slot : random.choice([True, False])
                                   for item_slot in consts.kChaosRecipeItemSlots}
     for item_slot, desired_enabled_status in desired_enabled_status_map.items():
@@ -69,13 +70,28 @@ def TestChaosRecipe():
         enabled_status = loot_filter.IsChaosRecipeEnabledFor(item_slot)
         CHECK(enabled_status == desired_enabled_status)
 # End TestChaosRecipe
-        
+
+def TestBackendCli():
+    print('Running TestBackendCli...')
+    test_function_calls = ['import_downloaded_filter',
+                           'adjust_currency_tier "Chromatic Orb" -2',
+                           'set_currency_tier "Chromatic Orb" 5',
+                           'get_currency_tiers',
+                           'set_hide_map_below_tier 14',
+                           'get_hide_map_below_tier',
+                           'set_chaos_recipe_enabled_for Weapons 0',
+                           'is_chaos_recipe_enabled_for "Body Armours"']
+    for function_call in test_function_calls:
+        return_value = os.system('python3 backend_cli.py ' + function_call)
+        CHECK(return_value == 0)
+# End TestBackendCli
 
 def RunAllTests():
     TestChangeRuleVisibility()
     TestHideMapsBelowTier()
     TestCurrency()
     TestChaosRecipe()
+    TestBackendCli()
 # End RunAllTests
 
 def main():

@@ -23,12 +23,12 @@ def HideCurrencyTierExample(loot_filter):
     rule.SetVisibility(RuleVisibility.kHide)
     print('\nSetting visibilty to "Hide" gives the following rule:\n')
     print(rule)
-    print('\nSaving updated filter to', config.kOutputLootFilterFilename)
-    loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+    print('\nSaving updated filter to', config.kPathOfExileLootFilterFullpath)
+    loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
 
 def main():
     logger.InitializeLog('example.log')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
     HideCurrencyTierExample(loot_filter)
     
 
