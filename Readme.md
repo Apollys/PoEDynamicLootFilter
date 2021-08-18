@@ -39,15 +39,19 @@ The AHK frontend calls the Python backend via:
 
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
 
-The AHK frontend will return updated filter values to Python by writing them to the files `ahkgui.putput`.
+The AHK frontend will return updated filter values to Python by writing them to the files `ahkgui_rares.output` and `ahkgui_currency.output`
 
 **Currently Supported Functions:**
- - `adjust_currency_tier <currency_name> <tier_delta: int> -> None`  (-> indicates return value) 
+  - `adjust_currency_tier <currency_name> <tier_delta>`
+    - Moves a given currency type by a relative tier_delta
+    - Output: None
+    - Example: `> python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2`
+  - `get_currency_tiers`
+    - Output: newline-separated sequence of `"<currency_name>";<tier>`, one per currency type
+    - Example: `> python3 backend_cli.py get_currency_tiers`
 
 **Functions To Implement**
  - XXX`set_currency_tier <currency_name> <tier: int> -> None`XXX Temporary hold, potentially uncessary
- - `get_currency_tiers -> all currency tiers in current filter`\*
-     + Output format: one line `<currency_name>;<tier: int>` for each currency type
  - XXX`set_rare_status <rare_type: string> <status: bool/int> -> None`XXX Temporary hold, potentially unnecessary
  - `get_rare_status -> all chaos rare statuses in current filter`
      + Output format should be `<Rare Type>;<status>` with one entry per line. Rare Types in `consts.py`
