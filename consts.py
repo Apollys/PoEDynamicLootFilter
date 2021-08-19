@@ -24,16 +24,6 @@ kSectionHeaderTemplate = \
 
 kSectionRePattern = re.compile(r'\[\d+\]+ .*')
 
-# ================================= Map Tier =================================
-
-# No idea if the ShapedMap matters, but NeverSink used it in his filters
-kHideMapsBelowTierRuleTemplate = \
-'''Hide $type->hide_maps_below_tier $tier->hide_maps_below_tier
-Class Maps
-ShapedMap False
-MapTier < {}'''
-
-
 # ================================= Currency =================================
 
 kCurrencyTierNames = {1 : 't1exalted',
@@ -50,10 +40,31 @@ kMaxCurrencyTier = len(kCurrencyTierNames) + 1
 
 kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 
+# ================================= Map Tier =================================
+
+# No idea if the ShapedMap matters, but NeverSink used it in his filters
+kHideMapsBelowTierRuleTemplate = \
+'''Hide $type->dlf_hide_maps_below_tier $tier->dlf_hide_maps_below_tier
+Class Maps
+ShapedMap False
+MapTier < {}'''
+
+# ================================== Flasks ==================================
+
+kFlaskRuleTemplate = \
+'''# Show # $type->dlf_flasks $tier->dlf_flasks
+# Rarity <= Magic
+# BaseType
+# SetFontSize 44
+# SetBorderColor 50 200 125 255
+# SetBackgroundColor 21 45 37
+# PlayEffect Green Temp
+# MinimapIcon 0 Green Raindrop'''
+
 # =============================== Chaos Recipe ===============================
 
 kChaosRecipeRuleTemplate = \
-'''Show $type->chaos_recipe_rares $tier->{}
+'''Show $type->dlf_chaos_recipe_rares $tier->{}
 SetBorderColor {}
 SetFontSize 40
 ItemLevel >= 60
@@ -102,14 +113,14 @@ kChaosRecipeClasses = {'Weapons' : kChaosRecipeWeaponClassesString,
                        'Rings' : '"Rings"',
                        'Belts' : '"Belts"'}
 
-kChaosRecipeMinimapIconSizeColorParams = {'Weapons' : '2 Red',
-                                          'Body Armours' : '2 Pink',
-                                          'Helmets' : '2 Orange',
-                                          'Gloves' : '2 Yellow',
-                                          'Boots' : '2 Green',
-                                          'Amulets': '3 Cyan',
-                                          'Rings' : '3 Purple',
-                                          'Belts' : '2 Blue'}
+kChaosRecipeMinimapIconSizeColorParams = {'Weapons' : '1 Red',
+                                          'Body Armours' : '1 Pink',
+                                          'Helmets' : '1 Orange',
+                                          'Gloves' : '1 Yellow',
+                                          'Boots' : '1 Green',
+                                          'Amulets': '0 Cyan',
+                                          'Rings' : '0 Purple',
+                                          'Belts' : '1 Blue'}
 
 kChaosRecipeMinimapIconType = 'Moon'
 

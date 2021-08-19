@@ -260,7 +260,7 @@ class LootFilter:
     
     def SetHideMapsBelowTierTier(self, tier: int) -> int:
         CheckType(tier, 'tier', int)
-        type_name = 'hide_maps_below_tier'
+        type_name = 'dlf_hide_maps_below_tier'
         tier_name = type_name
         [rule] = self.type_tier_rule_map[type_name][tier_name]
         for i in range(len(rule.text_lines)):
@@ -273,7 +273,7 @@ class LootFilter:
     # End SetHideMapsBelowTierTier
     
     def GetHideMapsBelowTierTier(self) -> int:
-        type_name = 'hide_maps_below_tier'
+        type_name = 'dlf_hide_maps_below_tier'
         tier_name = type_name
         [rule] = self.type_tier_rule_map[type_name][tier_name]
         for line in rule.text_lines:
@@ -384,7 +384,7 @@ class LootFilter:
     def SetChaosRecipeEnabledFor(self, item_slot: str, enable_flag: bool):
         CheckType(item_slot, 'item_slot', str)
         CheckType(enable_flag, 'enable_flag', bool)
-        type_tag: str = 'chaos_recipe_rares'
+        type_tag: str = 'dlf_chaos_recipe_rares'
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
         [rule] = self.type_tier_rule_map[type_tag][tier_tag]
@@ -393,7 +393,7 @@ class LootFilter:
     
     def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
         CheckType(item_slot, 'item_slot', str)
-        type_tag: str = 'chaos_recipe_rares'
+        type_tag: str = 'dlf_chaos_recipe_rares'
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
         [rule] = self.type_tier_rule_map[type_tag][tier_tag]
