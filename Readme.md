@@ -47,4 +47,4 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_all_chaos_recipe_statuses`
 
 **Functions To Implement**
-
+ - Flask show/hide operations
