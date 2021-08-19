@@ -30,7 +30,8 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
     - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
     - Ouput is separated by the single-character line `@` placed after the output of each function call in `backend_cli.output`
   - `undo_last_change`
-    - Initial implementation - removes last line from profile and re-runs `import_downloaded_filter` (could be changed to a smarter algorithm later if needed)
+    - Initial implementation - removes last line from profile and re-runs `import_downloaded_filter`
+    - Could be optimized to a smarter algorithm later if deemed important
   - `import_downloaded_filter`
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
