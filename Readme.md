@@ -1,4 +1,4 @@
-# PoEDynamicLootFilter
+# PoE Dynamic Loot Filter
 
 Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
