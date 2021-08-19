@@ -24,6 +24,7 @@ will generate the error message:
 which will be logged to the log file along with the stack trace.
 '''
 
+import shlex
 import sys
 import traceback
 from typing import List
@@ -36,7 +37,14 @@ from loot_filter import RuleVisibility, LootFilterRule, LootFilter
 from type_checker import CheckType
 
 kLogFilename = 'backend_cli.log'
+kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
+
+# List of functions that modify the filter in any way
+# This list excludes getter-only functions, which can be excluded from the profile data
+kFilterMutatorFunctionNames = ['run_batch', 'set_currency_tier', 'adjust_currency_tier',
+        'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
+        'set_hide_map_below_tier', 'set_chaos_recipe_enabled_for']
 
 def CheckNumParams(params_list: List[str], required_num_params: int):
     CheckType(params_list, 'params_list', list)
@@ -49,19 +57,42 @@ def CheckNumParams(params_list: List[str], required_num_params: int):
         raise RuntimeError(error_message)
 # End CheckNumParams
 
+def ReadInput() -> List[str]:
+    with open(kInputFilename) as input_file:
+        return input_file.readlines()
+# End ReadInput
+
 def WriteOutput(output_string: str):
     CheckType(output_string, 'output_string', str)
     with open(kOutputFilename, 'w') as output_file:
         output_file.write(output_string)
 # End WriteOutput
 
-def DelegateFunctionCall(function_name: str, function_params):
+# function_output_string should be the whole string containing the given function call's output
+def AppendFunctionOutput(function_output_string: str):
+    CheckType(function_output_string, 'function_output_string', str)
+    if ((len(function_output_string) == 0) or (function_output_string[-1] != '\n')):
+        function_output_string += '\n'
+    with open(kOutputFilename, 'a') as output_file:
+        output_file.write(function_output_string + '@\n')
+# End AppendFunctionOutput
+
+# Passing in None as the loot filter here indicates to create the loot filter object,
+# perform the call, and write the output all within this delegation.
+# Passing in a LootFilter object instead indicates that there will be multiple
+# consecutive function calls, so this delegation should not construct a LootFilter,
+# and it should append its output to the output file rather than overwriting it.
+def DelegateFunctionCall(loot_filter: LootFilter or None,
+                         function_name: str,
+                         function_params: List[str],
+                         in_batch: bool = False):
+    CheckType(loot_filter, 'loot_filter', (LootFilter, type(None)))
     CheckType(function_name, 'function_name', str)
     CheckType(function_params, 'function_params_list', list)
-    input_loot_filter_fullpath = (config.kDownloadedLootFilterFullpath
-                                  if function_name == 'import_downloaded_filter'
-                                  else config.kPathOfExileLootFilterFullpath)
-    loot_filter = LootFilter(input_loot_filter_fullpath)
+    output_string = ''
+    # Initialize loot_filter if not in_batch and not running import_downloaded_filter
+    if ((not in_batch) and (function_name != 'import_downloaded_filter')):
+        loot_filter = LootFilter(config.kPathOfExileLootFilterFullpath)
     if (function_name == 'import_downloaded_filter'):
         '''
         import_downloaded_filter
@@ -72,8 +103,28 @@ def DelegateFunctionCall(function_name: str, function_params):
          - Example: > python3 backend_cli.py import_downloaded_filter
         '''
         CheckNumParams(function_params, 0)
+        loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
         # TODO: once profile saving is implemented, apply all saved changes to filter here
         loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+    # Note: cannot run_batch from within a run_batch command, as there would be no place for
+    # batch function call list, and this should be unnecessary
+    elif ((function_name == 'run_batch') and not in_batch):
+        '''
+        run_batch
+         - Runs the batch of functions specified in file backend_cli.input
+         - Format is one function call per line, given as: <function_name> <function_params...>
+         - Output: concatenation of the outputs of all the functions, with each function output
+           separated by the line containing the single character: `@`
+         - Example: > python3 run_batch
+        '''
+        CheckNumParams(function_params, 0)
+        loot_filter = LootFilter(config.kPathOfExileLootFilterFullpath)
+        WriteOutput('')  # clear the output file, since we will be appending output in batch
+        function_call_list: List[str] = ReadInput()
+        for function_call_string in function_call_list:
+            # need different variable names here to not overwrite the existing ones
+            _function_name, *_function_params = shlex.split(function_call_string)
+            DelegateFunctionCall(loot_filter, _function_name, _function_params, True)
     elif (function_name == 'set_currency_tier'):
         '''
         set_currency_tier <currency_name: str> <tier: int>
@@ -85,7 +136,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         currency_name: str = function_params[0]
         target_tier: int = int(function_params[1])
         loot_filter.SetCurrencyToTier(currency_name, target_tier)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'adjust_currency_tier'):
         '''
         adjust_currency_tier <currency_name: str> <tier_delta: int>
@@ -97,7 +147,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         currency_name: str = function_params[0]
         tier_delta: int = int(function_params[1])
         loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_all_currency_tiers'):
         '''
         get_all_currency_tiers
@@ -111,7 +160,6 @@ def DelegateFunctionCall(function_name: str, function_params):
             currency_names = loot_filter.GetAllCurrencyInTier(tier)
             output_string += ''.join((currency_name + ';' + str(tier) + '\n')
                                         for currency_name in currency_names)
-        WriteOutput(output_string)
     elif (function_name == 'set_currency_tier_visibility'):
         '''
         set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>
@@ -128,7 +176,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         visible_flag = bool(int(function_params[1]))
         visibility = RuleVisibility.kShow if visible_flag else RuleVisibility.kHide
         loot_filter.SetCurrencyTierVisibility(tier, visibility)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_currency_tier_visibility'):
         '''
         get_currency_tier_visibility <tier: int or tier_tag: str>
@@ -141,7 +188,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         tier = function_params[0]
         if (tier.isdigit()): tier = int(tier)
         output_string = str(int(loot_filter.GetCurrencyTierVisibility(tier) == RuleVisibility.kShow))
-        WriteOutput(output_string)
     elif (function_name == 'set_hide_currency_above_tier'):
         '''
         set_hide_currency_above_tier <tier: int>
@@ -152,7 +198,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         CheckNumParams(function_params, 1)
         max_visible_tier: int = int(function_params[0])
         loot_filter.SetHideCurrencyAboveTierTier(max_visible_tier)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_hide_currency_above_tier'):
         '''
         get_hide_currency_above_tier
@@ -161,7 +206,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideCurrencyAboveTierTier())
-        WriteOutput(output_string)
     elif (function_name == 'set_hide_map_below_tier'):
         '''
         set_hide_map_below_tier <tier: int>
@@ -171,7 +215,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         '''
         min_visibile_tier: int = int(function_params[0])
         loot_filter.SetHideMapsBelowTierTier(min_visibile_tier)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_hide_map_below_tier'):
         '''
         get_hide_map_below_tier
@@ -179,7 +222,6 @@ def DelegateFunctionCall(function_name: str, function_params):
          - Example: > python3 backend_cli.py get_hide_map_below_tier
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
-        WriteOutput(output_string)
     elif (function_name == 'set_chaos_recipe_enabled_for'):
         '''
         set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>
@@ -192,7 +234,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         item_slot: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
         loot_filter.SetChaosRecipeEnabledFor(item_slot, enable_flag)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'is_chaos_recipe_enabled_for'):
         '''
         is_chaos_recipe_enabled_for <item_slot: str>
@@ -203,7 +244,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         '''
         item_slot: str = function_params[0]
         output_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
-        WriteOutput(output_string)
     elif (function_name == 'get_all_chaos_recipe_statuses'):
         '''
         get_all_chaos_recipe_statuses
@@ -213,16 +253,25 @@ def DelegateFunctionCall(function_name: str, function_params):
          - <enabled_flag> is "1" if chaos recipe items are showing for the given item_slot, else "0"
          - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses
         '''
-        output_string = ''
         for item_slot in consts.kChaosRecipeItemSlots:
             enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
             output_string += item_slot + ';' + enabled_flag_string + '\n'
-        WriteOutput(output_string)
     else:
         error_message: str = 'Function "{}" not found'.format(function_name)
         logger.Log('Error: ' + error_message)
         raise RuntimeError(error_message)
-        
+    # Function call delegation completed, and return value is in output_string
+    # If we just ran a single function, we can write the output to the output file,
+    # but if we are in a batch we have to append to avoid overwriting on consecutive calls
+    if (in_batch):
+        AppendFunctionOutput(output_string)
+    else:
+        # Save loot filter if not in batch, and called a mutator function
+        if (function_name in kFilterMutatorFunctionNames):
+            loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+        # Write output, unless this function is run_batch, in which case output is already appended
+        if (function_name != 'run_batch'):
+            WriteOutput(output_string)
 # End DelegateFunctionCall
         
 def main():
@@ -239,7 +288,7 @@ def main():
     # Delegate function call based on name
     function_name: str = sys.argv[1]
     try:
-        DelegateFunctionCall(function_name, sys.argv[2:])
+        DelegateFunctionCall(None, function_name, sys.argv[2:])
     except Exception as e:
         traceback_message = traceback.format_exc()
         logger.Log(traceback_message)

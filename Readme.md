@@ -29,8 +29,8 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `get_all_currency_tiers`
-  - `get_currency_tier_visibility`
   - `set_currency_tier_visibility`
+  - `get_currency_tier_visibility`
   - `set_hide_currency_above_tier`
   - `get_hide_currency_above_tier`
   - `set_hide_map_below_tier <tier: int>`
@@ -43,4 +43,4 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
  - `batch_process`
    - Processes a sequence of functions specified in the file `backend_cli.input`
    - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
-   - Ouput is separated by the line `# [end_function_output]` placed after the output of each function call in `backend_cli.output`
+   - Ouput is separated by the line `@ [end_function_output]` placed after the output of each function call in `backend_cli.output`

@@ -1,6 +1,8 @@
-import os
 import random
+import shlex
+import subprocess
 
+from backend_cli import kInputFilename as kBackendCliInputFilename
 import config
 import consts
 import helper
@@ -77,21 +79,29 @@ def TestChaosRecipe():
 
 def TestBackendCli():
     print('Running TestBackendCli...')
-    test_function_calls = ['import_downloaded_filter',
-                           'adjust_currency_tier "Chromatic Orb" -2',
-                           'set_currency_tier "Chromatic Orb" 5',
-                           'get_all_currency_tiers',
-                           'set_hide_currency_above_tier 8',
-                           'get_hide_currency_above_tier',
-                           'set_hide_map_below_tier 14',
-                           'get_hide_map_below_tier',
-                           'set_chaos_recipe_enabled_for Weapons 0',
-                           'is_chaos_recipe_enabled_for "Body Armours"',
-                           'get_all_chaos_recipe_statuses']
-    for function_call in test_function_calls:
-        return_value = os.system('python3 backend_cli.py ' + function_call)
-        CHECK(return_value == 0)
+    function_call_strings = ['import_downloaded_filter',
+                             'adjust_currency_tier "Chromatic Orb" -2',
+                             'set_currency_tier "Chromatic Orb" 5',
+                             'get_all_currency_tiers',
+                             'set_hide_currency_above_tier 8',
+                             'get_hide_currency_above_tier',
+                             'set_hide_map_below_tier 14',
+                             'get_hide_map_below_tier',
+                             'set_chaos_recipe_enabled_for Weapons 0',
+                             'is_chaos_recipe_enabled_for "Body Armours"',
+                             'get_all_chaos_recipe_statuses']
+    for function_call_string in function_call_strings:
+        cli_params_list = ['python3', 'backend_cli.py'] + shlex.split(function_call_string)
+        completed_process = subprocess.run(cli_params_list)
+        CHECK(completed_process.returncode == 0)
 # End TestBackendCli
+
+def TestRunBatchCli():
+    print('Running TestBatchCli...')
+    subprocess.run(['cp', 'backend_cli.test_input', kBackendCliInputFilename])
+    run_batch_command = 'python3 backend_cli.py run_batch'
+    subprocess.run(shlex.split(run_batch_command))
+# End TestRunBatchCli
 
 def RunAllTests():
     TestChangeRuleVisibility()
@@ -99,6 +109,7 @@ def RunAllTests():
     TestCurrency()
     TestChaosRecipe()
     TestBackendCli()
+    TestRunBatchCli()
 # End RunAllTests
 
 def main():
