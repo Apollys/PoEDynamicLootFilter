@@ -5467,7 +5467,7 @@ SetBackgroundColor 0 0 69
 MinimapIcon 2 Cyan Raindrop
 DisableDropSound True
 
-Show # %H2 $type->currency $tier->t9armour
+Hide # %H2 $type->currency $tier->t9armour
 Class "Currency"
 BaseType == "Alteration Shard" "Armourer's Scrap" "Transmutation Shard"
 SetFontSize 45

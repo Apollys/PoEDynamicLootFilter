@@ -338,6 +338,40 @@ class LootFilter:
         target_currency_rule.AddBaseType(currency_name)
     # End MoveCurrencyFromTierToTier
     
+    def SetCurrencyTierVisibility(self, tier: int, visibility: RuleVisibility):
+        CheckType(tier, 'tier', int)
+        CheckType(visibility, 'visibility', RuleVisibility)
+        type_tag = 'currency'
+        tier_tag = consts.kCurrencyTierNames[tier]
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule.SetVisibility(visibility)
+    # SetCurrencyTierVisibility
+    
+    def GetCurrencyTierVisibility(self, tier: int) -> RuleVisibility:
+        CheckType(tier, 'tier', int)
+        type_tag = 'currency'
+        tier_tag = consts.kCurrencyTierNames[tier]
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility
+    # GetCurrencyTierVisibility
+    
+    def GetHideCurrencyAboveTierTier(self) -> int:
+        max_visible_tier: int = 0
+        for tier in range(1, consts.kMaxCurrencyTier):
+            if (self.GetCurrencyTierVisibility(tier) == RuleVisibility.kShow):
+                max_visible_tier = tier
+            else:
+                break
+        return max_visible_tier
+    # GetHideCurrencyAboveTierTier   
+    
+    def SetHideCurrencyAboveTierTier(self, max_visible_tier: int):
+        CheckType(max_visible_tier, 'max_visible_tier', int)
+        for tier in range(1, consts.kMaxCurrencyTier):
+            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            self.SetCurrencyTierVisibility(tier, visibility)
+    # SetHideCurrencyAboveTierTier
+    
     # ======================= Chaos Recipe-Related Functions =======================
     
     def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:

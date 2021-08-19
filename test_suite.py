@@ -77,6 +77,8 @@ def TestBackendCli():
                            'adjust_currency_tier "Chromatic Orb" -2',
                            'set_currency_tier "Chromatic Orb" 5',
                            'get_all_currency_tiers',
+                           'set_hide_currency_above_tier 8',
+                           'get_hide_currency_above_tier',
                            'set_hide_map_below_tier 14',
                            'get_hide_map_below_tier',
                            'set_chaos_recipe_enabled_for Weapons 0',

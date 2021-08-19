@@ -45,6 +45,8 @@ kCurrencyTierNames = {1 : 't1exalted',
                       7 : 't7chance',
                       8 : 't8trans',
                       9 : 't9armour'}
+                      
+kMaxCurrencyTier = len(kCurrencyTierNames) + 1
 
 kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 

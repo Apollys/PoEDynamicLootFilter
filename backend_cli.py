@@ -112,6 +112,26 @@ def DelegateFunctionCall(function_name: str, function_params):
             output_string += ''.join((currency_name + ';' + str(tier) + '\n')
                                         for currency_name in currency_names)
         WriteOutput(output_string)
+    elif (function_name == 'set_hide_currency_above_tier'):
+        '''
+        set_hide_currency_above_tier <tier: int>
+         - Sets the currency tier "above" which all will be hidden (higher currency tiers are worse)
+         - Output: None
+         - Example: > python3 backend_cli.py set_hide_currency_above_tier 8
+        '''
+        CheckNumParams(function_params, 1)
+        max_visible_tier: int = int(function_params[0])
+        loot_filter.SetHideCurrencyAboveTierTier(max_visible_tier)
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+    elif (function_name == 'get_hide_currency_above_tier'):
+        '''
+        get_hide_currency_above_tier
+         - Output: single integer, the tier above which all currency is hidden
+         - Example: > python3 backend_cli.py get_hide_currency_above_tier
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = str(loot_filter.GetHideCurrencyAboveTierTier())
+        WriteOutput(output_string)
     elif (function_name == 'set_hide_map_below_tier'):
         '''
         set_hide_map_below_tier <tier: int>
@@ -119,13 +139,13 @@ def DelegateFunctionCall(function_name: str, function_params):
          - Output: None
          - Example: > python3 backend_cli.py set_hide_map_below_tier 14
         '''
-        tier: int = int(function_params[0])
-        loot_filter.SetHideMapsBelowTierTier(tier)
+        min_visibile_tier: int = int(function_params[0])
+        loot_filter.SetHideMapsBelowTierTier(min_visibile_tier)
         loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_hide_map_below_tier'):
         '''
         get_hide_map_below_tier
-         - Output: a single number, the tier below which all maps are hidden
+         - Output:  single integer, the tier below which all maps are hidden
          - Example: > python3 backend_cli.py get_hide_map_below_tier
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
