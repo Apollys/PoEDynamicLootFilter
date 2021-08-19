@@ -251,17 +251,6 @@ class LootFilter:
     
     # =========================== Map-Related Functions ===========================
     
-    def GetHideMapsBelowTierTier(self) -> int:
-        type_name = 'hide_maps_below_tier'
-        tier_name = type_name
-        [rule] = self.type_tier_rule_map[type_name][tier_name]
-        for line in rule.text_lines:
-            keystring: str = 'MapTier < '
-            if (keystring in line):
-                maptier_start_index = line.find(keystring) + len(keystring)
-                return helper.ParseNumberFromString(line, maptier_start_index)
-    # End GetHideMapsBelowTierTier
-    
     def SetHideMapsBelowTierTier(self, tier: int) -> int:
         CheckType(tier, 'tier', int)
         type_name = 'hide_maps_below_tier'
@@ -276,7 +265,33 @@ class LootFilter:
                 break
     # End SetHideMapsBelowTierTier
     
+    def GetHideMapsBelowTierTier(self) -> int:
+        type_name = 'hide_maps_below_tier'
+        tier_name = type_name
+        [rule] = self.type_tier_rule_map[type_name][tier_name]
+        for line in rule.text_lines:
+            keystring: str = 'MapTier < '
+            if (keystring in line):
+                maptier_start_index = line.find(keystring) + len(keystring)
+                return helper.ParseNumberFromString(line, maptier_start_index)
+    # End GetHideMapsBelowTierTier
+    
     # ========================= Currency-Related Functions =========================
+        
+    def SetCurrencyToTier(self, currency_name: str, target_tier: int):
+        CheckType(currency_name, 'currency_name', str)
+        CheckType(target_tier, 'target_tier', int)
+        original_tier: int = self.GetTierOfCurrency(currency_name)
+        self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
+    # End MoveCurrencyToTier
+    
+    def AdjustTierOfCurrency(self, currency_name: str, tier_delta: int):
+        CheckType(currency_name, 'currency_name', str)
+        CheckType(tier_delta, 'tier_delta', int)
+        original_tier: int = self.GetTierOfCurrency(currency_name)
+        target_tier: int = original_tier + tier_delta
+        self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
+    # End AdjustTierOfCurrency
     
     def GetAllCurrencyInTier(self, tier: int) -> List[str]:
         CheckType(tier, 'tier', int)
@@ -302,21 +317,6 @@ class LootFilter:
                            currency_name))
         return -1
     # End GetTierOfCurrency
-    
-    def AdjustTierOfCurrency(self, currency_name: str, tier_delta: int):
-        CheckType(currency_name, 'currency_name', str)
-        CheckType(tier_delta, 'tier_delta', int)
-        original_tier: int = self.GetTierOfCurrency(currency_name)
-        target_tier: int = original_tier + tier_delta
-        self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
-    # End AdjustTierOfCurrency
-        
-    def SetCurrencyToTier(self, currency_name: str, target_tier: int):
-        CheckType(currency_name, 'currency_name', str)
-        CheckType(target_tier, 'target_tier', int)
-        original_tier: int = self.GetTierOfCurrency(currency_name)
-        self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
-    # End MoveCurrencyToTier
         
     def MoveCurrencyFromTierToTier(self, currency_name: str, original_tier: int, target_tier: int):
         CheckType(currency_name, 'currency_name', str)
@@ -338,22 +338,29 @@ class LootFilter:
         target_currency_rule.AddBaseType(currency_name)
     # End MoveCurrencyFromTierToTier
     
-    def SetCurrencyTierVisibility(self, tier: int, visibility: RuleVisibility):
-        CheckType(tier, 'tier', int)
+    def SetCurrencyTierVisibility(self, tier: int or str, visibility: RuleVisibility):
+        CheckType(tier, 'tier', (int, str))
         CheckType(visibility, 'visibility', RuleVisibility)
         type_tag = 'currency'
-        tier_tag = consts.kCurrencyTierNames[tier]
+        tier_tag = consts.kCurrencyTierNames[tier] if isinstance(tier, int) else tier
         [rule] = self.type_tier_rule_map[type_tag][tier_tag]
         rule.SetVisibility(visibility)
     # SetCurrencyTierVisibility
     
-    def GetCurrencyTierVisibility(self, tier: int) -> RuleVisibility:
-        CheckType(tier, 'tier', int)
+    def GetCurrencyTierVisibility(self, tier: int or str) -> RuleVisibility:
+        CheckType(tier, 'tier', (int, str))
         type_tag = 'currency'
-        tier_tag = consts.kCurrencyTierNames[tier]
+        tier_tag = consts.kCurrencyTierNames[tier] if isinstance(tier, int) else tier
         [rule] = self.type_tier_rule_map[type_tag][tier_tag]
         return rule.visibility
     # GetCurrencyTierVisibility
+    
+    def SetHideCurrencyAboveTierTier(self, max_visible_tier: int):
+        CheckType(max_visible_tier, 'max_visible_tier', int)
+        for tier in range(1, consts.kMaxCurrencyTier):
+            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            self.SetCurrencyTierVisibility(tier, visibility)
+    # SetHideCurrencyAboveTierTier
     
     def GetHideCurrencyAboveTierTier(self) -> int:
         max_visible_tier: int = 0
@@ -363,25 +370,9 @@ class LootFilter:
             else:
                 break
         return max_visible_tier
-    # GetHideCurrencyAboveTierTier   
-    
-    def SetHideCurrencyAboveTierTier(self, max_visible_tier: int):
-        CheckType(max_visible_tier, 'max_visible_tier', int)
-        for tier in range(1, consts.kMaxCurrencyTier):
-            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
-            self.SetCurrencyTierVisibility(tier, visibility)
-    # SetHideCurrencyAboveTierTier
+    # GetHideCurrencyAboveTierTier
     
     # ======================= Chaos Recipe-Related Functions =======================
-    
-    def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
-        CheckType(item_slot, 'item_slot', str)
-        type_tag: str = 'chaos_recipe_rares'
-        tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
-                         else consts.kChaosRecipeTierTags[item_slot])
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
-        return rule.visibility == RuleVisibility.kShow
-    # End IsChaosRecipeItemSlotEnabled
     
     def SetChaosRecipeEnabledFor(self, item_slot: str, enable_flag: bool):
         CheckType(item_slot, 'item_slot', str)
@@ -391,6 +382,15 @@ class LootFilter:
                          else consts.kChaosRecipeTierTags[item_slot])
         [rule] = self.type_tier_rule_map[type_tag][tier_tag]
         rule.SetVisibility(RuleVisibility.kShow if enable_flag else RuleVisibility.kDisable)
+    # End IsChaosRecipeItemSlotEnabled
+    
+    def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
+        CheckType(item_slot, 'item_slot', str)
+        type_tag: str = 'chaos_recipe_rares'
+        tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
+                         else consts.kChaosRecipeTierTags[item_slot])
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility == RuleVisibility.kShow
     # End IsChaosRecipeItemSlotEnabled
     
     # ======================== Private Parser Methods ========================

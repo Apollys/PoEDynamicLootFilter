@@ -26,9 +26,11 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 
 **Currently Supported Functions:**
   - `import_downloaded_filter`
-  - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `set_currency_tier <currency_name: str> <tier: int>`
+  - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `get_all_currency_tiers`
+  - `get_currency_tier_visibility`
+  - `set_currency_tier_visibility`
   - `set_hide_currency_above_tier`
   - `get_hide_currency_above_tier`
   - `set_hide_map_below_tier <tier: int>`

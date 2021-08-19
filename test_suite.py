@@ -57,6 +57,10 @@ def TestCurrency():
         tier_delta = target_tier - current_tier
         loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
         CHECK(loot_filter.GetTierOfCurrency(currency_name) == target_tier)
+    for tier in list(range(1, 10)) + ['twisdom', 'tportal']:
+        desired_visibility = random.choice([RuleVisibility.kShow, RuleVisibility.kHide])
+        loot_filter.SetCurrencyTierVisibility(tier, desired_visibility)
+        CHECK(loot_filter.GetCurrencyTierVisibility(tier) == desired_visibility)
 # End TestCurrency
 
 def TestChaosRecipe():

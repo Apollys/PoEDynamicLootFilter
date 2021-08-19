@@ -74,18 +74,6 @@ def DelegateFunctionCall(function_name: str, function_params):
         CheckNumParams(function_params, 0)
         # TODO: once profile saving is implemented, apply all saved changes to filter here
         loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
-    elif (function_name == 'adjust_currency_tier'):
-        '''
-        adjust_currency_tier <currency_name: str> <tier_delta: int>
-         - Moves the given currency type by a relative tier_delta
-         - Output: None
-         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
-        '''
-        CheckNumParams(function_params, 2)
-        currency_name: str = function_params[0]
-        tier_delta: int = int(function_params[1])
-        loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'set_currency_tier'):
         '''
         set_currency_tier <currency_name: str> <tier: int>
@@ -97,6 +85,18 @@ def DelegateFunctionCall(function_name: str, function_params):
         currency_name: str = function_params[0]
         target_tier: int = int(function_params[1])
         loot_filter.SetCurrencyToTier(currency_name, target_tier)
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+    elif (function_name == 'adjust_currency_tier'):
+        '''
+        adjust_currency_tier <currency_name: str> <tier_delta: int>
+         - Moves the given currency type by a relative tier_delta
+         - Output: None
+         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
+        '''
+        CheckNumParams(function_params, 2)
+        currency_name: str = function_params[0]
+        tier_delta: int = int(function_params[1])
+        loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
         loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     elif (function_name == 'get_all_currency_tiers'):
         '''
@@ -111,6 +111,36 @@ def DelegateFunctionCall(function_name: str, function_params):
             currency_names = loot_filter.GetAllCurrencyInTier(tier)
             output_string += ''.join((currency_name + ';' + str(tier) + '\n')
                                         for currency_name in currency_names)
+        WriteOutput(output_string)
+    elif (function_name == 'set_currency_tier_visibility'):
+        '''
+        set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>
+         - Sets the visibility for the given currency tier
+         - First parameter may be a tier integer [1-9] or a tier tag string, such as:
+           "tportal" for Portal Scrolls, "twisdom" for Wisdom Scrolls
+         - visible_flag is 1 for True (enable), 0 for False (disable)
+         - Output: None
+         - Example: > python3 backend_cli.py set_currency_tier_visibility tportal 1
+        '''
+        CheckNumParams(function_params, 2)
+        tier = function_params[0]
+        if (tier.isdigit()): tier = int(tier)
+        visible_flag = bool(int(function_params[1]))
+        visibility = RuleVisibility.kShow if visible_flag else RuleVisibility.kHide
+        loot_filter.SetCurrencyTierVisibility(tier, visibility)
+        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+    elif (function_name == 'get_currency_tier_visibility'):
+        '''
+        get_currency_tier_visibility <tier: int or tier_tag: str>
+         - Parameter may be a tier integer [1-9] or a tier tag string, such as:
+           "tportal" for Portal Scrolls, "twisdom" for Wisdom Scrolls
+         - Output: "1" if the given currency tier is shown, "0" otherwise
+         - Example: > python3 backend_cli.py get_currency_tier_visibility twisdom
+        '''
+        CheckNumParams(function_params, 1)
+        tier = function_params[0]
+        if (tier.isdigit()): tier = int(tier)
+        output_string = str(int(loot_filter.GetCurrencyTierVisibility(tier) == RuleVisibility.kShow))
         WriteOutput(output_string)
     elif (function_name == 'set_hide_currency_above_tier'):
         '''
