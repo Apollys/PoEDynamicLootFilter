@@ -94,7 +94,8 @@ def TestBackendCli():
                              'get_hide_map_below_tier',
                              'set_chaos_recipe_enabled_for Weapons 0',
                              'is_chaos_recipe_enabled_for "Body Armours"',
-                             'get_all_chaos_recipe_statuses']
+                             'get_all_chaos_recipe_statuses',
+                             'undo_last_change']
     for function_call_string in function_call_strings:
         cli_params_list = (['python3', 'backend_cli.py', 'TEST']
                             + shlex.split(function_call_string))

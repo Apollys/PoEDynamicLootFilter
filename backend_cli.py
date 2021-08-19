@@ -50,6 +50,7 @@ kTestProfileFullpath = os.path.join(config.kProfileDirectory, 'TestProfile.profi
 # List of functions that modify the filter in any way
 # This list excludes getter-only functions, which can be excluded from the profile data
 # Also exclues run_batch (depends on batch functions) and import_downloaded_filter
+# Excluded undo_last_change since it's rather unique and handles its own saving
 kFilterMutatorFunctionNames = ['set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
         'set_hide_map_below_tier', 'set_chaos_recipe_enabled_for']
@@ -102,10 +103,11 @@ def DelegateFunctionCall(loot_filter: LootFilter,
     output_string = ''
     # Save function call to profile data if it is a mutator function
     # (kFilterMutatorFunctionNames excludes import_downloaded_filter and run_batch)
-    if (function_name in kFilterMutatorFunctionNames):
+    # Note: suppress_output also functioning as an indicator to not save profile data here
+    if ((function_name in kFilterMutatorFunctionNames) and not suppress_output):
         with open(loot_filter.profile_fullpath, 'a') as profile_file:
             profile_file.write(shlex.join([function_name] + function_params) + '\n')
-                
+    # Define functions by function name
     if (function_name == 'import_downloaded_filter'):
         '''
         import_downloaded_filter
@@ -140,6 +142,20 @@ def DelegateFunctionCall(loot_filter: LootFilter,
             # need different variable names here to not overwrite the existing ones
             _function_name, *_function_params = shlex.split(function_call_string)
             DelegateFunctionCall(loot_filter, _function_name, _function_params, True)
+    elif (function_name == 'undo_last_change'):
+        '''
+        undo_last_change
+         - Removes the last line of the current profile, then performs import_downloaded_filter
+         - Assumed to never be called as part of a batch
+         - Not included in mutator functions list since it's handled differently
+         - Output: None
+         - Example: > python3 backend_cli.py undo_last_change
+        '''
+        CheckNumParams(function_params, 0)
+        profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
+        with open(loot_filter.profile_fullpath, 'w') as profile_file:
+            profile_file.writelines(profile_lines[:-1])
+        DelegateFunctionCall(loot_filter, 'import_downloaded_filter', [])
     elif (function_name == 'set_currency_tier'):
         '''
         set_currency_tier <currency_name: str> <tier: int>
