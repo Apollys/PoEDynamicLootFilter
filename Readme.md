@@ -29,6 +29,8 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
     - Processes a sequence of functions specified in the file `backend_cli.input`
     - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
     - Ouput is separated by the single-character line `@` placed after the output of each function call in `backend_cli.output`
+  - `undo_last_change`
+    - Initial implementation - removes last line from profile and re-runs `import_downloaded_filter` (could be changed to a smarter algorithm later if needed)
   - `import_downloaded_filter`
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
@@ -44,7 +46,4 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_all_chaos_recipe_statuses`
 
 **Functions To Implement**
- - `undo_last_change`
-   - Initial implementation - "profile" saved as a text file of cli function calls, one per line
-   - `undo_last_change` would remove the last line from the profile, then re-import downloaded filter and apply changes from profile text file
 
