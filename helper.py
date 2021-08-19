@@ -5,6 +5,17 @@ from type_checker import CheckType
 
 # ========================== Generic Helper Methods ==========================
 
+# Read lines of a file to a list of strings
+# Safe against file not existing
+def ReadFile(fullpath: str) -> List[str]:
+    CheckType(fullpath, 'fullpath', str)
+    try:
+        with open(fullpath) as input_file:
+            return input_file.readlines()
+    except FileNotFoundError:
+        return []
+# End ReadFile
+
 # Given a string and a predicate (function mapping character to bool),
 # returns the index of the first character in the string for which
 # the predicate returns True.

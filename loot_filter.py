@@ -17,6 +17,7 @@ class RuleVisibility(Enum):
     kHide = 2
     kDisable = 3  # rule is commented out
     kUnknown = 4
+# End class RuleVisibility
 
 # -----------------------------------------------------------------------------
 
@@ -76,15 +77,15 @@ class LootFilterRule:
                 self.base_type_line_index = i
                 self.base_type_list = helper.ParseBaseTypeLine(line)
         # TODO: parse size, color, etc...
-    # End __init__()
+    # End __init__
         
     def __repr__(self):
         return '\n'.join(self.text_lines)
-    # End __repr__()
+    # End __repr__
         
     def GetVisibility(self) -> RuleVisibility:
         return self.visibility
-    # End GetVisibility()
+    # End GetVisibility
     
     def SetVisibility(self, visibility: RuleVisibility) -> None:
         CheckType(visibility, 'visibility', RuleVisibility)
@@ -118,7 +119,7 @@ class LootFilterRule:
         original_base_type_line = self.text_lines[self.base_type_line_index]
         self.text_lines[self.base_type_line_index] = \
                 self.text_lines[self.base_type_line_index] + ' "' + base_type_name + '"'
-    # End AddBaseType()
+    # End AddBaseType
     
     def RemoveBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
@@ -136,25 +137,28 @@ class LootFilterRule:
         else:
             self.text_lines[index] = \
                     self.text_lines[index].replace(' ' + base_type_name, '')
-    # End RemoveBaseType()
+    # End RemoveBaseType
         
     def GetSize(self) -> int:
         pass
-    # End GetSize()
+    # End GetSize
         
     def SetSize(self, size: int) -> None:
         pass
-    # End SetSize()
+    # End SetSize
         
     def GetRuleTextLines(self) -> List[str]:
         return self.text_lines
-    # End GetRuleTextLines()
+    # End GetRuleTextLines
+    
+# End class LootFilterRule
 
 # -----------------------------------------------------------------------------
 
 class LootFilter:
     '''
     Member variables:
+     - self.profile_fullpath
      - self.text_lines: List[str]
      - self.parser_index: int
      - self.section_map: OrderedDict[id: str, name: str]
@@ -170,9 +174,12 @@ class LootFilter:
     # ============================== Public API ==============================
     
     # Construct LootFilter object, parsing the given loot filter file
-    def __init__(self, input_filename: str):
-        CheckType(input_filename, 'input_filename', str)
-        self.ParseLootFilterFile(input_filename)
+    def __init__(self, input_filter_fullpath: str, profile_fullpath: str = config.kProfileFullpath):
+        CheckType(input_filter_fullpath, 'input_filter_fullpath', str)
+        CheckType(profile_fullpath, 'profile_fullpath', str)
+        self.profile_fullpath = profile_fullpath
+        self.ParseLootFilterFile(input_filter_fullpath)
+    # End __init__
         
     # Saves a backup first if output_filename == input_filename
     def SaveToFile(self, output_filename: str):

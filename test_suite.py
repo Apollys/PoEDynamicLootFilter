@@ -3,6 +3,7 @@ import shlex
 import subprocess
 
 from backend_cli import kInputFilename as kBackendCliInputFilename
+from backend_cli import kTestProfileFullpath
 import config
 import consts
 import helper
@@ -18,9 +19,13 @@ def CHECK(expr: bool):
         raise RuntimeError('CHECK failed: expression evaluated to False')
 # End CHECK
 
+def ResetTestProfile():
+    open(kTestProfileFullpath, 'w').close()
+# End ResetTestProfile
+
 def TestChangeRuleVisibility():
     print('Running TestChangeRuleVisibility...')
-    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath, kTestProfileFullpath)
     type_name = 'currency'
     tier_name = consts.kCurrencyTierNames[1]
     [rule] = loot_filter.type_tier_rule_map[type_name][tier_name]
@@ -32,7 +37,7 @@ def TestChangeRuleVisibility():
 
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
-    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath, kTestProfileFullpath)
     CHECK(loot_filter.GetHideMapsBelowTierTier() == config.kHideMapsBelowTier)
     for i in range(10):
         tier = random.randint(0, 16)
@@ -43,7 +48,7 @@ def TestHideMapsBelowTier():
 
 def TestCurrency():
     print('Running TestCurrency...')
-    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath, kTestProfileFullpath)
     type_name = 'currency'
     for tier in range(1, 10):
         currency_names = loot_filter.GetAllCurrencyInTier(tier)
@@ -67,7 +72,7 @@ def TestCurrency():
 
 def TestChaosRecipe():
     print('Running TestChaosRecipe...')
-    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
+    loot_filter = LootFilter(config.kDownloadedLootFilterFullpath, kTestProfileFullpath)
     desired_enabled_status_map = {item_slot : random.choice([True, False])
                                   for item_slot in consts.kChaosRecipeItemSlots}
     for item_slot, desired_enabled_status in desired_enabled_status_map.items():
@@ -91,7 +96,8 @@ def TestBackendCli():
                              'is_chaos_recipe_enabled_for "Body Armours"',
                              'get_all_chaos_recipe_statuses']
     for function_call_string in function_call_strings:
-        cli_params_list = ['python3', 'backend_cli.py'] + shlex.split(function_call_string)
+        cli_params_list = (['python3', 'backend_cli.py', 'TEST']
+                            + shlex.split(function_call_string))
         completed_process = subprocess.run(cli_params_list)
         CHECK(completed_process.returncode == 0)
 # End TestBackendCli
@@ -99,11 +105,12 @@ def TestBackendCli():
 def TestRunBatchCli():
     print('Running TestBatchCli...')
     subprocess.run(['cp', 'backend_cli.test_input', kBackendCliInputFilename])
-    run_batch_command = 'python3 backend_cli.py run_batch'
+    run_batch_command = 'python3 backend_cli.py TEST run_batch'
     subprocess.run(shlex.split(run_batch_command))
 # End TestRunBatchCli
 
 def RunAllTests():
+    ResetTestProfile()
     TestChangeRuleVisibility()
     TestHideMapsBelowTier()
     TestCurrency()

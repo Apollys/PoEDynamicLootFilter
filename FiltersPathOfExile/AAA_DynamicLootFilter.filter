@@ -195,7 +195,7 @@
 Hide $type->hide_maps_below_tier $tier->hide_maps_below_tier
 Class Maps
 ShapedMap False
-MapTier < 13
+MapTier < 14
 
 #------------------------------------------------
 #   [9902] Chaos recipe rares
@@ -5383,7 +5383,7 @@ BaseType == "Silver Coin"
 
 Show # $type->currency $tier->t1exalted
 Class "Currency"
-BaseType == "Albino Rhoa Feather" "Awakener's Orb" "Blessing of Chayula" "Crusader's Exalted Orb" "Eternal Orb" "Exalted Orb" "Hunter's Exalted Orb" "Maven's Orb" "Mirror of Kalandra" "Mirror Shard" "Redeemer's Exalted Orb" "Tempering Orb" "Warlord's Exalted Orb" "Chromatic Orb"
+BaseType == "Albino Rhoa Feather" "Awakener's Orb" "Blessing of Chayula" "Crusader's Exalted Orb" "Eternal Orb" "Exalted Orb" "Hunter's Exalted Orb" "Maven's Orb" "Mirror of Kalandra" "Mirror Shard" "Redeemer's Exalted Orb" "Tempering Orb" "Warlord's Exalted Orb"
 SetFontSize 45
 SetTextColor 0 255 255 255
 SetBorderColor 0 255 255 255
@@ -5427,7 +5427,7 @@ PlayAlertSound 2 300
 
 Show # %H5 $type->currency $tier->t5alchemy
 Class "Currency"
-BaseType == "Abrasive Catalyst" "Annulment Shard" "Bestiary Orb" "Blessed Orb" "Cartographer's Chisel" "Enkindling Orb" "Facetor's Lens" "Glassblower's Bauble" "Harbinger's Shard" "Imbued Catalyst" "Instilling Orb" "Intrinsic Catalyst" "Noxious Catalyst" "Orb of Fusing" "Orb of Horizons" "Prime Sextant" "Stacked Deck" "Vaal Orb"
+BaseType == "Abrasive Catalyst" "Annulment Shard" "Bestiary Orb" "Blessed Orb" "Cartographer's Chisel" "Enkindling Orb" "Facetor's Lens" "Glassblower's Bauble" "Harbinger's Shard" "Imbued Catalyst" "Instilling Orb" "Intrinsic Catalyst" "Noxious Catalyst" "Orb of Fusing" "Orb of Horizons" "Prime Sextant" "Stacked Deck" "Vaal Orb" "Chromatic Orb"
 SetFontSize 45
 SetTextColor 30 200 200 255
 SetBorderColor 30 200 200 255
@@ -5485,7 +5485,7 @@ SetBorderColor 30 50 100 255
 SetBackgroundColor 0 0 0 255
 SetTextColor 73 103 179 255
 
-Hide # %H2 $type->currency $tier->twisdom
+Show # %H2 $type->currency $tier->twisdom
 Class "Currency"
 BaseType == "Scroll of Wisdom"
 SetFontSize 40

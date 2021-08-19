@@ -22,9 +22,15 @@ For example, running the following command:
 will generate the error message:
 "ValueError: invalid literal for int() with base 10: 'a'",
 which will be logged to the log file along with the stack trace.
+
+Testing feature:
+ - Insert "TEST" as the first argument after "python3 backend_cli.py" to run tests
+ - This will save all updates in a separate testing profile so as to not ruin
+   one's real profile(s).  Used in all test_suite.py calls.
 '''
 
 import shlex
+import os.path
 import sys
 import traceback
 from typing import List
@@ -39,12 +45,19 @@ from type_checker import CheckType
 kLogFilename = 'backend_cli.log'
 kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
+kTestProfileFullpath = os.path.join(config.kProfileDirectory, 'TestProfile.profile')
 
 # List of functions that modify the filter in any way
 # This list excludes getter-only functions, which can be excluded from the profile data
-kFilterMutatorFunctionNames = ['run_batch', 'set_currency_tier', 'adjust_currency_tier',
+# Also exclues run_batch (depends on batch functions) and import_downloaded_filter
+kFilterMutatorFunctionNames = ['set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
         'set_hide_map_below_tier', 'set_chaos_recipe_enabled_for']
+
+def Error(e):
+    loger.Log('Error ' + str(e))
+    raise RuntimeError(e)
+# End Error
 
 def CheckNumParams(params_list: List[str], required_num_params: int):
     CheckType(params_list, 'params_list', list)
@@ -53,14 +66,8 @@ def CheckNumParams(params_list: List[str], required_num_params: int):
         error_message: str = ('incorrect number of parameters given for '
                               'function {}: required {}, got {}').format(
                                    sys.argv[1], required_num_params, len(params_list))
-        logger.Log('Error: ' + error_message)
-        raise RuntimeError(error_message)
+        Error(error_message)
 # End CheckNumParams
-
-def ReadInput() -> List[str]:
-    with open(kInputFilename) as input_file:
-        return input_file.readlines()
-# End ReadInput
 
 def WriteOutput(output_string: str):
     CheckType(output_string, 'output_string', str)
@@ -82,17 +89,23 @@ def AppendFunctionOutput(function_output_string: str):
 # Passing in a LootFilter object instead indicates that there will be multiple
 # consecutive function calls, so this delegation should not construct a LootFilter,
 # and it should append its output to the output file rather than overwriting it.
-def DelegateFunctionCall(loot_filter: LootFilter or None,
+def DelegateFunctionCall(loot_filter: LootFilter,
                          function_name: str,
                          function_params: List[str],
-                         in_batch: bool = False):
-    CheckType(loot_filter, 'loot_filter', (LootFilter, type(None)))
+                         in_batch: bool = False,
+                         suppress_output: bool = False):
+    CheckType(loot_filter, 'loot_filter', LootFilter)
     CheckType(function_name, 'function_name', str)
     CheckType(function_params, 'function_params_list', list)
+    CheckType(in_batch, 'in_batch', bool)
+    CheckType(suppress_output, 'suppress_output', bool)
     output_string = ''
-    # Initialize loot_filter if not in_batch and not running import_downloaded_filter
-    if ((not in_batch) and (function_name != 'import_downloaded_filter')):
-        loot_filter = LootFilter(config.kPathOfExileLootFilterFullpath)
+    # Save function call to profile data if it is a mutator function
+    # (kFilterMutatorFunctionNames excludes import_downloaded_filter and run_batch)
+    if (function_name in kFilterMutatorFunctionNames):
+        with open(loot_filter.profile_fullpath, 'a') as profile_file:
+            profile_file.write(shlex.join([function_name] + function_params) + '\n')
+                
     if (function_name == 'import_downloaded_filter'):
         '''
         import_downloaded_filter
@@ -104,7 +117,10 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 0)
         loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
-        # TODO: once profile saving is implemented, apply all saved changes to filter here
+        profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
+        for function_call_string in profile_lines:
+            _function_name, *_function_params = shlex.split(function_call_string)
+            DelegateFunctionCall(loot_filter, _function_name, _function_params, True, True)
         loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
     # Note: cannot run_batch from within a run_batch command, as there would be no place for
     # batch function call list, and this should be unnecessary
@@ -118,9 +134,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 run_batch
         '''
         CheckNumParams(function_params, 0)
-        loot_filter = LootFilter(config.kPathOfExileLootFilterFullpath)
         WriteOutput('')  # clear the output file, since we will be appending output in batch
-        function_call_list: List[str] = ReadInput()
+        function_call_list: List[str] = helper.ReadFile(kInputFilename)
         for function_call_string in function_call_list:
             # need different variable names here to not overwrite the existing ones
             _function_name, *_function_params = shlex.split(function_call_string)
@@ -261,34 +276,40 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         logger.Log('Error: ' + error_message)
         raise RuntimeError(error_message)
     # Function call delegation completed, and return value is in output_string
-    # If we just ran a single function, we can write the output to the output file,
-    # but if we are in a batch we have to append to avoid overwriting on consecutive calls
     if (in_batch):
-        AppendFunctionOutput(output_string)
+        if (not suppress_output): AppendFunctionOutput(output_string)
     else:
+        WriteOutput(output_string)
         # Save loot filter if not in batch, and called a mutator function
         if (function_name in kFilterMutatorFunctionNames):
             loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
-        # Write output, unless this function is run_batch, in which case output is already appended
-        if (function_name != 'run_batch'):
-            WriteOutput(output_string)
 # End DelegateFunctionCall
         
 def main():
     # Initialize
     logger.InitializeLog(kLogFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
-    print(argv_info_message)
     logger.Log(argv_info_message)
-    # Check that there at least exists a function name in argv
+    profile_fullpath = config.kProfileFullpath
+    function_name, function_params = '', []
+    # Check that there are enough params, and split into function_name, function_params
     if (len(sys.argv) < 2):
-        error_message: str = 'no function specified, too few command line arguments given'
-        logger.Log('Error: ' + error_message)
-        raise RuntimeError(error_message)
-    # Delegate function call based on name
-    function_name: str = sys.argv[1]
+        Error('no function specified, too few command line arguments given')
+    elif (sys.argv[1] == 'TEST'):
+        profile_fullpath = kTestProfileFullpath
+        if (len(sys.argv) < 3):
+            Error('no function specified, too few command line arguments given')
+        function_name, *function_params = sys.argv[2:]
+    else:
+        function_name, *function_params = sys.argv[1:]
+    # Determine input filter path based on function name
+    input_filter_fullpath = (config.kDownloadedLootFilterFullpath
+                             if function_name == 'import_downloaded_filter'
+                             else config.kPathOfExileLootFilterFullpath)
+    # Delegate function call
+    loot_filter = LootFilter(input_filter_fullpath, profile_fullpath)
     try:
-        DelegateFunctionCall(None, function_name, sys.argv[2:])
+        DelegateFunctionCall(loot_filter, function_name, function_params)
     except Exception as e:
         traceback_message = traceback.format_exc()
         logger.Log(traceback_message)
