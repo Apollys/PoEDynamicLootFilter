@@ -4,7 +4,6 @@
 # Ignore output files
 *.output
 *output.filter
-FiltersPathOfExile/*.filter
 
 # Ignore user profiles
 *.profile
