@@ -28,7 +28,7 @@ def TestChangeRuleVisibility():
                              kTestOutputLootFilterFilename, kTestProfileFullpath)
     type_name = 'currency'
     tier_name = consts.kCurrencyTierNames[1]
-    [rule] = loot_filter.type_tier_rule_map[type_name][tier_name]
+    rule = loot_filter.type_tier_rule_map[type_name][tier_name]
     rule.SetVisibility(RuleVisibility.kShow)
     rule.SetVisibility(RuleVisibility.kHide)
     rule.SetVisibility(RuleVisibility.kDisable)

@@ -24,6 +24,8 @@ kSectionHeaderTemplate = \
 
 kSectionRePattern = re.compile(r'\[\d+\]+ .*')
 
+kTypeTierTagTemplate = '$type->{} $tier->{}'
+
 # ================================= Currency =================================
 
 kCurrencyTierNames = {1 : 't1exalted',

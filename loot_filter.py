@@ -27,8 +27,8 @@ class LootFilterRule:
      - self.text_lines: List[str]
      - self.start_line_index: int - line index of this rule in the original filter file
      - self.visibility: RuleVisibility
-     - self.type: str - identifier found after "$type->" in the first line of the rule
-     - self.tier: str - identifier found after "$tier->" in the first line of the rule
+     - self.type_tag: str - identifier found after "$type->" in the first line of the rule
+     - self.tier_tag: str - identifier found after "$tier->" in the first line of the rule
      - self.base_type_list: List[str]
        - Note: not all rules must have BaseType, so base_type_list may be empty
      - self.base_type_line_index: int - index into self.text_lines (not full loot filter)
@@ -64,8 +64,8 @@ class LootFilterRule:
         type_end_index = first_line.find(' ', type_start_index)
         tier_start_index = first_line.find(kTierIdentifier) + len(kTierIdentifier)
         tier_end_index = first_line.find(' ', tier_start_index)
-        self.type: str = first_line[type_start_index : type_end_index]
-        self.tier: str = first_line[tier_start_index : tier_end_index]
+        self.type_tag: str = first_line[type_start_index : type_end_index]
+        self.tier_tag: str = first_line[tier_start_index : tier_end_index]
         # Parse base type list
         # Note - not all rules may have a base type, in which case base type list is empty
         self.base_type_list = []
@@ -172,9 +172,8 @@ class LootFilter:
      - self.rules_start_line_index: int
      - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
      - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
-     - self.type_tier_rule_map: 2d dict which allows you to access rules by type and tier
-       Example: self.type_tier_rule_map['currency']['t1exalted']  
-                    -> list of rules of type 'currency' and tier 't1'
+     - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
+       Example: self.type_tier_rule_map['currency']['t1exalted']
     '''
 
     # ============================== Public API ==============================
@@ -207,9 +206,12 @@ class LootFilter:
                     line_index += len(rule.text_lines)
     # End SaveToFile
     
-    def GetRulesByTypeTier(self, type_name: str, tier_name: str) -> List[LootFilterRule]:
-        CheckType(type_name, 'type_name', str)
-        CheckType(tier_name, 'tier_name', str)
+    # In NeverSink's fitler, type_tags plus tier_tags form a unique key for rules,
+    # *except* for rules that have no type or tier tags.
+    # When parsing, we create unique tags for rules missing tags, to create a unique key.
+    def GetRuleByTypeTier(self, type_tag: str, tier_tag: str) -> LootFilterRule:
+        CheckType(type_tag, 'type_tag', str)
+        CheckType(tier_tag, 'tier_tag', str)
         return self.type_tier_rule_map[type_name][tier_name]
     # End GetRulesByTypeTier
     
@@ -270,7 +272,7 @@ class LootFilter:
         CheckType(tier, 'tier', int)
         type_name = 'dlf_hide_maps_below_tier'
         tier_name = type_name
-        [rule] = self.type_tier_rule_map[type_name][tier_name]
+        rule = self.type_tier_rule_map[type_name][tier_name]
         for i in range(len(rule.text_lines)):
             line = rule.text_lines[i]
             keystring: str = 'MapTier < '
@@ -283,7 +285,7 @@ class LootFilter:
     def GetHideMapsBelowTierTier(self) -> int:
         type_name = 'dlf_hide_maps_below_tier'
         tier_name = type_name
-        [rule] = self.type_tier_rule_map[type_name][tier_name]
+        rule = self.type_tier_rule_map[type_name][tier_name]
         for line in rule.text_lines:
             keystring: str = 'MapTier < '
             if (keystring in line):
@@ -294,12 +296,11 @@ class LootFilter:
     # =========================== Flask-Related Functions ==========================
     
     def SetFlaskRuleEnabledFor(self, flask_base_type: str, enable_flag: bool):
-        print('SetFlaskRuleEnabledFor({}, {})'.format(flask_base_type, enable_flag))
         CheckType(flask_base_type, 'flask_base_type', str)
         CheckType(enable_flag, 'enable_flag', bool)
         type_tag = 'dlf_flasks'
         tier_tag = type_tag
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         if (enable_flag):
             rule.AddBaseType(flask_base_type)
             # Rule may have been disabled if BaseType line was previously empty
@@ -312,7 +313,7 @@ class LootFilter:
         CheckType(flask_base_type, 'flask_base_type', str)
         type_tag = 'dlf_flasks'
         tier_tag = type_tag
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         if (rule.visibility != RuleVisibility.kShow):
             return False
         return flask_base_type in rule.base_type_list
@@ -321,7 +322,7 @@ class LootFilter:
     def GetAllEnabledFlaskTypes(self) -> List[str]:
         type_tag = 'dlf_flasks'
         tier_tag = type_tag
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         if (rule.visibility != RuleVisibility.kShow):
             return []
         return rule.base_type_list
@@ -351,7 +352,7 @@ class LootFilter:
             return []
         type_name = 'currency'
         tier_name = consts.kCurrencyTierNames[tier]
-        [rule] = self.type_tier_rule_map[type_name][tier_name]
+        rule = self.type_tier_rule_map[type_name][tier_name]
         return rule.base_type_list
     # End GetAllCurrencyInTier
     
@@ -360,7 +361,7 @@ class LootFilter:
         CheckType(currency_name, 'currency_name', str)
         type_name = 'currency'
         for tier_name in consts.kCurrencyTierNames.values():
-            [rule] = self.type_tier_rule_map[type_name][tier_name]
+            rule = self.type_tier_rule_map[type_name][tier_name]
             if (currency_name in rule.base_type_list):
                 return consts.kCurrencyTierNameToNumberMap[tier_name]
         logger.Log('Warning: currency "{}" not found in normal currency tiers'.format(
@@ -380,11 +381,11 @@ class LootFilter:
         type_name = 'currency'
         # Remove currency_name from original_tier rule
         original_tier_name = consts.kCurrencyTierNames[original_tier]
-        [original_rule] = self.type_tier_rule_map[type_name][original_tier_name]
+        original_rule = self.type_tier_rule_map[type_name][original_tier_name]
         original_rule.RemoveBaseType(currency_name)
         # Add currency_name to target_tier rule
         target_tier_name = consts.kCurrencyTierNames[target_tier]
-        [target_currency_rule] = self.type_tier_rule_map[type_name][target_tier_name]
+        target_currency_rule = self.type_tier_rule_map[type_name][target_tier_name]
         target_currency_rule.AddBaseType(currency_name)
     # End MoveCurrencyFromTierToTier
     
@@ -393,7 +394,7 @@ class LootFilter:
         CheckType(visibility, 'visibility', RuleVisibility)
         type_tag = 'currency'
         tier_tag = consts.kCurrencyTierNames[tier] if isinstance(tier, int) else tier
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         rule.SetVisibility(visibility)
     # SetCurrencyTierVisibility
     
@@ -401,7 +402,7 @@ class LootFilter:
         CheckType(tier, 'tier', (int, str))
         type_tag = 'currency'
         tier_tag = consts.kCurrencyTierNames[tier] if isinstance(tier, int) else tier
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         return rule.visibility
     # GetCurrencyTierVisibility
     
@@ -430,7 +431,7 @@ class LootFilter:
         type_tag: str = 'dlf_chaos_recipe_rares'
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         rule.SetVisibility(RuleVisibility.kShow if enable_flag else RuleVisibility.kDisable)
     # End IsChaosRecipeItemSlotEnabled
     
@@ -439,7 +440,7 @@ class LootFilter:
         type_tag: str = 'dlf_chaos_recipe_rares'
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
-        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         return rule.visibility == RuleVisibility.kShow
     # End IsChaosRecipeItemSlotEnabled
     
@@ -530,9 +531,9 @@ class LootFilter:
          - self.rules_start_line_index: int
          - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
          - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
-         - self.type_tier_rule_map: 2d dict which allows you to access rules by type and tier
-           Example: self.type_tier_rule_map['currency']['t1']  
-                        -> list of rules of type 'currency' and tier 't1'
+         - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
+           Note: parser ensures that (type_tag, tier_tag) forms a unique key for rules
+           Example: self.type_tier_rule_map['currency']['t1'] 
         '''
         # Initialize data structures to store parsed data
         self.section_map: OrderedDict[str, str] = {}  # maps ids to names
@@ -545,6 +546,7 @@ class LootFilter:
         current_rule_lines: List[str] = []
         current_section_id: str = ''
         current_section_group_prefix: str = ''
+        untagged_rule_count: int = 0
         for line_index in range(self.rules_start_line_index, len(self.text_lines)):
             line: str = self.text_lines[line_index]
             if (not in_rule):
@@ -573,12 +575,18 @@ class LootFilter:
                     self.section_rule_map[current_section_id].append(new_rule)
                     # Add rules to line index rule map
                     self.line_index_rule_map[rule_start_line_index] = new_rule
+                    # Generate unique type-tier tag pair if no tags
+                    # (For now we assume it either has both or none)
+                    if ((new_rule.type_tag == '') and (new_rule.tier_tag == '')):
+                        new_rule.type_tag = 'untagged_rule'
+                        new_rule.tier_tag = str(untagged_rule_count)
+                        untagged_rule_count += 1
+                        current_rule_lines[0] += ' ' + consts.kTypeTierTagTemplate.format(
+                                new_rule.type_tag, new_rule.tier_tag)
                     # Add rule to type tier rule map
-                    if (new_rule.type not in self.type_tier_rule_map):
-                        self.type_tier_rule_map[new_rule.type] = {}
-                    if (new_rule.tier not in self.type_tier_rule_map[new_rule.type]):
-                        self.type_tier_rule_map[new_rule.type][new_rule.tier] = []
-                    self.type_tier_rule_map[new_rule.type][new_rule.tier].append(new_rule)
+                    if (new_rule.type_tag not in self.type_tier_rule_map):
+                        self.type_tier_rule_map[new_rule.type_tag] = {}
+                    self.type_tier_rule_map[new_rule.type_tag][new_rule.tier_tag] = new_rule
                     in_rule = False
                     current_rule_lines = []
                 else:
