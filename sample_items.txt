@@ -1,0 +1,189 @@
+Item Class: Gloves
+Rarity: Rare
+Mind Grip
+Conjurer Gloves
+--------
+Quality: +20% (augmented)
+Energy Shield: 178 (augmented)
+--------
+Requirements:
+Level: 70
+Str: 151
+Dex: 68
+Int: 155
+--------
+Sockets: R R-B-B 
+--------
+Item Level: 72
+--------
++39 to Intelligence
++42 to maximum Energy Shield
+37% increased Energy Shield
++19% to Cold Resistance
+15% increased Stun and Block Recovery
+74% increased Energy Shield (crafted)
+##########
+Item Class: Belts
+Rarity: Unique
+Darkness Enthroned
+Stygian Vise
+--------
+Requirements:
+Level: 60
+--------
+Sockets: A A 
+--------
+Item Level: 79
+--------
+Has 1 Abyssal Socket (implicit)
+--------
+Has 1 Abyssal Socket
+75% increased Effect of Socketed Jewels
+--------
+Hold in your hand the darkness
+and never will the light blind you.
+#########
+Item Class: Shields
+Rarity: Rare
+Soul Weaver
+Titanium Spirit Shield
+--------
+Quality: +20% (augmented)
+Chance to Block: 25%
+Energy Shield: 157 (augmented)
+--------
+Requirements:
+Level: 70
+Dex: 155
+Int: 159
+--------
+Sockets: G-G-B 
+--------
+Item Level: 84
+--------
+Socketed Gems have 15% reduced Reservation
++109 to maximum Life
++48% to Fire Resistance
+10% increased effect of Non-Curse Auras from your Skills
++67 to maximum Energy Shield (crafted)
+--------
+Shaper Item
+Redeemer Item
+#############
+Item Class: Utility Flasks
+Rarity: Magic
+Chemist's Quartz Flask of Grounding
+--------
+Quality: +20% (augmented)
+Lasts 4.80 (augmented) Seconds
+Consumes 25 (augmented) of 60 Charges on use
+Currently has 60 Charges
+6% chance to Dodge Attack Hits
+6% chance to Dodge Spell Hits
+Phasing
+--------
+Requirements:
+Level: 27
+--------
+Item Level: 81
+--------
+Used when you become Shocked (enchant)
+--------
+15% reduced Charges used
+Grants Immunity to Shock for 4 seconds if used while Shocked
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+##############
+Item Class: Stackable Currency
+Rarity: Currency
+Chaos Orb
+--------
+Stack Size: 37/10
+--------
+Reforges a rare item with new random modifiers
+--------
+Right click this item then left click a rare item to apply it.
+Shift click to unstack.
+################
+Item Class: Daggers
+Rarity: Rare
+Gutting Knife
+--------
+Dagger
+Physical Damage: 19-76
+Critical Strike Chance: 6.50%
+Attacks per Second: 1.40
+Weapon Range: 10
+--------
+Requirements:
+Dex: 113
+Int: 78
+--------
+Sockets: G-B-B 
+--------
+Item Level: 82
+--------
+30% increased Global Critical Strike Chance (implicit)
+--------
+Unidentified
+#################
+Item Class: Amulets
+Rarity: Rare
+Lapis Amulet
+--------
+Item Level: 80
+--------
++22 to Intelligence (implicit)
+--------
+Unidentified
+#################
+Item Class: Maps
+Rarity: Magic
+Twinned Marshes Map of Impotence
+--------
+Map Tier: 11
+Atlas Region: Glennach Cairns
+Item Quantity: +32% (augmented)
+Item Rarity: +19% (augmented)
+Monster Pack Size: +12% (augmented)
+--------
+Item Level: 82
+--------
+Area contains two Unique Bosses
+Players have 25% less Area of Effect
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+###################
+Item Class: Map Fragments
+Rarity: Normal
+Fragment of Constriction
+--------
+Webs are torn, not untangled.
+--------
+Can be used in a personal Map Device.
+####################
+Item Class: Maps
+Rarity: Rare
+Superior Maze of the Minotaur Map
+--------
+Map Tier: 16
+Item Quantity: +19% (augmented)
+Quality: +19% (augmented)
+--------
+Item Level: 82
+--------
+Area is influenced by The Shaper (implicit)
+--------
+Unidentified
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+###################Item Class: Maps
+Rarity: Normal
+Terrace Map
+--------
+Map Tier: 16
+Atlas Region: Tirn's End
+--------
+Item Level: 83
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
