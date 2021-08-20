@@ -34,7 +34,7 @@ The Python backend communicates return values to AHK by writing them to the file
 See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py) for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
-  - `batch_process`
+  - `run_batch`
     - TODO: make input filepath first argument
     - Processes a sequence of functions specified in the file `backend_cli.input`
     - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
