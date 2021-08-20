@@ -1,3 +1,43 @@
+Item Class: Two Hand Swords
+Rarity: Normal
+Wraith Sword
+--------
+Two Handed Sword
+Physical Damage: 52-109
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.35
+Weapon Range: 13
+--------
+Requirements:
+Level: 54
+Str: 93
+Dex: 93
+--------
+Sockets: R-R G 
+--------
+Item Level: 69
+--------
+45% increased Global Accuracy Rating (implicit)
+###################
+Item Class: Map Fragments
+Rarity: Normal
+Rusted Breach Scarab
+--------
+Area contains an additional Breach
+--------
+The Ember-dwellers sought to throw you to their volcanic god, young Omid,
+but we caught you instead. The Order of the Djinn is your tribe now.
+--------
+Can be used in a personal Map Device to add modifiers to a Map.
+#####################
+Item Class: Divination Cards
+Rarity: Divination Card
+Chaotic Disposition
+--------
+5x Chaos Orb
+--------
+Life isn't what you make of it, it's already been made for you.
+###################
 Item Class: Gloves
 Rarity: Rare
 Mind Grip
