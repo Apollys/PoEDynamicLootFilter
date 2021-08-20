@@ -1,3 +1,30 @@
+Item Class: Boots
+Rarity: Rare
+Domination March
+Scholar Boots
+--------
+Energy Shield: 76 (augmented)
+--------
+Requirements:
+Level: 60
+Int: 59
+--------
+Sockets: R-B-B-B 
+--------
+Item Level: 72
+--------
+16% increased Attack and Cast Speed if you've Killed Recently (enchant)
+--------
++42 to maximum Energy Shield
+21% increased Energy Shield
+Regenerate 5.6 Life per second
+30% increased Movement Speed
+11% increased Stun and Block Recovery
+5% increased Movement Speed if you haven't been Hit Recently
++33% to Fire Resistance (crafted)
+
+===============================================================================
+
 Item Class: Two Hand Swords
 Rarity: Normal
 Wraith Sword
@@ -18,7 +45,9 @@ Sockets: R-R G
 Item Level: 69
 --------
 45% increased Global Accuracy Rating (implicit)
-###################
+
+===============================================================================
+
 Item Class: Map Fragments
 Rarity: Normal
 Rusted Breach Scarab
@@ -29,7 +58,9 @@ The Ember-dwellers sought to throw you to their volcanic god, young Omid,
 but we caught you instead. The Order of the Djinn is your tribe now.
 --------
 Can be used in a personal Map Device to add modifiers to a Map.
-#####################
+
+===============================================================================
+
 Item Class: Divination Cards
 Rarity: Divination Card
 Chaotic Disposition
@@ -37,7 +68,9 @@ Chaotic Disposition
 5x Chaos Orb
 --------
 Life isn't what you make of it, it's already been made for you.
-###################
+
+===============================================================================
+
 Item Class: Gloves
 Rarity: Rare
 Mind Grip
@@ -62,7 +95,9 @@ Item Level: 72
 +19% to Cold Resistance
 15% increased Stun and Block Recovery
 74% increased Energy Shield (crafted)
-##########
+
+===============================================================================
+
 Item Class: Belts
 Rarity: Unique
 Darkness Enthroned
@@ -82,7 +117,9 @@ Has 1 Abyssal Socket
 --------
 Hold in your hand the darkness
 and never will the light blind you.
-#########
+
+===============================================================================
+
 Item Class: Shields
 Rarity: Rare
 Soul Weaver
@@ -109,7 +146,9 @@ Socketed Gems have 15% reduced Reservation
 --------
 Shaper Item
 Redeemer Item
-#############
+
+===============================================================================
+
 Item Class: Utility Flasks
 Rarity: Magic
 Chemist's Quartz Flask of Grounding
@@ -133,7 +172,9 @@ Used when you become Shocked (enchant)
 Grants Immunity to Shock for 4 seconds if used while Shocked
 --------
 Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
-##############
+
+===============================================================================
+
 Item Class: Stackable Currency
 Rarity: Currency
 Chaos Orb
@@ -144,7 +185,9 @@ Reforges a rare item with new random modifiers
 --------
 Right click this item then left click a rare item to apply it.
 Shift click to unstack.
-################
+
+===============================================================================
+
 Item Class: Daggers
 Rarity: Rare
 Gutting Knife
@@ -166,7 +209,9 @@ Item Level: 82
 30% increased Global Critical Strike Chance (implicit)
 --------
 Unidentified
-#################
+
+===============================================================================
+
 Item Class: Amulets
 Rarity: Rare
 Lapis Amulet
@@ -176,7 +221,9 @@ Item Level: 80
 +22 to Intelligence (implicit)
 --------
 Unidentified
-#################
+
+===============================================================================
+
 Item Class: Maps
 Rarity: Magic
 Twinned Marshes Map of Impotence
@@ -193,7 +240,9 @@ Area contains two Unique Bosses
 Players have 25% less Area of Effect
 --------
 Travel to this Map by using it in a personal Map Device. Maps can only be used once.
-###################
+
+===============================================================================
+
 Item Class: Map Fragments
 Rarity: Normal
 Fragment of Constriction
@@ -201,7 +250,9 @@ Fragment of Constriction
 Webs are torn, not untangled.
 --------
 Can be used in a personal Map Device.
-####################
+
+===============================================================================
+
 Item Class: Maps
 Rarity: Rare
 Superior Maze of the Minotaur Map
@@ -217,7 +268,10 @@ Area is influenced by The Shaper (implicit)
 Unidentified
 --------
 Travel to this Map by using it in a personal Map Device. Maps can only be used once.
-###################Item Class: Maps
+
+===============================================================================
+
+Item Class: Maps
 Rarity: Normal
 Terrace Map
 --------
@@ -227,3 +281,6 @@ Atlas Region: Tirn's End
 Item Level: 83
 --------
 Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+===============================================================================
+
