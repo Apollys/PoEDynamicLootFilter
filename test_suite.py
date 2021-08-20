@@ -3,15 +3,13 @@ import shlex
 import subprocess
 
 from backend_cli import kInputFilename as kBackendCliInputFilename
-from backend_cli import kTestOutputLootFilterFilename, kTestProfileFullpath
 import config
 import consts
 import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
+import test_consts
 from type_checker import CheckType
-
-kTestLogFilename = 'test_suite.log'
 
 def CHECK(expr: bool):
     if (not expr):
@@ -19,13 +17,15 @@ def CHECK(expr: bool):
 # End CHECK
 
 def ResetTestProfile():
-    open(kTestProfileFullpath, 'w').close()
+    open(test_consts.kTestProfileFullpath, 'w').close()
+    open(test_consts.kTestPoELootFilterFilename, 'w').close()
 # End ResetTestProfile
 
 def TestChangeRuleVisibility():
     print('Running TestChangeRuleVisibility...')
     loot_filter = LootFilter(config.kDownloadedLootFilterFullpath,
-                             kTestOutputLootFilterFilename, kTestProfileFullpath)
+                             test_consts.kTestPoELootFilterFilename,
+                             test_consts.kTestProfileFullpath)
     type_name = 'currency'
     tier_name = consts.kCurrencyTierNames[1]
     rule = loot_filter.type_tier_rule_map[type_name][tier_name]
@@ -38,7 +38,8 @@ def TestChangeRuleVisibility():
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
     loot_filter = LootFilter(config.kDownloadedLootFilterFullpath,
-                             kTestOutputLootFilterFilename, kTestProfileFullpath)
+                             test_consts.kTestPoELootFilterFilename,
+                             test_consts.kTestProfileFullpath)
     CHECK(loot_filter.GetHideMapsBelowTierTier() == config.kHideMapsBelowTier)
     for i in range(10):
         tier = random.randint(0, 16)
@@ -50,7 +51,8 @@ def TestHideMapsBelowTier():
 def TestCurrency():
     print('Running TestCurrency...')
     loot_filter = LootFilter(config.kDownloadedLootFilterFullpath,
-                             kTestOutputLootFilterFilename, kTestProfileFullpath)
+                             test_consts.kTestPoELootFilterFilename,
+                             test_consts.kTestProfileFullpath)
     type_name = 'currency'
     for tier in range(1, 10):
         currency_names = loot_filter.GetAllCurrencyInTier(tier)
@@ -75,7 +77,8 @@ def TestCurrency():
 def TestChaosRecipe():
     print('Running TestChaosRecipe...')
     loot_filter = LootFilter(config.kDownloadedLootFilterFullpath,
-                             kTestOutputLootFilterFilename, kTestProfileFullpath)
+                             test_consts.kTestPoELootFilterFilename,
+                             test_consts.kTestProfileFullpath)
     desired_enabled_status_map = {item_slot : random.choice([True, False])
                                   for item_slot in consts.kChaosRecipeItemSlots}
     for item_slot, desired_enabled_status in desired_enabled_status_map.items():
@@ -131,7 +134,7 @@ def RunAllTests():
 # End RunAllTests
 
 def main():
-    logger.InitializeLog(kTestLogFilename)
+    logger.InitializeLog(test_consts.kTestLogFilename)
     RunAllTests()
     print('All tests completed successfully!')
 # End main

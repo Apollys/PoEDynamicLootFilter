@@ -3,17 +3,16 @@ import consts
 import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
+import test_consts
 from type_checker import CheckType
 
-from backend_cli import kTestOutputLootFilterFilename, kTestProfileFullpath
-
 def main():
-    logger.InitializeLog('example.log')
+    logger.InitializeLog(test_consts.kTestLogFilename)
     loot_filter = LootFilter(config.kDownloadedLootFilterFullpath,
-                             kTestOutputLootFilterFilename,
-                             kTestProfileFullpath)
+                             test_consts.kTestPoELootFilterFilename,
+                             test_consts.kTestProfileFullpath)
     loot_filter.SaveToFile()
-    print('Loot filter saved to', kTestOutputLootFilterFilename)
+    print('Loot filter saved to', test_consts.kTestPoELootFilterFilename)
     
 if (__name__ == '__main__'):
     main()

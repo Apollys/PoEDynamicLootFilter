@@ -67,11 +67,12 @@ kFlaskRuleTemplate = \
 
 kChaosRecipeRuleTemplate = \
 '''Show $type->dlf_chaos_recipe_rares $tier->{}
-SetBorderColor {}
-SetFontSize 40
 ItemLevel >= 60
 Rarity Rare
 Class {}
+Identified False
+SetBorderColor {}
+SetFontSize 40
 MinimapIcon {} {}'''
 
 kChaosRecipeItemSlots = ['Weapons',

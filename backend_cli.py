@@ -31,7 +31,6 @@ Testing feature:
 '''
 
 import shlex
-import os.path
 import sys
 import traceback
 from typing import List
@@ -41,13 +40,12 @@ import consts
 import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
+import test_consts
 from type_checker import CheckType
 
 kLogFilename = 'backend_cli.log'
 kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
-kTestOutputLootFilterFilename = 'test_suite_output.filter'
-kTestProfileFullpath = os.path.join(config.kProfileDirectory, 'TestProfile.profile')
 
 # List of functions that modify the filter in any way
 # This list excludes getter-only functions, which can be excluded from the profile data
@@ -347,8 +345,8 @@ def main():
     if (len(sys.argv) < 2):
         Error('no function specified, too few command line arguments given')
     elif (sys.argv[1] == 'TEST'):
-        output_filter_fullpath = kTestOutputLootFilterFilename
-        profile_fullpath = kTestProfileFullpath
+        output_filter_fullpath = test_consts.kTestPoELootFilterFilename
+        profile_fullpath = test_consts.kTestProfileFullpath
         if (len(sys.argv) < 3):
             Error('no function specified, too few command line arguments given')
         function_name, *function_params = sys.argv[2:]

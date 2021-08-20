@@ -27,6 +27,7 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 
 **Currently Supported Functions:**
   - `batch_process`
+    - TODO: make input filepath first argument
     - Processes a sequence of functions specified in the file `backend_cli.input`
     - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
     - Ouput is separated by the single-character line `@` placed after the output of each function call in `backend_cli.output`
