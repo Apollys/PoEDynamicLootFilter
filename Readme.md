@@ -11,7 +11,12 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
  - [x] Hide maps below tier
  - [x] Show/hide flasks by type
  - [x] Save profile data - persistent changes with redownloaded filter
+ - [ ] Manipulate unique item visibility
  - [ ] Simulate - find rule matching item
+ - [ ] Set Gem min quality
+ - [ ] Set Flask min quality
+ - [ ] Set RGB item max size
+ - [ ] Set Blight Oil min tier
 
 - - -
 
