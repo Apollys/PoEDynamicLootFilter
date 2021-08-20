@@ -111,32 +111,38 @@ class LootFilterRule:
         self.visibility = visibility
     # End SetVisibility
     
+    # Note: BaseType names are *not* quoted in base_type_list
     def AddBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         if (base_type_name in self.base_type_list):
             return
+        quoted_base_type_name = '"' + base_type_name + '"'
         self.base_type_list.append(base_type_name)
-        original_base_type_line = self.text_lines[self.base_type_line_index]
         self.text_lines[self.base_type_line_index] = \
-                self.text_lines[self.base_type_line_index] + ' "' + base_type_name + '"'
+                self.text_lines[self.base_type_line_index] + ' ' + quoted_base_type_name
     # End AddBaseType
     
     def RemoveBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
-        if (base_type_name not in self.base_type_list):
+        quoted_base_type_name = '"' + base_type_name + '"'
+        if ((base_type_name not in self.base_type_list) and
+                (quoted_base_type_name not in self.base_type_list)):
             logger.Log('Warning: requested to remove BaseType ' + base_type_name + ' from rule "' + 
                     self.text_lines[0] + '", but given BaseType is not in this rule')
             return
         self.base_type_list.remove(base_type_name)
-        # Potential issue: what if base type list is empty now?
+        # Remove base_type_name from rule text
         index = self.base_type_line_index  # for convenience
-        quoted_base_type_name = '"' + base_type_name + '"'
         if (quoted_base_type_name in self.text_lines[self.base_type_line_index]):
-            self.text_lines[index] = \
-                    self.text_lines[index].replace(' ' + quoted_base_type_name, '')
-        else:
-            self.text_lines[index] = \
-                    self.text_lines[index].replace(' ' + base_type_name, '')
+            self.text_lines[index] = '{}BaseType {}'.format(
+                    '# ' if self.visibility == RuleVisibility.kDisable else '',
+                    '"' + '" "'.join(self.base_type_list) + '"')
+        # Now if the BaseType line is empty, it will generate an error in PoE,
+        # so we need to comment out the rule if no base types left
+        if (len(self.base_type_list) == 0):
+            self.SetVisibility(RuleVisibility.kDisable)
+            # Also, need to eliminate the ' ""'  in the list
+            self.text_lines[index] = self.text_lines[index][:-3]
     # End RemoveBaseType
         
     def GetSize(self) -> int:
@@ -174,17 +180,19 @@ class LootFilter:
     # ============================== Public API ==============================
     
     # Construct LootFilter object, parsing the given loot filter file
-    def __init__(self, input_filter_fullpath: str, profile_fullpath: str = config.kProfileFullpath):
+    def __init__(self, input_filter_fullpath: str,
+                 output_filter_fullpath: str = config.kPathOfExileLootFilterFullpath,
+                 profile_fullpath: str = config.kProfileFullpath):
         CheckType(input_filter_fullpath, 'input_filter_fullpath', str)
+        CheckType(output_filter_fullpath, 'output_filter_fullpath', str)
         CheckType(profile_fullpath, 'profile_fullpath', str)
+        self.output_filter_fullpath = output_filter_fullpath
         self.profile_fullpath = profile_fullpath
         self.ParseLootFilterFile(input_filter_fullpath)
     # End __init__
-        
-    # Saves a backup first if output_filename == input_filename
-    def SaveToFile(self, output_filename: str):
-        CheckType(output_filename, 'output_filename', str)
-        with open(output_filename, 'w') as output_file:
+
+    def SaveToFile(self):
+        with open(self.output_filter_fullpath, 'w') as output_file:
             line_index: int = 0
             while (line_index < len(self.text_lines)):
                 line: str = self.text_lines[line_index]
@@ -282,6 +290,41 @@ class LootFilter:
                 maptier_start_index = line.find(keystring) + len(keystring)
                 return helper.ParseNumberFromString(line, maptier_start_index)
     # End GetHideMapsBelowTierTier
+    
+    # =========================== Flask-Related Functions ==========================
+    
+    def SetFlaskRuleEnabledFor(self, flask_base_type: str, enable_flag: bool):
+        print('SetFlaskRuleEnabledFor({}, {})'.format(flask_base_type, enable_flag))
+        CheckType(flask_base_type, 'flask_base_type', str)
+        CheckType(enable_flag, 'enable_flag', bool)
+        type_tag = 'dlf_flasks'
+        tier_tag = type_tag
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        if (enable_flag):
+            rule.AddBaseType(flask_base_type)
+            # Rule may have been disabled if BaseType line was previously empty
+            rule.SetVisibility(RuleVisibility.kShow)
+        else:  # disable
+            rule.RemoveBaseType(flask_base_type)
+    # End SetFlaskRuleEnabledFor
+    
+    def IsFlaskRuleEnabledFor(self, flask_base_type: str) -> bool:
+        CheckType(flask_base_type, 'flask_base_type', str)
+        type_tag = 'dlf_flasks'
+        tier_tag = type_tag
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        if (rule.visibility != RuleVisibility.kShow):
+            return False
+        return flask_base_type in rule.base_type_list
+    # End IsFlaskRuleEnabledFor
+    
+    def GetAllEnabledFlaskTypes(self) -> List[str]:
+        type_tag = 'dlf_flasks'
+        tier_tag = type_tag
+        [rule] = self.type_tier_rule_map[type_tag][tier_tag]
+        if (rule.visibility != RuleVisibility.kShow):
+            return []
+        return rule.base_type_list
     
     # ========================= Currency-Related Functions =========================
         
@@ -458,6 +501,13 @@ class LootFilter:
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         to_add_string = consts.kHideMapsBelowTierRuleTemplate.format(
                 config.kHideMapsBelowTier)
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        # Add flask rule
+        current_section_id_int += 1
+        to_add_string = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show specific flask BaseTypes')
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        to_add_string = consts.kFlaskRuleTemplate
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         # Add chaos recipe rules
         current_section_id_int += 1

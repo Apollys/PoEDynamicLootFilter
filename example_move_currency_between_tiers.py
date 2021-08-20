@@ -16,11 +16,11 @@ def MoveCurrencyBetweenTiersExample(loot_filter):
     target_tier = 2
     loot_filter.SetCurrencyToTier(currency_name, target_tier)
     # Save new filter (diff input and output filter to see changes)
-    loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+    loot_filter.SaveToFile()
 
 def main():
     logger.InitializeLog('example.log')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    loot_filter = LootFilter(config.kInputLootFilterFilename, config.kOutputLootFilterFilename)
     MoveCurrencyBetweenTiersExample(loot_filter)
     
 if (__name__ == '__main__'):

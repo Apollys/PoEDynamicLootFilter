@@ -16,7 +16,7 @@ def MakeChaosRecipeRulesExample(loot_filter):
 
 def main():
     logger.InitializeLog('example.log')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
+    loot_filter = LootFilter(config.kInputLootFilterFilename, config.kOutputLootFilterFilename)
     MakeChaosRecipeRulesExample(loot_filter)
     
 

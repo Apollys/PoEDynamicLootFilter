@@ -108,13 +108,16 @@ def ParseSectionDeclarationLine(line) -> Tuple[bool, str, str]:
 # BaseType Alchemy Chaos  (result would be ["Alchemy", "Chaos"])
 def ParseBaseTypeLine(line: str) -> List[str]:
     CheckType(line, 'line', str)
+    # First remove 'BaseType' and anything before it from line
+    start_index = line.find('BaseType') + len('BaseType') + 1
+    line = line[start_index:]
+    if (line == ''):
+        return []
     if ('"' in line):
         start_index = line.find('"')
         end_index = line.rfind('"')
         return line[start_index + 1 : end_index].split('" "')
-    # Otherwise, items are just split by spaces, but we have to be careful
-    # about an extra space in comment: e.g. "# BaseType A B C"
-    start_index = line.find('BaseType ') + len('BaseType ')
-    return line[start_index :].split(' ')
+    # Otherwise, items are just split by spaces
+    return line.split(' ')
 # End ParseBaseTypeLine
 

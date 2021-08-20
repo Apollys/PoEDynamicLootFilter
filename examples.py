@@ -47,7 +47,7 @@ def RuleSearchExample(loot_filter: LootFilter):
             rule.SetVisibility(RuleVisibility.kShow)
             rule.SetVisibility(RuleVisibility.kHide)
             rule.SetVisibility(RuleVisibility.kDisable)
-    loot_filter.SaveToFile(kOutputLootFilterFilename)
+    loot_filter.SaveToFile()
     # Now just reload filter in-game and changes are applied
     
     # End RuleSearchExample()
@@ -66,7 +66,7 @@ def HideCurrencyTierExample(loot_filter):
     print('\nReplaced with rule:\n')
     print(found_currency_rule)
     print('\nSaving new filter to', kOutputLootFilterFilename)
-    loot_filter.SaveToFile(kOutputLootFilterFilename)
+    loot_filter.SaveToFile()
     
 def MoveCurrencyBetweenTiersExample(loot_filter):
     CheckType(loot_filter, 'loot_filter', LootFilter)
@@ -87,7 +87,7 @@ def MoveCurrencyBetweenTiersExample(loot_filter):
     print(starting_currency_rule)
     print('\n* * * * * * * * * * * * * * * * * * * *\n')
     print(target_currency_rule)
-    loot_filter.SaveToFile(kOutputLootFilterFilename)
+    loot_filter.SaveToFile()
 
 def MakeChaosRecipeRulesExample(loot_filter):
     CheckType(loot_filter, 'loot_filter', LootFilter)

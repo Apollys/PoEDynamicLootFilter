@@ -25,7 +25,8 @@ which will be logged to the log file along with the stack trace.
 
 Testing feature:
  - Insert "TEST" as the first argument after "python3 backend_cli.py" to run tests
- - This will save all updates in a separate testing profile so as to not ruin
+ - This wil write output to test output filter, rather than the PathOfExile filter path
+ - This will also save all profile updates in a separate testing profile so as to not ruin
    one's real profile(s).  Used in all test_suite.py calls.
 '''
 
@@ -45,6 +46,7 @@ from type_checker import CheckType
 kLogFilename = 'backend_cli.log'
 kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
+kTestOutputLootFilterFilename = 'test_suite_output.filter'
 kTestProfileFullpath = os.path.join(config.kProfileDirectory, 'TestProfile.profile')
 
 # List of functions that modify the filter in any way
@@ -53,7 +55,7 @@ kTestProfileFullpath = os.path.join(config.kProfileDirectory, 'TestProfile.profi
 # Excluded undo_last_change since it's rather unique and handles its own saving
 kFilterMutatorFunctionNames = ['set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
-        'set_hide_map_below_tier', 'set_chaos_recipe_enabled_for']
+        'set_hide_map_below_tier', 'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for']
 
 def Error(e):
     loger.Log('Error ' + str(e))
@@ -114,16 +116,18 @@ def DelegateFunctionCall(loot_filter: LootFilter,
          - Reads the filter located in the downloads directory, applies all DLF
            custom changes to it, and saves the result in the Path Of Exile directory.
            See config.py to configure filter file paths and names.
+         - Assumes this is NOT called as part of a batch
          - Output: None
          - Example: > python3 backend_cli.py import_downloaded_filter
         '''
         CheckNumParams(function_params, 0)
-        loot_filter = LootFilter(config.kDownloadedLootFilterFullpath)
+        # Note: if function name was import_downloaded_filter, main already
+        # checked and instantiated this loot_filter with the downloaded filter as input
         profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
         for function_call_string in profile_lines:
             _function_name, *_function_params = shlex.split(function_call_string)
             DelegateFunctionCall(loot_filter, _function_name, _function_params, True, True)
-        loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+        loot_filter.SaveToFile()
     # Note: cannot run_batch from within a run_batch command, as there would be no place for
     # batch function call list, and this should be unnecessary
     elif ((function_name == 'run_batch') and not in_batch):
@@ -253,6 +257,36 @@ def DelegateFunctionCall(loot_filter: LootFilter,
          - Example: > python3 backend_cli.py get_hide_map_below_tier
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
+    elif (function_name == 'set_flask_rule_enabled_for'):
+        '''
+        set_flask_rule_enabled_for <base_type: str> <enable_flag: int>
+         - Note: this does not overwrite any original filter rules, only adds a rule on top.
+           This function never hides flasks, it only modifies its own "Show" rule.
+         - <base_type> is any valid flask BaseType
+         - enable_flag is 1 for True (enable), 0 for False (disable)
+         - Output: None
+         - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1
+        '''
+        flask_base_type: str = function_params[0]
+        enable_flag: bool = bool(int(function_params[1]))
+        loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag)
+    elif (function_name == 'is_flask_rule_enabled_for'):
+        '''
+        is_flask_rule_enabled_for <base_type: str>
+         - <base_type> is any valid flask BaseType
+         - Output: "1" if flask rule is enabled for given base_type, else "0"
+         - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask"
+        '''
+        flask_base_type: str = function_params[0]
+        output_string = str(int(loot_filter.IsFlaskRuleEnabledFor(flask_base_type)))
+    elif (function_name == 'get_all_enabled_flask_types'):
+        '''
+        get_all_enabled_flask_types
+         - Output: newline-separated sequence of enabled flask BaseTypes
+         - Example: > python3 backend_cli.py get_all_enabled_flask_types
+        '''
+        for flask_base_type in loot_filter.GetAllEnabledFlaskTypes():
+            output_string += flask_base_type + '\n'
     elif (function_name == 'set_chaos_recipe_enabled_for'):
         '''
         set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>
@@ -298,7 +332,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         WriteOutput(output_string)
         # Save loot filter if not in batch, and called a mutator function
         if (function_name in kFilterMutatorFunctionNames):
-            loot_filter.SaveToFile(config.kPathOfExileLootFilterFullpath)
+            loot_filter.SaveToFile()
 # End DelegateFunctionCall
         
 def main():
@@ -307,11 +341,13 @@ def main():
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
     logger.Log(argv_info_message)
     profile_fullpath = config.kProfileFullpath
+    output_filter_fullpath = config.kPathOfExileLootFilterFullpath
     function_name, function_params = '', []
     # Check that there are enough params, and split into function_name, function_params
     if (len(sys.argv) < 2):
         Error('no function specified, too few command line arguments given')
     elif (sys.argv[1] == 'TEST'):
+        output_filter_fullpath = kTestOutputLootFilterFilename
         profile_fullpath = kTestProfileFullpath
         if (len(sys.argv) < 3):
             Error('no function specified, too few command line arguments given')
@@ -323,7 +359,7 @@ def main():
                              if function_name == 'import_downloaded_filter'
                              else config.kPathOfExileLootFilterFullpath)
     # Delegate function call
-    loot_filter = LootFilter(input_filter_fullpath, profile_fullpath)
+    loot_filter = LootFilter(input_filter_fullpath, output_filter_fullpath, profile_fullpath)
     try:
         DelegateFunctionCall(loot_filter, function_name, function_params)
     except Exception as e:

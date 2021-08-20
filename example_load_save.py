@@ -7,8 +7,8 @@ from type_checker import CheckType
 
 def main():
     logger.InitializeLog('example.log')
-    loot_filter = LootFilter(config.kInputLootFilterFilename)
-    loot_filter.SaveToFile(config.kOutputLootFilterFilename)
+    loot_filter = LootFilter(config.kInputLootFilterFilename, config.kOutputLootFilterFilename)
+    loot_filter.SaveToFile()
     
 if (__name__ == '__main__'):
     main()

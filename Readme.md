@@ -9,8 +9,9 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
  - [x] Show/hide whole currency tier
  - [x] Chaos recipe - show/hide by item slot
  - [x] Hide maps below tier
- - [ ] Show/hide flasks by type
+ - [x] Show/hide flasks by type
  - [x] Save profile data - persistent changes with redownloaded filter
+ - [ ] Simulate - find rule matching item
 
 - - -
 
@@ -42,9 +43,12 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_hide_currency_above_tier`
   - `set_hide_map_below_tier <tier: int>`
   - `get_hide_map_below_tier`
+  - `set_flask_rule_enabled_for <base_type: str> <enable_flag: int>`
+  - `is_flask_rule_enabled_for <base_type: str>`
+  - `get_all_enabled_flask_types`
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
   - `is_chaos_recipe_enabled_for <item_slot: str>`
   - `get_all_chaos_recipe_statuses`
 
 **Functions To Implement**
- - Flask show/hide operations
+ - Simulate - find rule matching item
