@@ -55,10 +55,13 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_hide_map_below_tier`
   - `set_flask_rule_enabled_for <base_type: str> <enable_flag: int>`
   - `is_flask_rule_enabled_for <base_type: str>`
-  - `get_all_enabled_flask_types`
+  - `get_all_enabled_flask_types` \*
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
   - `is_chaos_recipe_enabled_for <item_slot: str>`
   - `get_all_chaos_recipe_statuses`
 
 **Functions To Implement**
  - Simulate - find rule matching item
+
+\* Can this be changed to something more like the get_all_currency_tiers where it returns every flask type with <flask name>;<int: active>? Would be a lot easier for me
+ 
