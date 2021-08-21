@@ -91,6 +91,8 @@ def TestChaosRecipe():
 def TestRunBatchCli():
     print('Running TestBatchCli...')
     subprocess.run(['cp', 'backend_cli.test_input', kBackendCliInputFilename])
+    run_batch_command = 'python3 backend_cli.py TEST import_downloaded_filter only_if_missing'
+    subprocess.run(shlex.split(run_batch_command))
     run_batch_command = 'python3 backend_cli.py TEST run_batch'
     subprocess.run(shlex.split(run_batch_command))
 # End TestRunBatchCli

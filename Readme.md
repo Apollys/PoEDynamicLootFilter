@@ -34,7 +34,7 @@ The Python backend communicates return values to AHK by writing them to the file
 See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py) for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
-  - `batch_process`
+  - `run_batch`
     - TODO: make input filepath first argument
     - Processes a sequence of functions specified in the file `backend_cli.input`
     - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
@@ -42,7 +42,8 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `undo_last_change`
     - Initial implementation - removes last line from profile and re-runs `import_downloaded_filter`
     - Could be optimized to a smarter algorithm later if deemed important
-  - `import_downloaded_filter`
+  - `import_downloaded_filter <optional keyword: "only_if_missing">`
+    - Example: `> python3 backend_cli.py import_downloaded_filter only_if_missing`
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `get_all_currency_tiers`

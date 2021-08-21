@@ -30,6 +30,7 @@ Testing feature:
    one's real profile(s).  Used in all test_suite.py calls.
 '''
 
+from pathlib import Path
 import shlex
 import sys
 import traceback
@@ -59,6 +60,10 @@ def Error(e):
     loger.Log('Error ' + str(e))
     raise RuntimeError(e)
 # End Error
+
+def FileExists(path: str) -> bool:
+    return Path(path).is_file()
+# End FileExists
 
 def CheckNumParams(params_list: List[str], required_num_params: int):
     CheckType(params_list, 'params_list', list)
@@ -110,22 +115,31 @@ def DelegateFunctionCall(loot_filter: LootFilter,
     # Define functions by function name
     if (function_name == 'import_downloaded_filter'):
         '''
-        import_downloaded_filter
+        import_downloaded_filter <optional keyword: "only_if_missing">
          - Reads the filter located in the downloads directory, applies all DLF
            custom changes to it, and saves the result in the Path Of Exile directory.
            See config.py to configure filter file paths and names.
+         - If the argument "only_if_missing" is present, does nothing if the filter already is
+           present in the Path of Exile filters directory.
          - Assumes this is NOT called as part of a batch
          - Output: None
          - Example: > python3 backend_cli.py import_downloaded_filter
+         - Example: > python3 backend_cli.py import_downloaded_filter only_if_missing
         '''
-        CheckNumParams(function_params, 0)
-        # Note: if function name was import_downloaded_filter, main already
-        # checked and instantiated this loot_filter with the downloaded filter as input
-        profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
-        for function_call_string in profile_lines:
-            _function_name, *_function_params = shlex.split(function_call_string)
-            DelegateFunctionCall(loot_filter, _function_name, _function_params, True, True)
-        loot_filter.SaveToFile()
+        import_flag = True
+        if ((len(function_params) == 1) and (function_params[0] == 'only_if_missing')):
+            import_flag = not FileExists(loot_filter.output_filter_fullpath)
+        else:
+            CheckNumParams(function_params, 0)
+        print('import to {}: import_flag = {}'.format(loot_filter.output_filter_fullpath, import_flag))
+        if (import_flag):
+            # Note: if function name was import_downloaded_filter, main already
+            # checked and instantiated this loot_filter with the downloaded filter as input
+            profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
+            for function_call_string in profile_lines:
+                _function_name, *_function_params = shlex.split(function_call_string)
+                DelegateFunctionCall(loot_filter, _function_name, _function_params, True, True)
+            loot_filter.SaveToFile()
     # Note: cannot run_batch from within a run_batch command, as there would be no place for
     # batch function call list, and this should be unnecessary
     elif ((function_name == 'run_batch') and not in_batch):
@@ -355,7 +369,7 @@ def main():
     # Determine input filter path based on function name
     input_filter_fullpath = (config.kDownloadedLootFilterFullpath
                              if function_name == 'import_downloaded_filter'
-                             else config.kPathOfExileLootFilterFullpath)
+                             else output_filter_fullpath)
     # Delegate function call
     loot_filter = LootFilter(input_filter_fullpath, output_filter_fullpath, profile_fullpath)
     try:
