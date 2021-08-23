@@ -33,7 +33,7 @@ rare_val := []
 rare_val_start := []
 FileDelete, %ahk_out_path%
 FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_map_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`n, %ahk_out_path%
-RunWait, python %py_prog_path% run_batch
+RunWait, python %py_prog_path% run_batch , , Hide
 FileRead, py_out_text, %py_out_path%
 prog := 0
 Loop, parse, py_out_text, `n, `r
@@ -320,7 +320,7 @@ base_wishide := WisdomHide
 ;		FileAppend, % "set_flask_rule_enabled_for """ idx """ " val[1], %ahk_out_path%
 ;	}
 ;}
-Run, python %py_prog_path% run_batch
+RunWait, python %py_prog_path% run_batch , , Hide
 ;Gui, 1: Hide
 ;Gui, 2: Hide
 ;Gui, 3: Hide
@@ -340,5 +340,6 @@ ExitApp
 ;return
 
 F12::
-Run, python %py_prog_path% import_downloaded_filter
+Run, python %py_prog_path% import_downloaded_filter ,  , Hide
+Reload
 return
