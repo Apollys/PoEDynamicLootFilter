@@ -52,6 +52,22 @@ def ParseNumberFromString(input_string: str, starting_index: int = 0) -> int:
 
 # ==================== Loot Filter Specifc Helper Methods ====================
 
+def CommentedLine(line: str) -> str:
+    CheckType(line, 'line', str)
+    if (line.strip().startswith('#')):
+        return line
+    return '# ' + line
+# End CommentedLine
+
+def UncommentedLine(line: str) -> str:
+    CheckType(line, 'line', str)
+    if (line.strip().startswith('# ')):
+        return line.replace('# ', '', 1)  # 3rd parameter is max number of replacements
+    elif (line.strip().startswith('#')):
+        return line.replace('#', '', 1)  # 3rd parameter is max number of replacements
+    return line  # already uncommented
+# End UncommentedLine
+
 # Returns True if the given line is a section declaration or section group
 # declaration, and False otherwise.
 def IsSectionOrGroupDeclaration(line: str) -> bool:

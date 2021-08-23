@@ -27,11 +27,12 @@ def ParseRuleLineGeneric(line: str) -> Tuple[str, str, List[str]]:
     keyword: str = space_split_list[0]
     operator: str = ''
     values_string: str = ''
-    if (space_split_list[1] in kOperators):
-        operator = space_split_list[1]
-        values_string = ' '.join(space_split_list[2:])
-    else:
-        values_string = ' '.join(space_split_list[1:])
+    if (len(space_split_list) > 1):
+        if (space_split_list[1] in kOperators):
+            operator = space_split_list[1]
+            values_string = ' '.join(space_split_list[2:])
+        else:
+            values_string = ' '.join(space_split_list[1:])
     values_list = []
     # Now we want to parse the values string into a list of items
     # Items in values string can be either space-separated, or enclosed in quotes
@@ -56,5 +57,4 @@ def Test():
         print('keyword = "{}", operator = "{}", values_list = {}'.format(
                 keyword, operator, values_list))
 
-Test()
 

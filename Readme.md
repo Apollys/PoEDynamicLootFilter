@@ -5,10 +5,8 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 - - -
 
 ### Cody To-Do
- - Make `run_batch` save iff at least one run function was a mutator
  - Make `import_downloaded_filter` delete the imported filter and save a backup somehwere else
- - Research why `subprocess` doesn't work on windows, and switch to `os.system` if needed
- - When a rule's visibility is set to Hide, remove any beam effects, minimap icons, and sound effects
+ - Switch `subprocess` to `os.system`
  - Create a more thorough set of tests to cover everything in the backend_cli
    - Examples: make sure filter is saved whenever a change is made, make sure things go to the
      right tier/status by re-reading the file, make sure it doesn't save on batch of getters, etc

@@ -8,6 +8,7 @@ import config
 import consts
 import helper
 import logger
+import rule_parser
 from type_checker import CheckType
 
 # -----------------------------------------------------------------------------
@@ -25,6 +26,7 @@ class LootFilterRule:
     '''
     Member variables:
      - self.text_lines: List[str]
+     - self.parsed_line: list of (keyword, operator, values_list) triplets
      - self.start_line_index: int - line index of this rule in the original filter file
      - self.visibility: RuleVisibility
      - self.type_tag: str - identifier found after "$type->" in the first line of the rule
@@ -37,6 +39,7 @@ class LootFilterRule:
     def __init__(self, rule_text_lines: str or List[str], start_line_index: int):
         if (isinstance(rule_text_lines, str)):
             rule_text_lines = rule_text_lines.split('\n')
+        # Now rule is a list of line strings
         CheckType(rule_text_lines, 'rule_text_lines', list)
         CheckType(start_line_index, 'start_line_index', int)
         if (len(rule_text_lines) == 0):
@@ -44,6 +47,7 @@ class LootFilterRule:
                     start_line_index + 1))
         self.text_lines = rule_text_lines
         self.start_line_index = start_line_index  # index in full loot filter file
+        self.parsed_lines = [rule_parser.ParseRuleLineGeneric(line) for line in self.text_lines[1:]]
         # Parse rule visibility
         self.visibility = RuleVisibility.kUnknown
         if (rule_text_lines[0].startswith('Show')):
@@ -90,19 +94,25 @@ class LootFilterRule:
     def SetVisibility(self, visibility: RuleVisibility) -> None:
         CheckType(visibility, 'visibility', RuleVisibility)
         if (self.visibility == visibility): return
-        # Comment to disable
+        # Comment to Disable
         if (visibility == RuleVisibility.kDisable):
-            for i in range(len(self.text_lines)):
-                self.text_lines[i] = '# ' + self.text_lines[i]
-            self.visibility = visibility
-            return
-        # Uncomment if currently commented (disabled)
-        if (self.visibility == RuleVisibility.kDisable):
-            # Handle "# Show" and "#Show" comment styles uniformly
-            comment_prefix_length = helper.FindFirstMatchingPredicate(
-                    self.text_lines[0], str.isalnum)
-            for i in range(len(self.text_lines)):
-                self.text_lines[i] = self.text_lines[i][comment_prefix_length :]
+            self.text_lines = [helper.CommentedLine(line) for line in self.text_lines]
+        # Uncomment to Show
+        elif (visibility == RuleVisibility.kShow):
+            self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
+            if (self.text_lines[0].startswith('Hide')):
+                self.text_lines[0] = 'Show' + self.text_lines[0][4:]
+        # Disable beams, minimap icons, and drop sounds on Hide
+        elif (visibility == RuleVisibility.kHide):
+            if (self.text_lines[0].startswith('Show')):
+                self.text_lines[0] = 'Hide' + self.text_lines[0][4:]
+            kKeywordsToDisable = ['PlayEffect', 'MinimapIcon', 'PlayAlertSound']
+            for parsed_lines_index in range(len(self.parsed_lines)):
+                text_lines_index = parsed_lines_index + 1
+                keyword, _, _ = self.parsed_lines[parsed_lines_index]
+                if (keyword in kKeywordsToDisable):
+                    self.text_lines[text_lines_index] = helper.CommentedLine(
+                            self.text_lines[text_lines_index])
         # Toggle Show/Hide
         if ((visibility == RuleVisibility.kShow) and self.text_lines[0].startswith('Hide')):
             self.text_lines[0] = 'Show' + self.text_lines[0][4:]
