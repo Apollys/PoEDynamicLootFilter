@@ -341,9 +341,11 @@ def DelegateFunctionCall(loot_filter: LootFilter,
     if (in_batch):
         if (not suppress_output): AppendFunctionOutput(output_string)
     else:
-        WriteOutput(output_string)
-        # Save loot filter if not in batch, and called a mutator function
-        if (function_name in kFilterMutatorFunctionNames):
+        # If function was not run_batch, write output
+        if (function_name != 'run_batch'):
+            WriteOutput(output_string)
+        # Save loot filter if we called a mutator function or run_batch
+        if ((function_name in kFilterMutatorFunctionNames) or (function_name == 'run_batch')):
             loot_filter.SaveToFile()
 # End DelegateFunctionCall
         
