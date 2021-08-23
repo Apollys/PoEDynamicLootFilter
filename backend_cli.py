@@ -30,8 +30,10 @@ Testing feature:
    one's real profile(s).  Used in all test_suite.py calls.
 '''
 
+import os
 from pathlib import Path
 import shlex
+import shutil
 import sys
 import traceback
 from typing import List
@@ -374,10 +376,21 @@ def main():
         function_name, *function_params = sys.argv[2:]
     else:
         function_name, *function_params = sys.argv[1:]
-    # Determine input filter path based on function name
-    input_filter_fullpath = (config.kDownloadedLootFilterFullpath
-                             if function_name == 'import_downloaded_filter'
-                             else output_filter_fullpath)
+    input_filter_fullpath = output_filter_fullpath
+    # If importing downloaded filter, move the downloaded filter to input directory
+    # This deletes the downloaded filter for user convenience (but saves a backup)
+    if (function_name == 'import_downloaded_filter'):
+        downloaded_filter_fullpath = config.kDownloadedLootFilterFullpath
+        if (not os.path.isfile(downloaded_filter_fullpath)):
+            Error('downloaded loot filter: "{}" does not exist'.format(
+                    downloaded_filter_fullpath))
+        input_filter_fullpath = config.kInputLootFilterFullpath
+        if (config.kRemoveDownloadedFilter):
+            # Moves a file from source to destination, overwriting if destination exists
+            os.replace(downloaded_filter_fullpath, input_filter_fullpath)
+        else:
+            # Copies source file to destination, overwriting if destination exists
+            shutil.copyfile(downloaded_filter_fullpath, input_filter_fullpath)
     # Delegate function call
     loot_filter = LootFilter(input_filter_fullpath, output_filter_fullpath, profile_fullpath)
     try:
