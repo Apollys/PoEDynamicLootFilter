@@ -131,7 +131,6 @@ def DelegateFunctionCall(loot_filter: LootFilter,
             import_flag = not FileExists(loot_filter.output_filter_fullpath)
         else:
             CheckNumParams(function_params, 0)
-        print('import to {}: import_flag = {}'.format(loot_filter.output_filter_fullpath, import_flag))
         if (import_flag):
             # Note: if function name was import_downloaded_filter, main already
             # checked and instantiated this loot_filter with the downloaded filter as input
