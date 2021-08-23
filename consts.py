@@ -17,9 +17,11 @@ kSectionGroupHeaderTemplate = \
 #==============================================================================================================='''
 
 # Note: added a few extra dashes from NeverSink's template here
+# 0: Numerical section id code
+# 1: Section name
 kSectionHeaderTemplate = \
 '''#------------------------------------------------
-#   [{}] {}
+#   [{0}] {1}
 #------------------------------------------------'''
 
 kSectionRePattern = re.compile(r'\[\d+\]+ .*')
@@ -65,17 +67,24 @@ kFlaskRuleTemplate = \
 
 # =============================== Chaos Recipe ===============================
 
+# 0: tier tag (we will use the item slot for this)
+# 1: item class
+# 2: optional height condition (e.g. 'Height <= 3')
+# 3: border color (space-separated rgba values)
+# 4: minimap icon size (0 = largest, 1 = medium, 2 = small)
+# 5: minimap icon color (color keyword)
 kChaosRecipeRuleTemplate = \
-'''Show $type->dlf_chaos_recipe_rares $tier->{}
+'''Show $type->dlf_chaos_recipe_rares $tier->{0}
 ItemLevel >= 60
 Rarity Rare
-Class {}
+Class {1}{2}
 Identified False
-SetBorderColor {}
+SetBorderColor {3}
 SetFontSize 40
-MinimapIcon {} {}'''
+MinimapIcon {4} {5}'''
 
-kChaosRecipeItemSlots = ['Weapons',
+kChaosRecipeItemSlots = ['WeaponsX',
+                         'Weapons3',
                          'Body Armours',
                          'Helmets',
                          'Gloves',
@@ -85,7 +94,9 @@ kChaosRecipeItemSlots = ['Weapons',
                          'Belts']
 
 # Need no spaces in tier tags
-kChaosRecipeTierTags = {'Weapons' : 'weapons',
+kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
+                        'Weapons3' : 'weapons_max_height_3',
+                        'Body Armours' : 'body_armours',
                         'Body Armours' : 'body_armours',
                         'Helmets' : 'helmets',
                         'Gloves' : 'gloves',
@@ -96,18 +107,13 @@ kChaosRecipeTierTags = {'Weapons' : 'weapons',
                         
 kChaosRecipeTierToItemSlotMap = InvertedDict(kChaosRecipeTierTags)
 
-kChaosRecipeBorderColors = {'Weapons' : '200 0 0 255',
-                            'Body Armours' : '255 0 255 255',
-                            'Helmets' : '255 114 0 255',
-                            'Gloves' : '255 228 0 255',
-                            'Boots' : '0 255 0 255',
-                            'Amulets': '0 255 255 255',
-                            'Rings' : '65 0 189 255',
-                            'Belts' : '0 0 200 255'}
+kChaosRecipeWeaponClassesAnyHeightString = \
+        '"' + '" "'.join(config.kChaosRecipeWeaponClassesAnyHeight) + '"'
+kChaosRecipeWeaponClassesmaxHeight3String = \
+        '"' + '" "'.join(config.kChaosRecipeWeaponClassesMaxHeight3) + '"'
 
-kChaosRecipeWeaponClassesString = '"' + '" "'.join(config.kChaosRecipeWeaponClasses) + '"'
-
-kChaosRecipeClasses = {'Weapons' : kChaosRecipeWeaponClassesString,
+kChaosRecipeClasses = {'WeaponsX' : kChaosRecipeWeaponClassesAnyHeightString,
+                       'Weapons3' : kChaosRecipeWeaponClassesmaxHeight3String,
                        'Body Armours' : '"Body Armours"',
                        'Helmets' : '"Helmets"',
                        'Gloves' : '"Gloves"',
@@ -116,7 +122,22 @@ kChaosRecipeClasses = {'Weapons' : kChaosRecipeWeaponClassesString,
                        'Rings' : '"Rings"',
                        'Belts' : '"Belts"'}
 
-kChaosRecipeMinimapIconSizeColorParams = {'Weapons' : '1 Red',
+kChaosRecipeHeightConditions = {item_slot : (
+        '\nHeight <= 3' if item_slot == 'Weapons3' else '')
+        for item_slot in kChaosRecipeItemSlots}
+
+kChaosRecipeBorderColors = {'WeaponsX' : '200 0 0 255',
+                            'Weapons3' : '200 0 0 255',
+                            'Body Armours' : '255 0 255 255',
+                            'Helmets' : '255 114 0 255',
+                            'Gloves' : '255 228 0 255',
+                            'Boots' : '0 255 0 255',
+                            'Amulets': '0 255 255 255',
+                            'Rings' : '65 0 189 255',
+                            'Belts' : '0 0 200 255'}
+
+kChaosRecipeMinimapIconSizeColorParams = {'WeaponsX' : '1 Red',
+                                          'Weapons3' : '1 Red',
                                           'Body Armours' : '1 Pink',
                                           'Helmets' : '1 Orange',
                                           'Gloves' : '1 Yellow',
@@ -129,8 +150,9 @@ kChaosRecipeMinimapIconType = 'Moon'
 
 kChaosRecipeRuleStrings = [kChaosRecipeRuleTemplate.format(
                                    kChaosRecipeTierTags[item_slot],
-                                   kChaosRecipeBorderColors[item_slot],
                                    kChaosRecipeClasses[item_slot],
+                                   kChaosRecipeHeightConditions[item_slot],
+                                   kChaosRecipeBorderColors[item_slot],
                                    kChaosRecipeMinimapIconSizeColorParams[item_slot],
                                    kChaosRecipeMinimapIconType)
                                for item_slot in kChaosRecipeItemSlots]

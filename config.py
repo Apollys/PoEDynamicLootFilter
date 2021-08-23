@@ -10,7 +10,8 @@ kPathOfExileLootFilterFilename = 'AAA_DynamicLootFilter.filter'
 # Loot filter options
 kHideMapsBelowTier = 0
 kAddChaosRecipeRules = True
-kChaosRecipeWeaponClasses = ['Daggers', 'Wands']
+kChaosRecipeWeaponClassesAnyHeight = ['Daggers', 'Wands']
+kChaosRecipeWeaponClassesMaxHeight3 = ['Bows']
 
 # ============== Derived Values and Fixed Constants - Do not modify below this line ==============
 

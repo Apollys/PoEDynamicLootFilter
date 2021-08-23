@@ -428,6 +428,10 @@ class LootFilter:
     def SetChaosRecipeEnabledFor(self, item_slot: str, enable_flag: bool):
         CheckType(item_slot, 'item_slot', str)
         CheckType(enable_flag, 'enable_flag', bool)
+        if ((item_slot == 'Weapons') or (item_slot == 'weapons')):
+            self.SetChaosRecipeEnabledFor('WeaponsX', enable_flag)
+            self.SetChaosRecipeEnabledFor('Weapons3', enable_flag)
+            return
         type_tag: str = 'dlf_chaos_recipe_rares'
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
@@ -437,6 +441,8 @@ class LootFilter:
     
     def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
         CheckType(item_slot, 'item_slot', str)
+        if ((item_slot == 'Weapons') or (item_slot == 'weapons')):
+            return self.IsChaosRecipeEnabledFor('WeaponsX')
         type_tag: str = 'dlf_chaos_recipe_rares'
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
