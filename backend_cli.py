@@ -54,7 +54,8 @@ kOutputFilename = 'backend_cli.output'
 # Excluded undo_last_change since it's rather unique and handles its own saving
 kFilterMutatorFunctionNames = ['set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
-        'set_hide_map_below_tier', 'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for']
+        'set_hide_map_below_tier', 'set_flask_rule_enabled_for',
+        'set_chaos_recipe_enabled_for']
 
 def Error(e):
     loger.Log('Error ' + str(e))
@@ -152,11 +153,17 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         '''
         CheckNumParams(function_params, 0)
         WriteOutput('')  # clear the output file, since we will be appending output in batch
+        contains_mutator = False
         function_call_list: List[str] = helper.ReadFile(kInputFilename)
         for function_call_string in function_call_list:
             # need different variable names here to not overwrite the existing ones
             _function_name, *_function_params = shlex.split(function_call_string)
+            if (_function_name in kFilterMutatorFunctionNames):
+                contains_mutator = True
             DelegateFunctionCall(loot_filter, _function_name, _function_params, True)
+        # Check if batch contained a mutator and save filter if so
+        if (contains_mutator):
+            loot_filter.SaveToFile()
     elif (function_name == 'undo_last_change'):
         '''
         undo_last_change
@@ -343,8 +350,8 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         # If function was not run_batch, write output
         if (function_name != 'run_batch'):
             WriteOutput(output_string)
-        # Save loot filter if we called a mutator function or run_batch
-        if ((function_name in kFilterMutatorFunctionNames) or (function_name == 'run_batch')):
+        # Save loot filter if we called a mutator function
+        if (function_name in kFilterMutatorFunctionNames):
             loot_filter.SaveToFile()
 # End DelegateFunctionCall
         
