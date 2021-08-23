@@ -321,25 +321,22 @@ base_wishide := WisdomHide
 ;	}
 ;}
 RunWait, python %py_prog_path% run_batch , , Hide
-;Gui, 1: Hide
-;Gui, 2: Hide
-;Gui, 3: Hide
-;return
-ExitApp
+Gui, 1: Hide
+Gui, 2: Hide
+Gui, 3: Hide
+return
+;ExitApp
 
 Cancel_:
 Gui, Hide
-;return
-ExitApp
+return
+;ExitApp
 
-;F7::
-;Gui, 1: Hide
-;Gui, 2: Hide
-;Gui, 3: Hide
-;Gui, 1: Show, Restore
-;return
+F7::
+Reload
+ExitApp
 
 F12::
 Run, python %py_prog_path% import_downloaded_filter ,  , Hide
 Reload
-return
+ExitApp
