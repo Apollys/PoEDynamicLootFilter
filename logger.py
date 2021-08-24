@@ -12,6 +12,8 @@ def InitializeLog(log_filename: str = kDefaultLogFilename):
 # item can be a string or anything convertible to string
 def Log(item):
     global g_log_filename
+    if (g_log_filename == ''):
+        InitializeLog(kDefaultLogFilename)
     message: str = item if isinstance(item, str) else str(item)
     with open(g_log_filename, 'a') as log_file:
         log_file.write(message + '\n\n')

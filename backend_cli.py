@@ -60,7 +60,7 @@ kFilterMutatorFunctionNames = ['set_currency_tier', 'adjust_currency_tier',
         'set_chaos_recipe_enabled_for']
 
 def Error(e):
-    loger.Log('Error ' + str(e))
+    logger.Log('Error ' + str(e))
     raise RuntimeError(e)
 # End Error
 

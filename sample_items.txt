@@ -284,3 +284,26 @@ Travel to this Map by using it in a personal Map Device. Maps can only be used o
 
 ===============================================================================
 
+Item Class: Support Skill Gems
+Rarity: Gem
+Enlighten Support
+--------
+Support
+Level: 1
+--------
+Requirements:
+Level: 1
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will apply a mana multiplier to supported gems. Cannot support skills that don't come from gems.
+--------
+Experience: 54217488/226854909
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+--------
+Note: ~price 1 exalted
+
+===============================================================================
+
+

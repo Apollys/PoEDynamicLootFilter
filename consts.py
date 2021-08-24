@@ -5,6 +5,11 @@ import config
 def InvertedDict(input_dict):
     return {value : key for key, value in input_dict.items()}
 
+#=================================== Items ===================================
+
+kRarityList = ['Normal', 'Magic', 'Rare', 'Unique']
+kInverseRarityMap = {rarity : index for index, rarity in enumerate(kRarityList)}
+
 # =================================== Misc ===================================
 
 kTableOfContentsIdentifier = '[WELCOME] TABLE OF CONTENTS'

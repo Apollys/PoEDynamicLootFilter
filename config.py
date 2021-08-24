@@ -10,7 +10,7 @@ kPathOfExileLootFilterFilename = 'AAA_DynamicLootFilter.filter'
 
 # Remove filter from Downloads directory when importing?
 # Filter will still be saved in Input directory regardless
-kRemoveDownloadedFilter = True  # default will be True later, False for testing
+kRemoveDownloadedFilter = False  # default will be True later, False for testing
 
 # Loot filter options
 kHideMapsBelowTier = 0
