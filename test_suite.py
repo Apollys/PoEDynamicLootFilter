@@ -1,6 +1,6 @@
+import os  # subprocess.run creating all sorts of problems, so we use os.system
 import random
-import shlex
-import subprocess
+import shutil
 
 from backend_cli import kInputFilename as kBackendCliInputFilename
 import config
@@ -90,11 +90,11 @@ def TestChaosRecipe():
 
 def TestRunBatchCli():
     print('Running TestBatchCli...')
-    subprocess.run(['cp', 'backend_cli.test_input', kBackendCliInputFilename])
-    run_batch_command = 'python3 backend_cli.py TEST import_downloaded_filter only_if_missing'
-    subprocess.run(shlex.split(run_batch_command))
+    shutil.copyfile('backend_cli.test_input', kBackendCliInputFilename)
+    import_filter_command = 'python3 backend_cli.py TEST import_downloaded_filter only_if_missing'
+    os.system(import_filter_command)
     run_batch_command = 'python3 backend_cli.py TEST run_batch'
-    subprocess.run(shlex.split(run_batch_command))
+    os.system(run_batch_command)
 # End TestRunBatchCli
 
 def TestBackendCli():
@@ -118,10 +118,9 @@ def TestBackendCli():
                              'get_all_chaos_recipe_statuses',
                              'undo_last_change']
     for function_call_string in function_call_strings:
-        cli_params_list = (['python3', 'backend_cli.py', 'TEST']
-                            + shlex.split(function_call_string))
-        completed_process = subprocess.run(cli_params_list)
-        CHECK(completed_process.returncode == 0)
+        command_string = 'python3 backend_cli.py TEST ' + function_call_string
+        return_value = os.system(command_string)
+        CHECK(return_value == 0)
 # End TestBackendCli
 
 def RunAllTests():
