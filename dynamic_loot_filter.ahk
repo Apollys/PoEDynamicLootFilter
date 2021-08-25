@@ -13,14 +13,14 @@ curr_valid := ["Exalted Orb", "Orb of Alteration" , "Blessed Orb" , "Blacksmith'
 validstr := ""
 for idx, val in curr_valid
 	validstr .= "|" val
-rare_valid := ["Weapons","Body Armours","Helmets","Gloves","Boots","Amulets","Rings","Belts"]
+rare_valid := ["WeaponsX", "Weapons3","Body Armours","Helmets","Gloves","Boots","Amulets","Rings","Belts"]
 validstr2 := ""
 for idx,val in rare_valid
 	validstr2 .= "|" val
 ; Coloring from consts.py
-rare_colors := {"Weapons" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200", "Gloves" : "ffe400", "Boots" : "00ff00", "Amulets" : "00ffff", "Rings" : "4100bd", "Belts" : "0000c8"}
+rare_colors := {"WeaponsX" : "c80000", "Weapons3" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200", "Gloves" : "ffe400", "Boots" : "00ff00", "Amulets" : "00ffff", "Rings" : "4100bd", "Belts" : "0000c8"}
 ; Flask stuff
-flasks := {"Jade Flask":[0,0], "Quicksilver Flask":[1,1], "Aquamarine Flask":[0,0], "Ruby Flask":[1,1], "Granite Flask":[1,1]}
+flasks := {"Quicksilver Flask":[0,0], "Bismuth Flask":[0,0], "Amethyst Flask":[0,0], "Ruby Flask":[0,0], "Sapphire Flask":[0,0], "Topaz Flask":[0,0], "Aquamarine Flask":[0,0], "Diamond Flask":[0,0], "Jade Flask":[0,0], "Quartz Flask":[0,0], "Granite Flask":[0,0], "Sulphur Flask":[0,0], "Basalt Flask":[0,0], "Silver Flask":[0,0], "Stibnite Flask":[0,0], "Corundum Flask":[0,0], "Gold Flask":[0,0]}
 
 ; Read starting filter data from python client
 curr_txt := []
@@ -73,6 +73,27 @@ Loop, parse, py_out_text, `n, `r
 	Case 5:
 		currhide := A_LoopField
 	}
+}
+fake_queue := []
+FileDelete, %ahk_out_path%
+For key in flasks
+{
+	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
+	fake_queue.Push(key)
+}
+RunWait, python %py_prog_path% run_batch , , Hide
+FileRead, py_out_text, %py_out_path%
+idx := 1
+Loop, parse, py_out_text, `n, `r
+{
+	If(A_LoopField = "")
+		continue
+	If(InStr(A_LoopField, "@"))
+	{
+		idx := idx + 1
+		continue
+	}
+	flasks[fake_queue[idx]] := [A_LoopField, A_LoopField]
 }
 
 ; Initialize GUI Handles for changing text items
@@ -230,7 +251,7 @@ If (control_ = "Hide Currency Above Tier:")
 If (control_ = "Hacky" and not FlaskShow = -1)
 {
 	FlaskShow := !FlaskShow
-	flasks[Flask " Flask"][1] := FlaskShow
+	flasks[Flask][1] := FlaskShow
 	GuiControl, % "+c" (FlaskShow? "Blue" : "Red"), FlaskShow
 	GuiControl,, FlaskShow, % (FlaskShow? Chr(252) : Chr(251))
 }
@@ -255,7 +276,7 @@ return
 ; Flask Dropdown List
 FlaskDDL:
 Gui, Submit, NoHide
-FlaskShow := flasks[Flask " Flask"][1]
+FlaskShow := flasks[Flask][1]
 GuiControl, % "+c" (FlaskShow? "Blue" : "Red"), FlaskShow
 GuiControl,, FlaskShow, % (FlaskShow? Chr(252) : Chr(251))
 return
@@ -312,14 +333,14 @@ if (base_wishide != WisdomHide){
 	FileAppend, % "set_currency_tier_visibility twisdom " (WisdomHide? "0":"1") "`n", %ahk_out_path%
 }
 base_wishide := WisdomHide
-;for idx, val in flasks
-;{
+for idx, val in flasks
+{
 ;	MsgBox, % idx " " val[1] " " val[2]
-;	if (val[1] != val[2])
-;	{
-;		FileAppend, % "set_flask_rule_enabled_for """ idx """ " val[1], %ahk_out_path%
-;	}
-;}
+	if (val[1] != val[2])
+	{
+		FileAppend, % "set_flask_rule_enabled_for """ idx """ " val[1] "`n", %ahk_out_path%
+	}
+}
 RunWait, python %py_prog_path% run_batch , , Hide
 Gui, 1: Hide
 Gui, 2: Hide
