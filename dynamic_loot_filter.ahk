@@ -340,6 +340,7 @@ for idx, val in flasks
 	{
 		FileAppend, % "set_flask_rule_enabled_for """ idx """ " val[1] "`n", %ahk_out_path%
 	}
+	val[2] = val[1]
 }
 RunWait, python %py_prog_path% run_batch , , Hide
 Gui, 1: Hide
@@ -354,8 +355,10 @@ return
 ;ExitApp
 
 F7::
-Reload
-ExitApp
+Gui, 1: Show, Restore
+;Reload
+return
+;ExitApp
 
 F12::
 Run, python %py_prog_path% import_downloaded_filter ,  , Hide
