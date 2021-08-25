@@ -154,3 +154,4 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+dynamic_loot_filter.ahk.bak
