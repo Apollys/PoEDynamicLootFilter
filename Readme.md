@@ -24,7 +24,9 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
  - [ ] Set Flask min quality
  - [ ] Set RGB item max size
  - [ ] Set Blight Oil min tier
- - [ ] Add user-defined custom rules (user writes custom rules in a text file,
+ - [ ] Add profile selection to frontend, frontend calls backend with profile name,
+       move all config data from config.py to profile_name.config
+ - [x] Add user-defined custom rules (user writes custom rules in a text file,
    whenever the filter is imported those rules are automatically added.
    Useful for adding any rule FilterBlade doesn't support, like "3 sockets, at least 2 blues"
 
