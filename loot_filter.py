@@ -9,6 +9,7 @@ import consts
 import helper
 import logger
 import rule_parser
+import test_consts
 from type_checker import CheckType
 
 # -----------------------------------------------------------------------------
@@ -174,6 +175,9 @@ class LootFilterRule:
 class LootFilter:
     '''
     Member variables:
+     - self.input_filter_fullpath
+     - self.output_filter_fullpath
+     - self.profile_fullpath
      - self.profile_fullpath
      - self.text_lines: List[str]
      - self.parser_index: int
@@ -195,9 +199,10 @@ class LootFilter:
         CheckType(input_filter_fullpath, 'input_filter_fullpath', str)
         CheckType(output_filter_fullpath, 'output_filter_fullpath', str)
         CheckType(profile_fullpath, 'profile_fullpath', str)
+        self.input_filter_fullpath = input_filter_fullpath
         self.output_filter_fullpath = output_filter_fullpath
         self.profile_fullpath = profile_fullpath
-        self.ParseLootFilterFile(input_filter_fullpath)
+        self.ParseInputFilterFile()
     # End __init__
 
     def SaveToFile(self):
@@ -462,12 +467,11 @@ class LootFilter:
     
     # ======================== Private Parser Methods ========================
     
-    def ParseLootFilterFile(self, loot_filter_filename: str) -> None:
-        CheckType(loot_filter_filename, 'loot_filter_filename', str)
+    def ParseInputFilterFile(self) -> None:
         # Read in lines from file   
         self.text_lines: List[str] = []
-        with open(loot_filter_filename) as loot_filter_file:
-            for line in loot_filter_file:
+        with open(self.input_filter_fullpath) as input_filter_file:
+            for line in input_filter_file:
                 self.text_lines.append(line.strip())
         # Ensure there is a blank line at the end to make parsing algorithms cleaner
         if (self.text_lines[-1] != ''):

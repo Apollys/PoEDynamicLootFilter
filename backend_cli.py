@@ -40,6 +40,7 @@ from typing import List
 
 import config
 import consts
+import file_manip
 import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
@@ -93,14 +94,10 @@ def AppendFunctionOutput(function_output_string: str):
         output_file.write(function_output_string + '@\n')
 # End AppendFunctionOutput
 
-# Passing in None as the loot filter here indicates to create the loot filter object,
-# perform the call, and write the output all within this delegation.
-# Passing in a LootFilter object instead indicates that there will be multiple
-# consecutive function calls, so this delegation should not construct a LootFilter,
-# and it should append its output to the output file rather than overwriting it.
 def DelegateFunctionCall(loot_filter: LootFilter,
                          function_name: str,
                          function_params: List[str],
+                         *,  # require subsequence arguments to be named in function call
                          in_batch: bool = False,
                          suppress_output: bool = False):
     CheckType(loot_filter, 'loot_filter', LootFilter)
@@ -140,7 +137,8 @@ def DelegateFunctionCall(loot_filter: LootFilter,
             profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
             for function_call_string in profile_lines:
                 _function_name, *_function_params = shlex.split(function_call_string)
-                DelegateFunctionCall(loot_filter, _function_name, _function_params, True, True)
+                DelegateFunctionCall(loot_filter, _function_name, _function_params,
+                                     in_batch = True, suppress_output = True)
             loot_filter.SaveToFile()
     # Note: cannot run_batch from within a run_batch command, as there would be no place for
     # batch function call list, and this should be unnecessary
@@ -162,7 +160,8 @@ def DelegateFunctionCall(loot_filter: LootFilter,
             _function_name, *_function_params = shlex.split(function_call_string)
             if (_function_name in kFilterMutatorFunctionNames):
                 contains_mutator = True
-            DelegateFunctionCall(loot_filter, _function_name, _function_params, True)
+            DelegateFunctionCall(loot_filter, _function_name, _function_params,
+                                 in_batch = True, suppress_output = False)
         # Check if batch contained a mutator and save filter if so
         if (contains_mutator):
             loot_filter.SaveToFile()
@@ -242,11 +241,13 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         CheckNumParams(function_params, 1)
         tier = function_params[0]
         if (tier.isdigit()): tier = int(tier)
-        output_string = str(int(loot_filter.GetCurrencyTierVisibility(tier) == RuleVisibility.kShow))
+        output_string = str(int(
+                loot_filter.GetCurrencyTierVisibility(tier) == RuleVisibility.kShow))
     elif (function_name == 'set_hide_currency_above_tier'):
         '''
         set_hide_currency_above_tier <tier: int>
-         - Sets the currency tier "above" which all will be hidden (higher currency tiers are worse)
+         - Sets the currency tier "above" which all will be hidden
+           (higher currency tiers are worse)
          - Output: None
          - Example: > python3 backend_cli.py set_hide_currency_above_tier 8
         '''
@@ -335,7 +336,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
          - Output: one line formatted as `<item_slot>;<enabled_flag>` for each item slot
          - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
            "Boots", "Amulets", "Rings", "Belts"
-         - <enabled_flag> is "1" if chaos recipe items are showing for the given item_slot, else "0"
+         - <enabled_flag> is "1" if chaos recipe items are showing for given item_slot, else "0"
          - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses
         '''
         for item_slot in consts.kChaosRecipeItemSlots:
@@ -358,39 +359,42 @@ def DelegateFunctionCall(loot_filter: LootFilter,
 # End DelegateFunctionCall
         
 def main():
-    # Initialize
+    # Initialize log
     logger.InitializeLog(kLogFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
     logger.Log(argv_info_message)
-    profile_fullpath = config.kProfileFullpath
-    output_filter_fullpath = config.kPathOfExileLootFilterFullpath
+    # Parse command, determine input/output/profile path based on test_flag
+    test_flag: bool = False
     function_name, function_params = '', []
     # Check that there are enough params, and split into function_name, function_params
     if (len(sys.argv) < 2):
         Error('no function specified, too few command line arguments given')
-    elif (sys.argv[1] == 'TEST'):
-        output_filter_fullpath = test_consts.kTestPoELootFilterFilename
-        profile_fullpath = test_consts.kTestProfileFullpath
-        if (len(sys.argv) < 3):
-            Error('no function specified, too few command line arguments given')
-        function_name, *function_params = sys.argv[2:]
-    else:
-        function_name, *function_params = sys.argv[1:]
+    test_flag = sys.argv[1] == 'TEST'
+    remaining_argv = sys.argv[(2 if test_flag else 1) :]
+    if (len(remaining_argv) == 0):
+        Error('no function specified, too few command line arguments given')
+    function_name, *function_params = remaining_argv
+    profile_fullpath = (test_consts.kProfileFullpath if test_flag else config.kProfileFullpath)
+    output_filter_fullpath = (test_consts.kPathOfExileLootFilterFullpath if test_flag
+                              else config.kPathOfExileLootFilterFullpath)
+    # Usually, the input filter path equals the output filter path
     input_filter_fullpath = output_filter_fullpath
-    # If importing downloaded filter, move the downloaded filter to input directory
-    # This deletes the downloaded filter for user convenience (but saves a backup)
+    # The exception is import_downloaded_filter - input is the downloaded filter
+    # If importing downloaded filter, either move or copy the downloaded filter to the 
+    # input directory, as specified in config by kRemoveDownloadedFilter
     if (function_name == 'import_downloaded_filter'):
-        downloaded_filter_fullpath = config.kDownloadedLootFilterFullpath
+        downloaded_filter_fullpath = (test_consts.kDownloadedLootFilterFullpath if test_flag 
+                                      else config.kDownloadedLootFilterFullpath)
         if (not os.path.isfile(downloaded_filter_fullpath)):
             Error('downloaded loot filter: "{}" does not exist'.format(
                     downloaded_filter_fullpath))
-        input_filter_fullpath = config.kInputLootFilterFullpath
-        if (config.kRemoveDownloadedFilter):
-            # Moves a file from source to destination, overwriting if destination exists
-            os.replace(downloaded_filter_fullpath, input_filter_fullpath)
+        input_filter_fullpath = (test_consts.kInputLootFilterFullpath if test_flag 
+                                 else config.kInputLootFilterFullpath)
+        remove_downloaded_filter = False if test_flag else config.kRemoveDownloadedFilter
+        if (remove_downloaded_filter):
+            file_manip.MoveFile(downloaded_filter_fullpath, input_filter_fullpath)
         else:
-            # Copies source file to destination, overwriting if destination exists
-            shutil.copyfile(downloaded_filter_fullpath, input_filter_fullpath)
+            file_manip.CopyFile(downloaded_filter_fullpath, input_filter_fullpath)
     # Delegate function call
     loot_filter = LootFilter(input_filter_fullpath, output_filter_fullpath, profile_fullpath)
     try:
