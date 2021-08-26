@@ -5,6 +5,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 - - -
 
 ### Cody To-Do
+ - Make `get_currency_tier_visibility` return all tier visibilities if no parameter given
  - Create a more thorough set of tests to cover everything in the backend_cli
    - Examples: make sure filter is saved whenever a change is made, make sure things go to the
      right tier/status by re-reading the file, make sure it doesn't save on batch of getters, etc
@@ -58,6 +59,9 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_all_currency_tiers`
   - `set_currency_tier_visibility`
   - `get_currency_tier_visibility`
+  - `get_all_unique_tier_visibilities`
+  - `set_hide_uniques_above_tier`
+  - `get_hide_uniques_above_tier`
   - `set_hide_currency_above_tier`
   - `get_hide_currency_above_tier`
   - `set_hide_map_below_tier <tier: int>`

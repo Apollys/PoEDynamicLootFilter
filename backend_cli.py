@@ -57,8 +57,8 @@ kOutputFilename = 'backend_cli.output'
 # Excluded undo_last_change since it's rather unique and handles its own saving
 kFilterMutatorFunctionNames = ['set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
-        'set_hide_map_below_tier', 'set_flask_rule_enabled_for',
-        'set_chaos_recipe_enabled_for']
+        'set_hide_uniques_above_tier', 'set_hide_map_below_tier',
+         'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for']
 
 def Error(e):
     logger.Log('Error ' + str(e))
@@ -112,7 +112,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
     if ((function_name in kFilterMutatorFunctionNames) and not suppress_output):
         with open(loot_filter.profile_fullpath, 'a') as profile_file:
             profile_file.write(shlex.join([function_name] + function_params) + '\n')
-    # Define functions by function name
+    # =============================== Import Downloaded Filter ===============================
     if (function_name == 'import_downloaded_filter'):
         '''
         import_downloaded_filter <optional keyword: "only_if_missing">
@@ -140,6 +140,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
                 DelegateFunctionCall(loot_filter, _function_name, _function_params,
                                      in_batch = True, suppress_output = True)
             loot_filter.SaveToFile()
+    # ======================================= Run Batch =======================================
     # Note: cannot run_batch from within a run_batch command, as there would be no place for
     # batch function call list, and this should be unnecessary
     elif ((function_name == 'run_batch') and not in_batch):
@@ -165,6 +166,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         # Check if batch contained a mutator and save filter if so
         if (contains_mutator):
             loot_filter.SaveToFile()
+    # ========================================== Undo ==========================================
     elif (function_name == 'undo_last_change'):
         '''
         undo_last_change
@@ -179,6 +181,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         with open(loot_filter.profile_fullpath, 'w') as profile_file:
             profile_file.writelines(profile_lines[:-1])
         DelegateFunctionCall(loot_filter, 'import_downloaded_filter', [])
+    # ======================================== Currency ========================================
     elif (function_name == 'set_currency_tier'):
         '''
         set_currency_tier <currency_name: str> <tier: int>
@@ -262,6 +265,38 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideCurrencyAboveTierTier())
+    # ======================================== Uniques ========================================
+    elif (function_name == 'get_all_unique_tier_visibilities'):
+        '''
+        get_all_unique_tier_visibilities
+         - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
+         - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
+         - Example: > python3 backend_cli.py get_all_unique_tier_visibilities
+        '''
+        CheckNumParams(function_params, 0)
+        for tier in range(1, consts.kMaxUniqueTier):
+            output_string += str(tier) + ';' + str(int(
+                    loot_filter.GetUniqueTierVisibility(tier) == RuleVisibility.kShow)) + '\n'
+    elif (function_name == 'set_hide_uniques_above_tier'):
+        '''
+        set_hide_uniques_above_tier <tier: int>
+         - Sets the unique tier "above" which all will be hidden
+           (higher unique tiers are worse)
+         - Output: None
+         - Example: > python3 backend_cli.py set_hide_uniques_above_tier 3
+        '''
+        CheckNumParams(function_params, 1)
+        max_visible_tier: int = int(function_params[0])
+        loot_filter.SetHideUniquesAboveTierTier(max_visible_tier)
+    elif (function_name == 'get_hide_uniques_above_tier'):
+        '''
+        get_hide_uniques_above_tier
+         - Output: single integer, the tier above which all uniques are hidden
+         - Example: > python3 backend_cli.py get_hide_uniques_above_tier
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = str(loot_filter.GetHideUniquesAboveTierTier())
+    # ========================================== Maps ==========================================
     elif (function_name == 'set_hide_map_below_tier'):
         '''
         set_hide_map_below_tier <tier: int>
@@ -278,6 +313,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
          - Example: > python3 backend_cli.py get_hide_map_below_tier
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
+    # ========================================= Flasks =========================================
     elif (function_name == 'set_flask_rule_enabled_for'):
         '''
         set_flask_rule_enabled_for <base_type: str> <enable_flag: int>
@@ -308,6 +344,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         '''
         for flask_base_type in loot_filter.GetAllEnabledFlaskTypes():
             output_string += flask_base_type + '\n'
+    # =================================== Chaos Recipe Rares ===================================
     elif (function_name == 'set_chaos_recipe_enabled_for'):
         '''
         set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>
@@ -342,11 +379,13 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         for item_slot in consts.kChaosRecipeItemSlots:
             enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
             output_string += item_slot + ';' + enabled_flag_string + '\n'
+    # ================================= Unmatched Function Name =================================
     else:
         error_message: str = 'Function "{}" not found'.format(function_name)
         logger.Log('Error: ' + error_message)
         raise RuntimeError(error_message)
-    # Function call delegation completed, and return value is in output_string
+    # ============================= End Function Call Delegation ================================
+    # Return value is now in output_string
     if (in_batch):
         if (not suppress_output): AppendFunctionOutput(output_string)
     else:

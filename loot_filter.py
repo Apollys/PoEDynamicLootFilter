@@ -367,20 +367,20 @@ class LootFilter:
             logger.Log('Warning: currency tier {} is outside the valid currency tier range [0, 9]'
                         .format(tier))
             return []
-        type_name = 'currency'
-        tier_name = consts.kCurrencyTierNames[tier]
-        rule = self.type_tier_rule_map[type_name][tier_name]
+        type_tag = consts.kCurrencyTypeTag
+        tier_tag = consts.kCurrencyTierNames[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
         return rule.base_type_list
     # End GetAllCurrencyInTier
     
     # Returns the name of the tier to which the given currency belongs
     def GetTierOfCurrency(self, currency_name: str) -> int:
         CheckType(currency_name, 'currency_name', str)
-        type_name = 'currency'
-        for tier_name in consts.kCurrencyTierNames.values():
-            rule = self.type_tier_rule_map[type_name][tier_name]
+        type_tag = consts.kCurrencyTypeTag
+        for tier_tag in consts.kCurrencyTierNames.values():
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
             if (currency_name in rule.base_type_list):
-                return consts.kCurrencyTierNameToNumberMap[tier_name]
+                return consts.kCurrencyTierNameToNumberMap[tier_tag]
         logger.Log('Warning: currency "{}" not found in normal currency tiers'.format(
                            currency_name))
         return -1
@@ -395,21 +395,21 @@ class LootFilter:
                         'target tier is out of the valid currency tier range: [1, 9]').format(
                                 currency_name, original_tier, target_tier))
             return
-        type_name = 'currency'
+        type_tag = consts.kCurrencyTypeTag
         # Remove currency_name from original_tier rule
-        original_tier_name = consts.kCurrencyTierNames[original_tier]
-        original_rule = self.type_tier_rule_map[type_name][original_tier_name]
+        original_tier_tag = consts.kCurrencyTierNames[original_tier]
+        original_rule = self.type_tier_rule_map[type_tag][original_tier_tag]
         original_rule.RemoveBaseType(currency_name)
         # Add currency_name to target_tier rule
-        target_tier_name = consts.kCurrencyTierNames[target_tier]
-        target_currency_rule = self.type_tier_rule_map[type_name][target_tier_name]
+        target_tier_tag = consts.kCurrencyTierNames[target_tier]
+        target_currency_rule = self.type_tier_rule_map[type_tag][target_tier_tag]
         target_currency_rule.AddBaseType(currency_name)
     # End MoveCurrencyFromTierToTier
     
     def SetCurrencyTierVisibility(self, tier: int or str, visibility: RuleVisibility):
         CheckType(tier, 'tier', (int, str))
         CheckType(visibility, 'visibility', RuleVisibility)
-        type_tag = 'currency'
+        type_tag = consts.kCurrencyTypeTag
         tier_tag = consts.kCurrencyTierNames[tier] if isinstance(tier, int) else tier
         rule = self.type_tier_rule_map[type_tag][tier_tag]
         rule.SetVisibility(visibility)
@@ -417,7 +417,7 @@ class LootFilter:
     
     def GetCurrencyTierVisibility(self, tier: int or str) -> RuleVisibility:
         CheckType(tier, 'tier', (int, str))
-        type_tag = 'currency'
+        type_tag = consts.kCurrencyTypeTag
         tier_tag = consts.kCurrencyTierNames[tier] if isinstance(tier, int) else tier
         rule = self.type_tier_rule_map[type_tag][tier_tag]
         return rule.visibility
@@ -439,6 +439,42 @@ class LootFilter:
                 break
         return max_visible_tier
     # GetHideCurrencyAboveTierTier
+    
+    # =========================== Unique Item Functions ===========================
+    
+    def SetUniqueTierVisibility(self, tier: int or str, visibility: RuleVisibility):
+        CheckType(tier, 'tier', (int, str))
+        CheckType(visibility, 'visibility', RuleVisibility)
+        type_tag = consts.kUniqueTypeTag
+        tier_tag = consts.kUniqueTierNames[tier] if isinstance(tier, int) else tier
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule.SetVisibility(visibility)
+    # SetUniqueTierVisibility
+    
+    def GetUniqueTierVisibility(self, tier: int or str) -> RuleVisibility:
+        CheckType(tier, 'tier', (int, str))
+        type_tag = consts.kUniqueTypeTag
+        tier_tag = consts.kUniqueTierNames[tier] if isinstance(tier, int) else tier
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility
+    # GetUniqueTierVisibility
+    
+    def SetHideUniquesAboveTierTier(self, max_visible_tier: int):
+        CheckType(max_visible_tier, 'max_visible_tier', int)
+        for tier in range(1, consts.kMaxUniqueTier):
+            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            self.SetUniqueTierVisibility(tier, visibility)
+    # SetHideUniquesAboveTierTier
+    
+    def GetHideUniquesAboveTierTier(self) -> int:
+        max_visible_tier: int = 0
+        for tier in range(1, consts.kMaxUniqueTier):
+            if (self.GetUniqueTierVisibility(tier) == RuleVisibility.kShow):
+                max_visible_tier = tier
+            else:
+                break
+        return max_visible_tier
+    # GetHideUniquesAboveTierTier
     
     # ======================= Chaos Recipe-Related Functions =======================
     

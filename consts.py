@@ -35,6 +35,8 @@ kTypeTierTagTemplate = '$type->{} $tier->{}'
 
 # ================================= Currency =================================
 
+kCurrencyTypeTag = 'currency'
+
 kCurrencyTierNames = {1 : 't1exalted',
                       2 : 't2divine',
                       3 : 't3annul',
@@ -57,6 +59,20 @@ kHideMapsBelowTierRuleTemplate = \
 Class Maps
 ShapedMap False
 MapTier < {}'''
+
+# =============================== Unique Items ===============================
+
+kUniqueTypeTag = 'uniques'
+
+kUniqueTierNames = {1 : 't1',
+                    2 : 't2',
+                    3 : 't3',
+                    4 : 'hideable2',
+                    5 : 'hideable'}
+                      
+kMaxUniqueTier = len(kUniqueTierNames) + 1
+
+kUniqueTierNameToNumberMap = InvertedDict(kUniqueTierNames)
 
 # ================================== Flasks ==================================
 
