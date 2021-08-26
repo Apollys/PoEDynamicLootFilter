@@ -24,8 +24,8 @@ import os
 import os.path
 
 kProfileDirectory = 'Profiles'
-kProfileFilename = kProfileName + '.profile'
-kProfileFullpath = os.path.join(kProfileDirectory, kProfileFilename)
+kProfileFullpath = os.path.join(kProfileDirectory, kProfileName + '.profile')
+kCustomRulesFullpath = os.path.join(kProfileDirectory, kProfileName + '.rules')
 
 kDownloadedLootFilterFullpath = os.path.join(kDownloadDirectory, kDownloadedLootFilterFilename)
 kInputLootFilterFullpath = os.path.join(kInputLootFilterDirectory, kDownloadedLootFilterFilename)

@@ -1,0 +1,11 @@
+# Show any 3+ socketed item with at least 2 blue sockets early
+Show
+ItemLevel <= 12
+Sockets >= 3BB
+SetFontSize 45
+
+# Show gloves or hat with 4 sockets, at least 2 red + 1 blue, for early Part 2
+Show
+ItemLevel <= 55
+Sockets >= 4RRB
+SetFontSize 45

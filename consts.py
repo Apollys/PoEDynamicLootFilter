@@ -25,9 +25,9 @@ kSectionGroupHeaderTemplate = \
 # 0: Numerical section id code
 # 1: Section name
 kSectionHeaderTemplate = \
-'''#------------------------------------------------
+'''#----------------------------------------------------
 #   [{0}] {1}
-#------------------------------------------------'''
+#----------------------------------------------------'''
 
 kSectionRePattern = re.compile(r'\[\d+\]+ .*')
 
@@ -53,7 +53,7 @@ kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 
 # No idea if the ShapedMap matters, but NeverSink used it in his filters
 kHideMapsBelowTierRuleTemplate = \
-'''Hide $type->dlf_hide_maps_below_tier $tier->dlf_hide_maps_below_tier
+'''Hide # $type->dlf_hide_maps_below_tier $tier->dlf_hide_maps_below_tier
 Class Maps
 ShapedMap False
 MapTier < {}'''
@@ -79,7 +79,7 @@ kFlaskRuleTemplate = \
 # 4: minimap icon size (0 = largest, 1 = medium, 2 = small)
 # 5: minimap icon color (color keyword)
 kChaosRecipeRuleTemplate = \
-'''Show $type->dlf_chaos_recipe_rares $tier->{0}
+'''Show # $type->dlf_chaos_recipe_rares $tier->{0}
 ItemLevel >= 60
 Rarity Rare
 Class {1}{2}

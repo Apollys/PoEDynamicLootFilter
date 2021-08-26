@@ -74,12 +74,39 @@ def IsSectionOrGroupDeclaration(line: str) -> bool:
     CheckType(line, 'line', str)
     return bool(consts.kSectionRePattern.search(line))    
 
-# Returns True if the given line marks the start of a rule, else returns False
-def IsRuleStart(line: str) -> bool:
-    CheckType(line, 'line', str)
-    return (line.startswith('Show') or line.startswith('Hide') or
-            line.startswith('#Show') or line.startswith('#Hide') or
-            line.startswith('# Show') or line.startswith('# Hide'))
+# Returns True if the line at the given index marks the start of a rule, else returns False
+# The reason this is a lot more complicated than it seems is the following possible scenario:
+'''
+# Show 3 socketed items
+# Show 4 socketed items
+# Show
+# Sockets >= 3
+# SetFontSize 45
+
+'''
+# Here, the rule doesn't start until the third line!  The other two are comments,
+# and we need to make sure we don't think they're real loot filter code
+# The only way to solve this is to parse backwards from the end of the rule if it's commented.
+def IsRuleStart(lines: List[str], index: int) -> bool:
+    CheckType(lines, 'lines', list)
+    CheckType(lines[index], 'lines[index]', str)
+    CheckType(index, 'index', int)
+    if (not lines[index].startswith('#')):
+        return lines[index].startswith('Show') or lines[index].startswith('Hide')
+    # Otherwise, find the end of the rule and parse backwards to find its start line
+    i: int = index
+    while (lines[i] != ''):
+        i += 1
+    while (i >= index):
+        line: str = lines[i]
+        if (line.startswith('Show') or line.startswith('Hide') or
+                line.startswith('#Show') or line.startswith('#Hide') or
+                line.startswith('# Show') or line.startswith('# Hide')):
+            # Found the true rule start at i
+            return i == index
+        i -= 1
+    # If somehow we made it back here, there was no rule, just a random comment block
+    return False
 # End IsRuleStart()
 
 # Handles both sections and section groups (single and double bracket ids)

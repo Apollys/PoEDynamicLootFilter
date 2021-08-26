@@ -1,3 +1,4 @@
+import os.path
 import re
 
 from collections import OrderedDict
@@ -202,6 +203,7 @@ class LootFilter:
         self.input_filter_fullpath = input_filter_fullpath
         self.output_filter_fullpath = output_filter_fullpath
         self.profile_fullpath = profile_fullpath
+        self.custom_rules_fullpath = profile_fullpath[: -len('.profile')] + '.rules'
         self.ParseInputFilterFile()
     # End __init__
 
@@ -211,11 +213,11 @@ class LootFilter:
             while (line_index < len(self.text_lines)):
                 line: str = self.text_lines[line_index]
                 # If not a new rule start, just write input line back out
-                if (not helper.IsRuleStart(line)):
+                if (not helper.IsRuleStart(self.text_lines, line_index)):
                     output_file.write(line + '\n')
                     line_index += 1
                 # Otherwise is a new rule - write out the rule from line_index_rule_map
-                else:  # IsRuleStart(line)
+                else:  # IsRuleStart
                     rule = self.line_index_rule_map[line_index]
                     output_file.write(str(rule) + '\n')
                     line_index += len(rule.text_lines)
@@ -478,7 +480,8 @@ class LootFilter:
             self.text_lines.append('')
         self.rules_start_line_index = self.FindRulesStartLineIndex()
         self.parser_index = self.rules_start_line_index
-        self.AddDlfRulesIfMissing()  # add DLF-specific rules like chaos recipe rules
+        # Add custom user-defiend rulies plus DLF-generated rules like chaos recipe rules
+        self.AddDlfRulesIfMissing()
         self.ParseLootFilterRules()
     # End ParseLootFilterFile()
     
@@ -515,6 +518,36 @@ class LootFilter:
                 consts.kDlfAddedRulesSectionGroupName)
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         current_section_id_int: int = int(consts.kDlfAddedRulesSectionGroupId)
+        # Add custom user-defined rules
+        if (os.path.isfile(self.custom_rules_fullpath)):
+            current_section_id_int += 1
+            custom_rules_filename: str = os.path.basename(self.custom_rules_fullpath)
+            to_add_string = consts.kSectionHeaderTemplate.format(
+                    current_section_id_int, 'Custom rules from ' + custom_rules_filename)
+            to_add_string_list.extend(to_add_string.split('\n') + [''])
+            with open(self.custom_rules_fullpath) as custom_rules_file:
+                custom_rules_lines: List[str] = custom_rules_file.readlines()
+            custom_rules_lines = [line.strip() for line in custom_rules_lines]
+            custom_rules_lines.append('')  # append blank line to handle end uniformly
+            current_rule_lines: List[str] = []
+            custom_rule_count: int = 0
+            for line_index in range(len(custom_rules_lines)):
+                line: str = custom_rules_lines[line_index]
+                if (line == ''):
+                    if (len(current_rule_lines) == 0):
+                        continue
+                    else:
+                        # End of rule -> add rule, reset lines, and increment count
+                        to_add_string_list.extend(current_rule_lines + [''])
+                        current_rule_lines = []
+                        custom_rule_count += 1
+                elif (helper.IsRuleStart(custom_rules_lines, line_index)):
+                    type_tag = 'custom_rule'
+                    tier_tag = str(custom_rule_count)
+                    current_rule_lines.append(
+                            line + ' # $type->{} $tier->{}'.format(type_tag, tier_tag))
+                else:  # nonempty line
+                    current_rule_lines.append(line)
         # Add "Hide maps below tier" rule
         current_section_id_int += 1
         to_add_string = consts.kSectionHeaderTemplate.format(
@@ -584,7 +617,7 @@ class LootFilter:
                     self.section_rule_map[section_id] = []
                     current_section_id = section_id
                 # Case: encountered new rule
-                elif (helper.IsRuleStart(line)):
+                elif (helper.IsRuleStart(self.text_lines, line_index)):
                     in_rule = True
                     current_rule_lines.append(line)
             else:  # in_rule
@@ -601,7 +634,7 @@ class LootFilter:
                         new_rule.type_tag = 'untagged_rule'
                         new_rule.tier_tag = str(untagged_rule_count)
                         untagged_rule_count += 1
-                        current_rule_lines[0] += ' ' + consts.kTypeTierTagTemplate.format(
+                        current_rule_lines[0] += ' # ' + consts.kTypeTierTagTemplate.format(
                                 new_rule.type_tag, new_rule.tier_tag)
                     # Add rule to type tier rule map
                     if (new_rule.type_tag not in self.type_tier_rule_map):
