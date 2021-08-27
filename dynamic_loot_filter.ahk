@@ -31,8 +31,14 @@ rare_txt := []
 rare_ids := []
 rare_val := []
 rare_val_start := []
+fake_queue := []
 FileDelete, %ahk_out_path%
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_map_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_map_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`n, %ahk_out_path%
+For key in flasks
+{
+	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
+	fake_queue.Push(key)
+}
 RunWait, python %py_prog_path% run_batch , , Hide
 FileRead, py_out_text, %py_out_path%
 prog := 0
@@ -72,30 +78,12 @@ Loop, parse, py_out_text, `n, `r
 		WisdomHide := base_wishide
 	Case 5:
 		currhide := A_LoopField
+	Case 6:
+		uniqhide := A_LoopField
+	Default:
+		flasks[fake_queue[prog - 6]] := [A_LoopField, A_LoopField]
 	}
 }
-fake_queue := []
-FileDelete, %ahk_out_path%
-For key in flasks
-{
-	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
-	fake_queue.Push(key)
-}
-RunWait, python %py_prog_path% run_batch , , Hide
-FileRead, py_out_text, %py_out_path%
-idx := 1
-Loop, parse, py_out_text, `n, `r
-{
-	If(A_LoopField = "")
-		continue
-	If(InStr(A_LoopField, "@"))
-	{
-		idx := idx + 1
-		continue
-	}
-	flasks[fake_queue[idx]] := [A_LoopField, A_LoopField]
-}
-
 ; Initialize GUI Handles for changing text items
 for idx in curr_txt
 {
@@ -106,101 +94,89 @@ for idx in rare_txt
 	rare_ids.Push("rare_id_" idx)
 }
 
-; Currency GUI 
-Gui, Font, S18 cB0B0B0, Arial
-; Text
+;********** GUI Start ******************************
+; Currency
+Gui, Font, S16 cB0B0B0 norm, Courier New
 height:= 0
 For idx, val in curr_txt
 {
 	height := -20 + 25 * idx
-	Gui, Add, Text, x10 y%height% grmbhack, % Format("{:-55}",val)
-	Gui, Add, Text, % "backgroundtrans x" 280 " y" height " v" curr_ids[idx], % curr_val[idx]
+	Gui, Add, Text, x250 y%height% grmbhack, % Format("{:-24}",val)
+	Gui, Add, Text, % "backgroundtrans x" 545 " y" height " v" curr_ids[idx], % curr_val[idx]
 }
 ; Buttons
-Gui, Font, S10 norm bold, Arial
-height := height + 28
-Gui, Add, Button, x234 y%height% gUpdate_ BackgroundTrans, Update
-Gui, Add, Button, x10 y%height% gCancel_ BackgroundTrans, Cancel
-Gui, Add, Button, x78 y%height% gRare_ BackgroundTrans, Chaos Rares
-Gui, Add, Button, x182 y%height% gMisc_ BackgroundTrans, Misc
-; Options
-Gui, -border
-Gui, Color, 606060
-Gui, Show, w300
+Gui, Font, S20 cB0B0B0 norm bold, Courier New
+height := height - 32
+Gui, Add, Button, x867 y%height% gUpdate_ BackgroundTrans, Update
+Gui, Add, Button, x13 y%height% gCancel_ BackgroundTrans, Cancel
 
-; Rares Gui
-Gui 2: Default
-Gui, Font, S18, Arial
+; Rares
+Gui, Font, S18 norm bold, Courier New
 height := 0
-; Text
 For idx, val in rare_txt
 {
 	height := -30 + 40  * idx
 	Gui, Font, % "c" rare_colors[val]
-	Gui, Add, Text, x10 y%height% grmbhack, % Format("{:-55}", val)
+	Gui, Add, Text, backgroundtrans x10 y%height% grmbhack, % Format("{:-16}", val)
 	Gui, Font, S36, Wingdings
 	Gui, Font, % "c" (rare_val[idx]? "Blue" : "Red")
-	Gui, Add, Text, % "backgroundtrans x" 180 " y" (height - 15) " v" rare_ids[idx], % (rare_val[idx]? Chr(252) : Chr(251))
-	Gui, Font, S18, Arial
+	Gui, Add, Text, % "w40 backgroundtrans x" 200 " y" (height - 10) " v" rare_ids[idx], % (rare_val[idx]? Chr(252) : Chr(251))
+	Gui, Font, S18 norm bold, Courier New
 }
-; Buttons
-height := height + 35
-Gui, Font, S10 norm bold, Arial
-Gui, Add, Button, x155 y%height% gUpdate_ BackgroundTrans, Update
-Gui, Add, Button, x8 y%height% gCancel_ BackgroundTrans, Cancel
-Gui, Add, Button, x88 y%height% gCurr_ BackgroundTrans, Main
-; Options
-Gui, -border
-Gui, Color, 606060
-Gui, Show, Hide w220
+; Misc
+Gui, Font, S18 norm cB0B0B0, Courier New
+height := 10
 
-; Misc GUI
-Gui 3: Default
-Gui, Font, S18 cB0B0B0, Arial
 ; Hide Map Tiers
-Gui, Add, Text, x10 y10 grmbhack, % "Hide Maps Below Tier:                    "
-Gui, Add, Text, x320 y10 w30 BackgroundTrans vMapTierHide, % maphide
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Maps Below Tier:           "
+Gui, Add, Text, x944 y%height% w40 BackgroundTrans vMapTierHide, % Format("{:2}", maphide)
+height := height + 30
+
 ; Hide Currency Tiers
-Gui, Add, Text, x10 y40 grmbhack, % "Hide Currency Above Tier:                "
-Gui, Add, Text, x320 y40 w30 BackgroundTrans vCurrTierHide, % currhide
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Currency Above Tier:       "
+Gui, Add, Text, x944 y%height% w40 BackgroundTrans vCurrTierHide, % Format("{:2}", currhide)
+height := height + 30
+
+; Hide Unique Tiers
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Uniques Above Tier:        "
+Gui, Add, Text, x944 y%height% w40 BackgroundTrans vUniqTierHide, % Format("{:2}", uniqhide)
+height := height + 30
+
 ; Portal/Wisdom
 if (PortalHide)
 	Gui, Font, Strike
-Gui, Add, Text, x10 y70 grmbhack vPortalHide, Portal Scroll
+Gui, Add, Text, x590 y%height% grmbhack vPortalHide, Portal Scroll
 Gui, Font, norm
 if (WisdomHide)
 	Gui, Font, Strike
-Gui, Add, Text, x180 y70 grmbhack vWisdomHide, Wisdom Scroll
+Gui, Add, Text, x790 y%height% grmbhack vWisdomHide, Wisdom Scroll
 Gui, Font, norm
+height := height + 30
+
 ; Flask DDL
+Gui, Add, Text, x590 y%height%, Enable/Disable Flasks:
+height := height + 30
 FlaskShow := -1
 FlaskString := ""
 for key, val in flasks
 	FlaskString .= key "|"
 RTrim(FlaskString, "|")
-Gui, Add, DropDownList, x10 y100 vFlask gFlaskDDL, % FlaskString
+Gui, Add, DropDownList, x590 y%height% vFlask gFlaskDDL, % FlaskString
 Gui, Font, c606060
-Gui, Add, Text, x285 y105 grmbhack, Hacky
+Gui, Add, Text, % "x865 y" height + 5 " grmbhack", Hacky
 Gui, Font, S36, Wingdings
-Gui, Add, Text, backgroundtrans x285 w40 y93 vFlaskShow, 
-; Buttons
-height := 145
-Gui, Font, cB0B0B0 S10 norm bold, Arial
-Gui, Add, Button, x285 y%height% gUpdate_ BackgroundTrans, Update
-Gui, Add, Button, x8 y%height% gCancel_ BackgroundTrans, Cancel
-Gui, Add, Button, x145 y%height% gCurr_ BackgroundTrans, Main
+Gui, Add, Text, % "backgroundtrans x865 w40 y" height-7 " vFlaskShow", 
+
 ; Options
 Gui, -border
 Gui, Color, 606060
-Gui, Show, Hide w350
+Gui, Show, w1000
 return
+;************** GUI END **************************************
 
-; Non-Button Clicks
 ; Both RMB and LMB lead here
 rmbhack:
 GuiContextMenu:
-2GuiContextMenu:
-3GuiContextMenu:
 control_ := RTrim(A_GuiControl)
 For idx, val in curr_txt
 {
@@ -209,9 +185,9 @@ For idx, val in curr_txt
 		;GuiControlGet, current,,% curr_ids[idx]
 		current := curr_val[idx]
 		If (A_GuiEvent = "RightClick")
-			current := Mod(current + 7, 9) + 1
+			current := (current = 1? 1 : current - 1)
 		Else
-			current := Mod(current, 9) + 1
+			current := (current = 9? 9 : current + 1)
 		GuiControl,,% curr_ids[idx], % current
 		curr_val[idx] := current
 		return
@@ -232,20 +208,30 @@ If (control_ = "Hide Maps Below Tier:")
 {
 	GuiControlGet, current,, MapTierHide
 	If (A_GuiEvent = "RightClick")
-		current := Mod(current + 14, 16) + 1
+		current := (current = 1? 1 : current - 1)
 	Else
-		current := Mod(current, 16) + 1
-	GuiControl,, MapTierHide, % current
+		current := (current = 16? 16 : current + 1)
+	GuiControl,, MapTierHide, % Format("{:2}", current)
 	return
 }
 If (control_ = "Hide Currency Above Tier:")
 {
 	GuiControlGet, current,, CurrTierHide
 	If (A_GuiEvent = "RightClick")
-		current := Mod(current + 7, 9) + 1
+		current := (current = 1? 1 : current - 1)
 	Else
-		current := Mod(current, 9) + 1
-	GuiControl,, CurrTierHide, % current
+		current := (current = 9? 9 : current + 1)
+	GuiControl,, CurrTierHide, % Format("{:2}", current)
+	return
+}
+If (control_ = "Hide Uniques Above Tier:")
+{
+	GuiControlGet, current,, UniqTierHide
+	If (A_GuiEvent = "RightClick")
+		current := (current <= 1? 1 : current - 1)
+	Else
+		current := (current >= 5? 5 : current + 1)
+	GuiControl,, UniqTierHide, % Format("{:2}", current)
 	return
 }
 If (control_ = "Hacky" and not FlaskShow = -1)
@@ -257,7 +243,7 @@ If (control_ = "Hacky" and not FlaskShow = -1)
 }
 If (control_ = "PortalHide")
 {
-	Gui, Font, S18 cB0B0B0 norm, Arial
+	Gui, Font, S18 cB0B0B0 norm, Courier New
 	PortalHide := !PortalHide
 	if (PortalHide)
 		Gui, Font, Strike
@@ -265,7 +251,7 @@ If (control_ = "PortalHide")
 }
 If (control_ = "WisdomHide")
 {
-	Gui, Font, S18 cB0B0B0 norm, Arial
+	Gui, Font, S18 cB0B0B0 norm, Courier New
 	WisdomHide := !WisdomHide
 	if (WisdomHide)
 		Gui, Font, Strike
@@ -279,23 +265,6 @@ Gui, Submit, NoHide
 FlaskShow := flasks[Flask][1]
 GuiControl, % "+c" (FlaskShow? "Blue" : "Red"), FlaskShow
 GuiControl,, FlaskShow, % (FlaskShow? Chr(252) : Chr(251))
-return
-
-; Swap visible GUI
-Rare_:
-Gui, 2: Show, Restore
-Gui, 1: Hide
-return
-
-Curr_:
-Gui, 1: Show, Restore
-Gui, 2: Hide
-Gui, 3: Hide
-return
-
-Misc_:
-Gui, 3: Show, Restore
-Gui, 1: Hide
 return
 
 ; Write all filter modifications to one file, send it over to python
@@ -314,17 +283,18 @@ for idx in rare_txt
 		FileAppend, % "set_chaos_recipe_enabled_for """rare_txt[idx] """ " rare_val[idx] "`n", %ahk_out_path%
 	rare_val_start[idx] := rare_val[idx]
 }
-; Weird that AHK needs this line, luckily program about to exit
-; or not
-Gui 3: Default
 GuiControlGet, current_currhide,, CurrTierHide
 GuiControlGet, current_maphide,, MapTierHide
+GuiControlGet, current_uniqhide,, UniqTierHide
 if (current_currhide != currhide)
 	FileAppend, % "set_hide_currency_above_tier " current_currhide "`n", %ahk_out_path%
  currhide := current_currhide
 if (current_maphide != maphide)
 	FileAppend, % "set_hide_map_below_tier " current_maphide "`n", %ahk_out_path%
 maphide := current_maphide
+if (current_uniqhide != uniqhide)
+	FileAppend, % "set_hide_uniques_above_tier " current_uniqhide "`n", %ahk_out_path%
+uniqhide := current_uniqhide
 if (base_porthide != PortalHide){
 	FileAppend, % "set_currency_tier_visibility tportal " (PortalHide? "0":"1") "`n", %ahk_out_path%
 }
@@ -335,7 +305,6 @@ if (base_wishide != WisdomHide){
 base_wishide := WisdomHide
 for idx, val in flasks
 {
-;	MsgBox, % idx " " val[1] " " val[2]
 	if (val[1] != val[2])
 	{
 		FileAppend, % "set_flask_rule_enabled_for """ idx """ " val[1] "`n", %ahk_out_path%
@@ -344,8 +313,6 @@ for idx, val in flasks
 }
 RunWait, python %py_prog_path% run_batch , , Hide
 Gui, 1: Hide
-Gui, 2: Hide
-Gui, 3: Hide
 return
 ;ExitApp
 
