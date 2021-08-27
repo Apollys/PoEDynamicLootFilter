@@ -5,7 +5,6 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 - - -
 
 ### Cody To-Do
- - Make `get_currency_tier_visibility` return all tier visibilities if no parameter given
  - Create a more thorough set of tests to cover everything in the backend_cli
    - Examples: make sure filter is saved whenever a change is made, make sure things go to the
      right tier/status by re-reading the file, make sure it doesn't save on batch of getters, etc
