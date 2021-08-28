@@ -1,8 +1,9 @@
 import operator
 from typing import List, Tuple
 
+import multiset
 import simple_parser
-from type_checker import CheckType
+from type_checker import CheckType, CheckType2
 
 # =================================== Generic Helper ===================================
 
@@ -30,9 +31,16 @@ kConditionsKeywordToTemplateMap = {
     'LinkedSockets' : 'LinkedSockets {}',
     'Corrupted': 'Corrupted {}'}
 
+# Checks substring containment if operands are strings, otherwise equality
+def UnspecifiedOperator(item_property, rule_value) -> bool:
+    if (isinstance(item_property, str) and isinstance(rule_value, str)):
+        return rule_value in item_property
+    return rule_value == item_property
+# End UnspecifiedOperator
+
 kOperatorsMap = {'=' : operator.contains,
                  '==' : operator.eq,
-                 '' : operator.eq,  # absence of any operator implies equals
+                 '' : UnspecifiedOperator,
                  '!' : operator.ne,
                  '<' : operator.lt,
                  '<=' : operator.le,
@@ -95,7 +103,7 @@ kBinaryProperties = ['Unidentified', 'Corrupted', 'Mirrorred']
 kInfluenceProperties = ['Shaper Item', 'Elder Item', 'Crusader Item', 'Warlord Item',
                         'Redeemer Item', 'Hunter Item']
 
-kOtherImportantProperties = ['Sockets', 'Item Level', 'Stack Size', 'Map Tier', 'Quality']
+kOtherImportantProperties = ['Item Level', 'Stack Size', 'Map Tier', 'Quality']
 
 # Parses an item's text description into a dictionary of {'property_name' : property_value}
 def ParseItem(item_lines: List[str]) -> dict:
@@ -136,6 +144,26 @@ def ParseItem(item_lines: List[str]) -> dict:
                         _, [quality_string] = simple_parser.ParseFromTemplate(
                                 item_properties[property_name], '+{}%{~}')
                         item_properties[property_name] = quality_string
+                    elif (property_name == 'StackSize'):
+                        _, parse_result = simple_parser.ParseFromTemplate(
+                                item_properties[property_name], '{}/{}')
+                        item_properties[property_name] = [int(s) for s in parse_result]
+                    # Handle all single integer properties
+                    else:
+                        item_properties[property_name] = int(item_properties[property_name])
+                # Handle Sockets separately:
+                #  - Parse sockets as item_properties['Sockets'] = {'R', 'B', 'G', 'A'}
+                #  - Parse links as item_properties['SocketGroups'] = [{'R', 'G', 'B'}, {A}]
+                #  - Each set above is a Multiset object (defined in multiset.py)
+                elif (property_name == 'Sockets'):
+                    socket_groups = [multiset.Multiset(group.split('-'))
+                            for group in value_string.split(' ')]
+                    sockets = multiset.Multiset(
+                            socket for group in socket_groups for socket in group)
+                    item_properties['Sockets'] = sockets
+                    item_properties['SocketGroups'] = socket_groups
+                    item_properties['NumSockets'] = len(sockets)
+                    item_properties['NumLinkedSockets'] = max(len(group) for group in socket_groups)
     # Identified is handled backwards in item text and loot filter rules
     item_properties['Identified'] = not item_properties['Unidentified']
     # Todo: handle requirements section separately
@@ -145,6 +173,8 @@ def ParseItem(item_lines: List[str]) -> dict:
 kImplementedBinaryKeywords = ['Identified', 'Corrupted', 'Mirrorred']
 kImplementedOtherKeywords = ['Class', 'Rarity', 'BaseType', 'ItemLevel', 'MapTier', 
                              'HasInfluence']
+kIgnoreKeywords = ['AreaLevel', 'AnyEnchantment', 'FracturedItem', 'SynthesisedItem',
+                   'BlightedMap', 'HasExplicitMod', 'SocketGroup']
 
 # We are making a few basic assumptions that the rules are written "reasonably" here:
 #  - For binary properties, there will not be a "not equals" operator, i.e.
@@ -156,7 +186,10 @@ kImplementedOtherKeywords = ['Class', 'Rarity', 'BaseType', 'ItemLevel', 'MapTie
 def CheckRuleConditionMatchesItem(parsed_rule_line: tuple, item_properties: dict) -> bool:
     keyword, operator, values_list = parsed_rule_line
     match = True
-    if (keyword in kImplementedBinaryKeywords):
+    # Ignore any rules with keywords defined in kIgnoreKeywords
+    if (keyword in kIgnoreKeywords):
+        return False
+    elif (keyword in kImplementedBinaryKeywords):
         # Assume for now the user won't use a "not equals" operator here
         bool_values_list = [(s == 'True') for s in values_list]
         match = item_properties[keyword] in bool_values_list
@@ -173,22 +206,47 @@ def CheckRuleConditionMatchesItem(parsed_rule_line: tuple, item_properties: dict
             # Check for operator match when there is only one value
             else:  # len(values_list) == 1
                 [rule_value] = values_list
+                if (simple_parser.IsInt(rule_value)):
+                    rule_value = int(rule_value)
                 match = any(kOperatorsMap[operator](item_property, rule_value)
                             for item_property in item_properties_list)
+    # Handle socket conditions separately
+    # For now we only check the number of sockets and linked sockets, not colors
+    elif (keyword == 'Sockets'):
+        if ('Sockets' not in item_properties):
+            return False
+        int_list = simple_parser.ParseInts(values_list[0])
+        if (len(int_list) == 1):
+            [required_num_sockets] = int_list
+            op_func = kOperatorsMap[operator]
+            match = op_func(item_properties['NumSockets'], required_num_sockets)
+    elif (keyword == 'LinkedSockets'):
+        if ('Sockets' not in item_properties):
+            return False
+        int_list = simple_parser.ParseInts(values_list[0])
+        if (len(int_list) == 1):
+            [required_num_linked_sockets] = int_list
+            match = item_properties['NumLinkedSockets'] == required_num_linked_sockets
     # Todo: handle rest of cases
     return match
 # End CheckRuleConditionMatchesItem
 
-def CheckRuleMatchesItem(parsed_rule_lines: List[str], item_lines: List[str]) -> bool:
-    CheckType(parsed_rule_lines, 'parsed_rule_lines', list)
-    CheckType(item_lines, 'item_lines', list)
-    item_properties: dict = ParseItem(item_lines)
-    for parsed_rule_line in parsed_rule_lines[1:]:
+def CheckRuleMatchesItem(parsed_rule_lines: List[tuple], item_properties: dict) -> bool:
+    CheckType2(parsed_rule_lines, 'parsed_rule_lines', list, tuple)
+    CheckType(item_properties, 'item_properties', dict)
+    for parsed_rule_line in parsed_rule_lines:
         match = CheckRuleConditionMatchesItem(parsed_rule_line, item_properties)
         if (not match): 
             return False
     return True
 # End CheckRuleMatchesItem
+
+def CheckRuleMatchesItemText(parsed_rule_lines: List[str], item_lines: List[str]) -> bool:
+    CheckType2(parsed_rule_lines, 'parsed_rule_lines', list, str)
+    CheckType2(item_lines, 'item_lines', list, str)
+    item_properties: dict = ParseItem(item_lines)
+    return CheckRuleMatchesItem(parsed_rule_list, item_properties)
+# End CheckRuleMatchesItemText
                 
 
 test_item = \
@@ -222,6 +280,7 @@ Redeemer Item'''
 test_rule = \
 '''Show # $type->rare->redeemer $tier->t12
 HasInfluence Redeemer
+AreaLevel <= 10
 ItemLevel >= 84
 Rarity <= Rare
 BaseType "Cerulean Ring" "Marble Amulet" "Opal Ring" "Spiraled Wand" "Steel Ring" "Titanium Spirit Shield" "Void Fangs"
@@ -247,7 +306,8 @@ def Test():
     for line in parsed_rule_lines: print (line)
     print()
     
-    match_flag = CheckRuleMatchesItem(parsed_rule_lines, item_lines)
+    match_flag = CheckRuleMatchesItemText(parsed_rule_lines, item_lines)
     print('match_flag = {}'.format(match_flag))
 
 #Test()
+

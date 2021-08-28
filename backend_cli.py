@@ -181,6 +181,23 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         with open(loot_filter.profile_fullpath, 'w') as profile_file:
             profile_file.writelines(profile_lines[:-1])
         DelegateFunctionCall(loot_filter, 'import_downloaded_filter', [])
+    # ====================================== Rule Matching ======================================
+    elif (function_name == 'get_rule_matching_item'):
+        '''
+        get_rule_matching_item
+         - Takes an item text as input in backend_cli.input
+         - Finds the first rule matching the item and writes it to backed_cli.output
+         - Ignores rules with AreaLevel conditions
+         - This API is just a proof-of-concept test for now
+         - Continue not supported!
+        '''
+        CheckNumParams(function_params, 0)
+        item_text_lines: List[str] = helper.ReadFile(kInputFilename)
+        type_tag, tier_tag = loot_filter.GetRuleMatchingItem(item_text_lines)
+        output_string = 'type_tag: {}\ntier_tag: {}\n'.format(str(type_tag), str(tier_tag))
+        if ((type_tag != None) and (tier_tag != None)):
+            matched_rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
+            output_string += '\n'.join(matched_rule.text_lines)
     # ======================================== Currency ========================================
     elif (function_name == 'set_currency_tier'):
         '''

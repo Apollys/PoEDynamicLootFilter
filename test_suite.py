@@ -9,7 +9,7 @@ import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
 import test_consts
-from type_checker import CheckType
+from type_checker import CheckType, CheckType2
 
 def CHECK(expr: bool):
     if (not expr):

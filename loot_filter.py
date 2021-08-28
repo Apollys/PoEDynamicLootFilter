@@ -11,7 +11,7 @@ import helper
 import logger
 import rule_parser
 import test_consts
-from type_checker import CheckType
+from type_checker import CheckType, CheckType2
 
 # -----------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ class LootFilterRule:
     '''
     Member variables:
      - self.text_lines: List[str]
-     - self.parsed_line: list of (keyword, operator, values_list) triplets
+     - self.parsed_lines: list of (keyword, operator, values_list) triplets
      - self.start_line_index: int - line index of this rule in the original filter file
      - self.visibility: RuleVisibility
      - self.type_tag: str - identifier found after "$type->" in the first line of the rule
@@ -88,6 +88,10 @@ class LootFilterRule:
     def __repr__(self):
         return '\n'.join(self.text_lines)
     # End __repr__
+    
+    def MatchesItem(self, item_properties: dict) -> bool:
+        return rule_parser.CheckRuleMatchesItem(self.parsed_lines, item_properties)
+    # End MatchesItem
         
     def GetVisibility(self) -> RuleVisibility:
         return self.visibility
@@ -186,6 +190,7 @@ class LootFilter:
      - self.inverse_section_map: Dict[name: str, id: str]
      - self.rules_start_line_index: int
      - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
+     - self.rule_list: List[LootFilterRule] - in order of loot filter file
      - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
      - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
        Example: self.type_tier_rule_map['currency']['t1exalted']
@@ -229,8 +234,31 @@ class LootFilter:
     def GetRuleByTypeTier(self, type_tag: str, tier_tag: str) -> LootFilterRule:
         CheckType(type_tag, 'type_tag', str)
         CheckType(tier_tag, 'tier_tag', str)
-        return self.type_tier_rule_map[type_name][tier_name]
+        return self.type_tier_rule_map[type_tag][tier_tag]
     # End GetRulesByTypeTier
+    
+    # ============================= Rule-Item Matching =============================
+    
+    # Finds the first rule in the filter matching the given item
+    # Returns type_tag, tier_tag to uniquely identify the matched rule
+    # Returns None, None if no rule matched
+    # Cannot match AreaLevel restrictions:
+    #  - if a rule has an AreaLevel requirement, it will never match any item
+    def GetRuleMatchingItem(self, item_text_lines: List[str]) -> Tuple[str, str]:
+        CheckType2(item_text_lines, 'item_text_lines', list, str)
+        item_properties: dict = rule_parser.ParseItem(item_text_lines)
+        print('\nitem_properties:')
+        for k, v in item_properties.items():
+            print(k, ':', v)
+        print()
+        for rule in self.rule_list:
+            if ((rule.visibility != RuleVisibility.kDisable) and rule.MatchesItem(item_properties)):
+                print('Matched rule:')
+                print('\n'.join(rule.text_lines))
+                print()
+                return rule.type_tag, rule.tier_tag
+        return None, None
+    # End GetRuleMatchingItem
     
     # ========================= Section-Related Functions =========================
        
@@ -620,6 +648,7 @@ class LootFilter:
          - self.rules_start_line_index: int
          - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
          - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
+         - self.rule_list: List[LootFilterRule]
          - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
            Note: parser ensures that (type_tag, tier_tag) forms a unique key for rules
            Example: self.type_tier_rule_map['currency']['t1'] 
@@ -629,6 +658,7 @@ class LootFilter:
         self.inverse_section_map: Dict[str, str] = {}  # maps names to ids
         self.section_rule_map: OrderedDict[str, List[LootFilterRule]] = OrderedDict()
         self.line_index_rule_map: OrderedDict[int, LootFilterRule] = OrderedDict()
+        self.rule_list: List[LootFilterRule] = []
         self.type_tier_rule_map = {}
         # Set up parsing loop
         in_rule: bool = False
@@ -672,6 +702,8 @@ class LootFilter:
                         untagged_rule_count += 1
                         current_rule_lines[0] += ' # ' + consts.kTypeTierTagTemplate.format(
                                 new_rule.type_tag, new_rule.tier_tag)
+                    # Add rule to rule list
+                    self.rule_list.append(new_rule)
                     # Add rule to type tier rule map
                     if (new_rule.type_tag not in self.type_tier_rule_map):
                         self.type_tier_rule_map[new_rule.type_tag] = {}

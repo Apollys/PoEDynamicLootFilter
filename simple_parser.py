@@ -85,6 +85,27 @@ def ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]
     return token_list
 # End ParseEnclosedBy
 
+def IsInt(s: str) -> bool:
+    try:
+        int(s)
+    except:
+        return False
+    return True
+# End IsInt
+
+def ParseInts(line: str) -> List[int]:
+    parsed_ints = []
+    current_int_string = ''
+    # Add non-digit to end of line to handle last integer uniformly
+    for c in line + ' ':
+        if ((len(current_int_string) > 0) and not c.isdigit()):
+                parsed_ints.append(int(current_int_string))
+                current_int_string = ''
+        elif c.isdigit():
+            current_int_string += c
+    return parsed_ints
+# End ParseInts           
+
 def ParseFromTemplateTest():
     line1 = 'Show # $type->decorator->craftingrare $tier->raredecoratorgear '
     line2 = 'Show # $type->decorator->craftingrare $tier->raredecoratorgear $other_garbage lalal'
@@ -101,6 +122,13 @@ def ParseEnclosedByTest():
     result = ParseEnclosedBy(line, '"', '"')
     print(result)
     result == ['Leather Belt', 'Two-Stone Ring', 'Agate Amulet']
+
+def ParseIntsTest():
+    line = 'asdf45 re2 7432'
+    result = ParseInts(line)
+    print(result)
+    result == [45, 2, 7432]
     
 # ParseFromTemplateTest()
 # ParseEnclosedByTest()
+# ParseIntsTest()
