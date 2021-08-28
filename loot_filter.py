@@ -29,6 +29,7 @@ class LootFilterRule:
     Member variables:
      - self.text_lines: List[str]
      - self.parsed_lines: list of (keyword, operator, values_list) triplets
+     - self.has_continue: bool - indicates whether this rule has a "Continue" line
      - self.start_line_index: int - line index of this rule in the original filter file
      - self.visibility: RuleVisibility
      - self.type_tag: str - identifier found after "$type->" in the first line of the rule
@@ -49,6 +50,13 @@ class LootFilterRule:
                     start_line_index + 1))
         self.text_lines = rule_text_lines
         self.start_line_index = start_line_index  # index in full loot filter file
+        # Generate self.parsed_lines and check for 'Continue' keyword
+        self.parsed_lines = []
+        self.has_continue = False
+        for line in self.text_lines[1:]:
+            self.parsed_lines.append(rule_parser.ParseRuleLineGeneric(line))
+            if (helper.UncommentedLine(line).startswith('Continue')):
+                self.has_continue = True
         self.parsed_lines = [rule_parser.ParseRuleLineGeneric(line) for line in self.text_lines[1:]]
         # Parse rule visibility
         self.visibility = RuleVisibility.kUnknown
@@ -74,6 +82,7 @@ class LootFilterRule:
         self.tier_tag: str = first_line[tier_start_index : tier_end_index]
         # Parse base type list
         # Note - not all rules may have a base type, in which case base type list is empty
+        # TODO: do we still need this?
         self.base_type_list = []
         self.base_type_line_index = -1
         for i in range(len(self.text_lines)):
@@ -247,16 +256,22 @@ class LootFilter:
     def GetRuleMatchingItem(self, item_text_lines: List[str]) -> Tuple[str, str]:
         CheckType2(item_text_lines, 'item_text_lines', list, str)
         item_properties: dict = rule_parser.ParseItem(item_text_lines)
-        print('\nitem_properties:')
-        for k, v in item_properties.items():
-            print(k, ':', v)
-        print()
+        #print('\nitem_properties:')
+        #for k, v in item_properties.items():
+        #    print(k, ':', v)
+        #print()
+        matched_continue_rule = None
         for rule in self.rule_list:
             if ((rule.visibility != RuleVisibility.kDisable) and rule.MatchesItem(item_properties)):
-                print('Matched rule:')
-                print('\n'.join(rule.text_lines))
-                print()
-                return rule.type_tag, rule.tier_tag
+                #print('Matched rule:')
+                #print('\n'.join(rule.text_lines))
+                #print()
+                if (rule.has_continue):
+                    matched_continue_rule = rule
+                else:
+                    return rule.type_tag, rule.tier_tag
+        if (matched_continue_rule):
+            return matched_continue_rule.type_tag, matched_continue_rule.tier_tag
         return None, None
     # End GetRuleMatchingItem
     
