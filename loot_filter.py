@@ -109,18 +109,20 @@ class LootFilterRule:
     def SetVisibility(self, visibility: RuleVisibility) -> None:
         CheckType(visibility, 'visibility', RuleVisibility)
         if (self.visibility == visibility): return
-        # Comment to Disable
+        # Case: Disable - comment all lines
         if (visibility == RuleVisibility.kDisable):
             self.text_lines = [helper.CommentedLine(line) for line in self.text_lines]
-        # Uncomment to Show
+        # Case: Show - set first word to "Show" and uncomment all lines
         elif (visibility == RuleVisibility.kShow):
             self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
             if (self.text_lines[0].startswith('Hide')):
                 self.text_lines[0] = 'Show' + self.text_lines[0][4:]
-        # Disable beams, minimap icons, and drop sounds on Hide
+        # Case: Hide - set first word to hide and comment effect lines
         elif (visibility == RuleVisibility.kHide):
+            self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
             if (self.text_lines[0].startswith('Show')):
                 self.text_lines[0] = 'Hide' + self.text_lines[0][4:]
+            #  Disable beams, minimap icons, and drop sounds
             kKeywordsToDisable = ['PlayEffect', 'MinimapIcon', 'PlayAlertSound']
             for parsed_lines_index in range(len(self.parsed_lines)):
                 text_lines_index = parsed_lines_index + 1
@@ -128,11 +130,11 @@ class LootFilterRule:
                 if (keyword in kKeywordsToDisable):
                     self.text_lines[text_lines_index] = helper.CommentedLine(
                             self.text_lines[text_lines_index])
-        # Toggle Show/Hide
-        if ((visibility == RuleVisibility.kShow) and self.text_lines[0].startswith('Hide')):
-            self.text_lines[0] = 'Show' + self.text_lines[0][4:]
-        elif ((visibility == RuleVisibility.kHide) and self.text_lines[0].startswith('Show')):
-            self.text_lines[0] = 'Hide' + self.text_lines[0][4:]
+        # Update "Show" or "Hide" keyword in first line of rule
+        #if ((visibility == RuleVisibility.kShow) and self.text_lines[0].startswith('Hide')):
+        #    self.text_lines[0] = 'Show' + self.text_lines[0][4:]
+        #elif ((visibility == RuleVisibility.kHide) and self.text_lines[0].startswith('Show')):
+        #    self.text_lines[0] = 'Hide' + self.text_lines[0][4:]
         self.visibility = visibility
     # End SetVisibility
     
@@ -274,6 +276,19 @@ class LootFilter:
             return matched_continue_rule.type_tag, matched_continue_rule.tier_tag
         return None, None
     # End GetRuleMatchingItem
+    
+    def SetRuleVisibility(self, type_tag: str, tier_tag: str, visibility: RuleVisibility) -> bool:
+        CheckType(type_tag, 'type_tag', str)
+        CheckType(tier_tag, 'tier_tag', str)
+        CheckType(visibility, 'visibility', RuleVisibility)
+        try:
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
+        except KeyError:
+            return False
+        else:
+            rule.SetVisibility(visibility)
+            return True
+    # End SetRuleVisibility
     
     # ========================= Section-Related Functions =========================
        

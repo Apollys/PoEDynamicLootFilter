@@ -55,10 +55,11 @@ kOutputFilename = 'backend_cli.output'
 # This list excludes getter-only functions, which can be excluded from the profile data
 # Also exclues run_batch (depends on batch functions) and import_downloaded_filter
 # Excluded undo_last_change since it's rather unique and handles its own saving
-kFilterMutatorFunctionNames = ['set_currency_tier', 'adjust_currency_tier',
+kFilterMutatorFunctionNames = ['set_rule_visibility',
+        'set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
         'set_hide_uniques_above_tier', 'set_hide_map_below_tier',
-         'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for']
+         'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for',]
 
 def Error(e):
     logger.Log('Error ' + str(e))
@@ -186,18 +187,40 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         '''
         get_rule_matching_item
          - Takes an item text as input in backend_cli.input
-         - Finds the first rule matching the item and writes it to backed_cli.output
-         - Ignores rules with AreaLevel conditions
-         - This API is just a proof-of-concept test for now
-         - Continue not supported!
+         - Finds the rule in the PoE filter matching the item and writes it to backend_cli.output
+         - The first two lines of output will be `type_tag:<type_tag>` and `tier_tag:<tier_tag>`,
+           these two tags together form a unique key for the rule
+         - Ignores rules with AreaLevel conditions, as well as many other niche keywords
+         - Socket rules only implemented as numeric counting for now, ignores color requirements
+         - Example: > python3 backend_cli.py get_rule_matching_item
         '''
         CheckNumParams(function_params, 0)
         item_text_lines: List[str] = helper.ReadFile(kInputFilename)
         type_tag, tier_tag = loot_filter.GetRuleMatchingItem(item_text_lines)
-        output_string = 'type_tag: {}\ntier_tag: {}\n'.format(str(type_tag), str(tier_tag))
+        output_string = 'type_tag:{}\ntier_tag:{}\n'.format(str(type_tag), str(tier_tag))
         if ((type_tag != None) and (tier_tag != None)):
             matched_rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
-            output_string += '\n'.join(matched_rule.text_lines)
+            output_string += '\n'.join(matched_rule.text_lines)        
+    elif (function_name == 'set_rule_visibility'):
+        '''
+        set_rule_visibility <type_tag> <tier_tag> <visibility>
+         - Shows, hides, or disables the rule specified by the given type and tier tags
+         - The visibility parameter is one of: `show`, `hide`, `disable`
+         - Output: None (for now, can output a success flag if needed)
+         - Example > python3 backend_cli.py set_rule_visibility "rare->redeemer" t12 show
+         - Note: quotes (either type) are necessary for tags containing a ">" character,
+           since the shell will normally iterpret as the output redirection signal
+        '''
+        CheckNumParams(function_params, 3)
+        type_tag, tier_tag, visibility_string = function_params
+        kVisibilityMap = {'show': RuleVisibility.kShow, 'hide': RuleVisibility.kHide,
+                          'disable': RuleVisibility.kDisable}
+        success_flag = loot_filter.SetRuleVisibility(
+                type_tag, tier_tag, kVisibilityMap[visibility_string])
+        # Error out on incorrect tags for now to make testing easier
+        if (not success_flag):
+            Error('Rule with type_tag="{}", tier_tag="{}" does not exist in filter'.format(
+                    type_tag, tier_tag))
     # ======================================== Currency ========================================
     elif (function_name == 'set_currency_tier'):
         '''

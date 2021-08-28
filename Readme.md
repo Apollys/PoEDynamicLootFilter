@@ -19,7 +19,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
  - [x] Show/hide flasks by type
  - [x] Save profile data - persistent changes with redownloaded filter
  - [x] Manipulate unique item visibility
- - [ ] Simulate - find rule matching item
+ - [ ] Simulate - find rule matching item - partially complete
  - [ ] Set Gem min quality
  - [ ] Set Flask min quality
  - [ ] Set RGB item max size
@@ -44,15 +44,11 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 
 **Currently Supported Functions:**
   - `run_batch`
-    - TODO: make input filepath first argument
-    - Processes a sequence of functions specified in the file `backend_cli.input`
-    - Each line of the file is one function call, formatted as `<function_name> <function_params...>` (i.e. just like the cli function call but without `python3 backend_cli.py `
-    - Ouput is separated by the single-character line `@` placed after the output of each function call in `backend_cli.output`
+    - TODO: make input filepath first argument (maybe?)
   - `undo_last_change`
-    - Initial implementation - removes last line from profile and re-runs `import_downloaded_filter`
-    - Could be optimized to a smarter algorithm later if deemed important
   - `import_downloaded_filter <optional keyword: "only_if_missing">`
-    - Example: `> python3 backend_cli.py import_downloaded_filter only_if_missing`
+  - `get_rule_matching_item`
+  - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `get_all_currency_tiers`
