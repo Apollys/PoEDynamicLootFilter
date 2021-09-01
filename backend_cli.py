@@ -203,7 +203,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
             output_string += '\n'.join(matched_rule.text_lines)        
     elif (function_name == 'set_rule_visibility'):
         '''
-        set_rule_visibility <type_tag> <tier_tag> <visibility>
+        set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>
          - Shows, hides, or disables the rule specified by the given type and tier tags
          - The visibility parameter is one of: `show`, `hide`, `disable`
          - Output: None (for now, can output a success flag if needed)

@@ -98,12 +98,25 @@ Int: 159
 --------
 '''
 
-kBinaryProperties = ['Unidentified', 'Corrupted', 'Mirrorred']
+# Implemented keywords for items
+kBinaryProperties = ['Unidentified', 'Corrupted', 'Mirrorred', 'Alternate Quality']
 
 kInfluenceProperties = ['Shaper Item', 'Elder Item', 'Crusader Item', 'Warlord Item',
                         'Redeemer Item', 'Hunter Item']
 
 kOtherImportantProperties = ['Item Level', 'Stack Size', 'Map Tier', 'Quality']
+
+# Keywords in items have spaces, in loot filter ruels they don't
+# This function allows us to translate between the two.
+# Note: it modifies the input dict and does not return anything.
+def RemoveSpacesFromKeys(d: dict):
+    original_keys: list = list(d.keys())
+    for key in original_keys:
+        if (' 'in key):
+            new_key = key.replace(' ', '')
+            d[new_key] = d[key]
+            d.pop(key)
+# End RemoveSpacesFromKeys
 
 # Parses an item's text description into a dictionary of {'property_name' : property_value}
 def ParseItem(item_lines: List[str]) -> dict:
@@ -139,11 +152,11 @@ def ParseItem(item_lines: List[str]) -> dict:
                     property_name = property_name.replace(' ', '')
                     item_properties[property_name] = value_string
                     # Do any additional parsing here
-                    # "Fix" quality string: from '+20% (augmented)' to '20'
+                    # Parse int value from quality string: '+20% (augmented)' -> 20
                     if (property_name == 'Quality'):
-                        _, [quality_string] = simple_parser.ParseFromTemplate(
-                                item_properties[property_name], '+{}%{~}')
-                        item_properties[property_name] = quality_string
+                        quality_string = item_properties[property_name]
+                        [item_properties[property_name]] = simple_parser.ParseInts(
+                            quality_string)
                     elif (property_name == 'StackSize'):
                         _, parse_result = simple_parser.ParseFromTemplate(
                                 item_properties[property_name], '{}/{}')
@@ -166,15 +179,26 @@ def ParseItem(item_lines: List[str]) -> dict:
                     item_properties['NumLinkedSockets'] = max(len(group) for group in socket_groups)
     # Identified is handled backwards in item text and loot filter rules
     item_properties['Identified'] = not item_properties['Unidentified']
+    # Handle alternate quality gems (item will have line "Alternate Quality")
+    if ((item_properties['Rarity'] == 'Gem') and item_properties['Alternate Quality']):
+        print(item_properties['BaseType'])
+        _, [quality_type, gem_name] = simple_parser.ParseFromTemplate(
+                item_properties['BaseType'], '{} {}')
+        item_properties['GemQualityType'] = quality_type
+        item_properties['BaseType'] = gem_name
     # Todo: handle requirements section separately
+    # Remove all spaces from keys in item properties to match loot filter syntax
+    RemoveSpacesFromKeys(item_properties)
     return item_properties
 # End ParseItem
 
-kImplementedBinaryKeywords = ['Identified', 'Corrupted', 'Mirrorred']
-kImplementedOtherKeywords = ['Class', 'Rarity', 'BaseType', 'ItemLevel', 'MapTier', 
-                             'HasInfluence']
+# Implemented/ignore keywords for Rules
+kImplementedBinaryKeywords = ['Identified', 'Corrupted', 'Mirrorred', 'AlternateQuality']
+kImplementedOtherKeywords = ['Class', 'Rarity', 'BaseType', 'ItemLevel', 'MapTier', 'Quality',
+                             'HasInfluence', 'GemQualityType']
+# Ignore any rules with any of the following conditions:
 kIgnoreKeywords = ['AreaLevel', 'AnyEnchantment', 'FracturedItem', 'SynthesisedItem',
-                   'BlightedMap', 'HasExplicitMod', 'SocketGroup']
+                   'BlightedMap', 'HasExplicitMod', 'SocketGroup', 'GemLevel']
 
 # We are making a few basic assumptions that the rules are written "reasonably" here:
 #  - For binary properties, there will not be a "not equals" operator, i.e.
@@ -242,55 +266,53 @@ def CheckRuleMatchesItem(parsed_rule_lines: List[tuple], item_properties: dict) 
 # End CheckRuleMatchesItem
 
 def CheckRuleMatchesItemText(parsed_rule_lines: List[str], item_lines: List[str]) -> bool:
-    CheckType2(parsed_rule_lines, 'parsed_rule_lines', list, str)
+    CheckType2(parsed_rule_lines, 'parsed_rule_lines', list, tuple)
     CheckType2(item_lines, 'item_lines', list, str)
     item_properties: dict = ParseItem(item_lines)
-    return CheckRuleMatchesItem(parsed_rule_list, item_properties)
+    return CheckRuleMatchesItem(parsed_rule_lines, item_properties)
 # End CheckRuleMatchesItemText
                 
 
 test_item = \
-'''Item Class: Shields
-Rarity: Rare
-Soul Weaver
-Titanium Spirit Shield
+'''Item Class: Active Skill Gems
+Rarity: Gem
+Divergent Vitality
 --------
-Quality: +20% (augmented)
-Chance to Block: 25%
-Energy Shield: 157 (augmented)
+Aura, Spell, AoE
+Level: 16
+Reservation: 189 Mana
+Cooldown Time: 1.20 sec
+Cast Time: Instant
+Quality: +13% (augmented)
+Alternate Quality
 --------
 Requirements:
-Level: 70
-Dex: 155
-Int: 159
+Level: 60
+Str: 103
 --------
-Sockets: G-G-B 
+Casts an aura that grants life regeneration to you and your allies.
 --------
-Item Level: 84
++15 to radius
+You and nearby Allies Regenerate 135 Life per second
+You and nearby Allies deal 2% increased Damage while on Full Life
 --------
-Socketed Gems have 15% reduced Reservation
-+109 to maximum Life
-+48% to Fire Resistance
-10% increased effect of Non-Curse Auras from your Skills
-+67 to maximum Energy Shield (crafted)
+Experience: 7879780/16039890
 --------
-Shaper Item
-Redeemer Item'''
+Place into an item socket of the right colour to gain this skill...'''
 
 test_rule = \
-'''Show # $type->rare->redeemer $tier->t12
-HasInfluence Redeemer
-AreaLevel <= 10
-ItemLevel >= 84
-Rarity <= Rare
-BaseType "Cerulean Ring" "Marble Amulet" "Opal Ring" "Spiraled Wand" "Steel Ring" "Titanium Spirit Shield" "Void Fangs"
+'''Show # $type->gems-exceptional $tier->divt1
+GemQualityType Divergent
+Class "Gems"
+BaseType "Anger" "Vitality"
 SetFontSize 45
-SetTextColor 50 130 165 255
-SetBorderColor 50 130 165 255
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
 SetBackgroundColor 255 255 255 255
 PlayEffect Red
-MinimapIcon 0 Red Cross
-PlayAlertSound 1 300'''
+MinimapIcon 0 Red Star
+PlayAlertSound 1 300
+'''
 
 def Test():
     item_lines = test_item.split('\n')

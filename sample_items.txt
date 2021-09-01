@@ -306,4 +306,114 @@ Note: ~price 1 exalted
 
 ===============================================================================
 
+Item Class: Active Skill Gems
+Rarity: Gem
+Vitality
+--------
+Aura, Spell, AoE
+Level: 1
+Reservation: 28 Mana
+Cooldown Time: 1.20 sec
+Cast Time: Instant
+Quality: +10% (augmented)
+--------
+Requirements:
+Level: 10
+Str: 22
+--------
+Casts an aura that grants life regeneration to you and your allies.
+--------
+20% increased Area of Effect
+You and nearby Allies Regenerate 10 Life per second
+--------
+Experience: 1/9569
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
+
+===============================================================================
+
+Item Class: Active Skill Gems
+Rarity: Gem
+Divergent Vitality
+--------
+Aura, Spell, AoE
+Level: 16
+Reservation: 189 Mana
+Cooldown Time: 1.20 sec
+Cast Time: Instant
+Quality: +13% (augmented)
+Alternate Quality
+--------
+Requirements:
+Level: 60
+Str: 103
+--------
+Casts an aura that grants life regeneration to you and your allies.
+--------
++15 to radius
+You and nearby Allies Regenerate 135 Life per second
+You and nearby Allies deal 2% increased Damage while on Full Life
+--------
+Experience: 7879780/16039890
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
+
+===============================================================================
+
+Item Class: Active Skill Gems
+Rarity: Gem
+Divergent Fireball
+--------
+Projectile, Spell, AoE, Fire
+Level: 17
+Cost: 22 Mana
+Cast Time: 0.75 sec
+Critical Strike Chance: 6.00%
+Effectiveness of Added Damage: 240%
+Quality: +10% (augmented)
+Alternate Quality
+--------
+Requirements:
+Level: 60
+Int: 134
+--------
+Unleashes a ball of fire towards a target which explodes, damaging nearby foes.
+--------
+Deals 640 to 960 Fire Damage
+36% chance to Ignite enemies
+62% more Damage with Ignite
+Projectiles gain Radius as they travel farther, up to +8 Radius
+30% increased Effect of non-Damaging Ailments on Enemies
+--------
+Experience: 1692380/27792735
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
+--------
+Note: ~price 10 chaos
+
+===============================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Awakened Fire Penetration Support
+--------
+Fire, Support
+Level: 1
+Cost & Reservation Multiplier: 130%
+--------
+Requirements:
+Level: 72
+Str: 114
+--------
+Supports any skill that hits enemies, making those hits penetrate enemy fire resistance.
+--------
+Supported Skills Penetrate 35% Fire Resistance
+--------
+Experience: 1/413615669
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Note: ~price 20 blessed
+
+===============================================================================
 
