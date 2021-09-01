@@ -58,7 +58,7 @@ kOutputFilename = 'backend_cli.output'
 kFilterMutatorFunctionNames = ['set_rule_visibility',
         'set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
-        'set_hide_uniques_above_tier', 'set_hide_map_below_tier',
+        'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_hide_map_below_tier',
          'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for',]
 
 def Error(e):
@@ -336,6 +336,25 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideUniquesAboveTierTier())
+    # ======================================= Gem Quality =======================================
+    elif (function_name == 'set_gem_min_quality'):
+        '''
+        set_gem_min_quality <tier: int in [1, 20]>
+         - Sets the minimum quality below which gems will not be shown by gem quality rules
+         - Output: None
+         - Example: > python3 backend_cli.py set_gem_min_quality 10
+        '''
+        CheckNumParams(function_params, 1)
+        min_quality: int = int(function_params[0])
+        loot_filter.SetGemMinQuality(min_quality)
+    elif (function_name == 'get_gem_min_quality'):
+        '''
+        get_gem_min_quality
+         - Output: single integer, minimum shown gem quality for gem quality rules
+         - Example: > python3 backend_cli.py get_gem_min_quality
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = str(loot_filter.GetGemMinQuality())
     # ========================================== Maps ==========================================
     elif (function_name == 'set_hide_map_below_tier'):
         '''

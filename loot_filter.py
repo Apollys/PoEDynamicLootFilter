@@ -171,7 +171,36 @@ class LootFilterRule:
             # Also, need to eliminate the ' ""'  in the list
             self.text_lines[index] = self.text_lines[index][:-3]
     # End RemoveBaseType
-        
+    
+    # Returns a bool indicating whether or not the line identified by the given keyword was found
+    # Updates both parsed_item_lines and text_lines
+    def ModifyLine(self, keyword: str, new_operator: str,
+                   new_value_or_values: str or int or list[str]) -> bool:
+        CheckType(keyword, 'keyword', str)
+        CheckType(new_operator, 'new_operator', str)
+        CheckType(new_value_or_values, 'new_value_or_values', (str, int, list))
+        found_index: int = -1
+        for i in range(len(self.parsed_lines)):
+            if (self.parsed_lines[i][0] == keyword):
+                found_index = i
+                break
+        if (found_index == -1):
+            return False
+        new_values_list = (new_value_or_values if isinstance(new_value_or_values, list)
+                          else [str(new_value_or_values)])
+        self.parsed_lines[found_index] = keyword, new_operator, new_values_list
+        text_line: str = keyword
+        if (new_operator != ''):
+            text_line += ' ' + new_operator
+        use_quotes: bool = any(' ' in value_string for value_string in new_values_list)
+        text_line += ' ' + ('"' + '" "'.join(new_values_list) + '"' if use_quotes
+                            else ' '.join(new_values_list))
+        # The index in text_lines is 1 greater than in parsed_lines,
+        # because parsed_lines excludes the first (Show/Hide) line
+        self.text_lines[found_index + 1] = text_line
+        return True
+    # End ModifyLine
+    
     def GetSize(self) -> int:
         pass
     # End GetSize
@@ -533,6 +562,49 @@ class LootFilter:
                 break
         return max_visible_tier
     # GetHideUniquesAboveTierTier
+    
+    # ============================ Gem Quality Functions ============================
+    
+    # The rules we modify for gem-quality functionality are:
+    #  - Show # %D5 $type->gems-generic $tier->qt2   (19-20)
+    #  - Show # %D3 $type->gems-generic $tier->qt3   (14-18)
+    #  - Show # %D2 $type->gems-generic $tier->qt4   (1-13)
+    def SetGemMinQuality(self, min_quality: int):
+        type_tag: str = 'gems-generic'
+        tier_tag_base: str = 'qt'
+        quality_t2_rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(2)]
+        quality_t3_rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(3)]
+        quality_t4_rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(4)]
+        if (19 <= min_quality <= 20):
+            quality_t2_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t2_rule.ModifyLine('Quality', '>=', min_quality)
+            quality_t3_rule.SetVisibility(RuleVisibility.kDisable)
+            quality_t4_rule.SetVisibility(RuleVisibility.kDisable)
+        elif (14 <= min_quality <= 18):
+            quality_t2_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t2_rule.ModifyLine('Quality', '>=', 19)
+            quality_t3_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t3_rule.ModifyLine('Quality', '>=', min_quality)
+            quality_t4_rule.SetVisibility(RuleVisibility.kDisable)
+        elif (1 <= min_quality <= 13):
+            quality_t2_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t2_rule.ModifyLine('Quality', '>=', 19)
+            quality_t3_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t3_rule.ModifyLine('Quality', '>=', 14)
+            quality_t4_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t4_rule.ModifyLine('Quality', '>=', min_quality)
+    # End SetGemMinQuality
+    
+    def GetGemMinQuality(self):
+        type_tag: str = 'gems-generic'
+        tier_tag_base: str = 'qt'
+        for tier in [4, 3, 2, 1]:
+            rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(tier)]
+            if (rule.visibility == RuleVisibility.kShow):
+                for keyword, operator, value_string_list in rule.parsed_lines:
+                    if keyword == 'Quality':
+                        return int(value_string_list[0])
+        return -1  # indicates all gem quality rules are disabled/hidden
     
     # ======================= Chaos Recipe-Related Functions =======================
     

@@ -20,7 +20,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
  - [x] Save profile data - persistent changes with redownloaded filter
  - [x] Manipulate unique item visibility
  - [ ] Simulate - find rule matching item - partially complete
- - [ ] Set Gem min quality
+ - [x] Set Gem min quality
  - [ ] Set Flask min quality
  - [ ] Set RGB item max size
  - [ ] Set Blight Oil min tier
@@ -57,6 +57,8 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_all_unique_tier_visibilities`
   - `set_hide_uniques_above_tier`
   - `get_hide_uniques_above_tier`
+  - *Recenty added:* `set_gem_min_quality <tier: int in [1, 20]>`
+  - *Recenty added:* `get_gem_min_quality`
   - `set_hide_currency_above_tier`
   - `get_hide_currency_above_tier`
   - `set_hide_map_below_tier <tier: int>`
