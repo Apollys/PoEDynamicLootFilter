@@ -58,3 +58,6 @@ def ClearFileIfExists(filepath: str):
         open(filepath, 'w').close()
 # End ClearFileIfExists
 
+def ListFilesInDirectory(directory_path: str):
+    return [f for f in os.listdir(directory_path)
+            if os.path.isfile(os.path.join(directory_path, f))]

@@ -5,6 +5,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 - - -
 
 ### Cody To-Do
+ - Fix test suite to work with new profile system
  - Create a more thorough set of tests to cover everything in the backend_cli
    - Examples: make sure filter is saved whenever a change is made, make sure things go to the
      right tier/status by re-reading the file, make sure it doesn't save on batch of getters, etc
@@ -24,8 +25,9 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
  - [ ] Set Flask min quality
  - [ ] Set RGB item max size
  - [ ] Set Blight Oil min tier
- - [ ] Add profile selection to frontend, frontend calls backend with profile name,
-       move all config data from config.py to profile_name.config
+ - [ ] Profile rework: frontend
+ - [x] Profile rework: backend (separate all profile config data from python code)
+   - Formatting of profile file could probably be improved
  - [x] Add user-defined custom rules (user writes custom rules in a text file,
    whenever the filter is imported those rules are automatically added.
    Useful for adding any rule FilterBlade doesn't support, like "3 sockets, at least 2 blues"
@@ -36,7 +38,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
 The AHK frontend calls the Python backend via:
 ```
-> python3 backend_cli.py <function_name> <function_parameters...>
+> python3 backend_cli.py <profile_name> <function_name> <function_parameters...>
 ```
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
 
@@ -61,8 +63,8 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - *Recenty added:* `get_gem_min_quality`
   - `set_hide_currency_above_tier`
   - `get_hide_currency_above_tier`
-  - `set_hide_map_below_tier <tier: int>`
-  - `get_hide_map_below_tier`
+  - `set_hide_maps_below_tier <tier: int>`
+  - `get_hide_maps_below_tier`
   - `set_flask_rule_enabled_for <base_type: str> <enable_flag: int>`
   - `is_flask_rule_enabled_for <base_type: str>`
   - `get_all_enabled_flask_types` \*

@@ -1,7 +1,5 @@
 import re
 
-import config
-
 def InvertedDict(input_dict):
     return {value : key for key, value in input_dict.items()}
 
@@ -114,6 +112,8 @@ kChaosRecipeItemSlots = ['WeaponsX',
                          'Rings',
                          'Belts']
 
+kChaosRecipeItemSlotsMinusWeapons = kChaosRecipeItemSlots[2:]
+
 # Need no spaces in tier tags
 kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
                         'Weapons3' : 'weapons_max_height_3',
@@ -128,13 +128,8 @@ kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
                         
 kChaosRecipeTierToItemSlotMap = InvertedDict(kChaosRecipeTierTags)
 
-kChaosRecipeWeaponClassesAnyHeightString = \
-        '"' + '" "'.join(config.kChaosRecipeWeaponClassesAnyHeight) + '"'
-kChaosRecipeWeaponClassesmaxHeight3String = \
-        '"' + '" "'.join(config.kChaosRecipeWeaponClassesMaxHeight3) + '"'
-
-kChaosRecipeClasses = {'WeaponsX' : kChaosRecipeWeaponClassesAnyHeightString,
-                       'Weapons3' : kChaosRecipeWeaponClassesmaxHeight3String,
+kChaosRecipeClasses = {'WeaponsX' : 'XXX_Unused',
+                       'Weapons3' : 'XXX_Unused',
                        'Body Armours' : '"Body Armours"',
                        'Helmets' : '"Helmets"',
                        'Gloves' : '"Gloves"',
@@ -169,6 +164,7 @@ kChaosRecipeMinimapIconSizeColorParams = {'WeaponsX' : '1 Red',
 
 kChaosRecipeMinimapIconType = 'Moon'
 
+# All non-weapon chaos recipe rules (weapons handled in function below)
 kChaosRecipeRuleStrings = [kChaosRecipeRuleTemplate.format(
                                    kChaosRecipeTierTags[item_slot],
                                    kChaosRecipeClasses[item_slot],
@@ -176,5 +172,18 @@ kChaosRecipeRuleStrings = [kChaosRecipeRuleTemplate.format(
                                    kChaosRecipeBorderColors[item_slot],
                                    kChaosRecipeMinimapIconSizeColorParams[item_slot],
                                    kChaosRecipeMinimapIconType)
-                               for item_slot in kChaosRecipeItemSlots]
+                               for item_slot in kChaosRecipeItemSlotsMinusWeapons]
+
+
+def GenerateChaosRecipeWeaponRule(item_slot: str, weapon_classes: str) -> str:
+    if ((item_slot != 'WeaponsX') and (item_slot != 'Weapons3')):
+        raise RuntimeError('item_slot must be either "WeaponsX" or "Weapons3"')
+    return kChaosRecipeRuleTemplate.format(
+               kChaosRecipeTierTags[item_slot],
+               weapon_classes,
+               kChaosRecipeHeightConditions[item_slot],
+               kChaosRecipeBorderColors[item_slot],
+               kChaosRecipeMinimapIconSizeColorParams[item_slot],
+               kChaosRecipeMinimapIconType)
+# End GenerateChaosRecipeWeaponRule
 

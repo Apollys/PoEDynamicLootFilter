@@ -38,7 +38,6 @@ import sys
 import traceback
 from typing import List
 
-import config
 import consts
 import file_manip
 import helper
@@ -98,7 +97,7 @@ def AppendFunctionOutput(function_output_string: str):
 def DelegateFunctionCall(loot_filter: LootFilter,
                          function_name: str,
                          function_params: List[str],
-                         *,  # require subsequence arguments to be named in function call
+                         *,  # require subsequent arguments to be named in function call
                          in_batch: bool = False,
                          suppress_output: bool = False):
     CheckType(loot_filter, 'loot_filter', LootFilter)
@@ -106,20 +105,22 @@ def DelegateFunctionCall(loot_filter: LootFilter,
     CheckType(function_params, 'function_params_list', list)
     CheckType(in_batch, 'in_batch', bool)
     CheckType(suppress_output, 'suppress_output', bool)
+    # Alias config_data for convenience
+    config_data = loot_filter.profile_config_data
+    # 
     output_string = ''
     # Save function call to profile data if it is a mutator function
     # (kFilterMutatorFunctionNames excludes import_downloaded_filter and run_batch)
     # Note: suppress_output also functioning as an indicator to not save profile data here
     if ((function_name in kFilterMutatorFunctionNames) and not suppress_output):
-        with open(loot_filter.profile_fullpath, 'a') as profile_file:
-            profile_file.write(shlex.join([function_name] + function_params) + '\n')
+        with open(config_data['ChangesFullpath'], 'a') as changes_file:
+            changes_file.write(shlex.join([function_name] + function_params) + '\n')
     # =============================== Import Downloaded Filter ===============================
     if (function_name == 'import_downloaded_filter'):
         '''
         import_downloaded_filter <optional keyword: "only_if_missing">
          - Reads the filter located in the downloads directory, applies all DLF
            custom changes to it, and saves the result in the Path Of Exile directory.
-           See config.py to configure filter file paths and names.
          - If the argument "only_if_missing" is present, does nothing if the filter already is
            present in the Path of Exile filters directory.
          - Assumes this is NOT called as part of a batch
@@ -129,14 +130,25 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         '''
         import_flag = True
         if ((len(function_params) == 1) and (function_params[0] == 'only_if_missing')):
-            import_flag = not FileExists(loot_filter.output_filter_fullpath)
+            import_flag = not FileExists(config_data['OutputLootFilterFullpath'])
         else:
             CheckNumParams(function_params, 0)
         if (import_flag):
-            # Note: if function name was import_downloaded_filter, main already
-            # checked and instantiated this loot_filter with the downloaded filter as input
-            profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
-            for function_call_string in profile_lines:
+            # First check that downloaded filter exists
+            if (not os.path.isfile(config_data['DownloadedLootFilterFullpath'])):
+                Error('downloaded loot filter: "{}" does not exist'.format(
+                        config_data['DownloadedLootFilterFullpath']))
+            # Either move or copy the downloaded filter to the input directory,
+            # as specified in config by 'RemoveDownloadedFilter'
+            if (config_data['RemoveDownloadedFilter']):
+                file_manip.MoveFile(config_data['DownloadedLootFilterFullpath'],
+                                    config_data['InputLootFilterFullpath'])
+            else:
+                file_manip.CopyFile(config_data['DownloadedLootFilterFullpath'],
+                                    config_data['InputLootFilterFullpath'])
+                
+            changes_lines: List[str] = helper.ReadFile(config_data['ChangesFullpath'])
+            for function_call_string in changes_lines:
                 _function_name, *_function_params = shlex.split(function_call_string)
                 DelegateFunctionCall(loot_filter, _function_name, _function_params,
                                      in_batch = True, suppress_output = True)
@@ -178,9 +190,9 @@ def DelegateFunctionCall(loot_filter: LootFilter,
          - Example: > python3 backend_cli.py undo_last_change
         '''
         CheckNumParams(function_params, 0)
-        profile_lines: List[str] = helper.ReadFile(loot_filter.profile_fullpath)
-        with open(loot_filter.profile_fullpath, 'w') as profile_file:
-            profile_file.writelines(profile_lines[:-1])
+        changes_lines: List[str] = helper.ReadFile(config_data['ChangesFullpath'])
+        with open(config_data['ChangesFullpath'], 'w') as changes_file:
+            changes_file.writelines(changes_lines[:-1])
         DelegateFunctionCall(loot_filter, 'import_downloaded_filter', [])
     # ====================================== Rule Matching ======================================
     elif (function_name == 'get_rule_matching_item'):
@@ -217,7 +229,7 @@ def DelegateFunctionCall(loot_filter: LootFilter,
                           'disable': RuleVisibility.kDisable}
         success_flag = loot_filter.SetRuleVisibility(
                 type_tag, tier_tag, kVisibilityMap[visibility_string])
-        # Error out on incorrect tags for now to make testing easier
+        # Error out on incorrect tags for now to make testing easierlensing
         if (not success_flag):
             Error('Rule with type_tag="{}", tier_tag="{}" does not exist in filter'.format(
                     type_tag, tier_tag))
@@ -356,18 +368,18 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetGemMinQuality())
     # ========================================== Maps ==========================================
-    elif (function_name == 'set_hide_map_below_tier'):
+    elif (function_name == 'set_hide_maps_below_tier'):
         '''
-        set_hide_map_below_tier <tier: int>
+        set_hide_maps_below_tier <tier: int>
          - Sets the map tier below which all will be hidden (use 0/1 to show all)
          - Output: None
          - Example: > python3 backend_cli.py set_hide_map_below_tier 14
         '''
         min_visibile_tier: int = int(function_params[0])
         loot_filter.SetHideMapsBelowTierTier(min_visibile_tier)
-    elif (function_name == 'get_hide_map_below_tier'):
+    elif (function_name == 'get_hide_maps_below_tier'):
         '''
-        get_hide_map_below_tier
+        get_hide_maps_below_tier
          - Output:  single integer, the tier below which all maps are hidden
          - Example: > python3 backend_cli.py get_hide_map_below_tier
         '''
@@ -461,41 +473,19 @@ def main():
     logger.InitializeLog(kLogFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
     logger.Log(argv_info_message)
-    # Parse command, determine input/output/profile path based on test_flag
-    test_flag: bool = False
-    function_name, function_params = '', []
-    # Check that there are enough params, and split into function_name, function_params
-    if (len(sys.argv) < 2):
-        Error('no function specified, too few command line arguments given')
-    test_flag = sys.argv[1] == 'TEST'
-    remaining_argv = sys.argv[(2 if test_flag else 1) :]
-    if (len(remaining_argv) == 0):
-        Error('no function specified, too few command line arguments given')
-    function_name, *function_params = remaining_argv
-    profile_fullpath = (test_consts.kProfileFullpath if test_flag else config.kProfileFullpath)
-    output_filter_fullpath = (test_consts.kPathOfExileLootFilterFullpath if test_flag
-                              else config.kPathOfExileLootFilterFullpath)
-    # Usually, the input filter path equals the output filter path
-    input_filter_fullpath = output_filter_fullpath
-    # The exception is import_downloaded_filter - input is the downloaded filter
-    # If importing downloaded filter, either move or copy the downloaded filter to the 
-    # input directory, as specified in config by kRemoveDownloadedFilter
-    if (function_name == 'import_downloaded_filter'):
-        downloaded_filter_fullpath = (test_consts.kDownloadedLootFilterFullpath if test_flag 
-                                      else config.kDownloadedLootFilterFullpath)
-        if (not os.path.isfile(downloaded_filter_fullpath)):
-            Error('downloaded loot filter: "{}" does not exist'.format(
-                    downloaded_filter_fullpath))
-        input_filter_fullpath = (test_consts.kInputLootFilterFullpath if test_flag 
-                                 else config.kInputLootFilterFullpath)
-        remove_downloaded_filter = False if test_flag else config.kRemoveDownloadedFilter
-        if (remove_downloaded_filter):
-            file_manip.MoveFile(downloaded_filter_fullpath, input_filter_fullpath)
-        else:
-            file_manip.CopyFile(downloaded_filter_fullpath, input_filter_fullpath)
+    # Check that there are enough params (at least script name, profile name, function name)
+    if (len(sys.argv) < 3):
+        Error('too few command line arguments given (profile name or function name missing)\n' +
+              'Usage:\n' +
+              ' > python3 backend_cli.py <profile_name> <function_name> <function_arguments...>')
+    _, profile_name, function_name, *function_params = sys.argv
+    # Input filter is read from the output filter path, unless importing downloaded filter
+    output_as_input_filter: bool = (function_name != 'import_downloaded_filter')
     # Delegate function call
-    loot_filter = LootFilter(input_filter_fullpath, output_filter_fullpath, profile_fullpath)
-    try:
+    # Note: we create the loot filter first and pass in as a parameter,
+    # so that in case of a batch, DelegateFunctionCall can call itself recursively
+    loot_filter = LootFilter(profile_name, output_as_input_filter)
+    try:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
         DelegateFunctionCall(loot_filter, function_name, function_params)
     except Exception as e:
         traceback_message = traceback.format_exc()

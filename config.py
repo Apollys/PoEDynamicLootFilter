@@ -36,10 +36,10 @@ if (not os.path.isdir(kDownloadDirectory)):
     raise RuntimeError('download directory: "{}" does not exist'.format(kDownloadDirectory))
     
 if (not os.path.isdir(kPathOfExileDirectory)):
-    raise RuntimeError('download directory: "{}" does not exist'.format(kPathOfExileDirectory))
+    raise RuntimeError('path of exile directory: "{}" does not exist'.format(kPathOfExileDirectory))
 
 # Make other missing directories (for which their absence is not an error)
-os.makedirs(kInputLootFilterDirectory, exist_ok = True) 
+os.makedirs(kInputLootFilterDirectory, exist_ok = True)
 
 os.makedirs(kProfileDirectory, exist_ok = True) 
 

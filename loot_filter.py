@@ -5,10 +5,10 @@ from collections import OrderedDict
 from enum import Enum
 from typing import Dict, List, Tuple
 
-import config
 import consts
 import helper
 import logger
+import profile
 import rule_parser
 import test_consts
 from type_checker import CheckType, CheckType2
@@ -220,10 +220,8 @@ class LootFilterRule:
 class LootFilter:
     '''
     Member variables:
-     - self.input_filter_fullpath
-     - self.output_filter_fullpath
-     - self.profile_fullpath
-     - self.profile_fullpath
+     - self.profile_config_data: dict
+     - self.input_filter_fullpath: str
      - self.text_lines: List[str]
      - self.parser_index: int
      - self.section_map: OrderedDict[id: str, name: str]
@@ -239,21 +237,17 @@ class LootFilter:
     # ============================== Public API ==============================
     
     # Construct LootFilter object, parsing the given loot filter file
-    def __init__(self, input_filter_fullpath: str,
-                 output_filter_fullpath: str = config.kPathOfExileLootFilterFullpath,
-                 profile_fullpath: str = config.kProfileFullpath):
-        CheckType(input_filter_fullpath, 'input_filter_fullpath', str)
-        CheckType(output_filter_fullpath, 'output_filter_fullpath', str)
-        CheckType(profile_fullpath, 'profile_fullpath', str)
-        self.input_filter_fullpath = input_filter_fullpath
-        self.output_filter_fullpath = output_filter_fullpath
-        self.profile_fullpath = profile_fullpath
-        self.custom_rules_fullpath = profile_fullpath[: -len('.profile')] + '.rules'
+    def __init__(self, profile_name: str, output_as_input_filter: bool):
+        CheckType(profile_name, 'profile_name', str)
+        CheckType(output_as_input_filter, 'output_as_input_filter', bool)
+        self.profile_config_data = profile.ParseProfileConfig(profile_name)
+        self.input_filter_fullpath = (self.profile_config_data['OutputLootFilterFullpath']
+                if output_as_input_filter else self.profile_config_data['InputLootFilterFullpath'])
         self.ParseInputFilterFile()
     # End __init__
 
     def SaveToFile(self):
-        with open(self.output_filter_fullpath, 'w') as output_file:
+        with open(self.profile_config_data['OutputLootFilterFullpath'], 'w') as output_file:
             line_index: int = 0
             while (line_index < len(self.text_lines)):
                 line: str = self.text_lines[line_index]
@@ -685,42 +679,40 @@ class LootFilter:
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         current_section_id_int: int = int(consts.kDlfAddedRulesSectionGroupId)
         # Add custom user-defined rules
-        if (os.path.isfile(self.custom_rules_fullpath)):
-            current_section_id_int += 1
-            custom_rules_filename: str = os.path.basename(self.custom_rules_fullpath)
-            to_add_string = consts.kSectionHeaderTemplate.format(
-                    current_section_id_int, 'Custom rules from ' + custom_rules_filename)
-            to_add_string_list.extend(to_add_string.split('\n') + [''])
-            with open(self.custom_rules_fullpath) as custom_rules_file:
-                custom_rules_lines: List[str] = custom_rules_file.readlines()
-            custom_rules_lines = [line.strip() for line in custom_rules_lines]
-            custom_rules_lines.append('')  # append blank line to handle end uniformly
-            current_rule_lines: List[str] = []
-            custom_rule_count: int = 0
-            for line_index in range(len(custom_rules_lines)):
-                line: str = custom_rules_lines[line_index]
-                if (line == ''):
-                    if (len(current_rule_lines) == 0):
-                        continue
-                    else:
-                        # End of rule -> add rule, reset lines, and increment count
-                        to_add_string_list.extend(current_rule_lines + [''])
-                        current_rule_lines = []
-                        custom_rule_count += 1
-                elif (helper.IsRuleStart(custom_rules_lines, line_index)):
-                    type_tag = 'custom_rule'
-                    tier_tag = str(custom_rule_count)
-                    current_rule_lines.append(
-                            line + ' # $type->{} $tier->{}'.format(type_tag, tier_tag))
-                else:  # nonempty line
-                    current_rule_lines.append(line)
+        current_section_id_int += 1
+        to_add_string = consts.kSectionHeaderTemplate.format(
+                current_section_id_int,
+                'Custom rules from ' + self.profile_config_data['ProfileName'] + '.rules')
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        custom_rules_lines = helper.ReadFile(self.profile_config_data['RulesFullpath'])
+        custom_rules_lines = [line.strip() for line in custom_rules_lines]
+        custom_rules_lines.append('')  # append blank line to handle end uniformly
+        current_rule_lines: List[str] = []
+        custom_rule_count: int = 0
+        for line_index in range(len(custom_rules_lines)):
+            line: str = custom_rules_lines[line_index]
+            if (line == ''):
+                if (len(current_rule_lines) == 0):
+                    continue
+                else:
+                    # End of rule -> add rule, reset lines, and increment count
+                    to_add_string_list.extend(current_rule_lines + [''])
+                    current_rule_lines = []
+                    custom_rule_count += 1
+            elif (helper.IsRuleStart(custom_rules_lines, line_index)):
+                type_tag = 'custom_rule'
+                tier_tag = str(custom_rule_count)
+                current_rule_lines.append(
+                        line + ' # $type->{} $tier->{}'.format(type_tag, tier_tag))
+            else:  # nonempty line
+                current_rule_lines.append(line)
         # Add "Hide maps below tier" rule
         current_section_id_int += 1
         to_add_string = consts.kSectionHeaderTemplate.format(
                 current_section_id_int, 'Hide all maps below specified tier')
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         to_add_string = consts.kHideMapsBelowTierRuleTemplate.format(
-                config.kHideMapsBelowTier)
+                self.profile_config_data['HideMapsBelowTier'])
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         # Add flask rule
         current_section_id_int += 1
@@ -730,10 +722,21 @@ class LootFilter:
         to_add_string = consts.kFlaskRuleTemplate
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         # Add chaos recipe rules
+        # TODO: comment out if config says don't add chaos recipe rules
         current_section_id_int += 1
         to_add_string = consts.kSectionHeaderTemplate.format(
                 current_section_id_int, 'Chaos recipe rares')
         to_add_string_list.extend(to_add_string.split('\n') + [''])
+        # Weapons handled separately, since config tells us which classes to use
+        item_slot = 'WeaponsX'
+        weapon_classes = self.profile_config_data['ChaosRecipeWeaponClassesAnyHeight']
+        to_add_string = consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes)
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        item_slot = 'Weapons3'
+        weapon_classes = self.profile_config_data['ChaosRecipeWeaponClassesMaxHeight3']
+        to_add_string = consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes)
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        # Handle the rest of chaos recipe rules
         for chaos_recipe_rule_string in consts.kChaosRecipeRuleStrings:
             to_add_string_list.extend(chaos_recipe_rule_string.split('\n') + [''])
         # Update self.text_lines to contain the newly added rules

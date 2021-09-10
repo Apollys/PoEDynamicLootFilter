@@ -1,0 +1,10 @@
+# Ignore all profile files
+*.config
+*.rules
+*.changes
+
+# ...except DefaultProfile (used as a sample)
+!DefaultProfile.config
+!DefaultProfile.rules
+!DefaultProfile.changes
+
