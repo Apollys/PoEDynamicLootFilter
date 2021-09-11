@@ -4,7 +4,20 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
 - - -
 
+### Updated syntax for backend command-line interface calls
+
+```
+> python3 backend_cli.py <function_name> <profile_name (if required)> <function_parameters...>
+```
+
+The `profile_name` parameter is required in all cases except for:
+ - `get_all_profile_names`
+ - `set_active_profile`
+
+- - -
+
 ### Cody To-Do
+ - Update documentation in backend_cli to include profile in sample syntax
  - Fix test suite to work with new profile system
  - Create a more thorough set of tests to cover everything in the backend_cli
    - Examples: make sure filter is saved whenever a change is made, make sure things go to the
@@ -38,7 +51,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
 The AHK frontend calls the Python backend via:
 ```
-> python3 backend_cli.py <profile_name> <function_name> <function_parameters...>
+> python3 backend_cli.py <function_name> <profile_name (if required)> <function_parameters...>
 ```
 The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
 
@@ -47,6 +60,8 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 **Currently Supported Functions:**
   - `run_batch`
     - TODO: make input filepath first argument (maybe?)
+  - `get_all_profile_names`
+  - `set_active_profile`
   - `undo_last_change`
   - `import_downloaded_filter <optional keyword: "only_if_missing">`
   - `get_rule_matching_item`

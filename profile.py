@@ -10,33 +10,42 @@ kProfileDirectory = 'Profiles'
 kGeneralConfigFilename = 'general.config'
 kGeneralConfigFullpath = os.path.join(kProfileDirectory, kGeneralConfigFilename)
 
+kActiveProfileTemplate = 'Active profile: {}'
+
 def GetActiveProfileName() -> str:
     if (not os.path.isfile(kGeneralConfigFullpath)):
         return None
-    general_config_lines = helper.ReadFile(kGeneralConfigFullpath)
-    nonempty_lines = [line for line in general_config_lines if line.strip() != '']
+    general_config_lines = [line.strip() for line in helper.ReadFile(kGeneralConfigFullpath)]
+    nonempty_lines = [line for line in general_config_lines if line != '']
     if (len(nonempty_lines) == 0):
         return None
     parse_success, parse_results = simple_parser.ParseFromTemplate(
-            nonempty_lines[0], 'Active Profile: {}')
+            nonempty_lines[0], kActiveProfileTemplate)
     return  parse_results[0] if parse_success else None
+# End GetActiveProfileName
 
+def SetActiveProfile(profile_name: str):
+    if (not os.path.isdir(kProfileDirectory)):
+        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
+    with open(kGeneralConfigFullpath, 'w') as general_config_file:
+        general_config_file.write(kActiveProfileTemplate.format(profile_name))
+# End SetActiveProfile
+
+# Returns a list of strings, each string containing the name of a profile
+# The first item in the list is the currently active profile
 def GetAllProfileNames() -> list:
-    profile_names: set[str] = set()
+    profile_names: list[str] = [GetActiveProfileName()]
     profile_files_list: list[str] = file_manip.ListFilesInDirectory(kProfileDirectory)
     for filename in profile_files_list:
         if (filename == 'general.config'):
             continue
-        profile_name: str = os.path.splitext(filename)[0]
-        profile_names.add(profile_name)
-    return list(profile_names)
+        profile_name, extension = os.path.splitext(filename)
+        if ((extension == '.config') and (profile_name != profile_names[0])):
+            profile_names.append(profile_name)
+    return profile_names
+# End GetAllProfileNames
 
-def GetProfileConfigFullpath(profile_name: str) -> str:
-    return os.path.join(kProfileDirectory, profile_name + '.config')
-
-def GetProfileRulesFullpath(profile_name: str) -> str:
-    return os.path.join(kProfileDirectory, profile_name + '.rules')
-
+# Map of keyphrases from config file to keywords used in the config_data dictionary
 kProfileConfigKeyphraseMap = {
         'Download directory' : 'DownloadDirectory',
         'Input (backup) loot filter directory' : 'InputLootFilterDirectory',
@@ -48,6 +57,7 @@ kProfileConfigKeyphraseMap = {
         'Add chaos recipe rules' : 'AddChaosRecipeRules',
         'Chaos recipe weapon classes, any height' : 'ChaosRecipeWeaponClassesAnyHeight',
         'Chaos recipe weapon classes, max height 3' : 'ChaosRecipeWeaponClassesMaxHeight3'}
+
 def ParseProfileConfig(profile_name: str) -> dict:
     CheckType(profile_name, 'profile_name', str)
     config_data = {}
@@ -112,7 +122,7 @@ def ParseProfileConfig(profile_name: str) -> dict:
     os.makedirs(config_data['InputLootFilterDirectory'], exist_ok = True)
     # Done parsing
     return config_data
-        
+# End ParseProfileConfig
 
 def Test():
     active_profile_name = GetActiveProfileName()
@@ -125,5 +135,29 @@ def Test():
     print('parsed config data:')
     for key, value in parsed_config_data.items():
         print('{} : {} ({})'.format(key, value, type(value).__name__))
+# End Test
 
-#Test()
+# Test()
+
+'''
+Exampe parsed config data:
+
+ProfileName : DefaultProfile (str)
+ConfigFullpath : Profiles/DefaultProfile.config (str)
+RulesFullpath : Profiles/DefaultProfile.rules (str)
+ChangesFullpath : Profiles/DefaultProfile.changes (str)
+DownloadDirectory : FiltersDownload (str)
+InputLootFilterDirectory : FiltersInput (str)
+PathOfExileDirectory : FiltersPathOfExile (str)
+DownloadedLootFilterFilename : BrandLeaguestart.filter (str)
+OutputLootFilterFilename : DynamicLootFilter.filter (str)
+RemoveDownloadedFilter : False (bool)
+HideMapsBelowTier : 0 (int)
+AddChaosRecipeRules : True (str)
+ChaosRecipeWeaponClassesAnyHeight : "Daggers" "Rune Daggers" "Wands" (str)
+ChaosRecipeWeaponClassesMaxHeight3 : "Bows" (str)
+DownloadedLootFilterFullpath : FiltersDownload/BrandLeaguestart.filter (str)
+InputLootFilterFullpath : FiltersInput/BrandLeaguestart.filter (str)
+OutputLootFilterFullpath : FiltersPathOfExile/DynamicLootFilter.filter (str)
+'''
+

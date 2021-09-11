@@ -2,12 +2,16 @@
 This file defines the command-line interface for the AHK frontend
 to call the Python backend.  The general call format is:
 
- > python3 backend_cli.py <function_name> <function_parameters>
+ > python3 backend_cli.py <function_name> <profile_name (if required> <function_parameters>
 
 Return values of functions will be placed in the file "backend_cli.output",
 formatted as specified by the frontend developer.  (Note: make sure
 calls to the cli are synchronous if return values are to be used,
 so you ensure data is written before you try to read it.)
+
+Some functions do not require a profile_name parameter, specifically those which
+do not interact with the filter in any way (for now, this is simply the setters and getters
+for profile names).
 
 Scroll down to DelegateFunctionCall() to see documentation of all supported functions.
    
@@ -43,6 +47,7 @@ import file_manip
 import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
+import profile
 import test_consts
 from type_checker import CheckType
 
@@ -59,6 +64,10 @@ kFilterMutatorFunctionNames = ['set_rule_visibility',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
         'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_hide_map_below_tier',
          'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for',]
+
+# Functions that don't require a profile parameter in the CLI
+# These are the functions that do not interact with the loot filter in any way
+kNoProfileParameterFunctionNames = ['get_all_profile_names', 'set_active_profile']
 
 def Error(e):
     logger.Log('Error ' + str(e))
@@ -94,19 +103,19 @@ def AppendFunctionOutput(function_output_string: str):
         output_file.write(function_output_string + '@\n')
 # End AppendFunctionOutput
 
-def DelegateFunctionCall(loot_filter: LootFilter,
+def DelegateFunctionCall(loot_filter: LootFilter or None,
                          function_name: str,
                          function_params: List[str],
                          *,  # require subsequent arguments to be named in function call
                          in_batch: bool = False,
                          suppress_output: bool = False):
-    CheckType(loot_filter, 'loot_filter', LootFilter)
+    CheckType(loot_filter, 'loot_filter', (LootFilter, type(None)))
     CheckType(function_name, 'function_name', str)
     CheckType(function_params, 'function_params_list', list)
     CheckType(in_batch, 'in_batch', bool)
     CheckType(suppress_output, 'suppress_output', bool)
     # Alias config_data for convenience
-    config_data = loot_filter.profile_config_data
+    config_data = loot_filter.profile_config_data if loot_filter else None
     # 
     output_string = ''
     # Save function call to profile data if it is a mutator function
@@ -179,7 +188,26 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         # Check if batch contained a mutator and save filter if so
         if (contains_mutator):
             loot_filter.SaveToFile()
-    # ========================================== Undo ==========================================
+    # ========================================== Profile ==========================================
+    elif (function_name == 'get_all_profile_names'):
+        '''
+        get_all_profile_names
+         - Note: Does *not* take a <profile_name> parameter
+         - Output: newline-separated list of all profile names, with currently active profile first
+         - Example: > python3 get_all_profile_names
+        '''
+        CheckNumParams(function_params, 0)
+        profile_names_list = profile.GetAllProfileNames()
+        output_string += '\n'.join(profile_names_list)
+    elif (function_name == 'set_active_profile'):
+        '''
+        set_active_profile <new_active_profile_name>
+         - Note: Does *not* take a (current) <profile_name> parameter
+         - Output: None
+         - Example: > python3 set_active_profile TestProfile
+        '''
+        CheckNumParams(function_params, 1)
+        profile.SetActiveProfile(function_params[0])
     elif (function_name == 'undo_last_change'):
         '''
         undo_last_change
@@ -467,24 +495,36 @@ def DelegateFunctionCall(loot_filter: LootFilter,
         if (function_name in kFilterMutatorFunctionNames):
             loot_filter.SaveToFile()
 # End DelegateFunctionCall
-        
+
+kUsageErrorString = ('ill-formed command-line call\n' +
+  '  Check that the function name is spelled correctly and that the syntax is as follows:\n' +
+  '  > python3 backend_cli.py <function_name> <profile_name (if required)> <function_arguments...>')
+
 def main():
     # Initialize log
     logger.InitializeLog(kLogFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
     logger.Log(argv_info_message)
-    # Check that there are enough params (at least script name, profile name, function name)
-    if (len(sys.argv) < 3):
-        Error('too few command line arguments given (profile name or function name missing)\n' +
-              'Usage:\n' +
-              ' > python3 backend_cli.py <profile_name> <function_name> <function_arguments...>')
-    _, profile_name, function_name, *function_params = sys.argv
+    # Check that there are enough params:
+    #  - For non-profile-parameterized functions: script name, function name, ...
+    #  - Otherwise: script name, function name, profile name, ...
+    if (len(sys.argv) < 2):
+        Error(kUsageErrorString)
+    _, function_name, *remaining_args = sys.argv
+    profile_name = None
+    required_profile_param: bool = (function_name not in kNoProfileParameterFunctionNames)
+    if (required_profile_param):
+        if (len(sys.argv) < 3):
+            Error(kUsageErrorString)
+        profile_name, *function_params = remaining_args
+    else:
+        function_params = remaining_args
     # Input filter is read from the output filter path, unless importing downloaded filter
     output_as_input_filter: bool = (function_name != 'import_downloaded_filter')
     # Delegate function call
     # Note: we create the loot filter first and pass in as a parameter,
     # so that in case of a batch, DelegateFunctionCall can call itself recursively
-    loot_filter = LootFilter(profile_name, output_as_input_filter)
+    loot_filter = LootFilter(profile_name, output_as_input_filter) if profile_name else None
     try:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
         DelegateFunctionCall(loot_filter, function_name, function_params)
     except Exception as e:
