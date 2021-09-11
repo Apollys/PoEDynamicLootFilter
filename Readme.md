@@ -18,7 +18,7 @@ The `profile_name` parameter is required in all cases except for:
 
 ### Cody To-Do
  - Update documentation in backend_cli to include profile in sample syntax
- - Fix test suite to work with new profile system
+ - Update all tests in test_suite to new test framework
  - Create a more thorough set of tests to cover everything in the backend_cli
    - Examples: make sure filter is saved whenever a change is made, make sure things go to the
      right tier/status by re-reading the file, make sure it doesn't save on batch of getters, etc
