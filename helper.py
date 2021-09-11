@@ -1,3 +1,4 @@
+import os
 from typing import Dict, List, Tuple
 
 import consts
@@ -15,6 +16,24 @@ def ReadFile(fullpath: str) -> List[str]:
     except FileNotFoundError:
         return []
 # End ReadFile
+
+# Writes data to the file determined by fullpath
+# If data is a non-string iterable type, then it is written as newline-separated items
+# Otherwise, str(data) is written directly to file
+# Safe against directory not existing (creates directory if missing)
+def WriteToFile(data, fullpath: str):
+    os.makedirs(os.path.dirname(fullpath), exist_ok = True)
+    with open(fullpath, 'w') as f:
+        if (isinstance(data, str)):
+            f.write(data)
+        else:
+            try:
+                iter(data)
+                data_list = list(data)
+                f.write('\n'.join(str(x) for x in data_list))
+            except TypeError:
+                f.write(str(data))
+# End WriteToFile
 
 # Given a string and a predicate (function mapping character to bool),
 # returns the index of the first character in the string for which

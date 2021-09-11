@@ -48,7 +48,6 @@ import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
 import profile
-import test_consts
 from type_checker import CheckType
 
 kLogFilename = 'backend_cli.log'

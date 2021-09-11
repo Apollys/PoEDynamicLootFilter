@@ -10,7 +10,6 @@ import helper
 import logger
 import profile
 import rule_parser
-import test_consts
 from type_checker import CheckType, CheckType2
 
 # -----------------------------------------------------------------------------

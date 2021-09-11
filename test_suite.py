@@ -1,15 +1,41 @@
 import os  # subprocess.run creating all sorts of problems, so we use os.system
+import os.path
 import random
 import shutil
 
 from backend_cli import kInputFilename as kBackendCliInputFilename
-import config
+from backend_cli import kOutputFilename as kBackendCliOutputFilename
 import consts
 import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
-import test_consts
+import profile
 from type_checker import CheckType, CheckType2
+
+kTestLogFilename = 'test.log'
+
+kTestProfileName = 'TestProfile'
+
+kTestProfileConfigString = \
+'''# Profile config file for profile: "TestProfile"
+
+# Loot filter file locations
+Download directory: FiltersDownload
+Input (backup) loot filter directory: FiltersInput
+Path of Exile directory: FiltersPathOfExile
+Downloaded loot filter filename: BrandLeaguestart.filter
+Output (Path of Exile) loot filter filename: TestDynamicLootFilter.filter
+
+# Remove filter from downloads directory when importing?
+# Filter will still be saved in Input directory even if this is True
+Remove downloaded filter: False
+
+# Loot filter options
+Hide maps below tier: 0
+Add chaos recipe rules: True
+Chaos recipe weapon classes, any height: Daggers, Rune Daggers, Wands
+Chaos recipe weapon classes, max height 3: Bows
+'''
 
 def CHECK(expr: bool):
     if (not expr):
@@ -17,23 +43,54 @@ def CHECK(expr: bool):
 # End CHECK
 
 def ResetTestProfile():
-    open(test_consts.kProfileFullpath, 'w').close()
-    open(test_consts.kPathOfExileLootFilterFullpath, 'w').close()
+    # Write config string to config file
+    helper.WriteToFile(
+            kTestProfileConfigString, profile.GetProfileConfigFullpath(kTestProfileName))
+    # Clear rules and changes fules
+    open(profile.GetProfileRulesFullpath(kTestProfileName), 'w').close()
+    open(profile.GetProfileChangesFullpath(kTestProfileName), 'w').close()
 # End ResetTestProfile
 
-def TestChangeRuleVisibility():
-    print('Running TestChangeRuleVisibility...')
-    loot_filter = LootFilter(test_consts.kDownloadedLootFilterFullpath,
-                             test_consts.kPathOfExileLootFilterFullpath,
-                             test_consts.kProfileFullpath)
-    type_name = 'currency'
-    tier_name = consts.kCurrencyTierNames[1]
-    rule = loot_filter.type_tier_rule_map[type_name][tier_name]
-    rule.SetVisibility(RuleVisibility.kShow)
-    rule.SetVisibility(RuleVisibility.kHide)
-    rule.SetVisibility(RuleVisibility.kDisable)
+# Input is the backend_cli function (and parameters), optionally as a template string with
+# "{}" in the location of the profile name
+# Example: 'set_currency_tier {} "Chromatic Orb" 5'
+def CallCliFunction(function_call: str):
+    CheckType(function_call, 'function_call', str)
+    full_command: str = 'python3 backend_cli.py ' + function_call
+    if ('{}' in full_command):
+        full_command = full_command.format(kTestProfileName)
+    return_value = os.system(full_command)
+    CHECK(return_value == 0)
+# End RunCommand
+
+def TestSetRuleVisibility():
+    print('Running TestSetRuleVisibility...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter {}')
+    type_tag = consts.kCurrencyTypeTag
+    tier_tag = consts.kCurrencyTierNames[1]
+    # Test "hide"
+    CallCliFunction('set_rule_visibility {} {} {} hide'.format(
+            '{}', type_tag, tier_tag))
+    loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
+    rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
+    CHECK(rule.visibility == RuleVisibility.kHide)
+    # Test "disable"
+    CallCliFunction('set_rule_visibility {} {} {} disable'.format(
+            '{}', type_tag, tier_tag))
+    loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
+    rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
+    CHECK(rule.visibility == RuleVisibility.kDisable)
     CHECK(all(line.startswith('#') for line in rule.text_lines))
+    # Test "show"
+    CallCliFunction('set_rule_visibility {} {} {} show'.format(
+            '{}', type_tag, tier_tag))
+    loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
+    rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
+    CHECK(rule.visibility == RuleVisibility.kShow)
 # End TestChangeRuleVisibility
+
+# ========================= TODO: update all tests below this line ==========================
 
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
@@ -124,18 +181,17 @@ def TestBackendCli():
 # End TestBackendCli
 
 def RunAllTests():
-    ResetTestProfile()
-    TestChangeRuleVisibility()
-    TestHideMapsBelowTier()
-    TestCurrency()
-    TestChaosRecipe()
-    TestRunBatchCli()
-    ResetTestProfile()
-    TestBackendCli()
+    TestSetRuleVisibility()
+    #TestHideMapsBelowTier()
+    #TestCurrency()
+    #TestChaosRecipe()
+    #TestRunBatchCli()
+    #ResetTestProfile()
+    #TestBackendCli()
 # End RunAllTests
 
 def main():
-    logger.InitializeLog(test_consts.kLogFullpath)
+    logger.InitializeLog(kTestLogFilename)
     RunAllTests()
     print('All tests completed successfully!')
 # End main

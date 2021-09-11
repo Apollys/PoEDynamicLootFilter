@@ -45,6 +45,18 @@ def GetAllProfileNames() -> list:
     return profile_names
 # End GetAllProfileNames
 
+def GetProfileConfigFullpath(profile_name: str) -> str:
+    return os.path.join(kProfileDirectory, profile_name + '.config')
+# End GetProfileConfigFullpath
+    
+def GetProfileRulesFullpath(profile_name: str) -> str:
+    return os.path.join(kProfileDirectory, profile_name + '.rules')
+# End GetProfileRulesFullpath
+    
+def GetProfileChangesFullpath(profile_name: str) -> str:
+    return os.path.join(kProfileDirectory, profile_name + '.changes')
+# End GetProfileChangesFullpath
+
 # Map of keyphrases from config file to keywords used in the config_data dictionary
 kProfileConfigKeyphraseMap = {
         'Download directory' : 'DownloadDirectory',
@@ -62,11 +74,9 @@ def ParseProfileConfig(profile_name: str) -> dict:
     CheckType(profile_name, 'profile_name', str)
     config_data = {}
     config_data['ProfileName'] = profile_name
-    # Compute all profile file fullpaths
-    profile_path_basename = os.path.join(kProfileDirectory, profile_name)
-    config_data['ConfigFullpath'] = profile_path_basename + '.config'
-    config_data['RulesFullpath'] = profile_path_basename + '.rules'
-    config_data['ChangesFullpath'] = profile_path_basename + '.changes'
+    config_data['ConfigFullpath'] = GetProfileConfigFullpath(profile_name)
+    config_data['RulesFullpath'] = GetProfileRulesFullpath(profile_name)
+    config_data['ChangesFullpath'] = GetProfileChangesFullpath(profile_name)
     # Config file is required, raise error if not present
     if (not os.path.isfile(config_data['ConfigFullpath'])):
         raise RuntimeError('file {} does not exist'.format(config_data['ConfigFullpath']))
