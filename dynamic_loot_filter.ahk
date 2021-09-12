@@ -33,7 +33,7 @@ rare_val := []
 rare_val_start := []
 fake_queue := []
 FileDelete, %ahk_out_path%
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_map_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_map_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`n, %ahk_out_path%
 For key in flasks
 {
 	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
@@ -80,6 +80,9 @@ Loop, parse, py_out_text, `n, `r
 		currhide := A_LoopField
 	Case 6:
 		uniqhide := A_LoopField
+	Case 7:
+		gemmin := A_LoopField
+		base_gemmin := gemmin
 	Default:
 		flasks[fake_queue[prog - 6]] := [A_LoopField, A_LoopField]
 	}
@@ -95,6 +98,7 @@ for idx in rare_txt
 }
 
 ;********** GUI Start ******************************
+GuiBuild:
 ; Currency
 Gui, Font, S16 cB0B0B0 norm, Courier New
 height:= 0
@@ -153,6 +157,12 @@ Gui, Add, Text, x790 y%height% grmbhack vWisdomHide, Wisdom Scroll
 Gui, Font, norm
 height := height + 30
 
+; Gem Qual
+Gui, Add, Text, x590 y%height% vgemtext, Minimum Gem Quality: %gemmin%`%
+height := height + 30
+Gui, Add, Slider, Range1-20 ToolTip NoTicks x590 y%height% gGemSlider vgemslider AltSubmit, % gemmin
+height := height + 20
+
 ; Flask DDL
 Gui, Add, Text, x590 y%height%, Enable/Disable Flasks:
 height := height + 30
@@ -166,6 +176,11 @@ Gui, Font, c606060
 Gui, Add, Text, % "x865 y" height + 5 " grmbhack", Hacky
 Gui, Font, S36, Wingdings
 Gui, Add, Text, % "backgroundtrans x865 w40 y" height-7 " vFlaskShow", 
+
+; Rule Matching
+Gui, Font, S14 norm cB0B0B0, Courier New
+height := height + 40
+Gui, Add, Button, x590 y%height% gClip_, Find Rule Matching Clipboard
 
 ; Options
 Gui, -border
@@ -267,6 +282,89 @@ GuiControl, % "+c" (FlaskShow? "Blue" : "Red"), FlaskShow
 GuiControl,, FlaskShow, % (FlaskShow? Chr(252) : Chr(251))
 return
 
+; Gem Slider
+GemSlider:
+Gui, Submit, NoHide
+gemmin := gemslider
+GuiControl,, gemtext, Minimum Gem Quality: %gemmin%`%
+return
+
+; ???
+MsgBox(Message := "Press Ok to Continue.", Title := "", Type := 0, B1 := "", B2 := "", B3 := "", Time := "") {
+	If (Title = "")
+		Title := A_ScriptName
+	If (B1 != "") || (B2 != "") || (B3 != "")
+		SetTimer, ChangeButtonNames, -10
+	MsgBox, % Type, % Title, % Message, % Time
+	Return
+
+	ChangeButtonNames:
+		IfWinNotExist, %Title%
+			Return
+		WinActivate, % Title
+		ControlSetText, Button1, % (B1 = "") ? "Ok" : B1, % Title
+		Try ControlSetText, Button2, % (B2 = "") ? "Cancel" : B2, % Title
+		Try ControlSetText, Button3, % (B3 = "") ? "Close" : B3, % Title
+	Return
+}
+
+; Clipboard Rule Matching
+Clip_:
+FileDelete, %ahk_out_path%
+FileDelete, %py_out_path%
+FileAppend, % Clipboard, %ahk_out_path%
+RunWait, python %py_prog_path% get_rule_matching_item , , Hide
+FileRead, py_out_text, %py_out_path%
+If( py_out_text = "")
+{
+	MsgBox, No Matched Rule
+	return
+}
+idx := 0
+type_tag := ""
+tier_tag := ""
+rule := ""
+Loop, parse, py_out_text, `n, `r
+{
+	if(idx = 0){
+		splits := StrSplit(A_LoopField, ":")
+		type_tag := splits[2]
+		idx := 1
+	}
+	else if(idx = 1){
+		splits := StrSplit(A_LoopField, ":")
+		tier_tag := splits[2]
+		idx := 2
+	}
+	else
+		rule .= A_LoopField "`n"
+}
+visi := ""
+If(InStr(py_out_text, "Show #")){
+	MsgBox(rule, "Matched Rule" , 3 , "Hide", "Disable", "Show")
+	IfMsgBox Yes
+		visi := "hide"
+	IfMsgBox No
+		visi := "disable"
+}Else If(InStr(py_out_text, "Hide #")){
+	MsgBox(rule, "Matched Rule" , 3 , "Show", "Disable", "Hide")
+	IfMsgBox Yes
+		visi := "show"
+	IfMsgBox No
+		visi := "disable"
+}Else{
+	MsgBox(rule, "Matched Rule" , 3 , "Show", "Hide", "Disable")
+	IfMsgBox Yes
+		visi := "show"
+	IfMsgBox No
+		visi := "hide"
+}
+If(visi != ""){
+	MsgBox, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi%
+	RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi%, , Hide
+}
+return
+
 ; Write all filter modifications to one file, send it over to python
 Update_:
 Gui, Hide
@@ -303,6 +401,10 @@ if (base_wishide != WisdomHide){
 	FileAppend, % "set_currency_tier_visibility twisdom " (WisdomHide? "0":"1") "`n", %ahk_out_path%
 }
 base_wishide := WisdomHide
+if (base_gemhide != gemhide){
+	FileAppend, % "set_gem_min_quality " %gemhide% "`n", %ahk_out_path%
+}
+base_gemhide := gemhide
 for idx, val in flasks
 {
 	if (val[1] != val[2])
