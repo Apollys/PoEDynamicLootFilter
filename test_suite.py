@@ -23,7 +23,7 @@ kTestProfileConfigString = \
 Download directory: FiltersDownload
 Input (backup) loot filter directory: FiltersInput
 Path of Exile directory: FiltersPathOfExile
-Downloaded loot filter filename: BrandLeaguestart.filter
+Downloaded loot filter filename: NeversinkSemiStrict.filter
 Output (Path of Exile) loot filter filename: TestDynamicLootFilter.filter
 
 # Remove filter from downloads directory when importing?
