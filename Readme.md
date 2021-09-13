@@ -7,7 +7,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 ### Updated syntax for backend command-line interface calls
 
 ```
-> python3 backend_cli.py <function_name> <profile_name (if required)> <function_parameters...>
+> python3 backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
 ```
 
 The `profile_name` parameter is required in all cases except for:
