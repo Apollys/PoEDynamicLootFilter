@@ -12,6 +12,8 @@ backend_cli.output
 FiltersPathOfExile/*.filter
 TestData/FiltersPathOfExile/*.filter
 
+dynamic_loot_filter.ahk.bak
+
 # --- The following is GitHub's base Python .gitignore ---
 
 # Byte-compiled / optimized / DLL files
@@ -152,6 +154,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-dynamic_loot_filter.ahk.bak
-FiltersInput/NeverFloat.filter
-FiltersInput/TwiliteBasic.filter
