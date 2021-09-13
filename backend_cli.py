@@ -142,19 +142,6 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         else:
             CheckNumParams(function_params, 0)
         if (import_flag):
-            # First check that downloaded filter exists
-            if (not os.path.isfile(config_data['DownloadedLootFilterFullpath'])):
-                Error('downloaded loot filter: "{}" does not exist'.format(
-                        config_data['DownloadedLootFilterFullpath']))
-            # Either move or copy the downloaded filter to the input directory,
-            # as specified in config by 'RemoveDownloadedFilter'
-            if (config_data['RemoveDownloadedFilter']):
-                file_manip.MoveFile(config_data['DownloadedLootFilterFullpath'],
-                                    config_data['InputLootFilterFullpath'])
-            else:
-                file_manip.CopyFile(config_data['DownloadedLootFilterFullpath'],
-                                    config_data['InputLootFilterFullpath'])
-                
             changes_lines: List[str] = helper.ReadFile(config_data['ChangesFullpath'])
             for function_call_string in changes_lines:
                 _function_name, *_function_params = shlex.split(function_call_string)
@@ -518,6 +505,19 @@ def main():
         profile_name, *function_params = remaining_args
     else:
         function_params = remaining_args
+    # If importing downloaded filter, first verify that downloaded filter exists,
+    # then copy or move based on 'RemoveDownloadedFilter' value given in config
+    config_data = profile.ParseProfileConfig(profile_name) if profile_name else None
+    if (function_name == 'import_downloaded_filter'):
+        if (not os.path.isfile(config_data['DownloadedLootFilterFullpath'])):
+            Error('downloaded loot filter: "{}" does not exist'.format(
+                    config_data['DownloadedLootFilterFullpath']))
+        if (config_data['RemoveDownloadedFilter']):
+            file_manip.MoveFile(config_data['DownloadedLootFilterFullpath'],
+                                config_data['InputLootFilterFullpath'])
+        else:
+            file_manip.CopyFile(config_data['DownloadedLootFilterFullpath'],
+                                config_data['InputLootFilterFullpath'])
     # Input filter is read from the output filter path, unless importing downloaded filter
     output_as_input_filter: bool = (function_name != 'import_downloaded_filter')
     # Delegate function call
