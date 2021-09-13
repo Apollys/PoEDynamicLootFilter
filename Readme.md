@@ -53,9 +53,11 @@ The AHK frontend calls the Python backend via:
 ```
 > python3 backend_cli.py <function_name> <profile_name (if required)> <function_parameters...>
 ```
-The Python backend communicates return values to AHK by writing them to the file `backend_cli.output`.
+The Python backend communicates return values to AHK by writing them to the file
+`backend_cli.output`.
 
-See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py) for the detailed documentation of all available function calls.
+See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py)
+for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
   - `run_batch`
@@ -80,9 +82,9 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
   - `get_hide_currency_above_tier`
   - `set_hide_maps_below_tier <tier: int>`
   - `get_hide_maps_below_tier`
-  - `set_flask_rule_enabled_for <base_type: str> <enable_flag: int>`
-  - `is_flask_rule_enabled_for <base_type: str>`
-  - `get_all_enabled_flask_types` \*
+  - `set_flask_visibility <base_type: str> <visibility_flag: int>`
+  - `get_flask_visibility <base_type: str>`
+  - `get_all_flask_visibilities`
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
   - `is_chaos_recipe_enabled_for <item_slot: str>`
   - `get_all_chaos_recipe_statuses`
@@ -90,5 +92,3 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 **Functions To Implement**
  - Simulate - find rule matching item
 
-\* Can this be changed to something more like the get_all_currency_tiers where it returns every flask type with <flask name>;<int: active>? Would be a lot easier for me
- 

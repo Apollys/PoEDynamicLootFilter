@@ -416,7 +416,7 @@ class LootFilter:
         return flask_base_type in rule.base_type_list
     # End IsFlaskRuleEnabledFor
     
-    def GetAllEnabledFlaskTypes(self) -> List[str]:
+    def GetAllVisibleFlaskTypes(self) -> List[str]:
         type_tag = 'dlf_flasks'
         tier_tag = type_tag
         rule = self.type_tier_rule_map[type_tag][tier_tag]

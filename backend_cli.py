@@ -62,7 +62,7 @@ kFilterMutatorFunctionNames = ['set_rule_visibility',
         'set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
         'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_hide_map_below_tier',
-         'set_flask_rule_enabled_for', 'set_chaos_recipe_enabled_for',]
+         'set_flask_visibility', 'set_chaos_recipe_enabled_for',]
 
 # Functions that don't require a profile parameter in the CLI
 # These are the functions that do not interact with the loot filter in any way
@@ -399,36 +399,42 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
     # ========================================= Flasks =========================================
-    elif (function_name == 'set_flask_rule_enabled_for'):
+    elif (function_name == 'set_flask_visibility'):
         '''
-        set_flask_rule_enabled_for <base_type: str> <enable_flag: int>
+        set_flask_visibility <base_type: str> <visibility_flag: int>
          - Note: this does not overwrite any original filter rules, only adds a rule on top.
            This function never hides flasks, it only modifies its own "Show" rule.
          - <base_type> is any valid flask BaseType
-         - enable_flag is 1 for True (enable), 0 for False (disable)
+         - enable_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Output: None
          - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1
         '''
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
         loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag)
-    elif (function_name == 'is_flask_rule_enabled_for'):
+    elif (function_name == 'get_flask_visibility'):
         '''
-        is_flask_rule_enabled_for <base_type: str>
+        get_flask_visibility <base_type: str>
          - <base_type> is any valid flask BaseType
-         - Output: "1" if flask rule is enabled for given base_type, else "0"
+         - Output: "1" if given flask base type is shown by DLF rule, else "0"
          - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask"
         '''
         flask_base_type: str = function_params[0]
         output_string = str(int(loot_filter.IsFlaskRuleEnabledFor(flask_base_type)))
-    elif (function_name == 'get_all_enabled_flask_types'):
+    elif (function_name == 'get_all_flask_visibilities'):
         '''
-        get_all_enabled_flask_types
-         - Output: newline-separated sequence of enabled flask BaseTypes
+        get_all_flask_visibilities
+         - Output: newline-separated sequence of <flask_basetype>;<visibility_flag: int>
+         - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Example: > python3 backend_cli.py get_all_enabled_flask_types
         '''
-        for flask_base_type in loot_filter.GetAllEnabledFlaskTypes():
-            output_string += flask_base_type + '\n'
+        visible_flask_types = loot_filter.GetAllVisibleFlaskTypes()
+        visible_flask_types_set = set(visible_flask_types)
+        for visible_flask_base_type in visible_flask_types:
+            output_string += visible_flask_base_type + ';1' + '\n'
+        for flask_base_type in consts.kAllFlaskTypes:
+            if flask_base_type not in visible_flask_types_set:
+                output_string += flask_base_type + ';0' + '\n'
     # =================================== Chaos Recipe Rares ===================================
     elif (function_name == 'set_chaos_recipe_enabled_for'):
         '''

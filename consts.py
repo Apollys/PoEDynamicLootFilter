@@ -187,3 +187,11 @@ def GenerateChaosRecipeWeaponRule(item_slot: str, weapon_classes: str) -> str:
                kChaosRecipeMinimapIconType)
 # End GenerateChaosRecipeWeaponRule
 
+# List of all Flask BaseTypes
+kAllFlaskTypes = [
+        'Divine Life Flask', 'Eternal Life Flask', 'Divine Mana Flask', 'Eternal Mana Flask',
+        'Hallowed Hybrid Flask', 'Quicksilver Flask', 'Bismuth Flask', 'Amethyst Flask',
+        'Ruby Flask', 'Sapphire Flask', 'Topaz Flask', 'Aquamarine Flask',
+        'Diamond Flask', 'Granite Flask', 'Jade Flask', 'Quartz Flask', 'Sulphur Flask',
+        'Basalt Flask', 'Silver Flask', 'Stibnite Flask']
+

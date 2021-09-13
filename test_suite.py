@@ -94,10 +94,10 @@ def TestSetRuleVisibility():
 
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
-    loot_filter = LootFilter(test_consts.kDownloadedLootFilterFullpath,
-                             test_consts.kPathOfExileLootFilterFullpath,
-                             test_consts.kProfileFullpath)
-    CHECK(loot_filter.GetHideMapsBelowTierTier() == config.kHideMapsBelowTier)
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter {}')
+    CallCliFunction('get_hide_maps_below_tier {}')
+    
     for i in range(10):
         tier = random.randint(0, 16)
         loot_filter.SetHideMapsBelowTierTier(tier)
