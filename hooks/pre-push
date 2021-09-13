@@ -1,0 +1,4 @@
+echo "Running test_suite.py before pushing:"
+python3 test_suite.py
+
+exit $?
