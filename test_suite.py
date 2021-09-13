@@ -42,6 +42,14 @@ def CHECK(expr: bool):
         raise RuntimeError('CHECK failed: expression evaluated to False')
 # End CHECK
 
+def CheckOutput(expected_output_string: str):
+    CheckType(expected_output_string, 'expected_output_string', str)
+    output_string = ''.join(helper.ReadFile(kBackendCliOutputFilename))
+    if (output_string.strip() != expected_output_string.strip()):
+        raise RuntimeError('CheckOutput failed: expected "{}", got "{}"'.format(
+                expected_output_string, output_string))
+# End CheckOutput
+
 def ResetTestProfile():
     # Write config string to config file
     helper.WriteToFile(
@@ -51,14 +59,11 @@ def ResetTestProfile():
     open(profile.GetProfileChangesFullpath(kTestProfileName), 'w').close()
 # End ResetTestProfile
 
-# Input is the backend_cli function (and parameters), optionally as a template string with
-# "{}" in the location of the profile name
-# Example: 'set_currency_tier {} "Chromatic Orb" 5'
+# Input is the backend_cli function and optional parameters - TestProfile will be added
+# Example: 'set_currency_tier "Chromatic Orb" 5'
 def CallCliFunction(function_call: str):
     CheckType(function_call, 'function_call', str)
-    full_command: str = 'python3 backend_cli.py ' + function_call
-    if ('{}' in full_command):
-        full_command = full_command.format(kTestProfileName)
+    full_command: str = 'python3 backend_cli.py ' + function_call + ' ' + kTestProfileName
     return_value = os.system(full_command)
     CHECK(return_value == 0)
 # End RunCommand
@@ -66,44 +71,41 @@ def CallCliFunction(function_call: str):
 def TestSetRuleVisibility():
     print('Running TestSetRuleVisibility...')
     ResetTestProfile()
-    CallCliFunction('import_downloaded_filter {}')
+    CallCliFunction('import_downloaded_filter')
     type_tag = consts.kCurrencyTypeTag
     tier_tag = consts.kCurrencyTierNames[1]
     # Test "hide"
-    CallCliFunction('set_rule_visibility {} {} {} hide'.format(
-            '{}', type_tag, tier_tag))
+    CallCliFunction('set_rule_visibility {} {} hide'.format(type_tag, tier_tag))
     loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
     rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
     CHECK(rule.visibility == RuleVisibility.kHide)
     # Test "disable"
-    CallCliFunction('set_rule_visibility {} {} {} disable'.format(
-            '{}', type_tag, tier_tag))
+    CallCliFunction('set_rule_visibility {} {} disable'.format(type_tag, tier_tag))
     loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
     rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
     CHECK(rule.visibility == RuleVisibility.kDisable)
     CHECK(all(line.startswith('#') for line in rule.text_lines))
     # Test "show"
-    CallCliFunction('set_rule_visibility {} {} {} show'.format(
-            '{}', type_tag, tier_tag))
+    CallCliFunction('set_rule_visibility {} {} show'.format(type_tag, tier_tag))
     loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
     rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
     CHECK(rule.visibility == RuleVisibility.kShow)
 # End TestChangeRuleVisibility
 
-# ========================= TODO: update all tests below this line ==========================
-
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
     ResetTestProfile()
-    CallCliFunction('import_downloaded_filter {}')
-    CallCliFunction('get_hide_maps_below_tier {}')
-    
-    for i in range(10):
+    CallCliFunction('import_downloaded_filter')
+    CallCliFunction('get_hide_maps_below_tier')
+    CheckOutput('0')
+    for i in range(3):
         tier = random.randint(0, 16)
-        loot_filter.SetHideMapsBelowTierTier(tier)
-        CHECK(loot_filter.GetHideMapsBelowTierTier() == tier)
-    loot_filter.SaveToFile()
+        CallCliFunction('set_hide_maps_below_tier {}'.format(tier))
+        CallCliFunction('get_hide_maps_below_tier')
+        CheckOutput(str(tier))
 # End TestHideMapsBelowTier
+
+# ========================= TODO: update all tests below this line ==========================
 
 def TestCurrency():
     print('Running TestCurrency...')
@@ -182,7 +184,7 @@ def TestBackendCli():
 
 def RunAllTests():
     TestSetRuleVisibility()
-    #TestHideMapsBelowTier()
+    TestHideMapsBelowTier()
     #TestCurrency()
     #TestChaosRecipe()
     #TestRunBatchCli()

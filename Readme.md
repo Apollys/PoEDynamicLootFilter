@@ -51,7 +51,7 @@ The `profile_name` parameter is required in all cases except for:
 
 The AHK frontend calls the Python backend via:
 ```
-> python3 backend_cli.py <function_name> <profile_name (if required)> <function_parameters...>
+> python3 backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
 ```
 The Python backend communicates return values to AHK by writing them to the file
 `backend_cli.output`.

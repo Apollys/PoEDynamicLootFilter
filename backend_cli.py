@@ -2,7 +2,7 @@
 This file defines the command-line interface for the AHK frontend
 to call the Python backend.  The general call format is:
 
- > python3 backend_cli.py <function_name> <profile_name (if required> <function_parameters>
+ > python3 backend_cli.py <function_name> <function_parameters...> <profile_name (if required>
 
 Return values of functions will be placed in the file "backend_cli.output",
 formatted as specified by the frontend developer.  (Note: make sure
@@ -61,7 +61,7 @@ kOutputFilename = 'backend_cli.output'
 kFilterMutatorFunctionNames = ['set_rule_visibility',
         'set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
-        'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_hide_map_below_tier',
+        'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_hide_maps_below_tier',
          'set_flask_visibility', 'set_chaos_recipe_enabled_for',]
 
 # Functions that don't require a profile parameter in the CLI
@@ -508,7 +508,7 @@ def main():
     if (required_profile_param):
         if (len(sys.argv) < 3):
             Error(kUsageErrorString)
-        profile_name, *function_params = remaining_args
+        *function_params, profile_name = remaining_args
     else:
         function_params = remaining_args
     # If importing downloaded filter, first verify that downloaded filter exists,
