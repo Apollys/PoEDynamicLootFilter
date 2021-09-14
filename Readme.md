@@ -17,6 +17,7 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### Cody To-Do
+ - Does `import_downloaded_filter` really need to be prohibited from running in batch?
  - Update documentation in backend_cli to include profile in sample syntax
  - Update all tests in test_suite to new test framework
  - Create a more thorough set of tests to cover everything in the backend_cli
@@ -70,6 +71,7 @@ for the detailed documentation of all available function calls.
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
+  - `get_currency_tier <currency_name: str>`
   - `get_all_currency_tiers`
   - `set_currency_tier_visibility`
   - `get_currency_tier_visibility`

@@ -102,8 +102,7 @@ SetBorderColor {3}
 SetFontSize 40
 MinimapIcon {4} {5}'''
 
-kChaosRecipeItemSlots = ['WeaponsX',
-                         'Weapons3',
+kChaosRecipeItemSlots = ['Weapons',
                          'Body Armours',
                          'Helmets',
                          'Gloves',
@@ -112,7 +111,9 @@ kChaosRecipeItemSlots = ['WeaponsX',
                          'Rings',
                          'Belts']
 
-kChaosRecipeItemSlotsMinusWeapons = kChaosRecipeItemSlots[2:]
+kChaosRecipeItemSlotsMinusWeapons = kChaosRecipeItemSlots[1:]
+
+kChaosRecipeItemSlotsInternal = ['WeaponsX', 'Weapons3'] + kChaosRecipeItemSlotsMinusWeapons
 
 # Need no spaces in tier tags
 kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
@@ -140,7 +141,7 @@ kChaosRecipeClasses = {'WeaponsX' : 'XXX_Unused',
 
 kChaosRecipeHeightConditions = {item_slot : (
         '\nHeight <= 3' if item_slot == 'Weapons3' else '')
-        for item_slot in kChaosRecipeItemSlots}
+        for item_slot in kChaosRecipeItemSlotsInternal}
 
 kChaosRecipeBorderColors = {'WeaponsX' : '200 0 0 255',
                             'Weapons3' : '200 0 0 255',
@@ -174,7 +175,7 @@ kChaosRecipeRuleStrings = [kChaosRecipeRuleTemplate.format(
                                    kChaosRecipeMinimapIconType)
                                for item_slot in kChaosRecipeItemSlotsMinusWeapons]
 
-
+# Generate chaos recipe rule for 'WeaponsX' or 'Weapons3'
 def GenerateChaosRecipeWeaponRule(item_slot: str, weapon_classes: str) -> str:
     if ((item_slot != 'WeaponsX') and (item_slot != 'Weapons3')):
         raise RuntimeError('item_slot must be either "WeaponsX" or "Weapons3"')

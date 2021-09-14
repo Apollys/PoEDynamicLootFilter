@@ -20,6 +20,11 @@ import shutil
 
 from type_checker import CheckType
 
+def IsFileEmpty(filepath: str) -> bool:
+    CheckType(filepath, 'filepath', str)
+    return os.path.isfile(filepath) and (os.path.getsize(filepath) == 0)
+# End IsFileEmpty
+
 # Makes directories on path to destination if not exists
 # Overwrites destination if exists
 def CopyFile(source_path: str, destination_path: str):
@@ -61,3 +66,4 @@ def ClearFileIfExists(filepath: str):
 def ListFilesInDirectory(directory_path: str):
     return [f for f in os.listdir(directory_path)
             if os.path.isfile(os.path.join(directory_path, f))]
+# End ListFilesInDirectory

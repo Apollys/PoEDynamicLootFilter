@@ -96,10 +96,8 @@ def WriteOutput(output_string: str):
 # function_output_string should be the whole string containing the given function call's output
 def AppendFunctionOutput(function_output_string: str):
     CheckType(function_output_string, 'function_output_string', str)
-    if ((len(function_output_string) == 0) or (function_output_string[-1] != '\n')):
-        function_output_string += '\n'
     with open(kOutputFilename, 'a') as output_file:
-        output_file.write(function_output_string + '@\n')
+        output_file.write(function_output_string + '\n@\n')
 # End AppendFunctionOutput
 
 def DelegateFunctionCall(loot_filter: LootFilter or None,
@@ -270,6 +268,15 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         currency_name: str = function_params[0]
         tier_delta: int = int(function_params[1])
         loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
+    elif (function_name == 'get_currency_tier'):
+        '''
+        get_currency_tier <currency_name: str>
+         - Output: single integer, the tier of the given currency
+         - Example: pthon3 backend_cli.py get_currency_tier "Chromatic Orb"
+        '''
+        CheckNumParams(function_params, 1)
+        currency_name: str = function_params[0]
+        output_string += str(loot_filter.GetTierOfCurrency(currency_name))
     elif (function_name == 'get_all_currency_tiers'):
         '''
         get_all_currency_tiers
@@ -278,11 +285,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py get_all_currency_tiers
         '''
         CheckNumParams(function_params, 0)
-        output_string = ''
         for tier in consts.kCurrencyTierNames:
             currency_names = loot_filter.GetAllCurrencyInTier(tier)
             output_string += ''.join((currency_name + ';' + str(tier) + '\n')
                                         for currency_name in currency_names)
+        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
     elif (function_name == 'set_currency_tier_visibility'):
         '''
         set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>
@@ -343,6 +350,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         for tier in range(1, consts.kMaxUniqueTier):
             output_string += str(tier) + ';' + str(int(
                     loot_filter.GetUniqueTierVisibility(tier) == RuleVisibility.kShow)) + '\n'
+        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
     elif (function_name == 'set_hide_uniques_above_tier'):
         '''
         set_hide_uniques_above_tier <tier: int>
@@ -435,6 +443,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         for flask_base_type in consts.kAllFlaskTypes:
             if flask_base_type not in visible_flask_types_set:
                 output_string += flask_base_type + ';0' + '\n'
+        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
     # =================================== Chaos Recipe Rares ===================================
     elif (function_name == 'set_chaos_recipe_enabled_for'):
         '''
@@ -452,7 +461,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         is_chaos_recipe_enabled_for <item_slot: str>
          - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
-           "Boots", "Amulets", "Rings", "Belts"
+           "Boots", "Amulets", "Rings", "Belts"  (defined in consts.py)
          - Output: "1" if chaos recipe items are showing for the given item_slot, else "0"
          - Example: > python3 backend_cli.py is_chaos_recipe_enabled_for "Body Armours"
         '''
@@ -470,6 +479,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         for item_slot in consts.kChaosRecipeItemSlots:
             enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
             output_string += item_slot + ';' + enabled_flag_string + '\n'
+        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
     # ================================= Unmatched Function Name =================================
     else:
         error_message: str = 'Function "{}" not found'.format(function_name)

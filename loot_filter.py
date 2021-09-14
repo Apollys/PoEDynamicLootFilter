@@ -453,7 +453,7 @@ class LootFilter:
         return rule.base_type_list
     # End GetAllCurrencyInTier
     
-    # Returns the name of the tier to which the given currency belongs
+    # Returns the integer tier to which the given currency belongs
     def GetTierOfCurrency(self, currency_name: str) -> int:
         CheckType(currency_name, 'currency_name', str)
         type_tag = consts.kCurrencyTypeTag

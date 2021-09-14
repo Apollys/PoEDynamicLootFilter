@@ -22,7 +22,9 @@ def ReadFile(fullpath: str) -> List[str]:
 # Otherwise, str(data) is written directly to file
 # Safe against directory not existing (creates directory if missing)
 def WriteToFile(data, fullpath: str):
-    os.makedirs(os.path.dirname(fullpath), exist_ok = True)
+    parent_directory = os.path.dirname(fullpath)
+    if (parent_directory != ''):
+        os.makedirs(parent_directory, exist_ok = True)
     with open(fullpath, 'w') as f:
         if (isinstance(data, str)):
             f.write(data)

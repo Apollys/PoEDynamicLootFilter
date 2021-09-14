@@ -50,6 +50,14 @@ def CheckOutput(expected_output_string: str):
                 expected_output_string, output_string))
 # End CheckOutput
 
+# Parses the backend cli output file into a dict, where each line represents an item
+# Lines are assumed to be of the form <key>;<value>, value is parsed as the given value_type
+def ParseOutputAsDict(value_type: type):
+    CheckType(value_type, 'value_type', type)
+    split_lines = [line.split(';') for line in helper.ReadFile(kBackendCliOutputFilename)]
+    return {split_line[0] : value_type(split_line[1]) for split_line in split_lines}
+# End ParseOutputAsDict
+
 def ResetTestProfile():
     # Write config string to config file
     helper.WriteToFile(
@@ -92,10 +100,88 @@ def TestSetRuleVisibility():
     CHECK(rule.visibility == RuleVisibility.kShow)
 # End TestChangeRuleVisibility
 
+def TestCurrency():
+    print('Running TestCurrency...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    kMaxCurrencyTier = len(consts.kCurrencyTierNames)
+    # Get and parse all currency tiers
+    CallCliFunction('get_all_currency_tiers')
+    currency_to_tier_map = ParseOutputAsDict(value_type = int)
+    tier_to_currency_map = {}
+    for currency_name, tier in currency_to_tier_map.items():
+        if (tier not in tier_to_currency_map):
+            tier_to_currency_map[tier] = []
+        tier_to_currency_map[tier].append(currency_name)
+    # Test set_currency_tier, adjust_currency_tier, and get_currency_tier
+    for original_tier in [1, kMaxCurrencyTier, random.randint(2, kMaxCurrencyTier - 1)]:
+        # Test set_currency_tier
+        currency_name = random.choice(tier_to_currency_map[original_tier])
+        target_tier = random.randint(1, kMaxCurrencyTier)
+        CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, target_tier))
+        CallCliFunction('get_currency_tier "{}"'.format(currency_name))
+        CheckOutput(str(target_tier))
+        # Reset currency to original tier for future tests
+        CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, original_tier))
+        # Test adjust_currency_tier with random currency
+        currency_name = random.choice(tier_to_currency_map[original_tier])
+        target_tier = random.randint(1, kMaxCurrencyTier)
+        tier_delta = target_tier - original_tier
+        CallCliFunction('adjust_currency_tier "{}" {}'.format(currency_name, tier_delta))
+        CallCliFunction('get_currency_tier "{}"'.format(currency_name))
+        CheckOutput(str(target_tier))
+        # Reset currency to original tier for future tests
+        CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, original_tier))
+    # Test set_/get_currency_tier_visibility
+    for tier in [random.randint(1, kMaxCurrencyTier)] + ['twisdom', 'tportal']:
+        for desired_visibility_flag in [0, 1]:
+            CallCliFunction('set_currency_tier_visibility {} {}'.format(
+                    tier, desired_visibility_flag))
+            CallCliFunction('get_currency_tier_visibility {}'.format(tier))
+            CheckOutput(str(desired_visibility_flag))
+    # Test set_/get_hide_currency_above_tier
+    max_visible_tier = random.randint(2, kMaxCurrencyTier - 1)
+    CallCliFunction('set_hide_currency_above_tier {}'.format(max_visible_tier))
+    CallCliFunction('get_hide_currency_above_tier')
+    CheckOutput(str(max_visible_tier))
+    CallCliFunction('get_currency_tier_visibility {}'.format(max_visible_tier - 1))
+    CheckOutput(str(1))
+    CallCliFunction('get_currency_tier_visibility {}'.format(max_visible_tier))
+    CheckOutput(str(1))
+    CallCliFunction('get_currency_tier_visibility {}'.format(max_visible_tier + 1))
+    CheckOutput(str(0))
+# End TestCurrency
+
+def TestUniques():
+    print('Running TestUniques...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    kMaxUniqueTier = len(consts.kUniqueTierNames)
+    for max_visible_tier in [1, kMaxUniqueTier, random.randint(2, kMaxUniqueTier - 1)]:
+        CallCliFunction('set_hide_uniques_above_tier {}'.format(max_visible_tier))
+        CallCliFunction('get_hide_uniques_above_tier')
+        CheckOutput(str(max_visible_tier))
+        CallCliFunction('get_all_unique_tier_visibilities')
+        expected_output_string = '\n'.join('{};{}'.format(tier, int(tier <= max_visible_tier))
+                for tier in range(1, kMaxUniqueTier + 1))
+        CheckOutput(expected_output_string)
+# End TestUniques
+
+def TestGemQuality():
+    print('Running TestGemQuality...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    for min_visible_quality in [1, random.randint(2, 13), random.randint(14, 18), 19, 20]:
+        CallCliFunction('set_gem_min_quality {}'.format(min_visible_quality))
+        CallCliFunction('get_gem_min_quality')
+        CheckOutput(str(min_visible_quality))
+# End TestGemQuality
+
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
     ResetTestProfile()
     CallCliFunction('import_downloaded_filter')
+    # Initial value is 0 for test profile
     CallCliFunction('get_hide_maps_below_tier')
     CheckOutput('0')
     for i in range(3):
@@ -105,91 +191,135 @@ def TestHideMapsBelowTier():
         CheckOutput(str(tier))
 # End TestHideMapsBelowTier
 
-# ========================= TODO: update all tests below this line ==========================
-
-def TestCurrency():
-    print('Running TestCurrency...')
-    loot_filter = LootFilter(test_consts.kDownloadedLootFilterFullpath,
-                             test_consts.kPathOfExileLootFilterFullpath,
-                             test_consts.kProfileFullpath)
-    type_name = 'currency'
-    for tier in range(1, 10):
-        currency_names = loot_filter.GetAllCurrencyInTier(tier)
-        # Test SetCurrencyToTier with random currency
-        currency_name = random.choice(currency_names)
-        target_tier = random.randint(1, 9)
-        loot_filter.SetCurrencyToTier(currency_name, target_tier)
-        CHECK(loot_filter.GetTierOfCurrency(currency_name) == target_tier)
-        # Test AdjustTierOfCurrency with random currency
-        currency_name = random.choice(currency_names)
-        current_tier = loot_filter.GetTierOfCurrency(currency_name)
-        target_tier = random.randint(1, 9)
-        tier_delta = target_tier - current_tier
-        loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
-        CHECK(loot_filter.GetTierOfCurrency(currency_name) == target_tier)
-    for tier in list(range(1, 10)) + ['twisdom', 'tportal']:
-        desired_visibility = random.choice([RuleVisibility.kShow, RuleVisibility.kHide])
-        loot_filter.SetCurrencyTierVisibility(tier, desired_visibility)
-        CHECK(loot_filter.GetCurrencyTierVisibility(tier) == desired_visibility)
-# End TestCurrency
+def TestFlasks():
+    print('Running TestFlasks...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    CallCliFunction('get_all_flask_visibilities')
+    flask_visibility_map = ParseOutputAsDict(value_type = int)
+    flask_type_list = list(flask_visibility_map.keys())
+    for i in range(3):
+        flask_type = random.choice(flask_type_list)
+        original_visibility_flag = flask_visibility_map[flask_type]
+        CallCliFunction('get_flask_visibility "{}"'.format(flask_type))
+        CheckOutput(str(original_visibility_flag))
+        desired_visibility_flag = random.randint(0, 1)
+        CallCliFunction('set_flask_visibility "{}" {}'.format(flask_type, desired_visibility_flag))
+        CallCliFunction('get_flask_visibility "{}"'.format(flask_type))
+        CheckOutput(str(desired_visibility_flag))
+        flask_visibility_map[flask_type] = desired_visibility_flag
+# End TestFlasks
 
 def TestChaosRecipe():
     print('Running TestChaosRecipe...')
-    loot_filter = LootFilter(test_consts.kDownloadedLootFilterFullpath,
-                             test_consts.kPathOfExileLootFilterFullpath,
-                             test_consts.kProfileFullpath)
-    desired_enabled_status_map = {item_slot : random.choice([True, False])
-                                  for item_slot in consts.kChaosRecipeItemSlots}
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    CallCliFunction('get_all_chaos_recipe_statuses')
+    original_enabled_status_map = ParseOutputAsDict(value_type = int)
+    desired_enabled_status_map = {
+            item_slot : random.randint(0, 1) for item_slot in original_enabled_status_map}
+    for item_slot, original_enabled_status in original_enabled_status_map.items():
+        CallCliFunction('is_chaos_recipe_enabled_for "{}"'.format(item_slot))
+        CheckOutput(str(original_enabled_status))
+        CallCliFunction('set_chaos_recipe_enabled_for "{}" {}'.format(
+                item_slot, desired_enabled_status_map[item_slot]))
     for item_slot, desired_enabled_status in desired_enabled_status_map.items():
-        loot_filter.SetChaosRecipeEnabledFor(item_slot, desired_enabled_status)
-    for item_slot, desired_enabled_status in desired_enabled_status_map.items():
-        enabled_status = loot_filter.IsChaosRecipeEnabledFor(item_slot)
-        CHECK(enabled_status == desired_enabled_status)
+        CallCliFunction('is_chaos_recipe_enabled_for "{}"'.format(item_slot))
+        CheckOutput(str(desired_enabled_status))
 # End TestChaosRecipe
 
-def TestRunBatchCli():
-    print('Running TestBatchCli...')
-    shutil.copyfile(test_consts.kTestBatchFullpath, kBackendCliInputFilename)
-    import_filter_command = 'python3 backend_cli.py TEST import_downloaded_filter only_if_missing'
-    os.system(import_filter_command)
-    run_batch_command = 'python3 backend_cli.py TEST run_batch'
-    os.system(run_batch_command)
-# End TestRunBatchCli
+kTestBatchString = \
+'''get_all_currency_tiers
+set_currency_tier "Chromatic Orb" 3
+adjust_currency_tier "Chromatic Orb" -2
+adjust_currency_tier "Chromatic Orb" +1
+get_currency_tier "Chromatic Orb"
+set_currency_tier_visibility 2 0
+get_currency_tier_visibility 2
+set_hide_currency_above_tier 3
+get_hide_currency_above_tier
+get_all_unique_tier_visibilities
+set_hide_uniques_above_tier 1
+get_hide_uniques_above_tier
+set_gem_min_quality 18
+get_gem_min_quality
+set_hide_maps_below_tier 13
+get_hide_maps_below_tier
+get_all_flask_visibilities
+set_flask_visibility "Quicksilver Flask" 1
+set_flask_visibility "Gold Flask" 0
+get_flask_visibility "Quicksilver Flask"
+get_flask_visibility "Gold Flask"
+set_chaos_recipe_enabled_for "Weapons" 0
+set_chaos_recipe_enabled_for "Body Armours" 0
+set_chaos_recipe_enabled_for "Helmets" 1
+set_chaos_recipe_enabled_for "Gloves" 1
+set_chaos_recipe_enabled_for "Boots" 1
+set_chaos_recipe_enabled_for "Rings" 0
+set_chaos_recipe_enabled_for "Amulets" 1
+set_chaos_recipe_enabled_for "Belts" 0
+get_all_chaos_recipe_statuses
+'''
 
-def TestBackendCli():
-    print('Running TestBackendCli...')
-    function_call_strings = ['import_downloaded_filter',
-                             'adjust_currency_tier "Chromatic Orb" -2',
-                             'set_currency_tier "Chromatic Orb" 5',
-                             'get_all_currency_tiers',
-                             'set_hide_currency_above_tier 8',
-                             'get_hide_currency_above_tier',
-                             'set_hide_map_below_tier 14',
-                             'get_hide_map_below_tier',
-                             'set_flask_rule_enabled_for "Quartz Flask" 1',
-                             'set_flask_rule_enabled_for "Diamond Flask" 1',
-                             'set_flask_rule_enabled_for "Quartz Flask" 0',
-                             'set_flask_rule_enabled_for "Diamond Flask" 0',
-                             'is_flask_rule_enabled_for "Quicksilver Flask"',
-                             'get_all_enabled_flask_types',
-                             'set_chaos_recipe_enabled_for Weapons 0',
-                             'is_chaos_recipe_enabled_for "Body Armours"',
-                             'get_all_chaos_recipe_statuses',
-                             'undo_last_change']
-    for function_call_string in function_call_strings:
-        command_string = 'python3 backend_cli.py TEST ' + function_call_string
-        return_value = os.system(command_string)
-        CHECK(return_value == 0)
-# End TestBackendCli
+# Note: '...' indicates we don't check this output
+kTestBatchExpectedOutputList = [
+    '...',  # won't check get_all_currency_tiers initial output
+    '', '', '', '2',  # set/adjust/get_currency_tier
+    '', '0',  # set/get_currency_tier_visibility
+    '', '3',  # set/get_hide_currency_above_tier
+    '...', '', '1',  # set/get_hide_uniques_above_tier
+    '', '18',  # set/get_gem_min_quality
+    '', '13',  # set/get_hide_maps_below_tier
+    '...', '', '', '1', '0',  # set/get_flask_visibility
+    '', '', '', '', '', '', '', '', '...']  # chaos recipe visibility checked separately
+
+kTestBatchExpectedChaosRecipeVisbilityMap = {
+    "Weapons" : 0,
+    "Body Armours" : 0,
+    "Helmets" : 1,
+    "Gloves" : 1,
+    "Boots" : 1,
+    "Rings" : 0,
+    "Amulets" : 1,
+    "Belts" : 0}
+    
+def TestRunBatch():
+    print('Running TestBatch...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    helper.WriteToFile(kTestBatchString, kBackendCliInputFilename)
+    CallCliFunction('run_batch')
+    batch_output_string = ''.join(helper.ReadFile(kBackendCliOutputFilename))
+    batch_output_string = batch_output_string[:-3]  # trim off trailing '\n@\n'
+    batch_output_list = batch_output_string.split('\n@\n')
+    # Check outputs
+    CHECK(len(batch_output_list) == len(kTestBatchExpectedOutputList))
+    for output_index in range(len(kTestBatchExpectedOutputList)):
+        function_output_string = batch_output_list[output_index]
+        expected_function_output_string = kTestBatchExpectedOutputList[output_index]
+        if (expected_function_output_string != '...'):
+            CHECK(function_output_string == expected_function_output_string)
+    # Check chaos recipe visibility outputs
+    chaos_recipe_visibiility_list = [line.split(';') for line in batch_output_list[-1].split('\n')]
+    for item_slot, visibility_string in chaos_recipe_visibiility_list:
+        visibility_flag = int(visibility_string)
+        CHECK(visibility_flag == kTestBatchExpectedChaosRecipeVisbilityMap[item_slot])
+# End TestRunBatch
 
 def RunAllTests():
+    print('Launching test suite')
+    print('Note: test suite currently covers all backend functions except:')
+    print('\n'.join([' - get_all_profile_names', ' - set_active_profile', ' - undo_last_change',
+                     ' - get_rule_matching_item']))
+    print()
     TestSetRuleVisibility()
+    TestCurrency()
     TestHideMapsBelowTier()
-    #TestCurrency()
-    #TestChaosRecipe()
-    #TestRunBatchCli()
-    #ResetTestProfile()
-    #TestBackendCli()
+    TestUniques()
+    TestGemQuality()
+    TestFlasks()
+    TestChaosRecipe()
+    TestRunBatch()
 # End RunAllTests
 
 def main():
