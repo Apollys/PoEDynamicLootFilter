@@ -120,6 +120,37 @@ and never will the light blind you.
 
 ===============================================================================
 
+Item Class: Body Armours
+Rarity: Unique
+Replica Farrul's Fur
+Triumphant Lamellar
+--------
+Armour: 764 (augmented)
+Evasion Rating: 959 (augmented)
+--------
+Requirements:
+Level: 69
+Str: 95
+Dex: 116
+--------
+Sockets: R-R-G-R G 
+--------
+Item Level: 75
+--------
+101% increased Armour and Evasion
++98 to maximum Life
++2.00 seconds to Cat's Agility Duration
+Aspect of the Cat has no Reservation
+Gain up to your maximum number of Frenzy and Endurance Charges when you gain Cat's Agility
+You have Onslaught while you have Cat's Agility
+--------
+"Attempt #120: the prototype has finally achieved power similar to the original
+without breaking all the bones of the test subject. A rousing success."
+--------
+Note: ~price 20 exalted
+
+===============================================================================
+
 Item Class: Shields
 Rarity: Rare
 Soul Weaver

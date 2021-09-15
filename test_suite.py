@@ -325,7 +325,7 @@ def RunAllTests():
 def main():
     logger.InitializeLog(kTestLogFilename)
     RunAllTests()
-    print('All tests completed successfully!')
+    print('All tests completed successfully!\n')
 # End main
 
 if (__name__ == '__main__'):

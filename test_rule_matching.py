@@ -1,3 +1,5 @@
+import helper
+from loot_filter import LootFilter
 import rule_parser
 
 # item_text, rule_text, expected_result triplets
@@ -168,7 +170,8 @@ PlayEffect Yellow''',
 
 False)]
 
-def Test():
+def TestItemRuleMatching():
+    print('Testing item-rule matching...')
     all_tests_passed = True
     for test_item, test_rule, expected_result in test_cases:
         item_lines = test_item.split('\n')
@@ -177,7 +180,7 @@ def Test():
                 item_name, expected_result))
         rule_lines = test_rule.split('\n')
         parsed_rule_lines = [rule_parser.ParseRuleLineGeneric(line) for line in rule_lines]
-        match_flag = rule_parser.CheckRuleMatchesItem(parsed_rule_lines, item_lines)
+        match_flag = rule_parser.CheckRuleMatchesItemText(parsed_rule_lines, item_lines)
         test_passed = (match_flag == expected_result)
         print(' -> match result = {}, test {}\n'.format(match_flag,
                 'Passed!' if test_passed else 'Failed!'))
@@ -186,9 +189,38 @@ def Test():
         print('All tests passed!')
     else:
         print('At least one test failed.')
-# End Test
+# End TestItemRuleMatching
 
-Test()
+kSampleItemsFilename = 'sample_items.txt'
+kSampleItemsSeparator = \
+    '\n\n===============================================================================\n\n'
+
+def TestSampleItems():
+    print('\nRunning TestSampleItems...')
+    sample_items_full_text = ''.join(helper.ReadFile(kSampleItemsFilename))
+    sample_items_list = sample_items_full_text.split(kSampleItemsSeparator)
+    loot_filter = LootFilter('TestProfile', output_as_input_filter = False)
+    for item_string in sample_items_list:
+        print('\n==========================================================================\n')
+        if (item_string.strip() == ''):
+            break
+        print(item_string)
+        item_lines = item_string.split('\n')
+        rule_type_tag, rule_tier_tag = loot_filter.GetRuleMatchingItem(item_lines)
+        matched_rule = loot_filter.GetRuleByTypeTier(rule_type_tag, rule_tier_tag)
+        print('\n* * * * * * * * * * * *\n')
+        print('\n'.join(matched_rule.text_lines))
+        input('\nPress Enter to continue...')
+    print('Completed TestSampleItems')
+# End TestSampleItems
+
+def main():
+    TestItemRuleMatching()
+    TestSampleItems()
+# End main
+
+if (__name__ == '__main__'):
+    main()
 
 
 

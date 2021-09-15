@@ -277,6 +277,7 @@ class LootFilter:
     # Returns None, None if no rule matched
     # Cannot match AreaLevel restrictions:
     #  - if a rule has an AreaLevel requirement, it will never match any item
+    # TODO: shouldn't this just return the rule itself?
     def GetRuleMatchingItem(self, item_text_lines: List[str]) -> Tuple[str, str]:
         CheckType2(item_text_lines, 'item_text_lines', list, str)
         item_properties: dict = rule_parser.ParseItem(item_text_lines)

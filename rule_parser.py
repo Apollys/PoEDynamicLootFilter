@@ -99,7 +99,7 @@ Int: 159
 '''
 
 # Implemented keywords for items
-kBinaryProperties = ['Unidentified', 'Corrupted', 'Mirrorred', 'Alternate Quality']
+kBinaryProperties = ['Unidentified', 'Corrupted', 'Mirrorred', 'Alternate Quality', 'Replica']
 
 kInfluenceProperties = ['Shaper Item', 'Elder Item', 'Crusader Item', 'Warlord Item',
                         'Redeemer Item', 'Hunter Item']
@@ -118,6 +118,8 @@ def RemoveSpacesFromKeys(d: dict):
             d.pop(key)
 # End RemoveSpacesFromKeys
 
+# TODO: fix stacked currency, enlighten?
+
 # Parses an item's text description into a dictionary of {'property_name' : property_value}
 def ParseItem(item_lines: List[str]) -> dict:
     CheckType(item_lines, 'item_lines', list)
@@ -125,7 +127,7 @@ def ParseItem(item_lines: List[str]) -> dict:
     item_properties = {binary_property : False for binary_property in kBinaryProperties}
     item_properties['HasInfluence'] = []  # no influence by default
     item_lines = [line.strip() for line in item_lines]
-    # Parse first section: Class, Rarity, and BaseType
+    # Parse first section: Class, Rarity, and Name, BaseType
     # Class
     _, [class_value_string] = simple_parser.ParseFromTemplate(item_lines[0], 'Item Class: {}')
     if (class_value_string == 'Stackable Currency'): class_value_string = 'Currency'
@@ -133,8 +135,10 @@ def ParseItem(item_lines: List[str]) -> dict:
     # Rarity
     _, [rarity_value_string] = simple_parser.ParseFromTemplate(item_lines[1], 'Rarity: {}')
     item_properties['Rarity'] = rarity_value_string
-    # BaseType
-    base_type_line_index = 2 if (item_lines[3].startswith('-')) else 3
+    # Name and BaseType
+    has_name: bool = not item_lines[3].startswith('-')
+    item_properties['Name'] = item_lines[2] if has_name else ''
+    base_type_line_index = 3 if has_name else 2
     item_properties['BaseType'] = item_lines[base_type_line_index]
     # Parse the rest line-by-line, saving important properties (ignoring requirements for now)
     for line in item_lines[base_type_line_index + 2 :]:
@@ -181,11 +185,13 @@ def ParseItem(item_lines: List[str]) -> dict:
     item_properties['Identified'] = not item_properties['Unidentified']
     # Handle alternate quality gems (item will have line "Alternate Quality")
     if ((item_properties['Rarity'] == 'Gem') and item_properties['Alternate Quality']):
-        print(item_properties['BaseType'])
         _, [quality_type, gem_name] = simple_parser.ParseFromTemplate(
                 item_properties['BaseType'], '{} {}')
         item_properties['GemQualityType'] = quality_type
         item_properties['BaseType'] = gem_name
+    # Check for replica uniques (item rarity is unique, first word of name is "Replica")
+    item_properties['Replica'] = ((item_properties['Rarity'] == 'Unique') and
+                                  (item_properties['Name'].startswith('Replica ')))
     # Todo: handle requirements section separately
     # Remove all spaces from keys in item properties to match loot filter syntax
     RemoveSpacesFromKeys(item_properties)
@@ -193,7 +199,7 @@ def ParseItem(item_lines: List[str]) -> dict:
 # End ParseItem
 
 # Implemented/ignore keywords for Rules
-kImplementedBinaryKeywords = ['Identified', 'Corrupted', 'Mirrorred', 'AlternateQuality']
+kImplementedBinaryKeywords = ['Identified', 'Corrupted', 'Mirrorred', 'AlternateQuality', 'Replica']
 kImplementedOtherKeywords = ['Class', 'Rarity', 'BaseType', 'ItemLevel', 'MapTier', 'Quality',
                              'HasInfluence', 'GemQualityType']
 # Ignore any rules with any of the following conditions:
