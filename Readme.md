@@ -17,12 +17,9 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### Cody To-Do
+ - Remove redundant profile changes
  - Does `import_downloaded_filter` really need to be prohibited from running in batch?
  - Update documentation in backend_cli to include profile in sample syntax
- - Update all tests in test_suite to new test framework
- - Create a more thorough set of tests to cover everything in the backend_cli
-   - Examples: make sure filter is saved whenever a change is made, make sure things go to the
-     right tier/status by re-reading the file, make sure it doesn't save on batch of getters, etc
 
 - - -
 
@@ -34,7 +31,8 @@ The `profile_name` parameter is required in all cases except for:
  - [x] Show/hide flasks by type
  - [x] Save profile data - persistent changes with redownloaded filter
  - [x] Manipulate unique item visibility
- - [ ] Simulate - find rule matching item - partially complete
+ - [x] Simulate - find rule matching item
+   - All done except socket colors
  - [x] Set Gem min quality
  - [ ] Set Flask min quality
  - [ ] Set RGB item max size
