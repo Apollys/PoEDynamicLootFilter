@@ -4,6 +4,41 @@ import rule_parser
 
 # item_text, rule_text, expected_result triplets
 test_cases = [
+# Enlighten test
+('''Item Class: Support Skill Gems
+Rarity: Gem
+Enlighten Support
+--------
+Support
+Level: 1
+--------
+Requirements:
+Level: 1
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will apply a mana multiplier to supported gems. Cannot support skills that don't come from gems.
+--------
+Experience: 54217488/226854909
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+--------
+Note: ~price 1 exalted''',
+
+'''Show # $type->gems-special $tier->exspeciale4
+GemLevel >= 4
+Class "Gems"
+BaseType "Empower" "Enhance" "Enlighten"
+SetFontSize 45
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star''',
+
+True),
+
 # Simple chaos orb matching test
 ('''Item Class: Stackable Currency
 Rarity: Currency
@@ -172,7 +207,6 @@ False)]
 
 def TestItemRuleMatching():
     print('Testing item-rule matching...')
-    all_tests_passed = True
     for test_item, test_rule, expected_result in test_cases:
         item_lines = test_item.split('\n')
         item_name = item_lines[2] if item_lines[3].startswith('-') else ' '.join(item_lines[2:4])
@@ -184,11 +218,8 @@ def TestItemRuleMatching():
         test_passed = (match_flag == expected_result)
         print(' -> match result = {}, test {}\n'.format(match_flag,
                 'Passed!' if test_passed else 'Failed!'))
-        all_tests_passed = all_tests_passed and test_passed
-    if (all_tests_passed):
-        print('All tests passed!')
-    else:
-        print('At least one test failed.')
+        if (not test_passed):
+            raise RuntimeError('test failed')
 # End TestItemRuleMatching
 
 kSampleItemsFilename = 'sample_items.txt'

@@ -1,3 +1,51 @@
+Item Class: Stackable Currency
+Rarity: Currency
+Chaos Orb
+--------
+Stack Size: 37/10
+--------
+Reforges a rare item with new random modifiers
+--------
+Right click this item then left click a rare item to apply it.
+Shift click to unstack.
+
+===============================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Splinter of Uul-Netol
+--------
+Stack Size: 34/100
+--------
+Combine 100 Splinters to create Uul-Netol's Breachstone.
+Shift click to unstack.
+
+===============================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Simulacrum Splinter
+--------
+Stack Size: 1,112/300
+--------
+Combine 300 Splinters to create a Simulacrum.
+Shift click to unstack.
+--------
+Note: ~skip 
+
+===============================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Timeless Vaal Splinter
+--------
+Stack Size: 97/100
+--------
+Combine 100 Splinters to create a Timeless Vaal Emblem.
+Shift click to unstack.
+
+===============================================================================
+
 Item Class: Boots
 Rarity: Rare
 Domination March
@@ -203,19 +251,6 @@ Used when you become Shocked (enchant)
 Grants Immunity to Shock for 4 seconds if used while Shocked
 --------
 Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
-
-===============================================================================
-
-Item Class: Stackable Currency
-Rarity: Currency
-Chaos Orb
---------
-Stack Size: 37/10
---------
-Reforges a rare item with new random modifiers
---------
-Right click this item then left click a rare item to apply it.
-Shift click to unstack.
 
 ===============================================================================
 
@@ -445,40 +480,3 @@ Experience: 1/413615669
 This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
 --------
 Note: ~price 20 blessed
-
-===============================================================================
-
-Item Class: Stackable Currency
-Rarity: Currency
-Splinter of Uul-Netol
---------
-Stack Size: 34/100
---------
-Combine 100 Splinters to create Uul-Netol's Breachstone.
-Shift click to unstack.
-
-===============================================================================
-
-Item Class: Stackable Currency
-Rarity: Currency
-Simulacrum Splinter
---------
-Stack Size: 1,112/300
---------
-Combine 300 Splinters to create a Simulacrum.
-Shift click to unstack.
---------
-Note: ~skip 
-
-===============================================================================
-
-Item Class: Stackable Currency
-Rarity: Currency
-Timeless Vaal Splinter
---------
-Stack Size: 97/100
---------
-Combine 100 Splinters to create a Timeless Vaal Emblem.
-Shift click to unstack.
-
-===============================================================================

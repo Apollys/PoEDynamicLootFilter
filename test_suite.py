@@ -310,7 +310,7 @@ def RunAllTests():
     print('Launching test suite')
     print('Note: test suite currently covers all backend functions except:')
     print('\n'.join([' - get_all_profile_names', ' - set_active_profile', ' - undo_last_change',
-                     ' - get_rule_matching_item']))
+                     ' - get_rule_matching_item (use test_rule_matching for this)']))
     print()
     TestSetRuleVisibility()
     TestCurrency()
