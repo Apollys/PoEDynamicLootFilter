@@ -210,6 +210,26 @@ def TestFlasks():
         flask_visibility_map[flask_type] = desired_visibility_flag
 # End TestFlasks
 
+def TestRgbItems():
+    print('Running TestRgbItems...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    for target_max_size_string in consts.kRgbSizesMap:
+        CallCliFunction('set_rgb_item_max_size {}'.format(target_max_size_string))
+        CallCliFunction('get_rgb_item_max_size')
+        CheckOutput(target_max_size_string)
+        # Parse the loot filter and check if the rules have correct visibilities
+        loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
+        type_tag = consts.kRgbTypeTag
+        target_max_size_int, _ = consts.kRgbSizesMap[target_max_size_string]
+        for size_string, (size_int, tier_tag_list) in consts.kRgbSizesMap.items():
+            for tier_tag in tier_tag_list:
+                rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
+                expected_visibility = (RuleVisibility.kShow if size_int <= target_max_size_int
+                                       else RuleVisibility.kHide)
+                CHECK(rule.visibility == expected_visibility)
+# End TestRgbItems
+    
 def TestChaosRecipe():
     print('Running TestChaosRecipe...')
     ResetTestProfile()
@@ -318,6 +338,7 @@ def RunAllTests():
     TestUniques()
     TestGemQuality()
     TestFlasks()
+    TestRgbItems()
     TestChaosRecipe()
     TestRunBatch()
 # End RunAllTests

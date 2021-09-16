@@ -62,7 +62,7 @@ kFilterMutatorFunctionNames = ['set_rule_visibility',
         'set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
         'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_hide_maps_below_tier',
-         'set_flask_visibility', 'set_chaos_recipe_enabled_for',]
+         'set_flask_visibility', 'set_rgb_item_max_size', 'set_chaos_recipe_enabled_for']
 
 # Functions that don't require a profile parameter in the CLI
 # These are the functions that do not interact with the loot filter in any way
@@ -444,6 +444,24 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
             if flask_base_type not in visible_flask_types_set:
                 output_string += flask_base_type + ';0' + '\n'
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
+    # ======================================== Rgb Items ========================================
+    elif (function_name == 'set_rgb_item_max_size'):
+        '''
+        set_rgb_item_max_size <size: {none, small, medium, large}>
+         - Sets the maximum size at which an RGB item is shown
+         - "small" = 4, "medium" = 6, "large" = 8
+         - Output: None
+         - Example: > python3 backend_cli.py set_rgb_item_max_size small
+        '''
+        rgb_item_max_size: str = function_params[0]
+        loot_filter.SetRgbItemMaxSize(rgb_item_max_size)
+    elif (function_name == 'get_rgb_item_max_size'):
+        '''
+        get_rgb_item_max_size
+         - Output:  max-size of shown RGB items, one of {none, small, medium, large}
+         - Example: > python3 backend_cli.py get_rgb_item_max_size
+        '''
+        output_string = loot_filter.GetRgbItemMaxSize()
     # =================================== Chaos Recipe Rares ===================================
     elif (function_name == 'set_chaos_recipe_enabled_for'):
         '''

@@ -196,3 +196,13 @@ kAllFlaskTypes = [
         'Diamond Flask', 'Granite Flask', 'Jade Flask', 'Quartz Flask', 'Sulphur Flask',
         'Basalt Flask', 'Silver Flask', 'Stibnite Flask']
 
+# RGB Item consts
+
+kRgbTypeTag = 'endgamergb'
+
+# maps size_string to (size_int, tier_tag_list)
+kRgbSizesMap = {'none': (0, []),
+                'small': (4, ['rgbsmall1', 'rgbsmall2']),
+                'medium': (6, ['rgbmedium']),
+                'large': (8, ['rgblarge'])}
+

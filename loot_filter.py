@@ -600,7 +600,37 @@ class LootFilter:
                         return int(value_string_list[0])
         return -1  # indicates all gem quality rules are disabled/hidden
     
-    # ======================= Chaos Recipe-Related Functions =======================
+    # ============================== RGB Item Functions ==============================
+    
+    def SetRgbItemMaxSize(self, max_size_string: str):
+        CheckType(max_size_string, 'max_size_string', str)
+        type_tag = consts.kRgbTypeTag
+        if (max_size_string not in consts.kRgbSizesMap):
+            raise RuntimeError('Invalid max_size_string: "{}", expected one of {}'.format(
+                    max_size_string, consts.kRgbSizesMap.keys()))
+        max_size_int, _ = consts.kRgbSizesMap[max_size_string]
+        for _, (size_int, tier_tag_list) in consts.kRgbSizesMap.items():
+            for tier_tag in tier_tag_list:
+                target_visibility = (RuleVisibility.kShow if size_int <= max_size_int
+                                     else RuleVisibility.kHide)
+                self.type_tier_rule_map[type_tag][tier_tag].SetVisibility(
+                        target_visibility)
+    # End SetRgbItemMaxSize
+    
+    def GetRgbItemMaxSize(self) -> str:
+        type_tag = consts.kRgbTypeTag
+        max_size_string = 'none'
+        max_size_int = 0
+        for size_string, (size_int, tier_tag_list) in consts.kRgbSizesMap.items():
+            for tier_tag in tier_tag_list:
+                rule = self.type_tier_rule_map[type_tag][tier_tag]
+                if ((size_int > max_size_int) and (rule.visibility == RuleVisibility.kShow)):
+                    max_size_string = size_string
+                    max_size_int = size_int
+        return max_size_string
+    # End GetRgbItemMaxSize
+    
+    # ======================== Chaos Recipe-Related Functions ========================
     
     def SetChaosRecipeEnabledFor(self, item_slot: str, enable_flag: bool):
         CheckType(item_slot, 'item_slot', str)

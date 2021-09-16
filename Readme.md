@@ -78,8 +78,8 @@ for the detailed documentation of all available function calls.
   - `get_all_unique_tier_visibilities`
   - `set_hide_uniques_above_tier`
   - `get_hide_uniques_above_tier`
-  - *Recenty added:* `set_gem_min_quality <tier: int in [1, 20]>`
-  - *Recenty added:* `get_gem_min_quality`
+  - `set_gem_min_quality <tier: int in [1, 20]>`
+  - `get_gem_min_quality`
   - `set_hide_currency_above_tier`
   - `get_hide_currency_above_tier`
   - `set_hide_maps_below_tier <tier: int>`
@@ -87,6 +87,8 @@ for the detailed documentation of all available function calls.
   - `set_flask_visibility <base_type: str> <visibility_flag: int>`
   - `get_flask_visibility <base_type: str>`
   - `get_all_flask_visibilities`
+  - *Recenty added:* `set_rgb_item_max_size <size: {none, small, medium, large}>`
+  - *Recenty added:* `get_rgb_item_max_size`
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
   - `is_chaos_recipe_enabled_for <item_slot: str>`
   - `get_all_chaos_recipe_statuses`
