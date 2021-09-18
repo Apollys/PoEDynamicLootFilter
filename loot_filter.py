@@ -137,24 +137,33 @@ class LootFilterRule:
         self.visibility = visibility
     # End SetVisibility
     
+    # Adds base_type_name to this rule's BaseType line, if it's not there already
     # Note: BaseType names are *not* quoted in base_type_list
+    # TODO: If we add a basetype to a rule that was disabled (because its basetype line
+    # was previously emptied), do we re-enable the rule properly?
     def AddBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         if (base_type_name in self.base_type_list):
             return
+        # Check if rule is missing BaseType line, and add if so
+        if (self.base_type_line_index == -1):
+            base_type_line = "BaseType"
+            if (self.visibility == RuleVisibility.kDisable):
+                base_type_line = '# ' + base_type_line
+            self.base_type_line_index = len(self.text_lines)
+            self.text_lines.append(base_type_line)
         quoted_base_type_name = '"' + base_type_name + '"'
         self.base_type_list.append(base_type_name)
         self.text_lines[self.base_type_line_index] = \
                 self.text_lines[self.base_type_line_index] + ' ' + quoted_base_type_name
     # End AddBaseType
     
+    # Removes base_type_name from this rules BaseType line, if it's there
     def RemoveBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         quoted_base_type_name = '"' + base_type_name + '"'
         if ((base_type_name not in self.base_type_list) and
                 (quoted_base_type_name not in self.base_type_list)):
-            logger.Log('Warning: requested to remove BaseType ' + base_type_name + ' from rule "' + 
-                    self.text_lines[0] + '", but given BaseType is not in this rule')
             return
         self.base_type_list.remove(base_type_name)
         # Remove base_type_name from rule text
@@ -170,6 +179,11 @@ class LootFilterRule:
             # Also, need to eliminate the ' ""'  in the list
             self.text_lines[index] = self.text_lines[index][:-3]
     # End RemoveBaseType
+    
+    def ClearBaseTypeList(self):
+        while (len(self.base_type_list) > 0):
+            self.RemoveBaseType(self.base_type_list[-1])
+    # End ClearBaseTypeList
     
     # Returns a bool indicating whether or not the line identified by the given keyword was found
     # Updates both parsed_item_lines and text_lines
@@ -248,6 +262,7 @@ class LootFilter:
     def SaveToFile(self):
         with open(self.profile_config_data['OutputLootFilterFullpath'], 'w') as output_file:
             line_index: int = 0
+            previous_line: str = ''
             while (line_index < len(self.text_lines)):
                 line: str = self.text_lines[line_index]
                 # If not a new rule start, just write input line back out
@@ -256,9 +271,13 @@ class LootFilter:
                     line_index += 1
                 # Otherwise is a new rule - write out the rule from line_index_rule_map
                 else:  # IsRuleStart
+                    # Ensure there is a blank line before each rule start
+                    if (previous_line.strip() != ''):
+                        output_file.write('\n')
                     rule = self.line_index_rule_map[line_index]
                     output_file.write(str(rule) + '\n')
                     line_index += len(rule.text_lines)
+                previous_line = line
     # End SaveToFile
     
     # In NeverSink's fitler, type_tags plus tier_tags form a unique key for rules,
@@ -521,6 +540,32 @@ class LootFilter:
         return max_visible_tier
     # GetHideCurrencyAboveTierTier
     
+    # =========================== Oil-Related Functions ===========================
+    
+    def SetLowestVisibleOil(self, lowest_visible_oil_name: str):
+        type_tag = consts.kOilTypeTag
+        visible_flag = True
+        for oil_name, tier in consts.kOilTierList:
+            tier_tag = 't' + str(tier)
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            if (visible_flag):
+                rule.AddBaseType(oil_name)
+            else:
+                rule.RemoveBaseType(oil_name)
+            if (oil_name == lowest_visible_oil_name):
+                visible_flag = False  # hide rest below this oil
+    # End SetLowestVisibleOil
+    
+    def GetLowestVisibleOil(self) -> str:
+        type_tag = consts.kOilTypeTag
+        # Iterate upwards from bottom oil to find first visible
+        for oil_name, tier in reversed(consts.kOilTierList):
+            tier_tag = 't' + str(tier)
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            if (oil_name in rule.base_type_list):
+                return oil_name
+    # End GetLowestVisibleOil
+    
     # =========================== Unique Item Functions ===========================
     
     def SetUniqueTierVisibility(self, tier: int or str, visibility: RuleVisibility):
@@ -606,6 +651,7 @@ class LootFilter:
     # The rules we modify for flask quality functionality are:
     #  - Show # %D5 $type->endgameflasks $tier->qualityhigh  (14-20)
     #  - Show # %D3 $type->endgameflasks $tier->qualitylow   (1-13)
+    # Note: any min_quality value outside the range [1, 20] will disable all flask quality rules
     def SetFlaskMinQuality(self, min_quality: int):
         CheckType(min_quality, 'min_quality', int)
         type_tag: str = 'endgameflasks'
@@ -619,7 +665,10 @@ class LootFilter:
             quality_high_rule.SetVisibility(RuleVisibility.kShow)
             quality_high_rule.ModifyLine('Quality', '>=', 14)
             quality_low_rule.SetVisibility(RuleVisibility.kShow)
-            quality_low_rule.ModifyLine('Quality', '>=', min_quality)
+            quality_low_rule.ModifyLine('Quality', '>=', min_quality)        
+        else:  # out of range [1, 20] --> disable all flask quality rules
+            quality_high_rule.SetVisibility(RuleVisibility.kDisable)
+            quality_low_rule.SetVisibility(RuleVisibility.kDisable)
     # End SetFlaskMinQuality
     
     def GetFlaskMinQuality(self):
@@ -631,7 +680,7 @@ class LootFilter:
                 for keyword, operator, value_string_list in rule.parsed_lines:
                     if keyword == 'Quality':
                         return int(value_string_list[0])
-        return -1  # indicates all gem quality rules are disabled/hidden
+        return -1  # indicates all flask quality rules are disabled/hidden
     
     # ============================== RGB Item Functions ==============================
     
@@ -880,6 +929,18 @@ class LootFilter:
                     current_rule_lines = []
                 else:
                     current_rule_lines.append(line)
-    # End ParseLootFilterRules()
+    # End ParseLootFilterRules
+    
+    def ApplyImportChanges(self):
+        oil_hide_rule = self.type_tier_rule_map[consts.kOilTypeTag][consts.kOilHideTierTag]
+        oil_hide_rule.SetVisibility(RuleVisibility.kHide)
+        for oil_tier in range(1, consts.kMaxOilTier + 1):
+            rule = self.type_tier_rule_map[consts.kOilTypeTag]['t' + str(oil_tier)]
+            rule.ClearBaseTypeList()
+        for oil_name, oil_tier in consts.kOilTierList:
+            rule = self.type_tier_rule_map[consts.kOilTypeTag]['t' + str(oil_tier)]
+            rule.AddBaseType(oil_name)
+            rule.SetVisibility(RuleVisibility.kShow)
+    # End ApplyPostParseChanges
 
 # -----------------------------------------------------------------------------

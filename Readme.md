@@ -18,6 +18,8 @@ The `profile_name` parameter is required in all cases except for:
 
 ### Cody To-Do
  - Remove redundant profile changes
+ - Update rule-writing - handle issue where lines are added to rules after parsing
+   (e.g. blight oil t1 rule)
  - Does `import_downloaded_filter` really need to be prohibited from running in batch?
  - Update documentation in backend_cli to include profile in sample syntax
 
@@ -34,9 +36,9 @@ The `profile_name` parameter is required in all cases except for:
  - [x] Simulate - find rule matching item
    - All done except socket colors
  - [x] Set Gem min quality
- - [ ] Set Flask min quality
- - [ ] Set RGB item max size
- - [ ] Set Blight Oil min tier
+ - [x] Set Flask min quality
+ - [x] Set RGB item max size
+ - [x] Set Blight Oil min tier
  - [ ] Profile rework: frontend
  - [x] Profile rework: backend (separate all profile config data from python code)
    - Formatting of profile file could probably be improved
@@ -74,6 +76,8 @@ for the detailed documentation of all available function calls.
   - `get_all_currency_tiers`
   - `set_currency_tier_visibility`
   - `get_currency_tier_visibility`
+  - `set_lowest_visible_oil <oil_name: str>`
+  - `get_lowest_visible_oil`
   - `get_all_unique_tier_visibilities`
   - `set_hide_uniques_above_tier`
   - `get_hide_uniques_above_tier`
@@ -88,12 +92,9 @@ for the detailed documentation of all available function calls.
   - `set_flask_visibility <base_type: str> <visibility_flag: int>`
   - `get_flask_visibility <base_type: str>`
   - `get_all_flask_visibilities`
-  - *Recenty added:* `set_rgb_item_max_size <size: {none, small, medium, large}>`
-  - *Recenty added:* `get_rgb_item_max_size`
+  - `set_rgb_item_max_size <size: {none, small, medium, large}>`
+  - `get_rgb_item_max_size`
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
   - `is_chaos_recipe_enabled_for <item_slot: str>`
   - `get_all_chaos_recipe_statuses`
-
-**Functions To Implement**
- - Simulate - find rule matching item
 

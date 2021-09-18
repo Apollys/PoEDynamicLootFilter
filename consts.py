@@ -206,3 +206,16 @@ kRgbSizesMap = {'none': (0, []),
                 'medium': (6, ['rgbmedium']),
                 'large': (8, ['rgblarge'])}
 
+# Blight Oils consts
+
+kOilTypeTag = 'currency->oil'
+kOilHideTierTag = 'restex'
+kMaxOilTier = 4
+
+kOilTierList = [
+        ('Tainted Oil', 1), ('Golden Oil', 1),
+        ('Silver Oil', 2), ('Opalescent Oil', 2),
+        ('Black Oil', 3), ('Crimson Oil', 3), ('Voilet Oil', 3), ('Indigo Oil', 3),
+        ('Azure Oil', 4), ('Teal Oil', 4), ('Verdant Oil', 4), ('Amber Oil', 4),
+        ('Sepia Oil', 4), ('Clear Oil', 4)]
+

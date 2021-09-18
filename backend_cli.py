@@ -60,7 +60,7 @@ kOutputFilename = 'backend_cli.output'
 # Excluded undo_last_change since it's rather unique and handles its own saving
 kFilterMutatorFunctionNames = ['set_rule_visibility',
         'set_currency_tier', 'adjust_currency_tier',
-        'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
+        'set_currency_tier_visibility', 'set_hide_currency_above_tier', 'set_lowest_visible_oil',
         'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_flask_min_quality',
         'set_hide_maps_below_tier',
         'set_flask_visibility', 'set_rgb_item_max_size', 'set_chaos_recipe_enabled_for']
@@ -142,6 +142,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         else:
             CheckNumParams(function_params, 0)
         if (import_flag):
+            loot_filter.ApplyImportChanges()
             changes_lines: List[str] = helper.ReadFile(config_data['ChangesFullpath'])
             for function_call_string in changes_lines:
                 _function_name, *_function_params = shlex.split(function_call_string)
@@ -362,7 +363,25 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideCurrencyAboveTierTier())
-    # ======================================== Uniques ========================================
+    # ======================================= Blight Oils =======================================
+    elif (function_name == 'set_lowest_visible_oil'):
+        '''
+        set_lowest_visible_oil <oil_name: str>
+         - Sets the lowest-value blight oil which to be shown
+         - Output: None
+         - Example: > python3 backend_cli.py set_lowest_visible_oil "Voilet Oil"
+        '''
+        CheckNumParams(function_params, 1)
+        loot_filter.SetLowestVisibleOil(function_params[0])
+    elif (function_name == 'get_lowest_visible_oil'):
+        '''
+        get_lowest_visible_oil
+         - Output: the name of the lowest-value blight oil that is shown
+         - Example: > python3 backend_cli.py get_lowest_visible_oil
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = loot_filter.GetLowestVisibleOil()
+    # ========================================= Uniques =========================================
     elif (function_name == 'get_all_unique_tier_visibilities'):
         '''
         get_all_unique_tier_visibilities

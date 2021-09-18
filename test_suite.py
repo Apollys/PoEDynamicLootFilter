@@ -152,6 +152,20 @@ def TestCurrency():
     CheckOutput(str(0))
 # End TestCurrency
 
+def TestOils():
+    print('Running TestOils...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    oil_tier_names_map = {tier : [] for tier in range(1, consts.kMaxOilTier + 1)}
+    for oil_name, tier in consts.kOilTierList:
+        oil_tier_names_map[tier].append(oil_name)
+    for tier in range(1, consts.kMaxOilTier + 1):
+        lowest_visible_oil_name = random.choice(oil_tier_names_map[tier])
+        CallCliFunction('set_lowest_visible_oil "{}"'.format(lowest_visible_oil_name))
+        CallCliFunction('get_lowest_visible_oil')
+        CheckOutput(lowest_visible_oil_name)
+# End TestOils
+
 def TestUniques():
     print('Running TestUniques...')
     ResetTestProfile()
@@ -344,6 +358,7 @@ def RunAllTests():
     print()
     TestSetRuleVisibility()
     TestCurrency()
+    TestOils()
     TestHideMapsBelowTier()
     TestUniques()
     TestGemQuality()
