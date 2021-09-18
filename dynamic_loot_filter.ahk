@@ -32,14 +32,24 @@ rare_ids := []
 rare_val := []
 rare_val_start := []
 fake_queue := []
+profiles := []
 FileDelete, %ahk_out_path%
+RunWait, python %py_prog_path% get_all_profile_names
+FileRead, py_out_text, %py_out_path%
+Loop, parse, py_out_text, `n, `r
+{
+	If(A_LoopField = "")
+		continue
+	profiles.push(A_LoopField)
+}
+active_profile := profiles[0]
 FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_map_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`n, %ahk_out_path%
 For key in flasks
 {
 	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
 	fake_queue.Push(key)
 }
-RunWait, python %py_prog_path% run_batch , , Hide
+RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
 FileRead, py_out_text, %py_out_path%
 prog := 0
 Loop, parse, py_out_text, `n, `r
@@ -313,7 +323,7 @@ Clip_:
 FileDelete, %ahk_out_path%
 FileDelete, %py_out_path%
 FileAppend, % Clipboard, %ahk_out_path%
-RunWait, python %py_prog_path% get_rule_matching_item , , Hide
+RunWait, python %py_prog_path% get_rule_matching_item %active_profile%, , Hide
 FileRead, py_out_text, %py_out_path%
 If( py_out_text = "")
 {
@@ -360,8 +370,8 @@ If(InStr(py_out_text, "Show #")){
 		visi := "hide"
 }
 If(visi != ""){
-	MsgBox, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi%
-	RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi%, , Hide
+	MsgBox, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile%
+	RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile%, , Hide
 }
 return
 
@@ -413,7 +423,7 @@ for idx, val in flasks
 	}
 	val[2] = val[1]
 }
-RunWait, python %py_prog_path% run_batch , , Hide
+RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
 Gui, 1: Hide
 return
 ;ExitApp
@@ -430,6 +440,6 @@ return
 ;ExitApp
 
 F12::
-Run, python %py_prog_path% import_downloaded_filter ,  , Hide
+Run, python %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
 Reload
 ExitApp
