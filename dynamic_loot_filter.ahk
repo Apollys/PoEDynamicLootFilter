@@ -18,7 +18,7 @@ validstr2 := ""
 for idx,val in rare_valid
 	validstr2 .= "|" val
 ; Coloring from consts.py
-rare_colors := {"WeaponsX" : "c80000", "Weapons3" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200", "Gloves" : "ffe400", "Boots" : "00ff00", "Amulets" : "00ffff", "Rings" : "4100bd", "Belts" : "0000c8"}
+rare_colors := {"Weapons" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200", "Gloves" : "ffe400", "Boots" : "00ff00", "Amulets" : "00ffff", "Rings" : "4100bd", "Belts" : "0000c8"}
 ; Flask stuff
 flasks := {"Quicksilver Flask":[0,0], "Bismuth Flask":[0,0], "Amethyst Flask":[0,0], "Ruby Flask":[0,0], "Sapphire Flask":[0,0], "Topaz Flask":[0,0], "Aquamarine Flask":[0,0], "Diamond Flask":[0,0], "Jade Flask":[0,0], "Quartz Flask":[0,0], "Granite Flask":[0,0], "Sulphur Flask":[0,0], "Basalt Flask":[0,0], "Silver Flask":[0,0], "Stibnite Flask":[0,0], "Corundum Flask":[0,0], "Gold Flask":[0,0]}
 
@@ -34,7 +34,7 @@ rare_val_start := []
 fake_queue := []
 profiles := []
 FileDelete, %ahk_out_path%
-RunWait, python %py_prog_path% get_all_profile_names
+RunWait, python %py_prog_path% get_all_profile_names, , Hide
 FileRead, py_out_text, %py_out_path%
 Loop, parse, py_out_text, `n, `r
 {
@@ -42,8 +42,8 @@ Loop, parse, py_out_text, `n, `r
 		continue
 	profiles.push(A_LoopField)
 }
-active_profile := profiles[0]
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_map_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`n, %ahk_out_path%
+active_profile := profiles[1]
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`n, %ahk_out_path%
 For key in flasks
 {
 	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
@@ -120,16 +120,25 @@ For idx, val in curr_txt
 }
 ; Buttons
 Gui, Font, S20 cB0B0B0 norm bold, Courier New
-height := height - 32
+;height := height - 32
+height := 473
 Gui, Add, Button, x867 y%height% gUpdate_ BackgroundTrans, Update
 Gui, Add, Button, x13 y%height% gCancel_ BackgroundTrans, Cancel
+
+; Profiles DDL
+Gui, Font, S18 cB0B0B0 norm bold, Courier New
+ProfString := ""
+for key, val in profiles
+	ProfString .= val "|"
+RTrim(ProfString, "|")
+Gui, Add, DropDownList, w235 x5 y5 Choose1 vProf gProfDDL, % ProfString
 
 ; Rares
 Gui, Font, S18 norm bold, Courier New
 height := 0
 For idx, val in rare_txt
 {
-	height := -30 + 40  * idx
+	height := 10 + 40  * idx
 	Gui, Font, % "c" rare_colors[val]
 	Gui, Add, Text, backgroundtrans x10 y%height% grmbhack, % Format("{:-16}", val)
 	Gui, Font, S36, Wingdings
@@ -140,6 +149,17 @@ For idx, val in rare_txt
 ; Misc
 Gui, Font, S18 norm cB0B0B0, Courier New
 height := 10
+
+; Portal/Wisdom
+if (PortalHide)
+	Gui, Font, Strike
+Gui, Add, Text, x590 y%height% grmbhack vPortalHide, Portal Scroll
+Gui, Font, norm
+if (WisdomHide)
+	Gui, Font, Strike
+Gui, Add, Text, x790 y%height% grmbhack vWisdomHide, Wisdom Scroll
+Gui, Font, norm
+height := height + 30
 
 ; Hide Map Tiers
 Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Maps Below Tier:           "
@@ -156,16 +176,6 @@ Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Uniques Above T
 Gui, Add, Text, x944 y%height% w40 BackgroundTrans vUniqTierHide, % Format("{:2}", uniqhide)
 height := height + 30
 
-; Portal/Wisdom
-if (PortalHide)
-	Gui, Font, Strike
-Gui, Add, Text, x590 y%height% grmbhack vPortalHide, Portal Scroll
-Gui, Font, norm
-if (WisdomHide)
-	Gui, Font, Strike
-Gui, Add, Text, x790 y%height% grmbhack vWisdomHide, Wisdom Scroll
-Gui, Font, norm
-height := height + 30
 
 ; Gem Qual
 Gui, Add, Text, x590 y%height% vgemtext, Minimum Gem Quality: %gemmin%`%
@@ -292,6 +302,15 @@ GuiControl, % "+c" (FlaskShow? "Blue" : "Red"), FlaskShow
 GuiControl,, FlaskShow, % (FlaskShow? Chr(252) : Chr(251))
 return
 
+; Profile Dropdown List
+ProfDDL:
+Gui, Submit, NoHide
+If (Prof = active_profile)
+	return
+RunWait, python %py_prog_path% set_active_profile %Prof%, , Hide
+Reload
+ExitApp
+
 ; Gem Slider
 GemSlider:
 Gui, Submit, NoHide
@@ -370,7 +389,6 @@ If(InStr(py_out_text, "Show #")){
 		visi := "hide"
 }
 If(visi != ""){
-	MsgBox, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile%
 	RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile%, , Hide
 }
 return
