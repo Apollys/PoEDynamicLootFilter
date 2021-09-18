@@ -77,8 +77,10 @@ for the detailed documentation of all available function calls.
   - `get_all_unique_tier_visibilities`
   - `set_hide_uniques_above_tier`
   - `get_hide_uniques_above_tier`
-  - `set_gem_min_quality <tier: int in [1, 20]>`
+  - `set_gem_min_quality <quality: int in [1, 20]>`
   - `get_gem_min_quality`
+  - `set_flask_min_quality <quality: int in [1, 20]>`
+  - `get_flask_min_quality`
   - `set_hide_currency_above_tier`
   - `get_hide_currency_above_tier`
   - `set_hide_maps_below_tier <tier: int>`

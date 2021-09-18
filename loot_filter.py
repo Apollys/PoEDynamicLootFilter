@@ -559,11 +559,12 @@ class LootFilter:
     
     # ============================ Gem Quality Functions ============================
     
-    # The rules we modify for gem-quality functionality are:
+    # The rules we modify for gem quality functionality are:
     #  - Show # %D5 $type->gems-generic $tier->qt2   (19-20)
     #  - Show # %D3 $type->gems-generic $tier->qt3   (14-18)
     #  - Show # %D2 $type->gems-generic $tier->qt4   (1-13)
     def SetGemMinQuality(self, min_quality: int):
+        CheckType(min_quality, 'min_quality', int)
         type_tag: str = 'gems-generic'
         tier_tag_base: str = 'qt'
         quality_t2_rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(2)]
@@ -594,6 +595,38 @@ class LootFilter:
         tier_tag_base: str = 'qt'
         for tier in [4, 3, 2, 1]:
             rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(tier)]
+            if (rule.visibility == RuleVisibility.kShow):
+                for keyword, operator, value_string_list in rule.parsed_lines:
+                    if keyword == 'Quality':
+                        return int(value_string_list[0])
+        return -1  # indicates all gem quality rules are disabled/hidden
+    
+    # ============================ Flask Quality Functions ============================
+    
+    # The rules we modify for flask quality functionality are:
+    #  - Show # %D5 $type->endgameflasks $tier->qualityhigh  (14-20)
+    #  - Show # %D3 $type->endgameflasks $tier->qualitylow   (1-13)
+    def SetFlaskMinQuality(self, min_quality: int):
+        CheckType(min_quality, 'min_quality', int)
+        type_tag: str = 'endgameflasks'
+        quality_high_rule = self.type_tier_rule_map[type_tag]['qualityhigh']
+        quality_low_rule = self.type_tier_rule_map[type_tag]['qualitylow']
+        if (14 <= min_quality <= 20):
+            quality_high_rule.SetVisibility(RuleVisibility.kShow)
+            quality_high_rule.ModifyLine('Quality', '>=', min_quality)
+            quality_low_rule.SetVisibility(RuleVisibility.kDisable)
+        elif (1 <= min_quality <= 13):
+            quality_high_rule.SetVisibility(RuleVisibility.kShow)
+            quality_high_rule.ModifyLine('Quality', '>=', 14)
+            quality_low_rule.SetVisibility(RuleVisibility.kShow)
+            quality_low_rule.ModifyLine('Quality', '>=', min_quality)
+    # End SetFlaskMinQuality
+    
+    def GetFlaskMinQuality(self):
+        type_tag: str = 'endgameflasks'
+        tier_tag_list: list[str] = ['qualitylow', 'qualityhigh']
+        for tier_tag in tier_tag_list:
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
             if (rule.visibility == RuleVisibility.kShow):
                 for keyword, operator, value_string_list in rule.parsed_lines:
                     if keyword == 'Quality':

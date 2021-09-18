@@ -61,8 +61,9 @@ kOutputFilename = 'backend_cli.output'
 kFilterMutatorFunctionNames = ['set_rule_visibility',
         'set_currency_tier', 'adjust_currency_tier',
         'set_currency_tier_visibility', 'set_hide_currency_above_tier', 
-        'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_hide_maps_below_tier',
-         'set_flask_visibility', 'set_rgb_item_max_size', 'set_chaos_recipe_enabled_for']
+        'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_flask_min_quality',
+        'set_hide_maps_below_tier',
+        'set_flask_visibility', 'set_rgb_item_max_size', 'set_chaos_recipe_enabled_for']
 
 # Functions that don't require a profile parameter in the CLI
 # These are the functions that do not interact with the loot filter in any way
@@ -396,7 +397,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     # ======================================= Gem Quality =======================================
     elif (function_name == 'set_gem_min_quality'):
         '''
-        set_gem_min_quality <tier: int in [1, 20]>
+        set_gem_min_quality <quality: int in [1, 20]>
          - Sets the minimum quality below which gems will not be shown by gem quality rules
          - Output: None
          - Example: > python3 backend_cli.py set_gem_min_quality 10
@@ -412,6 +413,25 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetGemMinQuality())
+    # ====================================== Flask Quality ======================================
+    elif (function_name == 'set_flask_min_quality'):
+        '''
+        set_flask_min_quality <quality: int in [1, 20]>
+         - Sets the minimum quality below which flasks will not be shown by flask quality rules
+         - Output: None
+         - Example: > python3 backend_cli.py set_flask_min_quality 14
+        '''
+        CheckNumParams(function_params, 1)
+        min_quality: int = int(function_params[0])
+        loot_filter.SetFlaskMinQuality(min_quality)
+    elif (function_name == 'get_flask_min_quality'):
+        '''
+        get_flask_min_quality
+         - Output: single integer, minimum shown flask quality for flask quality rules
+         - Example: > python3 backend_cli.py get_flask_min_quality
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = str(loot_filter.GetFlaskMinQuality())
     # ========================================== Maps ==========================================
     elif (function_name == 'set_hide_maps_below_tier'):
         '''

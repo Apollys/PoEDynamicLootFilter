@@ -177,6 +177,16 @@ def TestGemQuality():
         CheckOutput(str(min_visible_quality))
 # End TestGemQuality
 
+def TestFlaskQuality():
+    print('Running TestFlaskQuality...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    for min_visible_quality in [1, random.randint(2, 13), 14, random.randint(15, 19), 20]:
+        CallCliFunction('set_flask_min_quality {}'.format(min_visible_quality))
+        CallCliFunction('get_flask_min_quality')
+        CheckOutput(str(min_visible_quality))
+# End TestFlaskQuality
+
 def TestHideMapsBelowTier():
     print('Running TestHideMapsBelowTier...')
     ResetTestProfile()
@@ -336,6 +346,7 @@ def RunAllTests():
     TestCurrency()
     TestHideMapsBelowTier()
     TestUniques()
+    TestGemQuality()
     TestGemQuality()
     TestFlasks()
     TestRgbItems()
