@@ -66,7 +66,8 @@ kFilterMutatorFunctionNames = ['set_rule_visibility',
 
 # Functions that don't require a profile parameter in the CLI
 # These are the functions that do not interact with the loot filter in any way
-kNoProfileParameterFunctionNames = ['get_all_profile_names', 'set_active_profile']
+kNoProfileParameterFunctionNames = [
+        'get_all_profile_names', 'create_new_profile', 'set_active_profile']
 
 def Error(e):
     logger.Log('Error ' + str(e))
@@ -178,11 +179,33 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_profile_names
          - Note: Does *not* take a <profile_name> parameter
          - Output: newline-separated list of all profile names, with currently active profile first
+         - If there is no specified active profile (e.g. if general.config is missing), first line
+           will be blank
          - Example: > python3 get_all_profile_names
         '''
         CheckNumParams(function_params, 0)
         profile_names_list = profile.GetAllProfileNames()
         output_string += '\n'.join(profile_names_list)
+    elif (function_name == 'create_new_profile'):
+        '''
+        create_new_profile <new_profile_name>
+         - Creates a new profile by copying DefaultProfile.config, and sets new profile to active
+         - Does nothing if a profile with the given new_profile_name already exists
+         - Output: "1" if the new profile was created, "0" otherwise
+         - Example: > python3 create_new_profile MyProfile
+        '''
+        CheckNumParams(function_params, 1)
+        profile_names_list = profile.GetAllProfileNames()
+        new_profile_name = function_params[0]
+        create_new_profile_flag = new_profile_name not in profile_names_list
+        if (create_new_profile_flag):
+            default_profile_config_fullpath = os.path.join(
+                    profile.kProfileDirectory, 'DefaultProfile.config')
+            new_profile_config_fullpath = os.path.join(
+                    profile.kProfileDirectory, new_profile_name + '.config')
+            file_manip.CopyFile(default_profile_config_fullpath, new_profile_config_fullpath)
+            profile.SetActiveProfile(new_profile_name)
+        output_string += str(int(create_new_profile_flag))
     elif (function_name == 'set_active_profile'):
         '''
         set_active_profile <new_active_profile_name>

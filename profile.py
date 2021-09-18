@@ -13,6 +13,8 @@ kGeneralConfigFullpath = os.path.join(kProfileDirectory, kGeneralConfigFilename)
 kActiveProfileTemplate = 'Active profile: {}'
 
 def GetActiveProfileName() -> str:
+    if (not os.path.isdir(kProfileDirectory)):
+        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
     if (not os.path.isfile(kGeneralConfigFullpath)):
         return None
     general_config_lines = [line.strip() for line in helper.ReadFile(kGeneralConfigFullpath)]
@@ -34,7 +36,10 @@ def SetActiveProfile(profile_name: str):
 # Returns a list of strings, each string containing the name of a profile
 # The first item in the list is the currently active profile
 def GetAllProfileNames() -> list:
-    profile_names: list[str] = [GetActiveProfileName()]
+    if (not os.path.isdir(kProfileDirectory)):
+        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
+    active_profile_name = GetActiveProfileName()
+    profile_names: list[str] = [active_profile_name] if active_profile_name else ['']
     profile_files_list: list[str] = file_manip.ListFilesInDirectory(kProfileDirectory)
     for filename in profile_files_list:
         if (filename == 'general.config'):

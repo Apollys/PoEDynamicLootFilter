@@ -62,6 +62,7 @@ for the detailed documentation of all available function calls.
   - `run_batch`
     - TODO: make input filepath first argument (maybe?)
   - `get_all_profile_names`
+  - `create_new_profile <new_profile_name>`
   - `set_active_profile`
   - `undo_last_change`
   - `import_downloaded_filter <optional keyword: "only_if_missing">`
