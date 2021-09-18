@@ -21,6 +21,8 @@ for idx,val in rare_valid
 rare_colors := {"Weapons" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200", "Gloves" : "ffe400", "Boots" : "00ff00", "Amulets" : "00ffff", "Rings" : "4100bd", "Belts" : "0000c8"}
 ; Flask stuff
 flasks := {"Quicksilver Flask":[0,0], "Bismuth Flask":[0,0], "Amethyst Flask":[0,0], "Ruby Flask":[0,0], "Sapphire Flask":[0,0], "Topaz Flask":[0,0], "Aquamarine Flask":[0,0], "Diamond Flask":[0,0], "Jade Flask":[0,0], "Quartz Flask":[0,0], "Granite Flask":[0,0], "Sulphur Flask":[0,0], "Basalt Flask":[0,0], "Silver Flask":[0,0], "Stibnite Flask":[0,0], "Corundum Flask":[0,0], "Gold Flask":[0,0]}
+; RGB Size Tooltips
+rgbtooltip := {"none" : "Hide everything", "small" : "2x2, 4x1, and 3x1", "medium" : "3x2, 2x2, 4x1, and 3x1", "large" : "Show everything"}
 
 ; Read starting filter data from python client
 curr_txt := []
@@ -43,7 +45,7 @@ Loop, parse, py_out_text, `n, `r
 	profiles.push(A_LoopField)
 }
 active_profile := profiles[1]
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`n, %ahk_out_path%
 For key in flasks
 {
 	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
@@ -93,6 +95,9 @@ Loop, parse, py_out_text, `n, `r
 	Case 7:
 		gemmin := A_LoopField
 		base_gemmin := gemmin
+	Case 8:
+		rgbsize := A_LoopField
+		base_rgbsize := rgbsize
 	Default:
 		flasks[fake_queue[prog - 6]] := [A_LoopField, A_LoopField]
 	}
@@ -176,6 +181,10 @@ Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Uniques Above T
 Gui, Add, Text, x944 y%height% w40 BackgroundTrans vUniqTierHide, % Format("{:2}", uniqhide)
 height := height + 30
 
+; RGB Size
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "RGB Items Shown:           "
+Gui, Add, Text, x825 y%height% w100 BackgroundTrans vRGBHide, % Format("{:T}", rgbsize)
+height:= height + 30
 
 ; Gem Qual
 Gui, Add, Text, x590 y%height% vgemtext, Minimum Gem Quality: %gemmin%`%
@@ -292,6 +301,31 @@ If (control_ = "WisdomHide")
 		Gui, Font, Strike
 	GuiControl, Font, WisdomHide
 }
+If (control_ = "RGB Items Shown:")
+{
+	If (A_GuiEvent = "RightClick"){
+		If (rgbsize = "medium")
+			rgbsize := "large"
+		If (rgbsize = "small")
+			rgbsize := "medium"
+		If (rgbsize = "none")
+			rgbsize := "small"
+	}Else{
+		If (rgbsize = "small")
+			rgbsize := "none"
+		If (rgbsize = "medium")
+			rgbsize := "small"
+		If (rgbsize = "large")
+			rgbsize := "medium"
+	}
+	ToolTip, % rgbtooltip[rgbsize]
+	SetTimer, RemoveToolTip, -2500
+	GuiControl, , RGBHide, % Format("{:T}", rgbsize)
+}
+return
+
+RemoveToolTip:
+ToolTip
 return
 
 ; Flask Dropdown List
@@ -396,6 +430,7 @@ return
 ; Write all filter modifications to one file, send it over to python
 Update_:
 Gui, Hide
+ToolTip
 FileDelete, %ahk_out_path%
 for idx in curr_txt
 {
@@ -429,10 +464,14 @@ if (base_wishide != WisdomHide){
 	FileAppend, % "set_currency_tier_visibility twisdom " (WisdomHide? "0":"1") "`n", %ahk_out_path%
 }
 base_wishide := WisdomHide
-if (base_gemhide != gemhide){
-	FileAppend, % "set_gem_min_quality " %gemhide% "`n", %ahk_out_path%
+if (base_gemmin != gemmin){
+	FileAppend, % "set_gem_min_quality " gemmin "`n", %ahk_out_path%
 }
-base_gemhide := gemhide
+base_gemmin := gemmin
+if (base_rgbsize != rgbsize){
+	FileAppend, % "set_rgb_item_max_size " rgbsize "`n", %ahk_out_path%
+}
+base_rgbsize := rgbsize
 for idx, val in flasks
 {
 	if (val[1] != val[2])
@@ -448,6 +487,7 @@ return
 
 Cancel_:
 Gui, Hide
+ToolTip
 return
 ;ExitApp
 
