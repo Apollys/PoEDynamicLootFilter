@@ -45,7 +45,7 @@ Loop, parse, py_out_text, `n, `r
 	profiles.push(A_LoopField)
 }
 active_profile := profiles[1]
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`n, %ahk_out_path%
 For key in flasks
 {
 	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
@@ -98,6 +98,9 @@ Loop, parse, py_out_text, `n, `r
 	Case 8:
 		rgbsize := A_LoopField
 		base_rgbsize := rgbsize
+	Case 9:
+		flaskmin := A_LoopField
+		base_flaskmin := flaskmin
 	Default:
 		flasks[fake_queue[prog - 6]] := [A_LoopField, A_LoopField]
 	}
@@ -190,7 +193,21 @@ height:= height + 30
 Gui, Add, Text, x590 y%height% vgemtext, Minimum Gem Quality: %gemmin%`%
 height := height + 30
 Gui, Add, Slider, Range1-20 ToolTip NoTicks x590 y%height% gGemSlider vgemslider AltSubmit, % gemmin
-height := height + 20
+Gui, Font, S12 bold 
+height := height + 1
+Gui, Add, Text, x860 y%height% gGemHA, Hide All
+Gui, Font, S18 norm
+height := height + 19
+
+; Flask Qual
+Gui, Add, Text, x590 y%height% vflasktext, % "Minimum Flask Quality: " (flaskmin = -1? "N/A" : flaskmin"`%")
+height := height + 30
+Gui, Add, Slider, Range1-20 ToolTip NoTicks x590 y%height% gFlaskSlider vflaskslider AltSubmit, % flaskmin
+Gui, Font, S12 bold 
+height := height + 1
+Gui, Add, Text, x860 y%height% gFlaskHA, Hide All
+Gui, Font, S18 norm
+height := height + 19
 
 ; Flask DDL
 Gui, Add, Text, x590 y%height%, Enable/Disable Flasks:
@@ -303,7 +320,7 @@ If (control_ = "WisdomHide")
 }
 If (control_ = "RGB Items Shown:")
 {
-	If (A_GuiEvent = "RightClick"){
+	If (A_GuiEvent != "RightClick"){
 		If (rgbsize = "medium")
 			rgbsize := "large"
 		If (rgbsize = "small")
@@ -352,6 +369,24 @@ gemmin := gemslider
 GuiControl,, gemtext, Minimum Gem Quality: %gemmin%`%
 return
 
+; Flask Slider
+FlaskSlider:
+Gui, Submit, NoHide
+flaskmin := flaskslider
+GuiControl,, flasktext, Minimum Flask Quality: %flaskmin%`%
+return
+
+FlaskHA:
+flaskmin := -1
+GuiControl,, flasktext, Minimum Flask Quality: N/A
+GuiControl,, flaskslider, 1
+return
+
+GemHA:
+gemmin := -1
+GuiControl,, gemtext, Minimum Gem Quality: N/A
+GuiControl,, gemslider, 1
+return
 ; ???
 MsgBox(Message := "Press Ok to Continue.", Title := "", Type := 0, B1 := "", B2 := "", B3 := "", Time := "") {
 	If (Title = "")
@@ -468,6 +503,10 @@ if (base_gemmin != gemmin){
 	FileAppend, % "set_gem_min_quality " gemmin "`n", %ahk_out_path%
 }
 base_gemmin := gemmin
+if (base_flaskmin != flaskmin){
+	FileAppend, % "set_flask_min_quality " flaskmin "`n", %ahk_out_path%
+}
+base_flaskmin := flaskmin
 if (base_rgbsize != rgbsize){
 	FileAppend, % "set_rgb_item_max_size " rgbsize "`n", %ahk_out_path%
 }
