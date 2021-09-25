@@ -49,6 +49,11 @@ class LootFilterRule:
                     start_line_index + 1))
         self.text_lines = rule_text_lines
         self.start_line_index = start_line_index  # index in full loot filter file
+        # Find the line index containing Show/Hide/Disable and save as self.tag_line_index
+        self.tag_line_index = helper.FindTagLineIndex(self.text_lines)
+        if (self.tag_line_index == -1):
+            raise RuntimeError('did not find Show/Hide/Disable line in rule:\n{}'.format(
+                    self.text_lines))
         # Generate self.parsed_lines and check for 'Continue' keyword
         self.parsed_lines = []
         self.has_continue = False
@@ -96,6 +101,15 @@ class LootFilterRule:
     def __repr__(self):
         return '\n'.join(self.text_lines)
     # End __repr__
+    
+    # Adds type and tier tags to the Show/Hide/Disable line, and updates
+    # self.type_tag and self.tier_tag accordingly
+    def AddTypeTierTags(self, type_tag: str, tier_tag: str):
+        self.type_tag = type_tag
+        self.tier_tag = tier_tag
+        self.text_lines[self.tag_line_index] += ' # ' + consts.kTypeTierTagTemplate.format(
+                type_tag, tier_tag)
+    # End AddTypeTierTags
     
     def MatchesItem(self, item_properties: dict) -> bool:
         return rule_parser.CheckRuleMatchesItem(self.parsed_lines, item_properties)
@@ -236,18 +250,21 @@ class LootFilter:
      - self.profile_config_data: dict
      - self.input_filter_fullpath: str
      - self.text_lines: List[str]
+     - self.header_lines: list[str] - the lines of the loot filter up to the start of the rules
      - self.parser_index: int
-     - self.section_map: OrderedDict[id: str, name: str]
-     - self.inverse_section_map: Dict[name: str, id: str]
      - self.rules_start_line_index: int
-     - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
-     - self.rule_list: List[LootFilterRule] - in order of loot filter file
-     - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
+     - self.rule_or_comment_block_list: list[LootFilterRule or list[str]]
      - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
        Example: self.type_tier_rule_map['currency']['t1exalted']
+    
+    Old, removed or no longer using:
+     - self.section_map: OrderedDict[id: str, name: str]
+     - self.inverse_section_map: Dict[name: str, id: str]
+     - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
+     - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
     '''
 
-    # ============================== Public API ==============================
+    # ================================= Public API =================================
     
     # Construct LootFilter object, parsing the given loot filter file
     def __init__(self, profile_name: str, output_as_input_filter: bool):
@@ -261,6 +278,21 @@ class LootFilter:
 
     def SaveToFile(self):
         with open(self.profile_config_data['OutputLootFilterFullpath'], 'w') as output_file:
+            for line in self.header_lines:
+                output_file.write(line + '\n')
+            for rule_or_comment_block in self.rule_or_comment_block_list:
+                if (isinstance(rule_or_comment_block, LootFilterRule)):
+                    rule = rule_or_comment_block
+                    for line in rule.text_lines:
+                        output_file.write(line + '\n')
+                    #output_file.writelines(rule.text_lines)
+                else:
+                    comment_block = rule_or_comment_block
+                    for line in comment_block:
+                        output_file.write(line + '\n')
+                    #output_file.writelines(comment_block)
+                output_file.write('\n')
+            '''
             line_index: int = 0
             previous_line: str = ''
             while (line_index < len(self.text_lines)):
@@ -278,6 +310,7 @@ class LootFilter:
                     output_file.write(str(rule) + '\n')
                     line_index += len(rule.text_lines)
                 previous_line = line
+            '''
     # End SaveToFile
     
     # In NeverSink's fitler, type_tags plus tier_tags form a unique key for rules,
@@ -300,20 +333,16 @@ class LootFilter:
     def GetRuleMatchingItem(self, item_text_lines: List[str]) -> Tuple[str, str]:
         CheckType2(item_text_lines, 'item_text_lines', list, str)
         item_properties: dict = rule_parser.ParseItem(item_text_lines)
-        #print('\nitem_properties:')
-        #for k, v in item_properties.items():
-        #    print(k, ':', v)
-        #print()
         matched_continue_rule = None
-        for rule in self.rule_list:
-            if ((rule.visibility != RuleVisibility.kDisable) and rule.MatchesItem(item_properties)):
-                #print('Matched rule:')
-                #print('\n'.join(rule.text_lines))
-                #print()
-                if (rule.has_continue):
-                    matched_continue_rule = rule
-                else:
-                    return rule.type_tag, rule.tier_tag
+        for rule_or_comment_block in self.rule_or_comment_block_list:
+            if (isinstance(rule, LootFilterRule)):
+                rule = rule_or_comment_block
+                if ((rule.visibility != RuleVisibility.kDisable)
+                        and rule.MatchesItem(item_properties)):
+                    if (rule.has_continue):
+                        matched_continue_rule = rule
+                    else:
+                        return rule.type_tag, rule.tier_tag
         if (matched_continue_rule):
             return matched_continue_rule.type_tag, matched_continue_rule.tier_tag
         return None, None
@@ -333,7 +362,7 @@ class LootFilter:
     # End SetRuleVisibility
     
     # ========================= Section-Related Functions =========================
-       
+    '''   
     def ContainsSection(self, section_name: str) -> bool:
         CheckType(section_name, 'section_name', str)
         return section_name in self.inverse_section_map
@@ -382,7 +411,7 @@ class LootFilter:
         CheckType(rule_index, 'rule_index', int)
         self.GetSectionRules(section_name)[rule_index].SetVisibility(visibility)
     # End ChangeRuleVisibility
-    
+    '''
     # =========================== Map-Related Functions ===========================
     
     def SetHideMapsBelowTierTier(self, tier: int) -> int:
@@ -751,6 +780,7 @@ class LootFilter:
         if (self.text_lines[-1] != ''):
             self.text_lines.append('')
         self.rules_start_line_index = self.FindRulesStartLineIndex()
+        self.header_lines = self.text_lines[: self.rules_start_line_index]
         self.parser_index = self.rules_start_line_index
         # Add custom user-defiend rulies plus DLF-generated rules like chaos recipe rules
         self.AddDlfRulesIfMissing()
@@ -859,78 +889,45 @@ class LootFilter:
     
     def ParseLootFilterRules(self) -> None:
         '''
-        This function parses the rules of the loot filter into the following data structures:
-         - self.section_map: OrderedDict[id: str, name: str]
-         - self.inverse_section_map: Dict[name: str, id: str]
-         - self.rules_start_line_index: int
-         - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
-         - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
-         - self.rule_list: List[LootFilterRule]
+        This function parses self.text_lines into:
+         - self.rule_or_comment_block_list: list[LootFilterRule or list[str]]
          - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
            Note: parser ensures that (type_tag, tier_tag) forms a unique key for rules
            Example: self.type_tier_rule_map['currency']['t1'] 
         '''
         # Initialize data structures to store parsed data
-        self.section_map: OrderedDict[str, str] = {}  # maps ids to names
-        self.inverse_section_map: Dict[str, str] = {}  # maps names to ids
-        self.section_rule_map: OrderedDict[str, List[LootFilterRule]] = OrderedDict()
-        self.line_index_rule_map: OrderedDict[int, LootFilterRule] = OrderedDict()
-        self.rule_list: List[LootFilterRule] = []
+        self.rule_or_comment_block_list = []
         self.type_tier_rule_map = {}
         # Set up parsing loop
-        in_rule: bool = False
-        current_rule_lines: List[str] = []
-        current_section_id: str = ''
-        current_section_group_prefix: str = ''
-        untagged_rule_count: int = 0
-        for line_index in range(self.rules_start_line_index, len(self.text_lines)):
-            line: str = self.text_lines[line_index]
-            if (not in_rule):
-                # Case: encountered new section or section group
-                if (helper.IsSectionOrGroupDeclaration(line)):
-                    is_section_group, section_id, section_name = \
-                            helper.ParseSectionDeclarationLine(line)
-                    if (is_section_group):
-                        current_section_group_prefix = '[' + section_name + '] '
-                    else:
-                        section_name = current_section_group_prefix + section_name
-                    section_id = helper.MakeUniqueId(section_id, self.section_map)
-                    self.section_map[section_id] = section_name
-                    self.inverse_section_map[section_name] = section_id
-                    self.section_rule_map[section_id] = []
-                    current_section_id = section_id
-                # Case: encountered new rule
-                elif (helper.IsRuleStart(self.text_lines, line_index)):
-                    in_rule = True
-                    current_rule_lines.append(line)
-            else:  # in_rule
-                if (line == ''):  # end of rule
-                    rule_start_line_index: int = line_index - len(current_rule_lines)
-                    new_rule = LootFilterRule(current_rule_lines, rule_start_line_index)
-                    # Add rule to section rule map
-                    self.section_rule_map[current_section_id].append(new_rule)
-                    # Add rules to line index rule map
-                    self.line_index_rule_map[rule_start_line_index] = new_rule
+        current_block: list[str] = []
+        while (self.parser_index < len(self.text_lines)):
+            current_line = self.text_lines[self.parser_index]
+            # Check for end of block
+            if ((current_line.strip() == '') and (len(current_block) > 0)):
+                is_comment_block: bool = (helper.FindTagLineIndex(current_block) == -1)
+                if (is_comment_block):
+                    self.rule_or_comment_block_list.append(current_block)
+                else:  # is rule
+                    new_rule = LootFilterRule(current_block, self.parser_index - len(current_block))
                     # Generate unique type-tier tag pair if no tags
                     # (For now we assume it either has both or none)
                     if ((new_rule.type_tag == '') and (new_rule.tier_tag == '')):
                         new_rule.type_tag = 'untagged_rule'
                         new_rule.tier_tag = str(untagged_rule_count)
-                        untagged_rule_count += 1
-                        current_rule_lines[0] += ' # ' + consts.kTypeTierTagTemplate.format(
-                                new_rule.type_tag, new_rule.tier_tag)
-                    # Add rule to rule list
-                    self.rule_list.append(new_rule)
+                        new_rule.AddTypeTierTags(type_tag, tier_tag)
                     # Add rule to type tier rule map
                     if (new_rule.type_tag not in self.type_tier_rule_map):
                         self.type_tier_rule_map[new_rule.type_tag] = {}
                     self.type_tier_rule_map[new_rule.type_tag][new_rule.tier_tag] = new_rule
-                    in_rule = False
-                    current_rule_lines = []
-                else:
-                    current_rule_lines.append(line)
+                    # Add rule to rule or comment block list
+                    self.rule_or_comment_block_list.append(new_rule)
+                current_block = []
+            else:  # not end of block
+                current_block.append(current_line)
+            self.parser_index += 1
     # End ParseLootFilterRules
     
+    # Apply changes that need to be made to the filter on import only
     def ApplyImportChanges(self):
         oil_hide_rule = self.type_tier_rule_map[consts.kOilTypeTag][consts.kOilHideTierTag]
         oil_hide_rule.SetVisibility(RuleVisibility.kHide)
@@ -941,6 +938,6 @@ class LootFilter:
             rule = self.type_tier_rule_map[consts.kOilTypeTag]['t' + str(oil_tier)]
             rule.AddBaseType(oil_name)
             rule.SetVisibility(RuleVisibility.kShow)
-    # End ApplyPostParseChanges
+    # End ApplyImportChanges
 
 # -----------------------------------------------------------------------------

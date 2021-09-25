@@ -18,8 +18,6 @@ The `profile_name` parameter is required in all cases except for:
 
 ### Cody To-Do
  - Remove redundant profile changes
- - Update rule-writing - handle issue where lines are added to rules after parsing
-   (e.g. blight oil t1 rule)
  - Does `import_downloaded_filter` really need to be prohibited from running in batch?
  - Update documentation in backend_cli to include profile in sample syntax
 
