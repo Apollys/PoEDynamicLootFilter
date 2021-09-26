@@ -23,6 +23,8 @@ rare_colors := {"Weapons" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff
 flasks := {"Quicksilver Flask":[0,0], "Bismuth Flask":[0,0], "Amethyst Flask":[0,0], "Ruby Flask":[0,0], "Sapphire Flask":[0,0], "Topaz Flask":[0,0], "Aquamarine Flask":[0,0], "Diamond Flask":[0,0], "Jade Flask":[0,0], "Quartz Flask":[0,0], "Granite Flask":[0,0], "Sulphur Flask":[0,0], "Basalt Flask":[0,0], "Silver Flask":[0,0], "Stibnite Flask":[0,0], "Corundum Flask":[0,0], "Gold Flask":[0,0]}
 ; RGB Size Tooltips
 rgbtooltip := {"none" : "Hide everything", "small" : "2x2, 4x1, and 3x1", "medium" : "3x2, 2x2, 4x1, and 3x1", "large" : "Show everything"}
+; Ordered Oils
+oils := ["Tainted", "Golden", "Silver", "Opalescent", "Black", "Crimson", "Violet", "Indigo", "Azure", "Teal", "Verdant", "Amber", "Sepia", "Clear"]
 
 ; Read starting filter data from python client
 curr_txt := []
@@ -105,6 +107,15 @@ Loop, parse, py_out_text, `n, `r
 		flasks[fake_queue[prog - 6]] := [A_LoopField, A_LoopField]
 	}
 }
+rawr_input := "Opalescent Oil"
+oil_text := StrSplit(rawr_input, " ")
+min_oil := -1
+for idx, val in oils
+{
+	if (val = oil_text[1])
+		min_oil := idx
+}
+base_min_oil := min_oil
 ; Initialize GUI Handles for changing text items
 for idx in curr_txt
 {
@@ -185,8 +196,13 @@ Gui, Add, Text, x944 y%height% w40 BackgroundTrans vUniqTierHide, % Format("{:2}
 height := height + 30
 
 ; RGB Size
-Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "RGB Items Shown:           "
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "RGB Items Shown:                "
 Gui, Add, Text, x825 y%height% w100 BackgroundTrans vRGBHide, % Format("{:T}", rgbsize)
+height:= height + 30
+
+; Blight Oils
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Min Blight Oil:                  "
+Gui, Add, Text, x805 y%height% w200 BackgroundTrans vBlightOil, % oils[min_oil]
 height:= height + 30
 
 ; Gem Qual
@@ -339,6 +355,14 @@ If (control_ = "RGB Items Shown:")
 	SetTimer, RemoveToolTip, -2500
 	GuiControl, , RGBHide, % Format("{:T}", rgbsize)
 }
+If (control_ = "Min Blight Oil:")
+{
+	If (A_GuiEvent = "RightClick")
+		min_oil := min_oil > 1 ? min_oil - 1 : 1
+	else
+		min_oil := min_oil < 14 ? min_oil + 1 : 14
+	GuiControl, , BlightOil, % oils[min_oil]
+}
 return
 
 RemoveToolTip:
@@ -387,6 +411,7 @@ gemmin := -1
 GuiControl,, gemtext, Minimum Gem Quality: N/A
 GuiControl,, gemslider, 1
 return
+
 ; ???
 MsgBox(Message := "Press Ok to Continue.", Title := "", Type := 0, B1 := "", B2 := "", B3 := "", Time := "") {
 	If (Title = "")
@@ -486,7 +511,7 @@ if (current_currhide != currhide)
 	FileAppend, % "set_hide_currency_above_tier " current_currhide "`n", %ahk_out_path%
  currhide := current_currhide
 if (current_maphide != maphide)
-	FileAppend, % "set_hide_map_below_tier " current_maphide "`n", %ahk_out_path%
+	FileAppend, % "set_hide_maps_below_tier " current_maphide "`n", %ahk_out_path%
 maphide := current_maphide
 if (current_uniqhide != uniqhide)
 	FileAppend, % "set_hide_uniques_above_tier " current_uniqhide "`n", %ahk_out_path%
@@ -511,6 +536,10 @@ if (base_rgbsize != rgbsize){
 	FileAppend, % "set_rgb_item_max_size " rgbsize "`n", %ahk_out_path%
 }
 base_rgbsize := rgbsize
+if (min_oil != base_min_oil){
+	FileAppend, % "set_min_oil_something_blah """ oils[min_oil] " Oil""`n", %ahk_out_path%
+}
+base_min_oil := min_oil
 for idx, val in flasks
 {
 	if (val[1] != val[2])
@@ -520,23 +549,41 @@ for idx, val in flasks
 	val[2] = val[1]
 }
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
-Gui, 1: Hide
+Gui, Destroy
 return
 ;ExitApp
 
 Cancel_:
-Gui, Hide
+Gui, Destroy
 ToolTip
+for idx in curr_txt
+{
+	curr_val[idx] := curr_val_start[idx]
+}
+for idx in rare_txt
+{
+	rare_val[idx] := rare_val_start[idx]
+}
+PortalHide := base_porthide
+wishide := base_WisdomHide
+gemmin := base_gemmin
+flaskmin := base_flaskmin
+rgbsize := base_rgbsize
+min_oil := base_min_oil
+for idx, val in flasks
+{
+	val[1] := val[2]
+}
 return
 ;ExitApp
 
 F7::
-Gui, 1: Show, Restore
+goto GuiBuild
 ;Reload
 return
 ;ExitApp
 
 F12::
-Run, python %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
+RunWait, python %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
 Reload
 ExitApp
