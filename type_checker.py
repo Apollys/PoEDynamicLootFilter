@@ -27,6 +27,8 @@ def CheckType2(variable, variable_name: str, required_outer_type, required_inner
         logger.Log('TypeError: ' + error_message)
         raise TypeError(error_message)
     else:
+        if (len(variable) == 0):
+            return
         try:
             inner_value = next(iter(variable))
         except:

@@ -362,7 +362,7 @@ def RunAllTests():
     TestHideMapsBelowTier()
     TestUniques()
     TestGemQuality()
-    TestGemQuality()
+    TestFlaskQuality()
     TestFlasks()
     TestRgbItems()
     TestChaosRecipe()

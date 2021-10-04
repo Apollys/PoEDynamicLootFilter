@@ -34,6 +34,7 @@ Testing feature:
    one's real profile(s).  Used in all test_suite.py calls.
 '''
 
+from collections import OrderedDict
 import os
 from pathlib import Path
 import shlex
@@ -48,22 +49,176 @@ import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
 import profile
-from type_checker import CheckType
+from type_checker import CheckType, CheckType2
 
 kLogFilename = 'backend_cli.log'
 kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
 
-# List of functions that modify the filter in any way
-# This list excludes getter-only functions, which can be excluded from the profile data
-# Also exclues run_batch (depends on batch functions) and import_downloaded_filter
-# Excluded undo_last_change since it's rather unique and handles its own saving
-kFilterMutatorFunctionNames = ['set_rule_visibility',
-        'set_currency_tier', 'adjust_currency_tier',
-        'set_currency_tier_visibility', 'set_hide_currency_above_tier', 'set_lowest_visible_oil',
-        'set_hide_uniques_above_tier', 'set_gem_min_quality', 'set_flask_min_quality',
-        'set_hide_maps_below_tier',
-        'set_flask_visibility', 'set_rgb_item_max_size', 'set_chaos_recipe_enabled_for']
+# Map of function name -> dictionary of properties indexed by the following string keywords:
+# - HasProfileParam: bool
+# - ModifiesFilter: bool
+# - NumParamsForMatch: int, only present for functions that modify the filter,
+#   Tells how many parameters need to be the same for two functions of this name to be
+#   reducible to a single function in the profile changes file.  For example:
+#     > adjust_currency_tier "Chromatic Orb" +1
+#     > adjust_currency_tier "Chromatic Orb" +1
+#   is reducible to
+#     > adjust_currency_tier "Chromatic Orb" +2
+#   so this value would be 1 for 'adjust_currency_tier'.
+kFunctionInfoMap = {
+    'get_all_profile_names' : {
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
+    'create_new_profile' : { 
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
+    'set_active_profile' : { 
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
+    'import_downloaded_filter' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'run_batch' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_rule_matching_item' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_rule_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 2,
+    },
+    'set_currency_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'adjust_currency_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'get_currency_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_all_currency_tiers' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_currency_tier_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'get_currency_tier_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_hide_currency_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_hide_currency_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_lowest_visible_oil' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_lowest_visible_oil' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_all_unique_tier_visibilities' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+        'NumParamsForMatch' : 0,
+    },
+    'set_hide_uniques_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_hide_uniques_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_gem_min_quality' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_gem_min_quality' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_flask_min_quality' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_flask_min_quality' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_hide_maps_below_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_hide_maps_below_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_flask_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'get_flask_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_all_flask_visibilities' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+        'NumParamsForMatch' : 0,
+    },
+    'set_rgb_item_max_size' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_rgb_item_max_size' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_chaos_recipe_enabled_for' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'is_chaos_recipe_enabled_for' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_all_chaos_recipe_statuses' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+}
 
 # Functions that don't require a profile parameter in the CLI
 # These are the functions that do not interact with the loot filter in any way
@@ -102,6 +257,104 @@ def AppendFunctionOutput(function_output_string: str):
         output_file.write(function_output_string + '\n@\n')
 # End AppendFunctionOutput
 
+def AddFunctionToChangesDict(function_tokens: List[str], changes_dict: OrderedDict):
+    CheckType2(function_tokens, 'function_tokens', list, str)
+    CheckType(changes_dict, 'changes_dict', OrderedDict)
+    function_name = function_tokens[0]
+    num_params_for_match = kFunctionInfoMap[function_name]['NumParamsForMatch']
+    current_dict = changes_dict
+    for i in range(num_params_for_match + 1):
+        current_token = function_tokens[i]
+        if (i == num_params_for_match):
+            current_dict[current_token] = function_tokens[i + 1]
+        else:
+            if (current_token not in current_dict):
+                current_dict[current_token] = OrderedDict()
+            current_dict = current_dict[current_token]
+# End AddLineToChangesDict
+
+# Returns list of lists of function tokens, for example:
+# [['adjust_currency_tier', 'Chromatic Orb', '1'],
+#  ['hide_uniques_above_tier', '3']]
+def ConvertChangesDictToFunctionListRec(changes_dict: OrderedDict or str,
+                                        current_prefix_list: List[str] = []) -> list:
+    CheckType(changes_dict, 'changes_dict', (OrderedDict, str))
+    CheckType2(current_prefix_list, 'current_prefix_list', list, str)
+    # changes_dict may just be final parameter, in which case it's a string
+    if (isinstance(changes_dict, str)):
+        last_param: str = changes_dict
+        return [current_prefix_list + [last_param]]
+    # Otherwise, recursively handle all keys in changes_dict
+    result_list = []
+    for param, subdict in changes_dict.items():
+        result_list.extend(
+                ConvertChangesDictToFunctionListRec(subdict, current_prefix_list + [param]))
+    return result_list
+# End ConvertChangesDictToFunctionListRec
+
+def ConvertChangesDictToFunctionList(changes_dict: OrderedDict) -> list:
+    CheckType(changes_dict, 'changes_dict', OrderedDict)
+    # Get list of lists of function tokens from recursive function above
+    token_lists = ConvertChangesDictToFunctionListRec(changes_dict)
+    function_list = []
+    for token_list in token_lists:
+        function_list.append(shlex.join(token_list))
+    return function_list
+# End ConvertChangesDictToFunctionList
+
+# Assumption: not BOTH adjust_currency_tier and set_currency tier will ever
+# be used for the same currency type in the same file
+def UpdateProfileChangesFile(changes_fullpath: str,
+                             new_function_name: str,
+                             new_function_params: list):
+    CheckType(changes_fullpath, 'changes_fullpath', str)
+    CheckType(new_function_name, 'new_function_name', str)
+    CheckType2(new_function_params, 'new_function_params', list, str)
+    # Parse changes file as chain of OrderedDicts:
+    # function_name -> param1 -> param2 -> ... -> last_param
+    #  > set_currency_tier "Chaos Orb" 3
+    # 'set_currency_tier' -> 'Chaos Orb' -> '3':
+    # {'set_currency_tier' : {'Chaos Orb' : '3'}}
+    parsed_changes_dict = OrderedDict()
+    changes_lines_list = helper.ReadFile(changes_fullpath)
+    for line in changes_lines_list:
+        tokens_list = shlex.split(line.strip())
+        AddFunctionToChangesDict(tokens_list, parsed_changes_dict)
+    # Now check if new function matches with any functions in parsed_changes_dict
+    num_params_for_match = kFunctionInfoMap[new_function_name]['NumParamsForMatch']
+    match_flag: bool = new_function_name in parsed_changes_dict
+    matched_rule_tokens_list = [new_function_name]
+    if (match_flag):
+        current_dict = parsed_changes_dict[new_function_name]
+        for i in range(num_params_for_match):
+            current_param = new_function_params[i]
+            if (current_param not in current_dict):
+                match_flag = False
+                break
+            else:
+                matched_rule_tokens_list.append(current_param)
+                current_dict = current_dict[current_param]
+        # Append last parameter if we found a match
+        # A bit wacky, but current_dict is just last parameter here due to the last line above
+        if (match_flag):
+            matched_rule_tokens_list.append(current_dict)
+    # If we found a match, update parsed_changes_dict accordingly
+    # In most cases, we combine matching functions by simply overwriting the last parameter
+    # The only exception is adjust_currency_tier, in which we must add the last parameters together
+    if (match_flag):
+        new_last_param = (
+                str(int(matched_rule_tokens_list[-1]) + int(new_function_params[-1]))
+                if (new_function_name == 'adjust_currency_tier')
+                else new_function_params[-1])
+        new_function_params[-1] = new_last_param
+    # Whether there was a match or not, update our parsed_changes_dict with this new function
+    AddFunctionToChangesDict([new_function_name] + new_function_params, parsed_changes_dict)
+    # Convert our parsed_changes_dict into a list of functions
+    changes_list = ConvertChangesDictToFunctionList(parsed_changes_dict)
+    # Write updated profile changes
+    helper.WriteToFile(changes_list, changes_fullpath)
+# End UpdateProfileChangesFile
+
 def DelegateFunctionCall(loot_filter: LootFilter or None,
                          function_name: str,
                          function_params: List[str],
@@ -118,11 +371,10 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     # 
     output_string = ''
     # Save function call to profile data if it is a mutator function
-    # (kFilterMutatorFunctionNames excludes import_downloaded_filter and run_batch)
     # Note: suppress_output also functioning as an indicator to not save profile data here
-    if ((function_name in kFilterMutatorFunctionNames) and not suppress_output):
-        with open(config_data['ChangesFullpath'], 'a') as changes_file:
-            changes_file.write(shlex.join([function_name] + function_params) + '\n')
+    if (kFunctionInfoMap[function_name]['ModifiesFilter'] and not suppress_output):
+        # We use the syntax some_list[:] to create a copy of some_list
+        UpdateProfileChangesFile(config_data['ChangesFullpath'], function_name, function_params[:])
     # =============================== Import Downloaded Filter ===============================
     if (function_name == 'import_downloaded_filter'):
         '''
@@ -166,9 +418,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         contains_mutator = False
         function_call_list: List[str] = helper.ReadFile(kInputFilename)
         for function_call_string in function_call_list:
+            if (function_call_string.strip() == ''):
+                continue
             # need different variable names here to not overwrite the existing ones
             _function_name, *_function_params = shlex.split(function_call_string)
-            if (_function_name in kFilterMutatorFunctionNames):
+            if (kFunctionInfoMap[_function_name]['ModifiesFilter']):
                 contains_mutator = True
             DelegateFunctionCall(loot_filter, _function_name, _function_params,
                                  in_batch = True, suppress_output = False)
@@ -217,20 +471,6 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 1)
         profile.SetActiveProfile(function_params[0])
-    elif (function_name == 'undo_last_change'):
-        '''
-        undo_last_change
-         - Removes the last line of the current profile, then performs import_downloaded_filter
-         - Assumed to never be called as part of a batch
-         - Not included in mutator functions list since it's handled differently
-         - Output: None
-         - Example: > python3 backend_cli.py undo_last_change
-        '''
-        CheckNumParams(function_params, 0)
-        changes_lines: List[str] = helper.ReadFile(config_data['ChangesFullpath'])
-        with open(config_data['ChangesFullpath'], 'w') as changes_file:
-            changes_file.writelines(changes_lines[:-1])
-        DelegateFunctionCall(loot_filter, 'import_downloaded_filter', [])
     # ====================================== Rule Matching ======================================
     elif (function_name == 'get_rule_matching_item'):
         '''
@@ -574,7 +814,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         if (function_name != 'run_batch'):
             WriteOutput(output_string)
         # Save loot filter if we called a mutator function
-        if (function_name in kFilterMutatorFunctionNames):
+        if (kFunctionInfoMap[function_name]['ModifiesFilter']):
             loot_filter.SaveToFile()
 # End DelegateFunctionCall
 
@@ -594,8 +834,7 @@ def main():
         Error(kUsageErrorString)
     _, function_name, *remaining_args = sys.argv
     profile_name = None
-    required_profile_param: bool = (function_name not in kNoProfileParameterFunctionNames)
-    if (required_profile_param):
+    if (kFunctionInfoMap[function_name]['HasProfileParam']):
         if (len(sys.argv) < 3):
             Error(kUsageErrorString)
         *function_params, profile_name = remaining_args

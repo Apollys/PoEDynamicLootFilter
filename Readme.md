@@ -59,32 +59,30 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
-  - `run_batch`
-    - TODO: make input filepath first argument (maybe?)
   - `get_all_profile_names`
   - `create_new_profile <new_profile_name>`
   - `set_active_profile`
-  - `undo_last_change`
   - `import_downloaded_filter <optional keyword: "only_if_missing">`
+  - `run_batch`
   - `get_rule_matching_item`
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
   - `set_currency_tier <currency_name: str> <tier: int>`
   - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `get_currency_tier <currency_name: str>`
   - `get_all_currency_tiers`
-  - `set_currency_tier_visibility`
-  - `get_currency_tier_visibility`
+  - `set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>`
+  - `get_currency_tier_visibility <tier: int or tier_tag: str>`
+  - `set_hide_currency_above_tier <tier: int>`
+  - `get_hide_currency_above_tier`
   - `set_lowest_visible_oil <oil_name: str>`
   - `get_lowest_visible_oil`
   - `get_all_unique_tier_visibilities`
-  - `set_hide_uniques_above_tier`
+  - `set_hide_uniques_above_tier <tier: int>`
   - `get_hide_uniques_above_tier`
   - `set_gem_min_quality <quality: int in [1, 20]>`
   - `get_gem_min_quality`
   - `set_flask_min_quality <quality: int in [1, 20]>`
   - `get_flask_min_quality`
-  - `set_hide_currency_above_tier`
-  - `get_hide_currency_above_tier`
   - `set_hide_maps_below_tier <tier: int>`
   - `get_hide_maps_below_tier`
   - `set_flask_visibility <base_type: str> <visibility_flag: int>`
