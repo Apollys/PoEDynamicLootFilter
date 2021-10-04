@@ -16,10 +16,9 @@ The `profile_name` parameter is required in all cases except for:
 
 - - -
 
-### Cody To-Do
- - Remove redundant profile changes
+### Misc To-Do / Notes
  - Does `import_downloaded_filter` really need to be prohibited from running in batch?
- - Update documentation in backend_cli to include profile in sample syntax
+   Would it ever be helpful to run `import_downloaded_filter` in a batch?
 
 - - -
 
@@ -37,8 +36,7 @@ The `profile_name` parameter is required in all cases except for:
  - [x] Set Flask min quality
  - [x] Set RGB item max size
  - [x] Set Blight Oil min tier
- - [ ] Profile rework: frontend
- - [x] Profile rework: backend (separate all profile config data from python code)
+ - [x] Profile rework
    - Formatting of profile file could probably be improved
  - [x] Add user-defined custom rules (user writes custom rules in a text file,
    whenever the filter is imported those rules are automatically added.

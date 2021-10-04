@@ -431,7 +431,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: newline-separated list of all profile names, with currently active profile first
          - If there is no specified active profile (e.g. if general.config is missing), first line
            will be blank
-         - Example: > python3 get_all_profile_names
+         - Example: > python3 backend_cli.py get_all_profile_names
         '''
         CheckNumParams(function_params, 0)
         profile_names_list = profile.GetAllProfileNames()
@@ -442,7 +442,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Creates a new profile by copying DefaultProfile.config, and sets new profile to active
          - Does nothing if a profile with the given new_profile_name already exists
          - Output: "1" if the new profile was created, "0" otherwise
-         - Example: > python3 create_new_profile MyProfile
+         - Example: > python3 backend_cli.py create_new_profile MyProfile
         '''
         CheckNumParams(function_params, 1)
         profile_names_list = profile.GetAllProfileNames()
@@ -461,7 +461,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_active_profile <new_active_profile_name>
          - Note: Does *not* take a (current) <profile_name> parameter
          - Output: None
-         - Example: > python3 set_active_profile TestProfile
+         - Example: > python3 backend_cli.py set_active_profile TestProfile
         '''
         CheckNumParams(function_params, 1)
         profile.SetActiveProfile(function_params[0])
@@ -475,7 +475,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            these two tags together form a unique key for the rule
          - Ignores rules with AreaLevel conditions, as well as many other niche keywords
          - Socket rules only implemented as numeric counting for now, ignores color requirements
-         - Example: > python3 backend_cli.py get_rule_matching_item
+         - Example: > python3 backend_cli.py get_rule_matching_item DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         item_text_lines: List[str] = helper.ReadFile(kInputFilename)
@@ -493,6 +493,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example > python3 backend_cli.py set_rule_visibility "rare->redeemer" t12 show
          - Note: quotes (either type) are necessary for tags containing a ">" character,
            since the shell will normally iterpret as the output redirection signal
+         - Example: > python3 backend_cli.py set_rule_visibility uniques 5link 0 DefaultProfile
         '''
         CheckNumParams(function_params, 3)
         type_tag, tier_tag, visibility_string = function_params
@@ -510,7 +511,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_currency_tier <currency_name: str> <tier: int>
          - Moves the given currency type to the specified tier
          - Output: None
-         - Example: > python3 backend_cli.py set_currency_tier "Chromatic Orb" 5
+         - Example: > python3 backend_cli.py set_currency_tier "Chromatic Orb" 5 DefaultProfile
         '''
         CheckNumParams(function_params, 2)
         currency_name: str = function_params[0]
@@ -521,7 +522,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
 #        adjust_currency_tier <currency_name: str> <tier_delta: int>
 #         - Moves the given currency type by a relative tier_delta
 #         - Output: None
-#         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
+#         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2 DefaultProfile
 #        '''
 #        CheckNumParams(function_params, 2)
 #        currency_name: str = function_params[0]
@@ -531,7 +532,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_currency_tier <currency_name: str>
          - Output: single integer, the tier of the given currency
-         - Example: pthon3 backend_cli.py get_currency_tier "Chromatic Orb"
+         - Example: python3 backend_cli.py get_currency_tier "Chromatic Orb" DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         currency_name: str = function_params[0]
@@ -541,7 +542,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_currency_tiers
          - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`,
            one per currency type
-         - Example: > python3 backend_cli.py get_all_currency_tiers
+         - Example: > python3 backend_cli.py get_all_currency_tiers DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         for tier in consts.kCurrencyTierNames:
@@ -557,7 +558,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            "tportal" for Portal Scrolls, "twisdom" for Wisdom Scrolls
          - visible_flag is 1 for True (enable), 0 for False (disable)
          - Output: None
-         - Example: > python3 backend_cli.py set_currency_tier_visibility tportal 1
+         - Example: > python3 backend_cli.py set_currency_tier_visibility tportal 1 DefaultProfile
         '''
         CheckNumParams(function_params, 2)
         tier = function_params[0]
@@ -571,7 +572,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Parameter may be a tier integer [1-9] or a tier tag string, such as:
            "tportal" for Portal Scrolls, "twisdom" for Wisdom Scrolls
          - Output: "1" if the given currency tier is shown, "0" otherwise
-         - Example: > python3 backend_cli.py get_currency_tier_visibility twisdom
+         - Example: > python3 backend_cli.py get_currency_tier_visibility twisdom DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         tier = function_params[0]
@@ -584,7 +585,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the currency tier "above" which all will be hidden
            (higher currency tiers are worse)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_currency_above_tier 8
+         - Example: > python3 backend_cli.py set_hide_currency_above_tier 8 DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         max_visible_tier: int = int(function_params[0])
@@ -593,7 +594,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_currency_above_tier
          - Output: single integer, the tier above which all currency is hidden
-         - Example: > python3 backend_cli.py get_hide_currency_above_tier
+         - Example: > python3 backend_cli.py get_hide_currency_above_tier DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideCurrencyAboveTierTier())
@@ -603,7 +604,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_lowest_visible_oil <oil_name: str>
          - Sets the lowest-value blight oil which to be shown
          - Output: None
-         - Example: > python3 backend_cli.py set_lowest_visible_oil "Voilet Oil"
+         - Example: > python3 backend_cli.py set_lowest_visible_oil "Voilet Oil" DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         loot_filter.SetLowestVisibleOil(function_params[0])
@@ -611,7 +612,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_lowest_visible_oil
          - Output: the name of the lowest-value blight oil that is shown
-         - Example: > python3 backend_cli.py get_lowest_visible_oil
+         - Example: > python3 backend_cli.py get_lowest_visible_oil DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = loot_filter.GetLowestVisibleOil()
@@ -621,7 +622,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_unique_tier_visibilities
          - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
          - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
-         - Example: > python3 backend_cli.py get_all_unique_tier_visibilities
+         - Example: > python3 backend_cli.py get_all_unique_tier_visibilities DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         for tier in range(1, consts.kMaxUniqueTier):
@@ -634,7 +635,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the unique tier "above" which all will be hidden
            (higher unique tiers are worse)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_uniques_above_tier 3
+         - Example: > python3 backend_cli.py set_hide_uniques_above_tier 3 DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         max_visible_tier: int = int(function_params[0])
@@ -643,7 +644,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_uniques_above_tier
          - Output: single integer, the tier above which all uniques are hidden
-         - Example: > python3 backend_cli.py get_hide_uniques_above_tier
+         - Example: > python3 backend_cli.py get_hide_uniques_above_tier DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideUniquesAboveTierTier())
@@ -653,7 +654,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_gem_min_quality <quality: int in [1, 20]>
          - Sets the minimum quality below which gems will not be shown by gem quality rules
          - Output: None
-         - Example: > python3 backend_cli.py set_gem_min_quality 10
+         - Example: > python3 backend_cli.py set_gem_min_quality 10 DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         min_quality: int = int(function_params[0])
@@ -662,7 +663,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_gem_min_quality
          - Output: single integer, minimum shown gem quality for gem quality rules
-         - Example: > python3 backend_cli.py get_gem_min_quality
+         - Example: > python3 backend_cli.py get_gem_min_quality DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetGemMinQuality())
@@ -672,7 +673,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_flask_min_quality <quality: int in [1, 20]>
          - Sets the minimum quality below which flasks will not be shown by flask quality rules
          - Output: None
-         - Example: > python3 backend_cli.py set_flask_min_quality 14
+         - Example: > python3 backend_cli.py set_flask_min_quality 14 DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         min_quality: int = int(function_params[0])
@@ -681,7 +682,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_flask_min_quality
          - Output: single integer, minimum shown flask quality for flask quality rules
-         - Example: > python3 backend_cli.py get_flask_min_quality
+         - Example: > python3 backend_cli.py get_flask_min_quality DefaultProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetFlaskMinQuality())
@@ -691,7 +692,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_hide_maps_below_tier <tier: int>
          - Sets the map tier below which all will be hidden (use 0/1 to show all)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_map_below_tier 14
+         - Example: > python3 backend_cli.py set_hide_map_below_tier 14 DefaultProfile
         '''
         min_visibile_tier: int = int(function_params[0])
         loot_filter.SetHideMapsBelowTierTier(min_visibile_tier)
@@ -699,7 +700,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_maps_below_tier
          - Output:  single integer, the tier below which all maps are hidden
-         - Example: > python3 backend_cli.py get_hide_map_below_tier
+         - Example: > python3 backend_cli.py get_hide_map_below_tier DefaultProfile
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
     # ========================================= Flasks =========================================
@@ -711,7 +712,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <base_type> is any valid flask BaseType
          - enable_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Output: None
-         - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1
+         - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1 DefaultProfile
         '''
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
@@ -721,7 +722,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_flask_visibility <base_type: str>
          - <base_type> is any valid flask BaseType
          - Output: "1" if given flask base type is shown by DLF rule, else "0"
-         - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask"
+         - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask" DefaultProfile
         '''
         flask_base_type: str = function_params[0]
         output_string = str(int(loot_filter.IsFlaskRuleEnabledFor(flask_base_type)))
@@ -730,7 +731,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_flask_visibilities
          - Output: newline-separated sequence of <flask_basetype>;<visibility_flag: int>
          - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
-         - Example: > python3 backend_cli.py get_all_enabled_flask_types
+         - Example: > python3 backend_cli.py get_all_enabled_flask_types DefaultProfile
         '''
         visible_flask_types = loot_filter.GetAllVisibleFlaskTypes()
         visible_flask_types_set = set(visible_flask_types)
@@ -747,7 +748,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the maximum size at which an RGB item is shown
          - "small" = 4, "medium" = 6, "large" = 8
          - Output: None
-         - Example: > python3 backend_cli.py set_rgb_item_max_size small
+         - Example: > python3 backend_cli.py set_rgb_item_max_size small DefaultProfile
         '''
         rgb_item_max_size: str = function_params[0]
         loot_filter.SetRgbItemMaxSize(rgb_item_max_size)
@@ -755,7 +756,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_rgb_item_max_size
          - Output:  max-size of shown RGB items, one of {none, small, medium, large}
-         - Example: > python3 backend_cli.py get_rgb_item_max_size
+         - Example: > python3 backend_cli.py get_rgb_item_max_size DefaultProfile
         '''
         output_string = loot_filter.GetRgbItemMaxSize()
     # =================================== Chaos Recipe Rares ===================================
@@ -766,7 +767,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            "Boots", "Amulets", "Rings", "Belts"
          - enable_flag is 1 for True (enable), 0 for False (disable)
          - Output: None
-         - Example: > python3 backend_cli.py set_chaos_recipe_enabled_for Weapons 0
+         - Example: > python3 backend_cli.py set_chaos_recipe_enabled_for Weapons 0 DefaultProfile
         '''
         item_slot: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
@@ -777,7 +778,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
            "Boots", "Amulets", "Rings", "Belts"  (defined in consts.py)
          - Output: "1" if chaos recipe items are showing for the given item_slot, else "0"
-         - Example: > python3 backend_cli.py is_chaos_recipe_enabled_for "Body Armours"
+         - Example: > python3 backend_cli.py is_chaos_recipe_enabled_for "Body Armours" DefaultProfile
         '''
         item_slot: str = function_params[0]
         output_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
@@ -788,7 +789,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
            "Boots", "Amulets", "Rings", "Belts"
          - <enabled_flag> is "1" if chaos recipe items are showing for given item_slot, else "0"
-         - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses
+         - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses DefaultProfile
         '''
         for item_slot in consts.kChaosRecipeItemSlots:
             enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
