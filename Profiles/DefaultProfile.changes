@@ -1,4 +1,5 @@
 set_currency_tier 'Chaos Orb' 2
+set_currency_tier 'Chromatic Orb' 5
 set_hide_uniques_above_tier 1
 set_gem_min_quality 18
 set_chaos_recipe_enabled_for Weapons 0

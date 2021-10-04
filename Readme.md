@@ -67,7 +67,7 @@ for the detailed documentation of all available function calls.
   - `get_rule_matching_item`
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
   - `set_currency_tier <currency_name: str> <tier: int>`
-  - `adjust_currency_tier <currency_name: str> <tier_delta: int>`
+  - \[removed] `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `get_currency_tier <currency_name: str>`
   - `get_all_currency_tiers`
   - `set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>`

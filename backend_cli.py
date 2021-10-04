@@ -338,16 +338,10 @@ def UpdateProfileChangesFile(changes_fullpath: str,
         # A bit wacky, but current_dict is just last parameter here due to the last line above
         if (match_flag):
             matched_rule_tokens_list.append(current_dict)
-    # If we found a match, update parsed_changes_dict accordingly
-    # In most cases, we combine matching functions by simply overwriting the last parameter
-    # The only exception is adjust_currency_tier, in which we must add the last parameters together
-    if (match_flag):
-        new_last_param = (
-                str(int(matched_rule_tokens_list[-1]) + int(new_function_params[-1]))
-                if (new_function_name == 'adjust_currency_tier')
-                else new_function_params[-1])
-        new_function_params[-1] = new_last_param
-    # Whether there was a match or not, update our parsed_changes_dict with this new function
+    # If we found a match, we update the matched function in the changes_dict,
+    # combining matching functions by simply overwriting the last parameter
+    # If we didn't find a match, we instead just add the new function to our changes_dict
+    # Either way, the following line of code does exactly what we want:
     AddFunctionToChangesDict([new_function_name] + new_function_params, parsed_changes_dict)
     # Convert our parsed_changes_dict into a list of functions
     changes_list = ConvertChangesDictToFunctionList(parsed_changes_dict)
@@ -522,17 +516,17 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         currency_name: str = function_params[0]
         target_tier: int = int(function_params[1])
         loot_filter.SetCurrencyToTier(currency_name, target_tier)
-    elif (function_name == 'adjust_currency_tier'):
-        '''
-        adjust_currency_tier <currency_name: str> <tier_delta: int>
-         - Moves the given currency type by a relative tier_delta
-         - Output: None
-         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
-        '''
-        CheckNumParams(function_params, 2)
-        currency_name: str = function_params[0]
-        tier_delta: int = int(function_params[1])
-        loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
+#    elif (function_name == 'adjust_currency_tier'):
+#        '''
+#        adjust_currency_tier <currency_name: str> <tier_delta: int>
+#         - Moves the given currency type by a relative tier_delta
+#         - Output: None
+#         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2
+#        '''
+#        CheckNumParams(function_params, 2)
+#        currency_name: str = function_params[0]
+#        tier_delta: int = int(function_params[1])
+#        loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
     elif (function_name == 'get_currency_tier'):
         '''
         get_currency_tier <currency_name: str>
