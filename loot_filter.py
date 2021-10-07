@@ -31,6 +31,7 @@ class LootFilterRule:
      - self.has_continue: bool - indicates whether this rule has a "Continue" line
      - self.start_line_index: int - line index of this rule in the original filter file
      - self.visibility: RuleVisibility
+     - self.show_flag: bool - true for Show, false for Hide
      - self.type_tag: str - identifier found after "$type->" in the first line of the rule
      - self.tier_tag: str - identifier found after "$tier->" in the first line of the rule
      - self.base_type_list: List[str]
@@ -63,6 +64,7 @@ class LootFilterRule:
                 self.has_continue = True
         self.parsed_lines = [rule_parser.ParseRuleLineGeneric(line) for line in self.text_lines[1:]]
         # Parse rule visibility
+        self.show_flag = helper.ParseShowFlag(rule_text_lines)
         self.visibility = RuleVisibility.kUnknown
         if (rule_text_lines[0].startswith('Show')):
             self.visibility = RuleVisibility.kShow
@@ -128,13 +130,15 @@ class LootFilterRule:
         # Case: Show - set first word to "Show" and uncomment all lines
         elif (visibility == RuleVisibility.kShow):
             self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
-            if (self.text_lines[0].startswith('Hide')):
+            if (not self.show_flag):
                 self.text_lines[0] = 'Show' + self.text_lines[0][4:]
+            self.show_flag = True
         # Case: Hide - set first word to hide and comment effect lines
         elif (visibility == RuleVisibility.kHide):
             self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
-            if (self.text_lines[0].startswith('Show')):
+            if (self.show_flag):
                 self.text_lines[0] = 'Hide' + self.text_lines[0][4:]
+            self.show_flag = False
             #  Disable beams, minimap icons, and drop sounds
             kKeywordsToDisable = ['PlayEffect', 'MinimapIcon', 'PlayAlertSound']
             for parsed_lines_index in range(len(self.parsed_lines)):
@@ -151,6 +155,13 @@ class LootFilterRule:
         self.visibility = visibility
     # End SetVisibility
     
+    # Uncomments the rule if it was commented before
+    def Enable(self) -> None:
+        if (self.visibility == RuleVisibility.kDisable):
+            self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
+            self.visibility = RuleVisibility.kShow if self.show_flag else RuleVisibility.kHide
+    # End Enable
+        
     # Adds base_type_name to this rule's BaseType line, if it's not there already
     # Note: BaseType names are *not* quoted in base_type_list
     # TODO: If we add a basetype to a rule that was disabled (because its basetype line
@@ -533,6 +544,7 @@ class LootFilter:
         target_tier_tag = consts.kCurrencyTierNames[target_tier]
         target_currency_rule = self.type_tier_rule_map[type_tag][target_tier_tag]
         target_currency_rule.AddBaseType(currency_name)
+        target_currency_rule.Enable()
     # End MoveCurrencyFromTierToTier
     
     def SetCurrencyTierVisibility(self, tier: int or str, visibility: RuleVisibility):
@@ -579,6 +591,7 @@ class LootFilter:
             rule = self.type_tier_rule_map[type_tag][tier_tag]
             if (visible_flag):
                 rule.AddBaseType(oil_name)
+                rule.Enable()
             else:
                 rule.RemoveBaseType(oil_name)
             if (oil_name == lowest_visible_oil_name):

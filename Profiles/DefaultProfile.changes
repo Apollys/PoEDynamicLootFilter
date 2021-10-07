@@ -16,6 +16,6 @@ set_flask_visibility "Gold Flask" 0
 set_flask_visibility "Quicksilver Flask" 1
 set_flask_visibility "Silver Flask" 0
 set_rgb_item_max_size small
-set_lowest_visible_oil "Azure Oil"
+set_lowest_visible_oil "Clear Oil"
 set_currency_tier_visibility 2 0
 set_hide_currency_above_tier 3

@@ -120,7 +120,7 @@ def IsSectionOrGroupDeclaration(line: str) -> bool:
 # and we need to make sure we don't think they're real loot filter code
 # The only way to solve this is to parse backwards from the end of the rule if it's commented.
 def IsRuleStart(lines: List[str], index: int) -> bool:
-    CheckType(lines, 'lines', list)
+    CheckType2(lines, 'lines', list, str)
     CheckType(lines[index], 'lines[index]', str)
     CheckType(index, 'index', int)
     if (not lines[index].startswith('#')):
@@ -140,6 +140,19 @@ def IsRuleStart(lines: List[str], index: int) -> bool:
     # If somehow we made it back here, there was no rule, just a random comment block
     return False
 # End IsRuleStart()
+
+def ParseShowFlag(lines: List[str]) -> bool:
+    CheckType2(lines, 'lines', list, str)
+    for line in lines:
+        if (line.startswith('#')):
+            line = line[1:].strip()
+        if (line.startswith('Show')):
+            return True
+        elif (line.startswith('Hide')):
+            return False
+    raise RuntimeError(
+            'Could not determine if rule is Show or Hide from rule:\n{}'.format('\n'.join(lines)))
+# End ParseShowFlag
 
 # Handles both sections and section groups (single and double bracket ids)
 # Returns (is_section_group, section_id, section_name) triplet
