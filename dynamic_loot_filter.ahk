@@ -47,10 +47,10 @@ Loop, parse, py_out_text, `n, `r
 	profiles.push(A_LoopField)
 }
 active_profile := profiles[1]
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %ahk_out_path%
 For key in flasks
 {
-	FileAppend, is_flask_rule_enabled_for "%key%"`r`n, %ahk_out_path% 
+	FileAppend, get_flask_visibility "%key%"`r`n, %ahk_out_path% 
 	fake_queue.Push(key)
 }
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
@@ -103,19 +103,19 @@ Loop, parse, py_out_text, `n, `r
 	Case 9:
 		flaskmin := A_LoopField
 		base_flaskmin := flaskmin
+	Case 10:
+		oil_text := StrSplit(A_LoopField, " ")
+		min_oil := -1
+		for idx, val in oils
+		{
+			if (val = oil_text[1])
+				min_oil := idx
+		}
+		base_min_oil := min_oil
 	Default:
 		flasks[fake_queue[prog - 6]] := [A_LoopField, A_LoopField]
 	}
 }
-rawr_input := "Opalescent Oil"
-oil_text := StrSplit(rawr_input, " ")
-min_oil := -1
-for idx, val in oils
-{
-	if (val = oil_text[1])
-		min_oil := idx
-}
-base_min_oil := min_oil
 ; Initialize GUI Handles for changing text items
 for idx in curr_txt
 {
@@ -491,6 +491,7 @@ return
 Update_:
 Gui, Hide
 ToolTip
+FileAppend, abc, %ahk_out_path%
 FileDelete, %ahk_out_path%
 for idx in curr_txt
 {
@@ -508,7 +509,7 @@ GuiControlGet, current_currhide,, CurrTierHide
 GuiControlGet, current_maphide,, MapTierHide
 GuiControlGet, current_uniqhide,, UniqTierHide
 if (current_currhide != currhide)
-	FileAppend, % "set_hide_currency_above_tier " current_currhide "`n", %ahk_out_path%
+	FileAppend, % "set_hide_currency_above_tier" current_currhide "`n", %ahk_out_path%
  currhide := current_currhide
 if (current_maphide != maphide)
 	FileAppend, % "set_hide_maps_below_tier " current_maphide "`n", %ahk_out_path%
@@ -537,14 +538,14 @@ if (base_rgbsize != rgbsize){
 }
 base_rgbsize := rgbsize
 if (min_oil != base_min_oil){
-	FileAppend, % "set_min_oil_something_blah """ oils[min_oil] " Oil""`n", %ahk_out_path%
+	FileAppend, % "set_lowest_visible_oil """ oils[min_oil] " Oil""`n", %ahk_out_path%
 }
 base_min_oil := min_oil
 for idx, val in flasks
 {
 	if (val[1] != val[2])
 	{
-		FileAppend, % "set_flask_rule_enabled_for """ idx """ " val[1] "`n", %ahk_out_path%
+		FileAppend, % "set_flask_visibility """ idx """ " val[1] "`n", %ahk_out_path%
 	}
 	val[2] = val[1]
 }
