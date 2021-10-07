@@ -298,7 +298,7 @@ def ConvertChangesDictToFunctionList(changes_dict: OrderedDict) -> list:
     token_lists = ConvertChangesDictToFunctionListRec(changes_dict)
     function_list = []
     for token_list in token_lists:
-        function_list.append(shlex.join(token_list))
+        function_list.append(helper.JoinParams(token_list))
     return function_list
 # End ConvertChangesDictToFunctionList
 
