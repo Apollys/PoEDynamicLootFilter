@@ -3,7 +3,7 @@ import re
 from typing import Dict, List, Tuple
 
 import consts
-from type_checker import CheckType
+from type_checker import CheckType, CheckType2
 
 # ========================== Generic Helper Methods ==========================
 
@@ -195,4 +195,19 @@ def ParseBaseTypeLine(line: str) -> List[str]:
     # Otherwise, items are just split by spaces
     return line.split(' ')
 # End ParseBaseTypeLine
+
+# Encloses the string in double quotes if it contains a space or single quote,
+# otherwise just returns the given string.  Note: does not check for double quotes in string.
+def QuoteStringIfRequired(input_string: str) -> str:
+    if ((" " in input_string) or ("'" in input_string)):
+        return '"' + input_string + '"'
+    return input_string
+# End QuoteStringIfRequired
+
+# Given a list of strings, joins the strings with a space,
+# and additionally encloses any string that contains a single quote or space in ""
+def JoinParams(params_list: List[str]) -> str:
+    CheckType2(params_list, 'params_list', list, str)
+    return ' '.join(QuoteStringIfRequired(param) for param in params_list)
+# End JoinParams
 
