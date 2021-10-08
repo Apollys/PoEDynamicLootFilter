@@ -604,7 +604,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_lowest_visible_oil <oil_name: str>
          - Sets the lowest-value blight oil which to be shown
          - Output: None
-         - Example: > python3 backend_cli.py set_lowest_visible_oil "Voilet Oil" DefaultProfile
+         - Example: > python3 backend_cli.py set_lowest_visible_oil "Violet Oil" DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         loot_filter.SetLowestVisibleOil(function_params[0])
