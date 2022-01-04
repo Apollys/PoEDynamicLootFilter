@@ -84,8 +84,9 @@ kUniqueTierNameToNumberMap = InvertedDict(kUniqueTierNames)
 
 kFlaskRuleTemplate = \
 '''# Show # $type->dlf_flasks $tier->dlf_flasks
-# Rarity <= Magic
 # BaseType
+# ItemLevel >= 85
+# Rarity <= Magic
 # SetFontSize 44
 # SetBorderColor 50 200 125 255
 # SetBackgroundColor 21 45 37

@@ -23,6 +23,7 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### Feature Wish List
+ - [ ] Update flask rules - one for high ilvl (85+) and one for all ilvls
  - [x] Move currency from one tier to another
  - [x] Show/hide whole currency tier
  - [x] Chaos recipe - show/hide by item slot
