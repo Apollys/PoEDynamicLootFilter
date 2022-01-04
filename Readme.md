@@ -72,6 +72,7 @@ for the detailed documentation of all available function calls.
   - `get_currency_tier_visibility <tier: int or tier_tag: str>`
   - `set_hide_currency_above_tier <tier: int>`
   - `get_hide_currency_above_tier`
+  - *New*: `set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">`
   - `set_lowest_visible_oil <oil_name: str>`
   - `get_lowest_visible_oil`
   - `get_all_unique_tier_visibilities`

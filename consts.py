@@ -44,7 +44,15 @@ kCurrencyTierNames = {1 : 't1exalted',
                       7 : 't7chance',
                       8 : 't8trans',
                       9 : 't9armour'}
-                      
+
+kStackedCurrencyTags = {
+    i : (('currency->stackedthree', 'currency->stackedsix'), ('t{}'.format(i), )) for i in range(1, 8)}
+kStackedCurrencyTags[8] = (('currency->stackedsupplieshigh', ), ('t3', 't2', 't1'))
+kStackedCurrencyTags[9] = (('currency->stackedsupplieslow', ), ('t3', 't2', 't1'))
+# Use indices 10/11 for portal/wisdom scrolls
+kStackedCurrencyTags[10] = (('currency->stackedsuppliesportal', ), ('t3', 't2', 't1'))
+kStackedCurrencyTags[11] = (('currency->stackedsupplieswisdom', ), ('t3', 't2', 't1'))
+      
 kMaxCurrencyTier = len(kCurrencyTierNames) + 1
 
 kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)

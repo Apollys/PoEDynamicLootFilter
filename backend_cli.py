@@ -132,6 +132,11 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
+    'set_currency_min_visible_stack_size' : {
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
     'set_lowest_visible_oil' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
@@ -598,6 +603,21 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideCurrencyAboveTierTier())
+    elif (function_name == 'set_currency_min_visible_stack_size'):
+        '''
+        set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">
+         - Shows currency stacks >= stack_size and hides stacks < stack_size for the given tier
+         - If stack_size is "hide_all", all currency of the given tier will be hidden
+         - Valid stack_size values: {1, 3, 6} for tiers1-7, {1, 3, 6, 10} for tiers 8-9 and scrolls
+         - tier may be an integer [1-9] or "tportal"/"twisdom" for Portal/Wisdom Scrolls
+         - Output: None
+         - Example: > python3 backend_cli.py set_currency_min_visible_stack_size 7 6 DefaultProfile
+         - Example: > python3 backend_cli.py set_currency_min_visible_stack_size twisdom hide_all DefaultProfile
+        '''
+        CheckNumParams(function_params, 2)
+        tier_str: str = function_params[0]
+        min_stack_size_str: str = function_params[1]
+        loot_filter.SetCurrencyMinVisibleStackSize(tier_str, min_stack_size_str)
     # ======================================= Blight Oils =======================================
     elif (function_name == 'set_lowest_visible_oil'):
         '''

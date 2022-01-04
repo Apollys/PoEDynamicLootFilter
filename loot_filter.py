@@ -1,5 +1,6 @@
 import os.path
 import re
+import itertools
 
 from collections import OrderedDict
 from enum import Enum
@@ -489,9 +490,57 @@ class LootFilter:
     def SetCurrencyToTier(self, currency_name: str, target_tier: int):
         CheckType(currency_name, 'currency_name', str)
         CheckType(target_tier, 'target_tier', int)
+        # Handle single (non-stacked) currency rule
         original_tier: int = self.GetTierOfCurrency(currency_name)
         self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
+        # Handle stacked currency rules
+        self.SetStackedCurrencyToTier(currency_name, target_tier)
     # End MoveCurrencyToTier
+    
+    def SetStackedCurrencyToTier(self, currency_name: str, target_tier: int):
+        CheckType(currency_name, 'currency_name', str)
+        CheckType(target_tier, 'target_tier', int)
+        # For initial implementation, we will just remove from all stacked tiers first
+        # (it may not be in the same stacked tier as normal tier)
+        for tier in range(1, consts.kMaxCurrencyTier):
+            type_tags, tier_tags = consts.kStackedCurrencyTags[tier]
+            for (type_tag, tier_tag) in itertools.product(type_tags, tier_tags):
+                rule = self.type_tier_rule_map[type_tag][tier_tag]
+                if (tier == target_tier):
+                    rule.AddBaseType(currency_name)
+                else:
+                    rule.RemoveBaseType(currency_name)
+    # End SetStackedCurrencyToTier
+    
+    def SetCurrencyMinVisibleStackSize(self, tier_str: str, min_stack_size_str: str):
+        CheckType(tier_str, 'tier_str', str)
+        CheckType(min_stack_size_str, 'min_stack_size_str', str)
+        tier: int = 10 if tier_str == 'tportal' else (
+                    11 if tier_str == 'twisdom' else int(tier_str))
+        min_stack_size = 100 if min_stack_size_str == 'hide_all' else int(min_stack_size_str)
+        kValidStackSizes = (1, 3, 6, 100) + ((10) if tier >= 8 else ())
+        if (min_stack_size not in kValidStackSizes):
+            raise RuntimeError('min_stack_size: {} invalid, valid options are {1, 3, 6}, '
+                    'or 10 for tiers 8-9 and scrolls'.format(min_stack_size))
+        # Hide all stacks lower than stack_size, show all stacks greater than or equal to stack size
+        # First single currency items
+        type_tag = consts.kCurrencyTypeTag
+        tier_tag = consts.kCurrencyTierNames[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        target_visibility = RuleVisibility.kShow if min_stack_size <= 1 else RuleVisibility.kHide
+        rule.SetVisibility(target_visibility)
+        # Now actual currency stacks
+        type_tags, tier_tags = consts.kStackedCurrencyTags[tier]
+        type_tier_tag_pairs = itertools.product(type_tags, tier_tags)
+        for i, (type_tag, tier_tag) in enumerate(type_tier_tag_pairs):
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            rule_stack_size = kValidStackSizes[i + 1]
+            target_visibility = (RuleVisibility.kShow if rule_stack_size >= min_stack_size
+                                 else RuleVisibility.kHide)
+            rule.SetVisibility(target_visibility)
+            print('Setting visibility for type->{}, tier->{} to {}'.format(
+                    type_tag, tier_tag, target_visibility))
+    # End SetCurrencyMinVisibleStackSize
     
     def AdjustTierOfCurrency(self, currency_name: str, tier_delta: int):
         CheckType(currency_name, 'currency_name', str)
