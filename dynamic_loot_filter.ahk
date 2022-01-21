@@ -20,11 +20,17 @@ for idx,val in rare_valid
 ; Coloring from consts.py
 rare_colors := {"Weapons" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200", "Gloves" : "ffe400", "Boots" : "00ff00", "Amulets" : "00ffff", "Rings" : "4100bd", "Belts" : "0000c8"}
 ; Flask stuff
-flasks := {"Quicksilver Flask":[0,0], "Bismuth Flask":[0,0], "Amethyst Flask":[0,0], "Ruby Flask":[0,0], "Sapphire Flask":[0,0], "Topaz Flask":[0,0], "Aquamarine Flask":[0,0], "Diamond Flask":[0,0], "Jade Flask":[0,0], "Quartz Flask":[0,0], "Granite Flask":[0,0], "Sulphur Flask":[0,0], "Basalt Flask":[0,0], "Silver Flask":[0,0], "Stibnite Flask":[0,0], "Corundum Flask":[0,0], "Gold Flask":[0,0]}
+flasks := {"Divine Life Flask": [0,0], "Eternal Mana Flask": [0,0], "Quicksilver Flask":[0,0], "Bismuth Flask":[0,0], "Amethyst Flask":[0,0], "Ruby Flask":[0,0], "Sapphire Flask":[0,0], "Topaz Flask":[0,0], "Aquamarine Flask":[0,0], "Diamond Flask":[0,0], "Jade Flask":[0,0], "Quartz Flask":[0,0], "Granite Flask":[0,0], "Sulphur Flask":[0,0], "Basalt Flask":[0,0], "Silver Flask":[0,0], "Stibnite Flask":[0,0], "Corundum Flask":[0,0], "Gold Flask":[0,0]}
 ; RGB Size Tooltips
 rgbtooltip := {"none" : "Hide everything", "small" : "2x2, 4x1, and 3x1", "medium" : "3x2, 2x2, 4x1, and 3x1", "large" : "Show everything"}
 ; Ordered Oils
 oils := ["Tainted", "Golden", "Silver", "Opalescent", "Black", "Crimson", "Violet", "Indigo", "Azure", "Teal", "Verdant", "Amber", "Sepia", "Clear"]
+; Currency Stack Size Options
+cstack_options := ["None", "8", "4", "2"]
+cstack_values := [0,0,0,0,0,0,0,0,0]
+options_idx := 1
+; Flask Ilvl Options
+flvl_options := ["Hide", "85+", "83+?", "Show"]
 
 ; Read starting filter data from python client
 curr_txt := []
@@ -113,7 +119,7 @@ Loop, parse, py_out_text, `n, `r
 		}
 		base_min_oil := min_oil
 	Default:
-		flasks[fake_queue[prog - 6]] := [A_LoopField, A_LoopField]
+		flasks[fake_queue[prog - 10]] := [A_LoopField, A_LoopField]
 	}
 }
 ; Initialize GUI Handles for changing text items
@@ -169,14 +175,14 @@ For idx, val in rare_txt
 Gui, Font, S18 norm cB0B0B0, Courier New
 height := 10
 
-; Portal/Wisdom
+; Portal/Wisdom ---------------- INCORPORATE STACKS ONCE GETTER APPLIED ----------
 if (PortalHide)
 	Gui, Font, Strike
-Gui, Add, Text, x590 y%height% grmbhack vPortalHide, Portal Scroll
+Gui, Add, Text, x590 y%height% grmbhack vPortalHide, Portal 
 Gui, Font, norm
 if (WisdomHide)
 	Gui, Font, Strike
-Gui, Add, Text, x790 y%height% grmbhack vWisdomHide, Wisdom Scroll
+Gui, Add, Text, x790 y%height% grmbhack vWisdomHide, Wisdom
 Gui, Font, norm
 height := height + 30
 
@@ -185,14 +191,20 @@ Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Maps Below Tier
 Gui, Add, Text, x944 y%height% w40 BackgroundTrans vMapTierHide, % Format("{:2}", maphide)
 height := height + 30
 
+; Hide Unique Tiers
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Uniques Above Tier:        "
+Gui, Add, Text, x944 y%height% w40 BackgroundTrans vUniqTierHide, % Format("{:2}", uniqhide)
+height := height + 30
+
 ; Hide Currency Tiers
 Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Currency Above Tier:       "
 Gui, Add, Text, x944 y%height% w40 BackgroundTrans vCurrTierHide, % Format("{:2}", currhide)
 height := height + 30
 
-; Hide Unique Tiers
-Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Uniques Above Tier:        "
-Gui, Add, Text, x944 y%height% w40 BackgroundTrans vUniqTierHide, % Format("{:2}", uniqhide)
+; Stacks only for Hidden Currency Tiers
+Gui, Add, Text, x590 y%height% BackgroundTrans, % "Stacks - Tier:     Size:        "
+Gui, Add, Text, x785 y%height% BackgroundTrans vStackTier grmbhack, % "N/A"
+Gui, Add, Text, x925 y%height% w80 BackgroundTrans vStackSize grmbhack, % "N/A"
 height := height + 30
 
 ; RGB Size
@@ -225,19 +237,19 @@ Gui, Add, Text, x860 y%height% gFlaskHA, Hide All
 Gui, Font, S18 norm
 height := height + 19
 
-; Flask DDL
+; Flask DDL -------------- FIX FOR ALL, ??? (LOOK AT FLASK MODS), 85+, HIDE
 Gui, Add, Text, x590 y%height%, Enable/Disable Flasks:
 height := height + 30
-FlaskShow := -1
+FlaskVal := -1
 FlaskString := ""
 for key, val in flasks
 	FlaskString .= key "|"
 RTrim(FlaskString, "|")
 Gui, Add, DropDownList, x590 y%height% vFlask gFlaskDDL, % FlaskString
 Gui, Font, c606060
-Gui, Add, Text, % "x865 y" height + 5 " grmbhack", Hacky
-Gui, Font, S36, Wingdings
-Gui, Add, Text, % "backgroundtrans x865 w40 y" height-7 " vFlaskShow", 
+Gui, Add, Text, % "x865 y" height + 4 " grmbhack", Hacky
+Gui, Font, cB0B0B0
+Gui, Add, Text, % "backgroundtrans x865 w80 y" height + 4 " vFlaskShow", 
 
 ; Rule Matching
 Gui, Font, S14 norm cB0B0B0, Courier New
@@ -301,6 +313,57 @@ If (control_ = "Hide Currency Above Tier:")
 	GuiControl,, CurrTierHide, % Format("{:2}", current)
 	return
 }
+If (control_ = "StackTier")
+{
+	GuiControlGet, currmin,, CurrTierHide
+	If (currmin = 9)
+		return
+	GuiControlGet, current,, StackTier
+	temp := current
+	If (current = "N/A")
+		current := 9
+	Else
+	{
+		If (A_GuiEvent = "RightClick")
+			current := (current = currmin +1 ? currmin + 1 : current - 1)
+		Else
+			current := (current = 9? 9 : current + 1)
+	}
+	if (temp != current)
+	{
+		options_idx := (cstack_values[current] = 0? 1 : cstack_values[current])
+		GuiControl,, StackSize, % cstack_options[options_idx]
+	}
+	GuiControl,, StackTier, % current
+	return
+}
+If (control_ = "StackSize")
+{
+	GuiControlGet, stack,, StackTier
+	If (stack = "N/A")
+		return
+	GuiControlGet, current,, StackSize
+	If (current = "N/A")
+	{
+		current := "Hide"
+		options_idx := 1
+	}
+	If (A_GuiEvent = "RightClick")
+	{
+		options_idx := (options_idx <= 1? 4 : options_idx - 1)
+		If (stack <= 7 and options_idx = 2)
+			options_idx := 1
+	}
+	Else
+	{
+		options_idx := (options_idx >= 4? 1 : options_idx + 1)
+		If (stack <= 7 and options_idx = 2)
+			options_idx := 3
+	}
+	GuiControl,, StackSize, % cstack_options[options_idx]
+	cstack_values[stack] := options_idx
+	return
+}
 If (control_ = "Hide Uniques Above Tier:")
 {
 	GuiControlGet, current,, UniqTierHide
@@ -311,12 +374,11 @@ If (control_ = "Hide Uniques Above Tier:")
 	GuiControl,, UniqTierHide, % Format("{:2}", current)
 	return
 }
-If (control_ = "Hacky" and not FlaskShow = -1)
+If (control_ = "Hacky" and not FlaskVal = -1)
 {
-	FlaskShow := !FlaskShow
-	flasks[Flask][1] := FlaskShow
-	GuiControl, % "+c" (FlaskShow? "Blue" : "Red"), FlaskShow
-	GuiControl,, FlaskShow, % (FlaskShow? Chr(252) : Chr(251))
+	FlaskVal := Mod(FlaskVal + 1, 4)
+	flasks[Flask][1] := FlaskVal
+	GuiControl,, FlaskShow, % flvl_options[flasks[Flask][1] + 1]
 }
 If (control_ = "PortalHide")
 {
@@ -372,9 +434,8 @@ return
 ; Flask Dropdown List
 FlaskDDL:
 Gui, Submit, NoHide
-FlaskShow := flasks[Flask][1]
-GuiControl, % "+c" (FlaskShow? "Blue" : "Red"), FlaskShow
-GuiControl,, FlaskShow, % (FlaskShow? Chr(252) : Chr(251))
+FlaskVal := flasks[Flask][1]
+GuiControl,, FlaskShow, % flvl_options[flasks[Flask][1] + 1]
 return
 
 ; Profile Dropdown List
@@ -510,7 +571,18 @@ GuiControlGet, current_maphide,, MapTierHide
 GuiControlGet, current_uniqhide,, UniqTierHide
 if (current_currhide != currhide)
 	FileAppend, % "set_hide_currency_above_tier" current_currhide "`n", %ahk_out_path%
- currhide := current_currhide
+currhide := current_currhide
+Loop, % 9 - currhide
+{
+	tier := % A_Index + currhide
+	tierval := cstack_values[tier]
+	if(tierval != 0)
+	{
+		stacksize := cstack_options[tierval]
+		stacksize := (stacksize = "None"? "hide_all" : stacksize)
+		FileAppend, % "set_currency_min_visible_stack_size " tier " " stacksize "`n", %ahk_out_path%
+	}
+}
 if (current_maphide != maphide)
 	FileAppend, % "set_hide_maps_below_tier " current_maphide "`n", %ahk_out_path%
 maphide := current_maphide
