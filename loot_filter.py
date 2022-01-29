@@ -453,11 +453,12 @@ class LootFilter:
     
     # =========================== Flask-Related Functions ==========================
     
-    def SetFlaskRuleEnabledFor(self, flask_base_type: str, enable_flag: bool):
+    def SetFlaskRuleEnabledFor(self, flask_base_type: str, enable_flag: bool, high_ilvl_flag: bool):
         CheckType(flask_base_type, 'flask_base_type', str)
         CheckType(enable_flag, 'enable_flag', bool)
+        CheckType(high_ilvl_flag, 'high_ilvl_flag', bool)
         type_tag = 'dlf_flasks'
-        tier_tag = type_tag
+        tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
         rule = self.type_tier_rule_map[type_tag][tier_tag]
         if (enable_flag):
             rule.AddBaseType(flask_base_type)
@@ -467,19 +468,19 @@ class LootFilter:
             rule.RemoveBaseType(flask_base_type)
     # End SetFlaskRuleEnabledFor
     
-    def IsFlaskRuleEnabledFor(self, flask_base_type: str) -> bool:
+    def IsFlaskRuleEnabledFor(self, flask_base_type: str, high_ilvl_flag: bool) -> bool:
         CheckType(flask_base_type, 'flask_base_type', str)
         type_tag = 'dlf_flasks'
-        tier_tag = type_tag
+        tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
         rule = self.type_tier_rule_map[type_tag][tier_tag]
         if (rule.visibility != RuleVisibility.kShow):
             return False
         return flask_base_type in rule.base_type_list
     # End IsFlaskRuleEnabledFor
     
-    def GetAllVisibleFlaskTypes(self) -> List[str]:
+    def GetAllVisibleFlaskTypes(self, high_ilvl_flag: bool) -> List[str]:
         type_tag = 'dlf_flasks'
-        tier_tag = type_tag
+        tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
         rule = self.type_tier_rule_map[type_tag][tier_tag]
         if (rule.visibility != RuleVisibility.kShow):
             return []
@@ -538,8 +539,6 @@ class LootFilter:
             target_visibility = (RuleVisibility.kShow if rule_stack_size >= min_stack_size
                                  else RuleVisibility.kHide)
             rule.SetVisibility(target_visibility)
-            print('Setting visibility for type->{}, tier->{} to {}'.format(
-                    type_tag, tier_tag, target_visibility))
     # End SetCurrencyMinVisibleStackSize
     
     def AdjustTierOfCurrency(self, currency_name: str, tier_delta: int):
@@ -844,7 +843,7 @@ class LootFilter:
         self.rules_start_line_index = self.FindRulesStartLineIndex()
         self.header_lines = self.text_lines[: self.rules_start_line_index]
         self.parser_index = self.rules_start_line_index
-        # Add custom user-defiend rulies plus DLF-generated rules like chaos recipe rules
+        # Add custom user-defiend rules plus DLF-generated rules like chaos recipe rules
         self.AddDlfRulesIfMissing()
         self.ParseLootFilterRules()
     # End ParseLootFilterFile()
@@ -918,12 +917,14 @@ class LootFilter:
         to_add_string = consts.kHideMapsBelowTierRuleTemplate.format(
                 self.profile_config_data['HideMapsBelowTier'])
         to_add_string_list.extend(to_add_string.split('\n') + [''])
-        # Add flask rule
+        # Add flask rules
         current_section_id_int += 1
         to_add_string = consts.kSectionHeaderTemplate.format(
                 current_section_id_int, 'Show specific flask BaseTypes')
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         to_add_string = consts.kFlaskRuleTemplate
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        to_add_string = consts.kHighIlvlFlaskRuleTemplate
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         # Add chaos recipe rules
         # TODO: comment out if config says don't add chaos recipe rules

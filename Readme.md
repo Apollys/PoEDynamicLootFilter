@@ -16,9 +16,14 @@ The `profile_name` parameter is required in all cases except for:
 
 - - -
 
-### Misc To-Do / Notes
- - Does `import_downloaded_filter` really need to be prohibited from running in batch?
-   Would it ever be helpful to run `import_downloaded_filter` in a batch?
+### To-Do
+ - Stacked Currency:
+   - Goal: generate stacked rules for 2, 4, 8 of every currency tier
+   - Parse full filter, comment out Neversink's stack rules
+   - Use the format of Neversink's stack rules to generate DLF added stack rules
+   - Alternate initial implementation: just copy the base currency rules, make icons bigger
+ - Flasks:
+   - Add `set_high_ilvl_flask_visibility <basetype>` function
 
 - - -
 
@@ -86,6 +91,7 @@ for the detailed documentation of all available function calls.
   - `set_hide_maps_below_tier <tier: int>`
   - `get_hide_maps_below_tier`
   - `set_flask_visibility <base_type: str> <visibility_flag: int>`
+  - *New* `set_high_ilvl_flask_visibility <base_type: str> <visibility_flag: int>`
   - `get_flask_visibility <base_type: str>`
   - `get_all_flask_visibilities`
   - `set_rgb_item_max_size <size: {none, small, medium, large}>`

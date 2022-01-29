@@ -192,6 +192,11 @@ kFunctionInfoMap = {
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
+    'set_high_ilvl_flask_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
     'get_flask_visibility' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
@@ -736,7 +741,23 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
-        loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag)
+        high_ilvl_flag: bool = False
+        loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag, high_ilvl_flag)
+    elif (function_name == 'set_high_ilvl_flask_visibility'):
+        '''
+        set_high_ilvl_flask_visibility <base_type: str> <visibility_flag: int>
+         - Note: this does not overwrite any original filter rules, only adds a rule on top.
+           This function never hides flasks, it only modifies its own "Show" rule.
+         - "High" item level threshold is defined in consts.py, currently 85
+         - <base_type> is any valid flask BaseType
+         - enable_flag is 1 for True (visible), 0 for False (not included in DLF rule)
+         - Output: None
+         - Example: > python3 backend_cli.py set_high_ilvl_flask_rule_enabled_for "Quartz Flask" 1 DefaultProfile
+        '''
+        flask_base_type: str = function_params[0]
+        enable_flag: bool = bool(int(function_params[1]))
+        high_ilvl_flag: bool = True
+        loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag, high_ilvl_flag)
     elif (function_name == 'get_flask_visibility'):
         '''
         get_flask_visibility <base_type: str>
@@ -745,7 +766,15 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask" DefaultProfile
         '''
         flask_base_type: str = function_params[0]
-        output_string = str(int(loot_filter.IsFlaskRuleEnabledFor(flask_base_type)))
+        high_ilvl_flag: bool = False
+        generic_rule_visibility_flag =
+                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag))
+        high_ilvl_flag: bool = True
+        high_ilvl_rule_visibility_flag =
+                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag))
+        output_string = (str(int(generic_rule_visibility_flag)) + ' ' +
+                         str(int(high_ilvl_rule_visibility_flag)))
+    # TODO: Update this for new high ilvl flask rules
     elif (function_name == 'get_all_flask_visibilities'):
         '''
         get_all_flask_visibilities
