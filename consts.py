@@ -95,7 +95,7 @@ kFlaskRuleTemplate = \
 kHighIlvlFlaskRuleTemplate = \
 '''# Show # $type->dlf_flasks $tier->dlf_flasks_high_ilvl
 # BaseType
-# ItemLevel >= 85
+# ItemLevel >= 84
 # Rarity <= Magic
 # SetFontSize 44
 # SetBorderColor 50 200 125 255

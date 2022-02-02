@@ -30,7 +30,7 @@ cstack_options := ["None", "8", "4", "2"]
 cstack_values := [0,0,0,0,0,0,0,0,0]
 options_idx := 1
 ; Flask Ilvl Options
-flvl_options := ["Hide", "85+", "83+?", "Show"]
+flvl_options := ["None", "All", "84+"]
 
 ; Read starting filter data from python client
 curr_txt := []
@@ -119,7 +119,19 @@ Loop, parse, py_out_text, `n, `r
 		}
 		base_min_oil := min_oil
 	Default:
-		flasks[fake_queue[prog - 10]] := [A_LoopField, A_LoopField]
+		splits := StrSplit(A_LoopField, " ")
+		if (splits[1] == 1)
+		{
+			flasks[fake_queue[prog - 10]] := [1,1]
+		}
+		else if (splits[2] == 1)
+		{
+			flasks[fake_queue[prog - 10]] := [2,2]
+		}
+		else
+		{
+			flasks[fake_queue[prog - 10]] := [0,0]
+		}
 	}
 }
 ; Initialize GUI Handles for changing text items
@@ -238,7 +250,7 @@ Gui, Font, S18 norm
 height := height + 19
 
 ; Flask DDL -------------- FIX FOR ALL, ??? (LOOK AT FLASK MODS), 85+, HIDE
-Gui, Add, Text, x590 y%height%, Enable/Disable Flasks:
+Gui, Add, Text, x590 y%height%, Show Specific Flasks:
 height := height + 30
 FlaskVal := -1
 FlaskString := ""
@@ -376,7 +388,7 @@ If (control_ = "Hide Uniques Above Tier:")
 }
 If (control_ = "Hacky" and not FlaskVal = -1)
 {
-	FlaskVal := Mod(FlaskVal + 1, 4)
+	FlaskVal := Mod(FlaskVal + 1, 3)
 	flasks[Flask][1] := FlaskVal
 	GuiControl,, FlaskShow, % flvl_options[flasks[Flask][1] + 1]
 }
@@ -613,11 +625,25 @@ if (min_oil != base_min_oil){
 	FileAppend, % "set_lowest_visible_oil """ oils[min_oil] " Oil""`n", %ahk_out_path%
 }
 base_min_oil := min_oil
+; TRANSLATE TO EXACT TIER
 for idx, val in flasks
 {
 	if (val[1] != val[2])
 	{
-		FileAppend, % "set_flask_visibility """ idx """ " val[1] "`n", %ahk_out_path%
+		if (val[1] == 0) ; hide
+		{
+			FileAppend, % "set_flask_visibility """ idx """ 0`n", %ahk_out_path%
+			FileAppend, % "set_high_ilvl_flask_visibility """ idx """ 0`n", %ahk_out_path%
+		}
+		if (val[1] == 1) ; show all
+		{
+			FileAppend, % "set_flask_visibility """ idx """ 1`n", %ahk_out_path%
+		}
+		if (val[1] == 2) ; show high lvl
+		{
+			FileAppend, % "set_flask_visibility """ idx """ 0`n", %ahk_out_path%
+			FileAppend, % "set_high_ilvl_flask_visibility """ idx """ 1`n", %ahk_out_path%
+		}
 	}
 	val[2] = val[1]
 }

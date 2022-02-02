@@ -227,11 +227,11 @@ def TestFlasks():
         flask_type = random.choice(flask_type_list)
         original_visibility_flag = flask_visibility_map[flask_type]
         CallCliFunction('get_flask_visibility "{}"'.format(flask_type))
-        CheckOutput(str(original_visibility_flag))
+        CheckOutput(str(original_visibility_flag) + ' 0')  # we're not yet testing high ilvl
         desired_visibility_flag = random.randint(0, 1)
         CallCliFunction('set_flask_visibility "{}" {}'.format(flask_type, desired_visibility_flag))
         CallCliFunction('get_flask_visibility "{}"'.format(flask_type))
-        CheckOutput(str(desired_visibility_flag))
+        CheckOutput(str(desired_visibility_flag) + ' 0')  # we're not yet testing high ilvl
         flask_visibility_map[flask_type] = desired_visibility_flag
 # End TestFlasks
 
@@ -314,7 +314,7 @@ kTestBatchExpectedOutputList = [
     '...', '', '1',  # set/get_hide_uniques_above_tier
     '', '18',  # set/get_gem_min_quality
     '', '13',  # set/get_hide_maps_below_tier
-    '...', '', '', '1', '0',  # set/get_flask_visibility
+    '...', '', '', '1 0', '0 0',  # set/get_flask_visibility
     '', '', '', '', '', '', '', '', '...']  # chaos recipe visibility checked separately
 
 kTestBatchExpectedChaosRecipeVisbilityMap = {

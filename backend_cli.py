@@ -767,11 +767,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         flask_base_type: str = function_params[0]
         high_ilvl_flag: bool = False
-        generic_rule_visibility_flag =
-                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag))
+        generic_rule_visibility_flag = \
+                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag)
         high_ilvl_flag: bool = True
-        high_ilvl_rule_visibility_flag =
-                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag))
+        high_ilvl_rule_visibility_flag = \
+                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag)
         output_string = (str(int(generic_rule_visibility_flag)) + ' ' +
                          str(int(high_ilvl_rule_visibility_flag)))
     # TODO: Update this for new high ilvl flask rules
@@ -782,7 +782,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Example: > python3 backend_cli.py get_all_enabled_flask_types DefaultProfile
         '''
-        visible_flask_types = loot_filter.GetAllVisibleFlaskTypes()
+        visible_flask_types = loot_filter.GetAllVisibleFlaskTypes(False)
         visible_flask_types_set = set(visible_flask_types)
         for visible_flask_base_type in visible_flask_types:
             output_string += visible_flask_base_type + ';1' + '\n'
