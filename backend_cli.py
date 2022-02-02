@@ -767,12 +767,12 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         flask_base_type: str = function_params[0]
         high_ilvl_flag: bool = False
-        generic_rule_visibility_flag =
-                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag))
+        generic_rule_visibility_flag = \
+                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag)
         high_ilvl_flag: bool = True
-        high_ilvl_rule_visibility_flag =
-                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag))
-        output_string = (str(int(generic_rule_visibility_flag)) + ' ' +
+        high_ilvl_rule_visibility_flag = \
+                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag)
+        output_string = (str(int(generic_rule_visibility_flag)) + ' ' + \
                          str(int(high_ilvl_rule_visibility_flag)))
     # TODO: Update this for new high ilvl flask rules
     elif (function_name == 'get_all_flask_visibilities'):
