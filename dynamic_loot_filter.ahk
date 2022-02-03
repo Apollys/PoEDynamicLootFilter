@@ -708,7 +708,7 @@ for idx in rare_txt
 }
 for idx in cstack_values
 {
-	cstack_values[tier] := cstack_values_base[tier])
+	cstack_values[tier] := cstack_values_base[tier]
 }
 PortalStack := base_portstack 
 WisdomStack := base_wisstack
