@@ -44,7 +44,9 @@ kCurrencyTierNames = {1 : 't1exalted',
                       6 : 't6chrom',
                       7 : 't7chance',
                       8 : 't8trans',
-                      9 : 't9armour'}
+                      9 : 't9armour',
+                      10: 'tportal',
+                      11: 'twisdom'}
 
 kStackedCurrencyTags = {
     i : list(itertools.product(

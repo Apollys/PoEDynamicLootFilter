@@ -19,3 +19,4 @@ set_rgb_item_max_size small
 set_lowest_visible_oil "Clear Oil"
 set_currency_tier_visibility 2 0
 set_hide_currency_above_tier 3
+set_currency_min_visible_stack_size 7 4

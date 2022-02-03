@@ -518,7 +518,7 @@ class LootFilter:
         tier: int = 10 if tier_str == 'tportal' else (
                     11 if tier_str == 'twisdom' else int(tier_str))
         min_stack_size = 100 if min_stack_size_str == 'hide_all' else int(min_stack_size_str)
-        kValidStackSizes = (1, 2, 4, 100) + ((8) if tier >= 8 else ())
+        kValidStackSizes = (1, 2, 4, 100) + ((8, ) if tier >= 8 else ())
         if (min_stack_size not in kValidStackSizes):
             raise RuntimeError('min_stack_size: {} invalid, valid options are {1, 2, 4}, '
                     'or 8 for tiers 8-9 and scrolls'.format(min_stack_size))
