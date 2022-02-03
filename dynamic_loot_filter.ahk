@@ -26,11 +26,15 @@ rgbtooltip := {"none" : "Hide everything", "small" : "2x2, 4x1, and 3x1", "mediu
 ; Ordered Oils
 oils := ["Tainted", "Golden", "Silver", "Opalescent", "Black", "Crimson", "Violet", "Indigo", "Azure", "Teal", "Verdant", "Amber", "Sepia", "Clear"]
 ; Currency Stack Size Options
-cstack_options := ["None", "8", "4", "2"]
-cstack_values := [0,0,0,0,0,0,0,0,0]
+cstack_options := ["All", "2", "4", "8", "None"]
+cstack_values := [5,5,5,5,5,5,5,5,5]
+cstack_values_base := [5,5,5,5,5,5,5,5,5]
 options_idx := 1
 ; Flask Ilvl Options
 flvl_options := ["None", "All", "84+"]
+; Scroll stuff maybe no necessary
+base_portstack = 5
+base_wisstack = 5
 
 ; Read starting filter data from python client
 curr_txt := []
@@ -53,7 +57,11 @@ Loop, parse, py_out_text, `n, `r
 	profiles.push(A_LoopField)
 }
 active_profile := profiles[1]
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_visibility tportal`nget_currency_tier_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_stacked_currency_visibility tportal`nget_stacked_currency_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %ahk_out_path%
+Loop, 9
+{
+	FileAppend, get_stacked_currency_visibility %A_Index%`n, %ahk_out_path%
+}
 For key in flasks
 {
 	FileAppend, get_flask_visibility "%key%"`r`n, %ahk_out_path% 
@@ -68,6 +76,7 @@ Loop, parse, py_out_text, `n, `r
 		continue
 	If(InStr(A_LoopField, "@"))
 	{
+		line := 0
 		prog := prog + 1
 		continue
 	}
@@ -91,11 +100,19 @@ Loop, parse, py_out_text, `n, `r
 	Case 2:
 		maphide := A_LoopField
 	Case 3:
-		base_porthide := !A_LoopField
-		PortalHide := base_porthide
+		line := line + 1
+		splits := StrSplit(A_LoopField, ";")
+		If (splits[2] = 1 And base_portstack = 5){
+			base_portstack := line
+			PortalStack := line
+		}
 	Case 4:
-		base_wishide := !A_LoopField
-		WisdomHide := base_wishide
+		line := line + 1
+		splits := StrSplit(A_LoopField, ";")
+		If (splits[2] = 1 And base_wisstack = 5){
+			base_wisstack := line
+			WisdomStack := line
+		}
 	Case 5:
 		currhide := A_LoopField
 	Case 6:
@@ -112,12 +129,19 @@ Loop, parse, py_out_text, `n, `r
 	Case 10:
 		oil_text := StrSplit(A_LoopField, " ")
 		min_oil := -1
-		for idx, val in oils
+		for idx, val in oils 
 		{
 			if (val = oil_text[1])
 				min_oil := idx
 		}
 		base_min_oil := min_oil
+	Case 11, 12, 13, 14, 15, 16, 17, 18, 19:
+		line := line + 1
+		splits := StrSplit(A_LoopField, ";")
+		If (splits[2] = 1 And cstack_values[prog-10] = 5){
+			cstack_values[prog-10] := line
+			cstack_values_base[prog-10] := line
+		}
 	Default:
 		splits := StrSplit(A_LoopField, " ")
 		if (splits[1] == 1)
@@ -187,15 +211,11 @@ For idx, val in rare_txt
 Gui, Font, S18 norm cB0B0B0, Courier New
 height := 10
 
-; Portal/Wisdom ---------------- INCORPORATE STACKS ONCE GETTER APPLIED ----------
-if (PortalHide)
-	Gui, Font, Strike
-Gui, Add, Text, x590 y%height% grmbhack vPortalHide, Portal 
-Gui, Font, norm
-if (WisdomHide)
-	Gui, Font, Strike
-Gui, Add, Text, x790 y%height% grmbhack vWisdomHide, Wisdom
-Gui, Font, norm
+; Portal/Wisdom ---------------- Stacks Still need more work ----------
+Gui, Add, Text, x590 y%height% w200 grmbhack vPortalHide, Portals:
+Gui, Add, Text, x705 y%height% w100 BackgroundTrans grmbhack vPortalText, % cstack_options[PortalStack]
+Gui, Add, Text, x800 y%height% w200 grmbhack vWisdomHide, Wisdoms:
+Gui, Add, Text, x915 y%height% w100 BackgroundTrans grmbhack vWisdomText, % cstack_options[WisdomStack]
 height := height + 30
 
 ; Hide Map Tiers
@@ -214,9 +234,9 @@ Gui, Add, Text, x944 y%height% w40 BackgroundTrans vCurrTierHide, % Format("{:2}
 height := height + 30
 
 ; Stacks only for Hidden Currency Tiers
-Gui, Add, Text, x590 y%height% BackgroundTrans, % "Stacks - Tier:     Size:        "
-Gui, Add, Text, x785 y%height% BackgroundTrans vStackTier grmbhack, % "N/A"
-Gui, Add, Text, x925 y%height% w80 BackgroundTrans vStackSize grmbhack, % "N/A"
+Gui, Add, Text, x590 y%height% BackgroundTrans, % "Stacks - Tier:  Min Size:        "
+Gui, Add, Text, x785 y%height% BackgroundTrans vStackTier grmbhack, % "X"
+Gui, Add, Text, x940 y%height% w80 BackgroundTrans vStackSize grmbhack, % "N/A"
 height := height + 30
 
 ; RGB Size
@@ -249,7 +269,7 @@ Gui, Add, Text, x860 y%height% gFlaskHA, Hide All
 Gui, Font, S18 norm
 height := height + 19
 
-; Flask DDL -------------- FIX FOR ALL, ??? (LOOK AT FLASK MODS), 85+, HIDE
+; Flask DDL -------------- Current Options: All, 84+, Hide 
 Gui, Add, Text, x590 y%height%, Show Specific Flasks:
 height := height + 30
 FlaskVal := -1
@@ -332,7 +352,7 @@ If (control_ = "StackTier")
 		return
 	GuiControlGet, current,, StackTier
 	temp := current
-	If (current = "N/A")
+	If (current = "X")
 		current := 9
 	Else
 	{
@@ -343,7 +363,7 @@ If (control_ = "StackTier")
 	}
 	if (temp != current)
 	{
-		options_idx := (cstack_values[current] = 0? 1 : cstack_values[current])
+		options_idx := (cstack_values[current] = 0? 5 : cstack_values[current])
 		GuiControl,, StackSize, % cstack_options[options_idx]
 	}
 	GuiControl,, StackTier, % current
@@ -352,25 +372,25 @@ If (control_ = "StackTier")
 If (control_ = "StackSize")
 {
 	GuiControlGet, stack,, StackTier
-	If (stack = "N/A")
+	If (stack = "X")
 		return
 	GuiControlGet, current,, StackSize
 	If (current = "N/A")
 	{
 		current := "Hide"
-		options_idx := 1
+		options_idx := 5
 	}
 	If (A_GuiEvent = "RightClick")
 	{
-		options_idx := (options_idx <= 1? 4 : options_idx - 1)
-		If (stack <= 7 and options_idx = 2)
-			options_idx := 1
+		options_idx := (options_idx <= 2? 5 : options_idx - 1)
+		If (stack <= 7 and options_idx = 4)
+			options_idx := 3
 	}
 	Else
 	{
-		options_idx := (options_idx >= 4? 1 : options_idx + 1)
-		If (stack <= 7 and options_idx = 2)
-			options_idx := 3
+		options_idx := (options_idx >= 5? 2 : options_idx + 1)
+		If (stack <= 7 and options_idx = 4)
+			options_idx := 5
 	}
 	GuiControl,, StackSize, % cstack_options[options_idx]
 	cstack_values[stack] := options_idx
@@ -394,19 +414,27 @@ If (control_ = "Hacky" and not FlaskVal = -1)
 }
 If (control_ = "PortalHide")
 {
-	Gui, Font, S18 cB0B0B0 norm, Courier New
-	PortalHide := !PortalHide
-	if (PortalHide)
-		Gui, Font, Strike
-	GuiControl, Font, PortalHide
+	If (A_GuiEvent = "RightClick")
+	{
+		PortalStack := (PortalStack <= 1? 5 : PortalStack - 1)
+	}
+	Else
+	{
+		PortalStack := (PortalStack >= 5? 1 : PortalStack + 1)
+	}
+	GuiControl,, PortalText, % cstack_options[PortalStack]
 }
 If (control_ = "WisdomHide")
 {
-	Gui, Font, S18 cB0B0B0 norm, Courier New
-	WisdomHide := !WisdomHide
-	if (WisdomHide)
-		Gui, Font, Strike
-	GuiControl, Font, WisdomHide
+	If (A_GuiEvent = "RightClick")
+	{
+		WisdomStack := (WisdomStack <= 1? 5 : WisdomStack - 1)
+	}
+	Else
+	{
+		WisdomStack := (WisdomStack >= 5? 1 : WisdomStack + 1)
+	}
+	GuiControl,, WisdomText, % cstack_options[WisdomStack]
 }
 If (control_ = "RGB Items Shown:")
 {
@@ -582,17 +610,28 @@ GuiControlGet, current_currhide,, CurrTierHide
 GuiControlGet, current_maphide,, MapTierHide
 GuiControlGet, current_uniqhide,, UniqTierHide
 if (current_currhide != currhide)
+{
 	FileAppend, % "set_hide_currency_above_tier" current_currhide "`n", %ahk_out_path%
+	if (current_currhide > currhide)
+	{
+		Loop, % current_currhide - currhide
+		{
+			idx := currhide + A_Index
+			FileAppend, % "set_currency_min_visible_stack_size " idx " 1`n", %ahk_out_path%
+		}
+	}
+}
 currhide := current_currhide
 Loop, % 9 - currhide
 {
 	tier := % A_Index + currhide
 	tierval := cstack_values[tier]
-	if(tierval != 0)
+	if(tierval != cstack_values_base[tier])
 	{
 		stacksize := cstack_options[tierval]
 		stacksize := (stacksize = "None"? "hide_all" : stacksize)
 		FileAppend, % "set_currency_min_visible_stack_size " tier " " stacksize "`n", %ahk_out_path%
+		cstack_values_base[tier] := tierval
 	}
 }
 if (current_maphide != maphide)
@@ -601,14 +640,16 @@ maphide := current_maphide
 if (current_uniqhide != uniqhide)
 	FileAppend, % "set_hide_uniques_above_tier " current_uniqhide "`n", %ahk_out_path%
 uniqhide := current_uniqhide
-if (base_porthide != PortalHide){
-	FileAppend, % "set_currency_tier_visibility tportal " (PortalHide? "0":"1") "`n", %ahk_out_path%
+if (base_portstack != PortalStack){
+	stacksize := (PortalStack = "None"? "hide_all" : PortalStack)
+	FileAppend, % "set_currency_min_visible_stack_size tportal " stacksize "`n", %ahk_out_path%
 }
-base_porthide := PortalHide
-if (base_wishide != WisdomHide){
-	FileAppend, % "set_currency_tier_visibility twisdom " (WisdomHide? "0":"1") "`n", %ahk_out_path%
+base_portstack := PortalStack
+if (base_wisstack != WisdomStack){
+	stacksize := (WisdomStack = "None"? "hide_all" : WisdomStack)
+	FileAppend, % "set_currency_min_visible_stack_size twisdom " stacksize "`n", %ahk_out_path%
 }
-base_wishide := WisdomHide
+base_wisstack := WisdomStack
 if (base_gemmin != gemmin){
 	FileAppend, % "set_gem_min_quality " gemmin "`n", %ahk_out_path%
 }

@@ -104,7 +104,6 @@ def TestCurrency():
     print('Running TestCurrency...')
     ResetTestProfile()
     CallCliFunction('import_downloaded_filter')
-    kMaxCurrencyTier = len(consts.kCurrencyTierNames)
     # Get and parse all currency tiers
     CallCliFunction('get_all_currency_tiers')
     currency_to_tier_map = ParseOutputAsDict(value_type = int)
@@ -114,10 +113,10 @@ def TestCurrency():
             tier_to_currency_map[tier] = []
         tier_to_currency_map[tier].append(currency_name)
     # Test set_currency_tier, adjust_currency_tier, and get_currency_tier
-    for original_tier in [1, kMaxCurrencyTier, random.randint(2, kMaxCurrencyTier - 1)]:
+    for original_tier in [1, consts.kMaxCurrencyTier, random.randint(2, consts.kMaxCurrencyTier - 1)]:
         # Test set_currency_tier
         currency_name = random.choice(tier_to_currency_map[original_tier])
-        target_tier = random.randint(1, kMaxCurrencyTier)
+        target_tier = random.randint(1, consts.kMaxCurrencyTier - 1)
         CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, target_tier))
         CallCliFunction('get_currency_tier "{}"'.format(currency_name))
         CheckOutput(str(target_tier))
@@ -134,14 +133,14 @@ def TestCurrency():
         # Reset currency to original tier for future tests
         #CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, original_tier))
     # Test set_/get_currency_tier_visibility
-    for tier in [random.randint(1, kMaxCurrencyTier)] + ['twisdom', 'tportal']:
+    for tier in [random.randint(1, consts.kMaxCurrencyTier)] + ['twisdom', 'tportal']:
         for desired_visibility_flag in [0, 1]:
             CallCliFunction('set_currency_tier_visibility {} {}'.format(
                     tier, desired_visibility_flag))
             CallCliFunction('get_currency_tier_visibility {}'.format(tier))
             CheckOutput(str(desired_visibility_flag))
     # Test set_/get_hide_currency_above_tier
-    max_visible_tier = random.randint(2, kMaxCurrencyTier - 1)
+    max_visible_tier = random.randint(2, consts.kMaxCurrencyTier - 1)
     CallCliFunction('set_hide_currency_above_tier {}'.format(max_visible_tier))
     CallCliFunction('get_hide_currency_above_tier')
     CheckOutput(str(max_visible_tier))
