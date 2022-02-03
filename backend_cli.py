@@ -137,6 +137,10 @@ kFunctionInfoMap = {
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
+    'get_stacked_currency_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
     'set_lowest_visible_oil' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
@@ -613,7 +617,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">
          - Shows currency stacks >= stack_size and hides stacks < stack_size for the given tier
          - If stack_size is "hide_all", all currency of the given tier will be hidden
-         - Valid stack_size values: {1, 3, 6} for tiers1-7, {1, 3, 6, 10} for tiers 8-9 and scrolls
+         - Valid stack_size values: {1, 2, 4} for tiers1-7, {1, 2, 4, 8} for tiers 8-9 and scrolls
          - tier may be an integer [1-9] or "tportal"/"twisdom" for Portal/Wisdom Scrolls
          - Output: None
          - Example: > python3 backend_cli.py set_currency_min_visible_stack_size 7 6 DefaultProfile
@@ -623,6 +627,19 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         tier_str: str = function_params[0]
         min_stack_size_str: str = function_params[1]
         loot_filter.SetCurrencyMinVisibleStackSize(tier_str, min_stack_size_str)
+    elif (function_name == 'get_stacked_currency_visibility'):
+        '''
+        get_stacked_currency_visibility <tier: int or str>
+         - "tier" is an int, or "tportal"/"twisdom" for portal/wisdom scrolls
+         - Output: newline-separated list of <stack_size: int>;<visible_flag: int>
+         - Example: > python3 backend_cli.py get_stacked_currency_visibility 4 DefaultProfile
+         - Example: > python3 backend_cli.py get_stacked_currency_visibility twisdom DefaultProfile
+        '''
+        CheckNumParams(function_params, 1)
+        tier_str: str = function_params[0]
+        stacksize_visibility_pairs = loot_filter.GetStackedCurrencyVisibility(tier_str)
+        output_string = '\n'.join(str(stack_size) + ';' + str(int(visibility_flag))
+                                    for stack_size, visibility_flag in stacksize_visibility_pairs)
     # ======================================= Blight Oils =======================================
     elif (function_name == 'set_lowest_visible_oil'):
         '''

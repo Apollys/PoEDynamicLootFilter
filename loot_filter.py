@@ -504,8 +504,7 @@ class LootFilter:
         # For initial implementation, we will just remove from all stacked tiers first
         # (it may not be in the same stacked tier as normal tier)
         for tier in range(1, consts.kMaxCurrencyTier):
-            type_tags, tier_tags = consts.kStackedCurrencyTags[tier]
-            for (type_tag, tier_tag) in itertools.product(type_tags, tier_tags):
+            for (type_tag, tier_tag) in consts.kStackedCurrencyTags[tier]:
                 rule = self.type_tier_rule_map[type_tag][tier_tag]
                 if (tier == target_tier):
                     rule.AddBaseType(currency_name)
@@ -519,10 +518,10 @@ class LootFilter:
         tier: int = 10 if tier_str == 'tportal' else (
                     11 if tier_str == 'twisdom' else int(tier_str))
         min_stack_size = 100 if min_stack_size_str == 'hide_all' else int(min_stack_size_str)
-        kValidStackSizes = (1, 3, 6, 100) + ((10) if tier >= 8 else ())
+        kValidStackSizes = (1, 2, 4, 100) + ((8) if tier >= 8 else ())
         if (min_stack_size not in kValidStackSizes):
-            raise RuntimeError('min_stack_size: {} invalid, valid options are {1, 3, 6}, '
-                    'or 10 for tiers 8-9 and scrolls'.format(min_stack_size))
+            raise RuntimeError('min_stack_size: {} invalid, valid options are {1, 2, 4}, '
+                    'or 8 for tiers 8-9 and scrolls'.format(min_stack_size))
         # Hide all stacks lower than stack_size, show all stacks greater than or equal to stack size
         # First single currency items
         type_tag = consts.kCurrencyTypeTag
@@ -531,15 +530,32 @@ class LootFilter:
         target_visibility = RuleVisibility.kShow if min_stack_size <= 1 else RuleVisibility.kHide
         rule.SetVisibility(target_visibility)
         # Now actual currency stacks
-        type_tags, tier_tags = consts.kStackedCurrencyTags[tier]
-        type_tier_tag_pairs = itertools.product(type_tags, tier_tags)
-        for i, (type_tag, tier_tag) in enumerate(type_tier_tag_pairs):
+        for i, (type_tag, tier_tag) in enumerate(consts.kStackedCurrencyTags[tier]):
             rule = self.type_tier_rule_map[type_tag][tier_tag]
             rule_stack_size = kValidStackSizes[i + 1]
             target_visibility = (RuleVisibility.kShow if rule_stack_size >= min_stack_size
                                  else RuleVisibility.kHide)
             rule.SetVisibility(target_visibility)
     # End SetCurrencyMinVisibleStackSize
+    
+    # Returns a list of (stack_size, visible_flag) pairs
+    def GetStackedCurrencyVisibility(self, tier_str: str) -> list:
+        CheckType(tier_str, 'tier_str', str)
+        tier: int = 10 if tier_str == 'tportal' else (
+                    11 if tier_str == 'twisdom' else int(tier_str))
+        result_list = []
+        # Start with non-stacked currency (StackSize 1)
+        tier_param = tier if tier < 10 else tier_str
+        single_currency_visibility = self.GetCurrencyTierVisibility(tier_param)
+        result_list.append((1, single_currency_visibility == RuleVisibility.kShow))
+        # Actual stacks
+        tag_pairs = consts.kStackedCurrencyTags[tier]
+        for i, (type_tag, tier_tag) in enumerate(tag_pairs):
+            stack_size = 2**(i + 1)
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            result_list.append((stack_size, rule.visibility == RuleVisibility.kShow))
+        return result_list
+    # End GetStackedCurrencyVisibility
     
     def AdjustTierOfCurrency(self, currency_name: str, tier_delta: int):
         CheckType(currency_name, 'currency_name', str)
@@ -992,6 +1008,7 @@ class LootFilter:
     
     # Apply changes that need to be made to the filter on import only
     def ApplyImportChanges(self):
+        # Place oils in appropriate tiers
         oil_hide_rule = self.type_tier_rule_map[consts.kOilTypeTag][consts.kOilHideTierTag]
         oil_hide_rule.SetVisibility(RuleVisibility.kHide)
         for oil_tier in range(1, consts.kMaxOilTier + 1):
@@ -1001,6 +1018,15 @@ class LootFilter:
             rule = self.type_tier_rule_map[consts.kOilTypeTag]['t' + str(oil_tier)]
             rule.AddBaseType(oil_name)
             rule.SetVisibility(RuleVisibility.kShow)
+        # Set currency stack size thresholds to 2, 4, 8
+        for tier, tag_pairs in consts.kStackedCurrencyTags.items():
+            for i, (type_tag, tier_tag) in enumerate(tag_pairs):
+                stack_size = 2**(i + 1)
+                rule = self.type_tier_rule_map[type_tag][tier_tag]
+                # Find "StackSize" line and rewrite stack size threshold
+                for j in range(len(rule.text_lines)):
+                    if ('StackSize' in rule.text_lines[j]):
+                        rule.text_lines[j] = 'StackSize >= {}'.format(stack_size)
     # End ApplyImportChanges
 
 # -----------------------------------------------------------------------------
