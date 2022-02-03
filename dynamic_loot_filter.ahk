@@ -138,23 +138,24 @@ Loop, parse, py_out_text, `n, `r
 	Case 11, 12, 13, 14, 15, 16, 17, 18, 19:
 		line := line + 1
 		splits := StrSplit(A_LoopField, ";")
-		If (splits[2] = 1 And cstack_values[prog-10] = 5){
+		If (splits[2] = 1 And cstack_values[prog-10] = 5)
+		{
 			cstack_values[prog-10] := line
 			cstack_values_base[prog-10] := line
 		}
 	Default:
 		splits := StrSplit(A_LoopField, " ")
-		if (splits[1] == 1)
+		if (splits[1] = 1)
 		{
-			flasks[fake_queue[prog - 10]] := [1,1]
+			flasks[fake_queue[prog - 19]] := [1,1]
 		}
-		else if (splits[2] == 1)
+		else if (splits[2] = 1)
 		{
-			flasks[fake_queue[prog - 10]] := [2,2]
+			flasks[fake_queue[prog - 19]] := [2,2]
 		}
 		else
 		{
-			flasks[fake_queue[prog - 10]] := [0,0]
+			flasks[fake_queue[prog - 19]] := [0,0]
 		}
 	}
 }
@@ -211,7 +212,7 @@ For idx, val in rare_txt
 Gui, Font, S18 norm cB0B0B0, Courier New
 height := 10
 
-; Portal/Wisdom ---------------- Stacks Still need more work ----------
+; Portal/Wisdom
 Gui, Add, Text, x590 y%height% w200 grmbhack vPortalHide, Portals:
 Gui, Add, Text, x705 y%height% w100 BackgroundTrans grmbhack vPortalText, % cstack_options[PortalStack]
 Gui, Add, Text, x800 y%height% w200 grmbhack vWisdomHide, Wisdoms:
@@ -474,8 +475,7 @@ return
 ; Flask Dropdown List
 FlaskDDL:
 Gui, Submit, NoHide
-FlaskVal := flasks[Flask][1]
-GuiControl,, FlaskShow, % flvl_options[flasks[Flask][1] + 1]
+GuiControl,, FlaskShow, % flvl_options[flasks[flask][1] + 1]
 return
 
 ; Profile Dropdown List
@@ -641,12 +641,14 @@ if (current_uniqhide != uniqhide)
 	FileAppend, % "set_hide_uniques_above_tier " current_uniqhide "`n", %ahk_out_path%
 uniqhide := current_uniqhide
 if (base_portstack != PortalStack){
-	stacksize := (PortalStack = "None"? "hide_all" : PortalStack)
+	stacksize := cstack_options[PortalStack]
+	stacksize := (stacksize = "None"? "hide_all" : stacksize)
 	FileAppend, % "set_currency_min_visible_stack_size tportal " stacksize "`n", %ahk_out_path%
 }
 base_portstack := PortalStack
 if (base_wisstack != WisdomStack){
-	stacksize := (WisdomStack = "None"? "hide_all" : WisdomStack)
+	stacksize := cstack_options[WisdomStack]
+	stacksize := (stacksize = "None"? "hide_all" : stacksize)
 	FileAppend, % "set_currency_min_visible_stack_size twisdom " stacksize "`n", %ahk_out_path%
 }
 base_wisstack := WisdomStack
@@ -686,7 +688,7 @@ for idx, val in flasks
 			FileAppend, % "set_high_ilvl_flask_visibility """ idx """ 1`n", %ahk_out_path%
 		}
 	}
-	val[2] = val[1]
+	val[2] := val[1]
 }
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
 Gui, Destroy
