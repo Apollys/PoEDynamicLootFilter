@@ -706,8 +706,12 @@ for idx in rare_txt
 {
 	rare_val[idx] := rare_val_start[idx]
 }
-PortalHide := base_porthide
-wishide := base_WisdomHide
+for idx in cstack_values
+{
+	cstack_values[tier] := cstack_values_base[tier])
+}
+PortalStack := base_portstack 
+WisdomStack := base_wisstack
 gemmin := base_gemmin
 flaskmin := base_flaskmin
 rgbsize := base_rgbsize
