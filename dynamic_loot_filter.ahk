@@ -643,12 +643,14 @@ uniqhide := current_uniqhide
 if (base_portstack != PortalStack){
 	stacksize := cstack_options[PortalStack]
 	stacksize := (stacksize = "None"? "hide_all" : stacksize)
+	stacksize := (stacksize = "All"? "1" : stacksize)
 	FileAppend, % "set_currency_min_visible_stack_size tportal " stacksize "`n", %ahk_out_path%
 }
 base_portstack := PortalStack
 if (base_wisstack != WisdomStack){
 	stacksize := cstack_options[WisdomStack]
 	stacksize := (stacksize = "None"? "hide_all" : stacksize)
+	stacksize := (stacksize = "All"? "1" : stacksize)
 	FileAppend, % "set_currency_min_visible_stack_size twisdom " stacksize "`n", %ahk_out_path%
 }
 base_wisstack := WisdomStack
