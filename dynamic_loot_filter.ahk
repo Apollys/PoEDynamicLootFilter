@@ -475,6 +475,7 @@ return
 ; Flask Dropdown List
 FlaskDDL:
 Gui, Submit, NoHide
+FlaskVal := flasks[flask][1]
 GuiControl,, FlaskShow, % flvl_options[flasks[flask][1] + 1]
 return
 
