@@ -62,7 +62,7 @@ kStackedCurrencyTags[10] = list(itertools.product(
 kStackedCurrencyTags[11] = list(itertools.product(
         ('currency->stackedsupplieswisdom', ), ('t3', 't2', 't1')))
 
-kMaxCurrencyTier = len(kCurrencyTierNames) - 2 + 1
+kMaxCurrencyTier = len(kCurrencyTierNames) - 2
 
 kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 

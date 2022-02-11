@@ -18,12 +18,18 @@ The `profile_name` parameter is required in all cases except for:
 
 ### To-Do
  - Stacked Currency:
-   - Goal: generate stacked rules for 2, 4, 8 of every currency tier
-   - Parse full filter, comment out Neversink's stack rules
-   - Use the format of Neversink's stack rules to generate DLF added stack rules
-   - Alternate initial implementation: just copy the base currency rules, make icons bigger
- - Flasks:
-   - Add `set_high_ilvl_flask_visibility <basetype>` function
+   - Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
+ - All currency:
+   - Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering
+   - Any others to add to tiering?
+ - Add support for essences
+   - Hide essences above tier
+ - Add first-time setup support
+   - Backend function `is_first_time`
+   - If yes, prompt user for profile name, create profile,
+     explain how to configure options and add custom rules
+ - UI Redeisgn
+   - Draft done
 
 - - -
 

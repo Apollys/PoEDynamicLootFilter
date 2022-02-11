@@ -122,16 +122,6 @@ def TestCurrency():
         CheckOutput(str(target_tier))
         # Reset currency to original tier for future tests
         CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, original_tier))
-        # Note: adjust_currency_tier no longer supported, so below is commented out
-        # Test adjust_currency_tier with random currency
-        #currency_name = random.choice(tier_to_currency_map[original_tier])
-        #target_tier = random.randint(1, kMaxCurrencyTier)
-        #tier_delta = target_tier - original_tier
-        #CallCliFunction('adjust_currency_tier "{}" {}'.format(currency_name, tier_delta))
-        #CallCliFunction('get_currency_tier "{}"'.format(currency_name))
-        #CheckOutput(str(target_tier))
-        # Reset currency to original tier for future tests
-        #CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, original_tier))
     # Test set_/get_currency_tier_visibility
     for tier in [random.randint(1, consts.kMaxCurrencyTier)] + ['twisdom', 'tportal']:
         for desired_visibility_flag in [0, 1]:

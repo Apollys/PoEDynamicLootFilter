@@ -503,7 +503,7 @@ class LootFilter:
         CheckType(target_tier, 'target_tier', int)
         # For initial implementation, we will just remove from all stacked tiers first
         # (it may not be in the same stacked tier as normal tier)
-        for tier in range(1, consts.kMaxCurrencyTier):
+        for tier in range(1, consts.kMaxCurrencyTier + 1):
             for (type_tag, tier_tag) in consts.kStackedCurrencyTags[tier]:
                 rule = self.type_tier_rule_map[type_tag][tier_tag]
                 if (tier == target_tier):
@@ -630,14 +630,14 @@ class LootFilter:
     
     def SetHideCurrencyAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
-        for tier in range(1, consts.kMaxCurrencyTier):
+        for tier in range(1, consts.kMaxCurrencyTier + 1):
             visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
             self.SetCurrencyTierVisibility(tier, visibility)
     # SetHideCurrencyAboveTierTier
     
     def GetHideCurrencyAboveTierTier(self) -> int:
         max_visible_tier: int = 0
-        for tier in range(1, consts.kMaxCurrencyTier):
+        for tier in range(1, consts.kMaxCurrencyTier + 1):
             if (self.GetCurrencyTierVisibility(tier) == RuleVisibility.kShow):
                 max_visible_tier = tier
             else:
