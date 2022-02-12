@@ -66,6 +66,17 @@ kMaxCurrencyTier = len(kCurrencyTierNames) - 2
 
 kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 
+# ================================= Essences =================================
+
+kNumEssenceTiers = 6
+kEssenceTags = { i : ('currency->essence', 't{}'.format(i)) for i in range(1, kNumEssenceTiers + 1) }
+
+# ================================ Div Cards =================================
+
+kDivCardTierTags = ['t1', 't2', 't3', 't4c', 't4', 't5c', 't5', 'restex'] 
+kDivCardTags = { i + 1 : ('divination', kDivCardTierTags[i]) for i in range(len(kDivCardTierTags))}
+kNumDivCardTiers = len(kDivCardTierTags)
+
 # ================================= Map Tier =================================
 
 # No idea if the ShapedMap matters, but NeverSink used it in his filters
@@ -85,7 +96,7 @@ kUniqueTierNames = {1 : 't1',
                     4 : 'hideable2',
                     5 : 'hideable'}
                       
-kMaxUniqueTier = len(kUniqueTierNames) + 1
+kNumUniqueTiers = len(kUniqueTierNames)
 
 kUniqueTierNameToNumberMap = InvertedDict(kUniqueTierNames)
 

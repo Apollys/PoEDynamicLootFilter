@@ -141,6 +141,32 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
+    'get_all_essence_tier_visibilities' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_hide_essences_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_hide_essences_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_all_div_card_tier_visibilities' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'set_hide_div_cards_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 0,
+    },
+    'get_hide_div_cards_above_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
     'set_lowest_visible_oil' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
@@ -153,7 +179,6 @@ kFunctionInfoMap = {
     'get_all_unique_tier_visibilities' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
-        'NumParamsForMatch' : 0,
     },
     'set_hide_uniques_above_tier' : { 
         'HasProfileParam' : True,
@@ -640,6 +665,70 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         stacksize_visibility_pairs = loot_filter.GetStackedCurrencyVisibility(tier_str)
         output_string = '\n'.join(str(stack_size) + ';' + str(int(visibility_flag))
                                     for stack_size, visibility_flag in stacksize_visibility_pairs)
+    # ========================================= Essences =========================================
+    elif (function_name == 'get_all_essence_tier_visibilities'):
+        '''
+        get_all_essence_tier_visibilities
+         - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
+         - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
+         - Example: > python3 backend_cli.py get_all_essence_tier_visibilities DefaultProfile
+        '''
+        CheckNumParams(function_params, 0)
+        for tier in range(1, consts.kMaxEssenceTier + 1):
+            output_string += str(tier) + ';' + str(int(
+                    loot_filter.GetEssenceTierVisibility(tier) == RuleVisibility.kShow)) + '\n'
+        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
+    elif (function_name == 'set_hide_essences_above_tier'):
+        '''
+        set_hide_essences_above_tier <tier: int>
+         - Sets the essence tier "above" which all will be hidden
+           (higher essence tiers are worse)
+         - Output: None
+         - Example: > python3 backend_cli.py set_hide_essences_above_tier 3 DefaultProfile
+        '''
+        CheckNumParams(function_params, 1)
+        max_visible_tier: int = int(function_params[0])
+        loot_filter.SetHideEssencesAboveTierTier(max_visible_tier)
+    elif (function_name == 'get_hide_essences_above_tier'):
+        '''
+        get_hide_essences_above_tier
+         - Output: single integer, the tier above which all essences are hidden
+         - Example: > python3 backend_cli.py get_hide_essences_above_tier DefaultProfile
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = str(loot_filter.GetHideEssencesAboveTierTier())
+    # ========================================= Div Cards =========================================
+    elif (function_name == 'get_all_div_card_tier_visibilities'):
+        '''
+        get_all_div_card_tier_visibilities
+         - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
+         - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
+         - Example: > python3 backend_cli.py get_all_div_card_tier_visibilities DefaultProfile
+        '''
+        CheckNumParams(function_params, 0)
+        for tier in range(1, consts.kMaxDivCardTier + 1):
+            output_string += str(tier) + ';' + str(int(
+                    loot_filter.GetDivCardTierVisibility(tier) == RuleVisibility.kShow)) + '\n'
+        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
+    elif (function_name == 'set_hide_div_cards_above_tier'):
+        '''
+        set_hide_div_cards_above_tier <tier: int>
+         - Sets the essence tier "above" which all will be hidden
+           (higher tiers are worse)
+         - Output: None
+         - Example: > python3 backend_cli.py set_hide_essences_above_tier 3 DefaultProfile
+        '''
+        CheckNumParams(function_params, 1)
+        max_visible_tier: int = int(function_params[0])
+        loot_filter.SetHideDivCardsAboveTierTier(max_visible_tier)
+    elif (function_name == 'get_hide_div_cards_above_tier'):
+        '''
+        get_hide_div_cards_above_tier
+         - Output: single integer, the tier above which all essences are hidden
+         - Example: > python3 backend_cli.py get_hide_div_cards_above_tier DefaultProfile
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = str(loot_filter.GetHideDivCardsAboveTierTier())
     # ======================================= Blight Oils =======================================
     elif (function_name == 'set_lowest_visible_oil'):
         '''
@@ -667,7 +756,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py get_all_unique_tier_visibilities DefaultProfile
         '''
         CheckNumParams(function_params, 0)
-        for tier in range(1, consts.kMaxUniqueTier):
+        for tier in range(1, consts.kNumUniqueTiers + 1):
             output_string += str(tier) + ';' + str(int(
                     loot_filter.GetUniqueTierVisibility(tier) == RuleVisibility.kShow)) + '\n'
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline

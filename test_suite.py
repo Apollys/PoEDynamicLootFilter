@@ -116,7 +116,7 @@ def TestCurrency():
     for original_tier in [1, consts.kMaxCurrencyTier, random.randint(2, consts.kMaxCurrencyTier - 1)]:
         # Test set_currency_tier
         currency_name = random.choice(tier_to_currency_map[original_tier])
-        target_tier = random.randint(1, consts.kMaxCurrencyTier - 1)
+        target_tier = random.randint(1, consts.kMaxCurrencyTier)
         CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, target_tier))
         CallCliFunction('get_currency_tier "{}"'.format(currency_name))
         CheckOutput(str(target_tier))

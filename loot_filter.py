@@ -645,6 +645,74 @@ class LootFilter:
         return max_visible_tier
     # GetHideCurrencyAboveTierTier
     
+    # ============================= Essence Functions =============================
+    
+    def SetEssenceTierVisibility(self, tier: int, visibility: RuleVisibility):
+        CheckType(tier, 'tier', int)
+        CheckType(visibility, 'visibility', RuleVisibility)
+        type_tag, tier_tag = consts.kEssenceTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule.SetVisibility(visibility)
+    # SetEssenceTierVisibility
+    
+    def GetEssenceTierVisibility(self, tier: int) -> RuleVisibility:
+        CheckType(tier, 'tier', int)
+        type_tag, tier_tag = consts.kEssenceTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility
+    # GetUniqueTierVisibility
+    
+    def SetHideEssencesAboveTierTier(self, max_visible_tier: int):
+        CheckType(max_visible_tier, 'max_visible_tier', int)
+        for tier in range(1, consts.kNumEssenceTiers + 1):
+            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            self.SetEssenceTierVisibility(tier, visibility)
+    # SetHideEssencesAboveTierTier
+    
+    def GetHideEssencesAboveTierTier(self) -> int:
+        max_visible_tier: int = 0
+        for tier in range(1, consts.kNumEssenceTiers + 1):
+            if (self.GetEssenceTierVisibility(tier) == RuleVisibility.kShow):
+                max_visible_tier = tier
+            else:
+                break
+        return max_visible_tier
+    # GetHideEssencesAboveTierTier
+    
+    # ============================= Div Card Functions =============================
+    
+    def SetDivCardTierVisibility(self, tier: int, visibility: RuleVisibility):
+        CheckType(tier, 'tier', int)
+        CheckType(visibility, 'visibility', RuleVisibility)
+        type_tag, tier_tag = consts.kDivCardTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule.SetVisibility(visibility)
+    # SetDivCardTierVisibility
+    
+    def GetDivCardTierVisibility(self, tier: int) -> RuleVisibility:
+        CheckType(tier, 'tier', int)
+        type_tag, tier_tag = consts.kDivCardTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility
+    # GetDivCardTierVisibility
+    
+    def SetHideDivCardsAboveTierTier(self, max_visible_tier: int):
+        CheckType(max_visible_tier, 'max_visible_tier', int)
+        for tier in range(1, consts.kNumDivCardTiers + 1):
+            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            self.SetDivCardTierVisibility(tier, visibility)
+    # SetHideDivCardAboveTierTier
+    
+    def GetHideDivCardsAboveTierTier(self) -> int:
+        max_visible_tier: int = 0
+        for tier in range(1, consts.kNumDivCardTiers + 1):
+            if (self.GetDivCardTierVisibility(tier) == RuleVisibility.kShow):
+                max_visible_tier = tier
+            else:
+                break
+        return max_visible_tier
+    # GetHideDivCardAboveTierTier
+    
     # =========================== Oil-Related Functions ===========================
     
     def SetLowestVisibleOil(self, lowest_visible_oil_name: str):
@@ -693,14 +761,14 @@ class LootFilter:
     
     def SetHideUniquesAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
-        for tier in range(1, consts.kMaxUniqueTier):
+        for tier in range(1, consts.kNumUniqueTiers + 1):
             visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
             self.SetUniqueTierVisibility(tier, visibility)
     # SetHideUniquesAboveTierTier
     
     def GetHideUniquesAboveTierTier(self) -> int:
         max_visible_tier: int = 0
-        for tier in range(1, consts.kMaxUniqueTier):
+        for tier in range(1, consts.kNumUniqueTiers + 1):
             if (self.GetUniqueTierVisibility(tier) == RuleVisibility.kShow):
                 max_visible_tier = tier
             else:

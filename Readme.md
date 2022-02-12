@@ -17,13 +17,18 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### To-Do
+ - Add tests for newly added featuers:
+   - Stacked currency
+   - Essences, div cards once added
  - Stacked Currency:
    - Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
+   - Consider making currency stack tiers consistent with single currency tiers on import
  - All currency:
    - Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering
    - Any others to add to tiering?
  - Add support for essences
    - Hide essences above tier
+ - Add support for div cards
  - Add first-time setup support
    - Backend function `is_first_time`
    - If yes, prompt user for profile name, create profile,
@@ -34,6 +39,8 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### Feature Wish List
+ - [x] Add support for essences
+ - [x] Add support for div cards
  - [x] Update flask rules - one for high ilvl (85+) and one for all ilvls
  - [x] Move currency from one tier to another
  - [x] Show/hide whole currency tier
@@ -77,15 +84,20 @@ for the detailed documentation of all available function calls.
   - `get_rule_matching_item`
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
   - `set_currency_tier <currency_name: str> <tier: int>`
-  - \[removed] `adjust_currency_tier <currency_name: str> <tier_delta: int>`
   - `get_currency_tier <currency_name: str>`
   - `get_all_currency_tiers`
   - `set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>`
   - `get_currency_tier_visibility <tier: int or tier_tag: str>`
   - `set_hide_currency_above_tier <tier: int>`
   - `get_hide_currency_above_tier`
-  - *New*: `set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">`
-  - *New*: `get_stacked_currency_visibility <tier: int or str>`
+  - `set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">`
+  - `get_stacked_currency_visibility <tier: int or str>`
+  - *New*: `get_all_essence_tier_visibilities`
+  - *New*: `set_hide_essences_above_tier <tier: int>`
+  - *New*: `get_hide_essences_above_tier`
+  - *New*: `get_all_div_card_tier_visibilities`
+  - *New*: `set_hide_div_cards_above_tier <tier: int>`
+  - *New*: `get_hide_div_cards_above_tier`
   - `set_lowest_visible_oil <oil_name: str>`
   - `get_lowest_visible_oil`
   - `get_all_unique_tier_visibilities`
@@ -98,7 +110,7 @@ for the detailed documentation of all available function calls.
   - `set_hide_maps_below_tier <tier: int>`
   - `get_hide_maps_below_tier`
   - `set_flask_visibility <base_type: str> <visibility_flag: int>`
-  - *New* `set_high_ilvl_flask_visibility <base_type: str> <visibility_flag: int>`
+  - `set_high_ilvl_flask_visibility <base_type: str> <visibility_flag: int>`
   - `get_flask_visibility <base_type: str>`
   - `get_all_flask_visibilities`
   - `set_rgb_item_max_size <size: {none, small, medium, large}>`
