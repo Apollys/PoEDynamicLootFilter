@@ -17,23 +17,22 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### To-Do
- - Add tests for newly added featuers:
-   - Stacked currency
-   - Essences, div cards once added
- - Stacked Currency:
-   - Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
-   - Consider making currency stack tiers consistent with single currency tiers on import
- - All currency:
-   - Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering
+ - [ ] Add tests for newly added featuers:
+   - [ ] Stacked currency
+   - [ ] Essences
+   - [ ] Div cards
+ - [ ] Stacked Currency:
+   - [x] Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
+   - [ ] Consider making currency stack tiers consistent with single currency tiers on import
+ - [ ] Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering
    - Any others to add to tiering?
- - Add support for essences
-   - Hide essences above tier
- - Add support for div cards
- - Add first-time setup support
+ - [x] Add support for essences
+ - [x] Add support for div cards
+ - [ ] Add first-time setup support
    - Backend function `is_first_time`
    - If yes, prompt user for profile name, create profile,
      explain how to configure options and add custom rules
- - UI Redeisgn
+ - [ ] UI Redeisgn
    - Draft done
 
 - - -

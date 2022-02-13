@@ -64,6 +64,8 @@ kStackedCurrencyTags[11] = list(itertools.product(
 
 kMaxCurrencyTier = len(kCurrencyTierNames) - 2
 
+kCurrencyStackSizes = [1, 2, 4, 6]
+
 kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 
 # ================================= Essences =================================

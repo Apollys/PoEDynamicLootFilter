@@ -573,10 +573,12 @@ class LootFilter:
         tier: int = 10 if tier_str == 'tportal' else (
                     11 if tier_str == 'twisdom' else int(tier_str))
         min_stack_size = 100 if min_stack_size_str == 'hide_all' else int(min_stack_size_str)
-        kValidStackSizes = (1, 2, 4) + ((8, ) if tier >= 8 else ()) + (100, )
-        if (min_stack_size not in kValidStackSizes):
-            raise RuntimeError('min_stack_size: {} invalid, valid options are {{1, 2, 4}}, '
-                    'or 8 for tiers 8-9 and scrolls'.format(min_stack_size))
+        valid_stack_sizes = (consts.kCurrencyStackSizes if tier >= 8
+                else consts.kCurrencyStackSizes[:-1]) + [100]
+        if (min_stack_size not in valid_stack_sizes):
+            raise RuntimeError('min_stack_size: {} invalid, valid options are {} for tier 1-7, '
+                    'or {} for tiers 8-9 and scrolls'.format(
+                        min_stack_size, consts.kCurrencyStackSizes[:-1], consts.kCurrencyStackSizes))
         # Hide all stacks lower than stack_size, show all stacks greater than or equal to stack size
         # First single currency items
         type_tag = consts.kCurrencyTypeTag
@@ -1176,7 +1178,7 @@ class LootFilter:
         # Set currency stack size thresholds to 2, 4, 8
         for tier, tag_pairs in consts.kStackedCurrencyTags.items():
             for i, (type_tag, tier_tag) in enumerate(tag_pairs):
-                stack_size = 2**(i + 1)
+                stack_size = consts.kCurrencyStackSizes[i + 1]
                 rule = self.type_tier_rule_map[type_tag][tier_tag]
                 # Find "StackSize" line and rewrite stack size threshold
                 for j in range(len(rule.text_lines)):
