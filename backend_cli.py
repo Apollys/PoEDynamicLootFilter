@@ -141,6 +141,15 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
+    'set_archnemesis_mod_tier' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'get_all_archnemesis_mod_tiers' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
     'get_all_essence_tier_visibilities' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
@@ -665,6 +674,33 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         stacksize_visibility_pairs = loot_filter.GetStackedCurrencyVisibility(tier_str)
         output_string = '\n'.join(str(stack_size) + ';' + str(int(visibility_flag))
                                     for stack_size, visibility_flag in stacksize_visibility_pairs)
+    # ===================================== Archnemesis Mods =====================================
+    elif (function_name == 'set_archnemesis_mod_tier'):
+        '''
+        set_archnemesis_mod_tier <archnemesis_mod_name: str> <tier: int>
+         - Moves the given archnemesis mod to the specified tier
+         - Note: last tier (4) is a blanket hide-all tier
+         - Output: None
+         - Example: > python3 backend_cli.py set_archnemesis_mod_tier "Frenzied" 1 DefaultProfile
+        '''
+        CheckNumParams(function_params, 2)
+        archnemesis_mod_name: str = function_params[0]
+        target_tier: int = int(function_params[1])
+        loot_filter.SetArchnemesisModToTier(archnemesis_mod_name, target_tier)
+    elif (function_name == 'get_all_archnemesis_mod_tiers'):
+        '''
+        get_all_archnemesis_mod_tiers
+         - Output: newline-separated sequence of `<archnemesis_mod_name: str>;<tier: int>`
+           Note: last tier is a blanket hide-all tier and will be excluded from output
+         - Example: > python3 backend_cli.py get_all_archnemesis_mod_tiers DefaultProfile
+        '''
+        CheckNumParams(function_params, 0)
+        for tier in range(1, consts.kNumArchnemesisTiers):  # omit last tier, as it's hide all
+            archnemesis_mod_names = loot_filter.GetAllArchnemesisModsInTier(tier)
+            output_string += ''.join((archnemesis_mod_name + ';' + str(tier) + '\n')
+                                        for archnemesis_mod_name in archnemesis_mod_names)
+        if ((len(output_string) > 0) and (output_string[-1] == '\n')):
+            output_string = output_string[:-1]  # remove final newline
     # ========================================= Essences =========================================
     elif (function_name == 'get_all_essence_tier_visibilities'):
         '''

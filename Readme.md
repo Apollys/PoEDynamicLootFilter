@@ -92,6 +92,8 @@ for the detailed documentation of all available function calls.
   - `get_hide_currency_above_tier`
   - `set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">`
   - `get_stacked_currency_visibility <tier: int or str>`
+  - *New*: `set_archnemesis_mod_tier <archnemesis_mod_name: str> <tier: int>`
+  - *New*: `get_all_archnemesis_mod_tiers`
   - *New*: `get_all_essence_tier_visibilities`
   - *New*: `set_hide_essences_above_tier <tier: int>`
   - *New*: `get_hide_essences_above_tier`

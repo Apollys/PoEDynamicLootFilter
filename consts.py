@@ -123,6 +123,56 @@ kHighIlvlFlaskRuleTemplate = \
 # PlayEffect Green Temp
 # MinimapIcon 0 Green Raindrop'''
 
+# ================================== Archnemesis ==================================
+
+kArchnemesisTierTags = ['t1', 't2', 't3', 'thide'] 
+kArchnemesisTags = { i + 1 : ('dlf_archnemesis', kDivCardTierTags[i])
+        for i in range(len(kArchnemesisTierTags))}
+kNumArchnemesisTiers = len(kArchnemesisTierTags)
+
+kArchnemesisRuleTemplates = [
+'''# Show # $type->dlf_archnemesis $tier->t1
+# ArchnemesisMod
+# Class "Archnemesis Mod"
+# SetFontSize 45
+# SetTextColor 252 3 144 255
+# SetBorderColor 252 3 144 255
+# SetBackgroundColor 0 0 0 255
+# PlayAlertSound 3 300
+# PlayEffect Pink
+# MinimapIcon 0 Pink Pentagon''',
+
+'''# Show # $type->dlf_archnemesis $tier->t2
+# ArchnemesisMod
+# Class "Archnemesis Mod"
+# SetFontSize 45
+# SetTextColor 3 252 240 255
+# SetBorderColor 3 252 240 255
+# SetBackgroundColor 0 0 0 255
+# PlayAlertSound 3 300
+# PlayEffect Cyan
+# MinimapIcon 0 Cyan Pentagon''',
+
+'''# Show # $type->dlf_archnemesis $tier->t3
+# ArchnemesisMod
+# Class "Archnemesis Mod"
+# SetFontSize 45
+# SetTextColor 74 230 58 255
+# SetBorderColor 74 230 58 255
+# SetBackgroundColor 0 0 0 255
+# PlayAlertSound 3 300
+# PlayEffect Green
+# MinimapIcon 0 Green Pentagon''',
+
+'''Hide # $type->dlf_archnemesis $tier->thide
+Class "Archnemesis Mod"
+SetFontSize 40
+SetTextColor 74 230 58 255
+SetBorderColor 74 230 58 255
+SetBackgroundColor 0 0 0 255'''
+]
+
+
 # =============================== Chaos Recipe ===============================
 
 # 0: tier tag (we will use the item slot for this)

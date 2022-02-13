@@ -209,6 +209,22 @@ def ParseBaseTypeLine(line: str) -> List[str]:
     return line.split(' ')
 # End ParseBaseTypeLine
 
+# Copied from above, for archnemesis line
+def ParseArchnemesisModLine(line: str) -> List[str]:
+    CheckType(line, 'line', str)
+    # First remove 'ArchnemesisMod' and anything before it from line
+    start_index = line.find('ArchnemesisMod') + len('ArchnemesisMod') + 1
+    line = line[start_index:]
+    if (line == ''):
+        return []
+    if ('"' in line):
+        start_index = line.find('"')
+        end_index = line.rfind('"')
+        return line[start_index + 1 : end_index].split('" "')
+    # Otherwise, items are just split by spaces
+    return line.split(' ')
+# End ParseArchnemesisModLine
+
 # Encloses the string in double quotes if it contains a space or single quote,
 # otherwise just returns the given string.  Note: does not check for double quotes in string.
 def QuoteStringIfRequired(input_string: str) -> str:

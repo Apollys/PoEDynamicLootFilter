@@ -38,6 +38,8 @@ class LootFilterRule:
      - self.base_type_list: List[str]
        - Note: not all rules must have BaseType, so base_type_list may be empty
      - self.base_type_line_index: int - index into self.text_lines (not full loot filter)
+     - self.archnemesis_mod_list: List[str]
+     - self.archnemesis_mod_line_index: int
     '''
 
     def __init__(self, rule_text_lines: str or List[str], start_line_index: int):
@@ -89,7 +91,6 @@ class LootFilterRule:
         self.tier_tag: str = first_line[tier_start_index : tier_end_index]
         # Parse base type list
         # Note - not all rules may have a base type, in which case base type list is empty
-        # TODO: do we still need this?
         self.base_type_list = []
         self.base_type_line_index = -1
         for i in range(len(self.text_lines)):
@@ -98,6 +99,16 @@ class LootFilterRule:
                     line.startswith('# BaseType')):
                 self.base_type_line_index = i
                 self.base_type_list = helper.ParseBaseTypeLine(line)
+        # Parse archnemesis mod list
+        # Note - not all rules may have a base type, in which case base type list is empty
+        self.archnemesis_mod_list = []
+        self.archnemesis_mod_line_index = -1
+        for i in range(len(self.text_lines)):
+            line: str = self.text_lines[i]
+            if (line.startswith('ArchnemesisMod') or line.startswith('#ArchnemesisMod') or
+                    line.startswith('# ArchnemesisMod')):
+                self.archnemesis_mod_line_index = i
+                self.archnemesis_mod_list = helper.ParseArchnemesisModLine(line)
         # TODO: parse size, color, etc...
     # End __init__
         
@@ -180,21 +191,21 @@ class LootFilterRule:
             self.text_lines.append(base_type_line)
         quoted_base_type_name = '"' + base_type_name + '"'
         self.base_type_list.append(base_type_name)
-        self.text_lines[self.base_type_line_index] = \
-                self.text_lines[self.base_type_line_index] + ' ' + quoted_base_type_name
+        self.text_lines[self.base_type_line_index] += ' ' + quoted_base_type_name
     # End AddBaseType
     
-    # Removes base_type_name from this rules BaseType line, if it's there
+    # Removes base_type_name from this rule's BaseType line, if it's there
     def RemoveBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         quoted_base_type_name = '"' + base_type_name + '"'
+        # TODO: potential bug here, this checks two things, removal could fail after
         if ((base_type_name not in self.base_type_list) and
                 (quoted_base_type_name not in self.base_type_list)):
             return
         self.base_type_list.remove(base_type_name)
         # Remove base_type_name from rule text
         index = self.base_type_line_index  # for convenience
-        if (quoted_base_type_name in self.text_lines[self.base_type_line_index]):
+        if (quoted_base_type_name in self.text_lines[index]):
             self.text_lines[index] = '{}BaseType {}'.format(
                     '# ' if self.visibility == RuleVisibility.kDisable else '',
                     '"' + '" "'.join(self.base_type_list) + '"')
@@ -210,6 +221,50 @@ class LootFilterRule:
         while (len(self.base_type_list) > 0):
             self.RemoveBaseType(self.base_type_list[-1])
     # End ClearBaseTypeList
+        
+    # ArchnemesisModList functions: analogous to BaseType functions above
+    # Adds archnemesis_mod_name to the rule's ArchnemesisMod line (if not there already)
+    def AddArchnemesisMod(self, archnemesis_mod_name: str):
+        CheckType(archnemesis_mod_name, 'archnemesis_mod_name', str)
+        if (archnemesis_mod_name in self.archnemesis_mod_list):
+            return
+        # Check if rule is missing ArchnemesisMod line, and add if so
+        if (self.archnemesis_mod_line_index == -1):
+            archnemesis_mod_line = "ArchnemesisMod"
+            if (self.visibility == RuleVisibility.kDisable):
+                archnemesis_mod_line = '# ' + archnemesis_mod_line
+            self.archnemesis_mod_line_index = len(self.text_lines)
+            self.text_lines.append(archnemesis_mod_line)
+        quoted_archnemesis_mod_name = '"' + archnemesis_mod_name + '"'
+        self.archnemesis_mod_list.append(archnemesis_mod_name)
+        self.text_lines[self.archnemesis_mod_line_index] += ' ' + quoted_archnemesis_mod_name
+    # End AddArchnemesisMod
+    
+    # Removes archnemesis_mod_name from this rule's ArchnemesisMod line, if it's there
+    def RemoveArchnemesisMod(self, archnemesis_mod_name: str):
+        CheckType(archnemesis_mod_name, 'archnemesis_mod_name', str)
+        quoted_archnemesis_mod_name = '"' + archnemesis_mod_name + '"'
+        if (archnemesis_mod_name not in self.archnemesis_mod_list):
+            return
+        self.archnemesis_mod_list.remove(archnemesis_mod_name)
+        # Remove archnemesis_mod_name from rule text
+        index = self.archnemesis_mod_line_index  # for convenience
+        if (quoted_archnemesis_mod_name in self.text_lines[index]):
+            self.text_lines[index] = '{}ArchnemesisMod {}'.format(
+                    '# ' if self.visibility == RuleVisibility.kDisable else '',
+                    '"' + '" "'.join(self.archnemesis_mod_list) + '"')
+        # Now if the line is empty, it will generate an error in PoE,
+        # so we need to comment out the rule if no archnemesis mods left
+        if (len(self.archnemesis_mod_list) == 0):
+            self.SetVisibility(RuleVisibility.kDisable)
+            # Also, need to eliminate the ' ""'  in the list
+            self.text_lines[index] = self.text_lines[index][:-3]
+    # End RemoveArchnemesisMod
+    
+    def ClearArchnemesisModList(self):
+        while (len(self.archnemesis_mod_list) > 0):
+            self.RemoveArchnemesisMod(self.archnemesis_mod_list[-1])
+    # End ClearArchnemesisModList
     
     # Returns a bool indicating whether or not the line identified by the given keyword was found
     # Updates both parsed_item_lines and text_lines
@@ -645,6 +700,28 @@ class LootFilter:
         return max_visible_tier
     # GetHideCurrencyAboveTierTier
     
+    # =========================== Archnemesis Functions ===========================
+    
+    # Note: highest tier = hide
+    def SetArchnemesisModToTier(self, archnemesis_mod: str, target_tier: int):
+        CheckType(archnemesis_mod, 'archnemesis_mod', str)
+        CheckType(target_tier, 'target_tier', int)
+        for tier in range(1, consts.kNumArchnemesisTiers):  # exclude last tier because it's hide all
+            type_tag, tier_tag = consts.kArchnemesisTags[tier]
+            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            if (tier != target_tier):
+                rule.RemoveArchnemesisMod(archnemesis_mod)
+            else:
+                rule.AddArchnemesisMod(archnemesis_mod)
+                rule.Enable()
+    # End SetArchnemesisModToTier
+    
+    def GetAllArchnemesisModsInTier(self, tier: int) -> list:
+        CheckType(tier, 'tier', int)
+        type_tag, tier_tag = consts.kArchnemesisTags[tier]
+        return self.type_tier_rule_map[type_tag][tier_tag].archnemesis_mod_list
+    # End GetAllArchnemesisModsInTier
+    
     # ============================= Essence Functions =============================
     
     def SetEssenceTierVisibility(self, tier: int, visibility: RuleVisibility):
@@ -1014,7 +1091,7 @@ class LootFilter:
         # TODO: comment out if config says don't add chaos recipe rules
         current_section_id_int += 1
         to_add_string = consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Chaos recipe rares')
+                current_section_id_int, 'Show chaos recipe rares by item +slot')
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         # Weapons handled separately, since config tells us which classes to use
         item_slot = 'WeaponsX'
@@ -1028,6 +1105,14 @@ class LootFilter:
         # Handle the rest of chaos recipe rules
         for chaos_recipe_rule_string in consts.kChaosRecipeRuleStrings:
             to_add_string_list.extend(chaos_recipe_rule_string.split('\n') + [''])
+        # Add Archnemesis rules
+        current_section_id_int += 1
+        to_add_string = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Highlight specific Archnemesis ingredients')
+        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        for archnemesis_rule_template in consts.kArchnemesisRuleTemplates:
+            to_add_string = archnemesis_rule_template
+            to_add_string_list.extend(to_add_string.split('\n') + [''])
         # Update self.text_lines to contain the newly added rules
         # Python trick to insert one list into another: https://stackoverflow.com/a/5805910
         insert_index: int = self.rules_start_line_index
@@ -1047,6 +1132,7 @@ class LootFilter:
         self.type_tier_rule_map = {}
         # Set up parsing loop
         current_block: list[str] = []
+        untagged_rule_count = 0
         while (self.parser_index < len(self.text_lines)):
             current_line = self.text_lines[self.parser_index]
             # Check for end of block
@@ -1061,7 +1147,8 @@ class LootFilter:
                     if ((new_rule.type_tag == '') and (new_rule.tier_tag == '')):
                         new_rule.type_tag = 'untagged_rule'
                         new_rule.tier_tag = str(untagged_rule_count)
-                        new_rule.AddTypeTierTags(type_tag, tier_tag)
+                        new_rule.AddTypeTierTags(new_rule.type_tag, new_rule.tier_tag)
+                        untagged_rule_count += 1
                     # Add rule to type tier rule map
                     if (new_rule.type_tag not in self.type_tier_rule_map):
                         self.type_tier_rule_map[new_rule.type_tag] = {}
