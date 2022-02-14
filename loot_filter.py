@@ -589,7 +589,7 @@ class LootFilter:
         # Now actual currency stacks
         for i, (type_tag, tier_tag) in enumerate(consts.kStackedCurrencyTags[tier]):
             rule = self.type_tier_rule_map[type_tag][tier_tag]
-            rule_stack_size = consts.kValidStackSizes[i + 1]
+            rule_stack_size = valid_stack_sizes[i + 1]
             target_visibility = (RuleVisibility.kShow if rule_stack_size >= min_stack_size
                                  else RuleVisibility.kHide)
             rule.SetVisibility(target_visibility)
