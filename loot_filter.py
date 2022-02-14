@@ -658,9 +658,10 @@ class LootFilter:
             return
         type_tag = consts.kCurrencyTypeTag
         # Remove currency_name from original_tier rule
-        original_tier_tag = consts.kCurrencyTierNames[original_tier]
-        original_rule = self.type_tier_rule_map[type_tag][original_tier_tag]
-        original_rule.RemoveBaseType(currency_name)
+        if (original_tier != -1):
+            original_tier_tag = consts.kCurrencyTierNames[original_tier]
+            original_rule = self.type_tier_rule_map[type_tag][original_tier_tag]
+            original_rule.RemoveBaseType(currency_name)
         # Add currency_name to target_tier rule
         target_tier_tag = consts.kCurrencyTierNames[target_tier]
         target_currency_rule = self.type_tier_rule_map[type_tag][target_tier_tag]

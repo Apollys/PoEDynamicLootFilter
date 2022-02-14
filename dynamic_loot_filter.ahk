@@ -32,9 +32,11 @@ cstack_values_base := [5,5,5,5,5,5,5,5,5]
 options_idx := 1
 ; Flask Ilvl Options
 flvl_options := ["None", "All", "84+"]
-; Scroll stuff maybe no necessary
-base_portstack = 5
-base_wisstack = 5
+; Scroll stuff maybe no necessary (looks like this is necessary)
+base_portstack := 5
+base_wisstack := 5
+PortalStack := 5
+WisdomStack := 5
 
 ; Read starting filter data from python client
 curr_txt := []
