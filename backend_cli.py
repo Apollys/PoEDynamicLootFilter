@@ -679,9 +679,10 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         set_archnemesis_mod_tier <archnemesis_mod_name: str> <tier: int>
          - Moves the given archnemesis mod to the specified tier
-         - Note: last tier (4) is a blanket hide-all tier
+         - Note: use last tier (4) to hide specific mod
          - Output: None
          - Example: > python3 backend_cli.py set_archnemesis_mod_tier "Frenzied" 1 DefaultProfile
+         - Example: > python3 backend_cli.py set_archnemesis_mod_tier "Gargantuan" 4 DefaultProfile
         '''
         CheckNumParams(function_params, 2)
         archnemesis_mod_name: str = function_params[0]
@@ -691,7 +692,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_all_archnemesis_mod_tiers
          - Output: newline-separated sequence of `<archnemesis_mod_name: str>;<tier: int>`
-           Note: last tier is a blanket hide-all tier and will be excluded from output
+           Note: last tier is a "hide" tier
          - Example: > python3 backend_cli.py get_all_archnemesis_mod_tiers DefaultProfile
         '''
         CheckNumParams(function_params, 0)

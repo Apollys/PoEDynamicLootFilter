@@ -128,7 +128,7 @@ kHighIlvlFlaskRuleTemplate = \
 # ================================== Archnemesis ==================================
 
 kArchnemesisTierTags = ['t1', 't2', 't3', 'thide'] 
-kArchnemesisTags = { i + 1 : ('dlf_archnemesis', kDivCardTierTags[i])
+kArchnemesisTags = { i + 1 : ('dlf_archnemesis', kArchnemesisTierTags[i])
         for i in range(len(kArchnemesisTierTags))}
 kNumArchnemesisTiers = len(kArchnemesisTierTags)
 
@@ -166,12 +166,13 @@ kArchnemesisRuleTemplates = [
 # PlayEffect Green
 # MinimapIcon 0 Green Pentagon''',
 
-'''Hide # $type->dlf_archnemesis $tier->thide
-Class "Archnemesis Mod"
-SetFontSize 40
-SetTextColor 74 230 58 255
-SetBorderColor 74 230 58 255
-SetBackgroundColor 0 0 0 255'''
+'''# Hide # $type->dlf_archnemesis $tier->thide
+# ArchnemesisMod
+# Class "Archnemesis Mod"
+# SetFontSize 30
+# SetTextColor 74 230 58 255
+# SetBorderColor 74 230 58 255
+# SetBackgroundColor 0 0 0 255'''
 ]
 
 

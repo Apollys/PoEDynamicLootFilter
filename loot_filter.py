@@ -708,7 +708,7 @@ class LootFilter:
     def SetArchnemesisModToTier(self, archnemesis_mod: str, target_tier: int):
         CheckType(archnemesis_mod, 'archnemesis_mod', str)
         CheckType(target_tier, 'target_tier', int)
-        for tier in range(1, consts.kNumArchnemesisTiers):  # exclude last tier because it's hide all
+        for tier in range(1, consts.kNumArchnemesisTiers + 1):
             type_tag, tier_tag = consts.kArchnemesisTags[tier]
             rule = self.type_tier_rule_map[type_tag][tier_tag]
             if (tier != target_tier):
