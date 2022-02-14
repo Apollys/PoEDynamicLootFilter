@@ -608,7 +608,7 @@ class LootFilter:
         # Actual stacks
         tag_pairs = consts.kStackedCurrencyTags[tier]
         for i, (type_tag, tier_tag) in enumerate(tag_pairs):
-            stack_size = 2**(i + 1)
+            stack_size = consts.kCurrencyStackSizes[i + 1]
             rule = self.type_tier_rule_map[type_tag][tier_tag]
             result_list.append((stack_size, rule.visibility == RuleVisibility.kShow))
         return result_list
