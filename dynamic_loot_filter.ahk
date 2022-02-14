@@ -26,7 +26,7 @@ rgbtooltip := {"none" : "Hide everything", "small" : "2x2, 4x1, and 3x1", "mediu
 ; Ordered Oils
 oils := ["Tainted", "Golden", "Silver", "Opalescent", "Black", "Crimson", "Violet", "Indigo", "Azure", "Teal", "Verdant", "Amber", "Sepia", "Clear"]
 ; Currency Stack Size Options
-cstack_options := ["All", "2", "4", "8", "None"]
+cstack_options := ["All", "2", "4", "6", "None"]
 cstack_values := [5,5,5,5,5,5,5,5,5]
 cstack_values_base := [5,5,5,5,5,5,5,5,5]
 options_idx := 1
