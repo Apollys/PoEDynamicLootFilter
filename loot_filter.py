@@ -589,7 +589,7 @@ class LootFilter:
         # Now actual currency stacks
         for i, (type_tag, tier_tag) in enumerate(consts.kStackedCurrencyTags[tier]):
             rule = self.type_tier_rule_map[type_tag][tier_tag]
-            rule_stack_size = kValidStackSizes[i + 1]
+            rule_stack_size = consts.kValidStackSizes[i + 1]
             target_visibility = (RuleVisibility.kShow if rule_stack_size >= min_stack_size
                                  else RuleVisibility.kHide)
             rule.SetVisibility(target_visibility)
@@ -936,7 +936,6 @@ class LootFilter:
         return -1  # indicates all flask quality rules are disabled/hidden
     
     # ============================== RGB Item Functions ==============================
-    
     def SetRgbItemMaxSize(self, max_size_string: str):
         CheckType(max_size_string, 'max_size_string', str)
         type_tag = consts.kRgbTypeTag
@@ -1155,7 +1154,7 @@ class LootFilter:
                     if (new_rule.type_tag not in self.type_tier_rule_map):
                         self.type_tier_rule_map[new_rule.type_tag] = {}
                     self.type_tier_rule_map[new_rule.type_tag][new_rule.tier_tag] = new_rule
-                    # Add rule to rule or comment block list
+                    # Add rule to rule orStacked Cu comment block list
                     self.rule_or_comment_block_list.append(new_rule)
                 current_block = []
             else:  # not end of block
