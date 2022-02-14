@@ -28,10 +28,14 @@ The `profile_name` parameter is required in all cases except for:
    - Any others to add to tiering?
  - [x] Add support for essences
  - [x] Add support for div cards
+ - [ ] Add support for unique map tiering
  - [ ] Add first-time setup support
    - Backend function `is_first_time`
    - If yes, prompt user for profile name, create profile,
      explain how to configure options and add custom rules
+ - [ ] Make UI display error messages on important failures
+   - Failed to import filter
+   - Any others to think of?
  - [ ] UI Redeisgn
    - Draft done
 
