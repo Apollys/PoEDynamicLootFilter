@@ -59,7 +59,7 @@ Loop, parse, py_out_text, `n, `r
 	profiles.push(A_LoopField)
 }
 active_profile := profiles[1]
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_stacked_currency_visibility tportal`nget_stacked_currency_visibility twisdom`nget_hide_currency_above_tier`nget_hide_uniques_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_stacked_currency_visibility tportal`nget_stacked_currency_visibility twisdom`nget_hide_currency_above_tier`nget_hide_unique_items_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %ahk_out_path%
 Loop, 9
 {
 	FileAppend, get_stacked_currency_visibility %A_Index%`n, %ahk_out_path%
@@ -226,8 +226,8 @@ Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Maps Below Tier
 Gui, Add, Text, x944 y%height% w40 BackgroundTrans vMapTierHide, % Format("{:2}", maphide)
 height := height + 30
 
-; Hide Unique Tiers
-Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Uniques Above Tier:        "
+; Hide Unique Item Tiers
+Gui, Add, Text, x590 y%height% grmbhack BackgroundTrans, % "Hide Unique Items Above Tier:        "
 Gui, Add, Text, x944 y%height% w40 BackgroundTrans vUniqTierHide, % Format("{:2}", uniqhide)
 height := height + 30
 
@@ -399,7 +399,7 @@ If (control_ = "StackSize")
 	cstack_values[stack] := options_idx
 	return
 }
-If (control_ = "Hide Uniques Above Tier:")
+If (control_ = "Hide Unique Items Above Tier:")
 {
 	GuiControlGet, current,, UniqTierHide
 	If (A_GuiEvent = "RightClick")
@@ -641,7 +641,7 @@ if (current_maphide != maphide)
 	FileAppend, % "set_hide_maps_below_tier " current_maphide "`n", %ahk_out_path%
 maphide := current_maphide
 if (current_uniqhide != uniqhide)
-	FileAppend, % "set_hide_uniques_above_tier " current_uniqhide "`n", %ahk_out_path%
+	FileAppend, % "set_hide_unique_items_above_tier " current_uniqhide "`n", %ahk_out_path%
 uniqhide := current_uniqhide
 if (base_portstack != PortalStack){
 	stacksize := cstack_options[PortalStack]

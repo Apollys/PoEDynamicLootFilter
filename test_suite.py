@@ -142,6 +142,36 @@ def TestCurrency():
     CheckOutput(str(0))
 # End TestCurrency
 
+def TestUniqueItems():
+    print('Running TestUniqueItems...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    kNumTiers = consts.kNumUniqueItemTiers
+    for max_visible_tier in [1, random.randint(2, kNumTiers - 1), kNumTiers]:
+        CallCliFunction('set_hide_unique_items_above_tier {}'.format(max_visible_tier))
+        CallCliFunction('get_hide_unique_items_above_tier')
+        CheckOutput(str(max_visible_tier))
+        CallCliFunction('get_all_unique_item_tier_visibilities')
+        expected_output_string = '\n'.join('{};{}'.format(tier, int(tier <= max_visible_tier))
+                for tier in range(1, kNumTiers + 1))
+        CheckOutput(expected_output_string)
+# End TestUniqueItems
+
+def TestUniqueMaps():
+    print('Running TestUniqueMaps...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    kNumTiers = consts.kNumUniqueMapTiers
+    for max_visible_tier in [1, random.randint(2, kNumTiers - 1), kNumTiers]:
+        CallCliFunction('set_hide_unique_maps_above_tier {}'.format(max_visible_tier))
+        CallCliFunction('get_hide_unique_maps_above_tier')
+        CheckOutput(str(max_visible_tier))
+        CallCliFunction('get_all_unique_map_tier_visibilities')
+        expected_output_string = '\n'.join('{};{}'.format(tier, int(tier <= max_visible_tier))
+                for tier in range(1, kNumTiers + 1))
+        CheckOutput(expected_output_string)
+# End TestUniqueMaps
+
 def TestOils():
     print('Running TestOils...')
     ResetTestProfile()
@@ -155,21 +185,6 @@ def TestOils():
         CallCliFunction('get_lowest_visible_oil')
         CheckOutput(lowest_visible_oil_name)
 # End TestOils
-
-def TestUniques():
-    print('Running TestUniques...')
-    ResetTestProfile()
-    CallCliFunction('import_downloaded_filter')
-    kMaxUniqueTier = len(consts.kUniqueTierNames)
-    for max_visible_tier in [1, kMaxUniqueTier, random.randint(2, kMaxUniqueTier - 1)]:
-        CallCliFunction('set_hide_uniques_above_tier {}'.format(max_visible_tier))
-        CallCliFunction('get_hide_uniques_above_tier')
-        CheckOutput(str(max_visible_tier))
-        CallCliFunction('get_all_unique_tier_visibilities')
-        expected_output_string = '\n'.join('{};{}'.format(tier, int(tier <= max_visible_tier))
-                for tier in range(1, kMaxUniqueTier + 1))
-        CheckOutput(expected_output_string)
-# End TestUniques
 
 def TestGemQuality():
     print('Running TestGemQuality...')
@@ -271,9 +286,9 @@ set_currency_tier_visibility 2 0
 get_currency_tier_visibility 2
 set_hide_currency_above_tier 3
 get_hide_currency_above_tier
-get_all_unique_tier_visibilities
-set_hide_uniques_above_tier 1
-get_hide_uniques_above_tier
+get_all_unique_item_tier_visibilities
+set_hide_unique_items_above_tier 1
+get_hide_unique_items_above_tier
 set_gem_min_quality 18
 get_gem_min_quality
 set_hide_maps_below_tier 13
@@ -300,7 +315,7 @@ kTestBatchExpectedOutputList = [
     '', '', '2',  # set/get_currency_tier
     '', '0',  # set/get_currency_tier_visibility
     '', '3',  # set/get_hide_currency_above_tier
-    '...', '', '1',  # set/get_hide_uniques_above_tier
+    '...', '', '1',  # set/get_hide_unique_items_above_tier
     '', '18',  # set/get_gem_min_quality
     '', '13',  # set/get_hide_maps_below_tier
     '...', '', '', '1 0', '0 0',  # set/get_flask_visibility
@@ -347,9 +362,10 @@ def RunAllTests():
     print()
     TestSetRuleVisibility()
     TestCurrency()
+    TestUniqueItems()
+    TestUniqueMaps()
     TestOils()
     TestHideMapsBelowTier()
-    TestUniques()
     TestGemQuality()
     TestFlaskQuality()
     TestFlasks()

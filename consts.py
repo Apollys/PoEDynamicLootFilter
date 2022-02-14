@@ -68,17 +68,6 @@ kCurrencyStackSizes = [1, 2, 4, 6]
 
 kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
 
-# ================================= Essences =================================
-
-kNumEssenceTiers = 6
-kEssenceTags = { i : ('currency->essence', 't{}'.format(i)) for i in range(1, kNumEssenceTiers + 1) }
-
-# ================================ Div Cards =================================
-
-kDivCardTierTags = ['t1', 't2', 't3', 't4c', 't4', 't5c', 't5', 'restex'] 
-kDivCardTags = { i + 1 : ('divination', kDivCardTierTags[i]) for i in range(len(kDivCardTierTags))}
-kNumDivCardTiers = len(kDivCardTierTags)
-
 # ================================= Map Tier =================================
 
 # No idea if the ShapedMap matters, but NeverSink used it in his filters
@@ -88,19 +77,40 @@ Class Maps
 ShapedMap False
 MapTier < {}'''
 
+# ================================= Essences =================================
+
+kNumEssenceTiers = 6
+kEssenceTags = {
+        i : ('currency->essence', 't{}'.format(i))
+        for i in range(1, kNumEssenceTiers + 1)
+}
+
+# ================================ Div Cards =================================
+
+kDivCardTierTags = ['t1', 't2', 't3', 't4c', 't4', 't5c', 't5', 'restex'] 
+kDivCardTags = {
+        i + 1 : ('divination', kDivCardTierTags[i])
+        for i in range(len(kDivCardTierTags))
+}
+kNumDivCardTiers = len(kDivCardTierTags)
+
 # =============================== Unique Items ===============================
 
-kUniqueTypeTag = 'uniques'
+kUniqueItemTierTags = ['t1', 't2', 't3', 'hideable2', 'hideable']
+kUniqueItemTags = {
+        i + 1 : ('uniques', kUniqueItemTierTags[i])
+        for i in range(len(kUniqueItemTierTags))
+}
+kNumUniqueItemTiers = len(kUniqueItemTierTags)
 
-kUniqueTierNames = {1 : 't1',
-                    2 : 't2',
-                    3 : 't3',
-                    4 : 'hideable2',
-                    5 : 'hideable'}
-                      
-kNumUniqueTiers = len(kUniqueTierNames)
+# =============================== Unique Maps ================================
 
-kUniqueTierNameToNumberMap = InvertedDict(kUniqueTierNames)
+kUniqueMapTierTags = ['t1', 't2', 't3', 't4'] 
+kUniqueMapTags = {
+        i + 1 : ('uniques->maps', kUniqueMapTierTags[i])
+        for i in range(len(kUniqueMapTierTags))
+}
+kNumUniqueMapTiers = len(kUniqueMapTierTags)
 
 # ================================== Flasks ==================================
 

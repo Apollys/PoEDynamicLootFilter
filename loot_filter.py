@@ -793,6 +793,74 @@ class LootFilter:
         return max_visible_tier
     # GetHideDivCardAboveTierTier
     
+    # =========================== Unique Item Functions ===========================
+    
+    def SetUniqueItemTierVisibility(self, tier: int, visibility: RuleVisibility):
+        CheckType(tier, 'tier', int)
+        CheckType(visibility, 'visibility', RuleVisibility)
+        type_tag, tier_tag = consts.kUniqueItemTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule.SetVisibility(visibility)
+    # SetUniqueItemTierVisibility
+    
+    def GetUniqueItemTierVisibility(self, tier: int) -> RuleVisibility:
+        CheckType(tier, 'tier', int)
+        type_tag, tier_tag = consts.kUniqueItemTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility
+    # GetUniqueItemTierVisibility
+    
+    def SetHideUniqueItemsAboveTierTier(self, max_visible_tier: int):
+        CheckType(max_visible_tier, 'max_visible_tier', int)
+        for tier in range(1, consts.kNumUniqueItemTiers + 1):
+            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            self.SetUniqueItemTierVisibility(tier, visibility)
+    # SetHideUniqueItemsAboveTierTier
+    
+    def GetHideUniqueItemsAboveTierTier(self) -> int:
+        max_visible_tier: int = 0
+        for tier in range(1, consts.kNumUniqueItemTiers + 1):
+            if (self.GetUniqueItemTierVisibility(tier) == RuleVisibility.kShow):
+                max_visible_tier = tier
+            else:
+                break
+        return max_visible_tier
+    # GetHideUniqueItemsAboveTierTier
+    
+    # ============================ Unique Map Functions ============================
+    
+    def SetUniqueMapTierVisibility(self, tier: int, visibility: RuleVisibility):
+        CheckType(tier, 'tier', int)
+        CheckType(visibility, 'visibility', RuleVisibility)
+        type_tag, tier_tag = consts.kUniqueMapTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule.SetVisibility(visibility)
+    # SetUniqueMapTierVisibility
+    
+    def GetUniqueMapTierVisibility(self, tier: int) -> RuleVisibility:
+        CheckType(tier, 'tier', int)
+        type_tag, tier_tag = consts.kUniqueMapTags[tier]
+        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        return rule.visibility
+    # GetUniqueMapTierVisibility
+    
+    def SetHideUniqueMapsAboveTierTier(self, max_visible_tier: int):
+        CheckType(max_visible_tier, 'max_visible_tier', int)
+        for tier in range(1, consts.kNumUniqueMapTiers + 1):
+            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            self.SetUniqueMapTierVisibility(tier, visibility)
+    # SetHideUniqueMapsAboveTierTier
+    
+    def GetHideUniqueMapsAboveTierTier(self) -> int:
+        max_visible_tier: int = 0
+        for tier in range(1, consts.kNumUniqueMapTiers + 1):
+            if (self.GetUniqueMapTierVisibility(tier) == RuleVisibility.kShow):
+                max_visible_tier = tier
+            else:
+                break
+        return max_visible_tier
+    # GetHideUniqueMapsAboveTierTier
+    
     # =========================== Oil-Related Functions ===========================
     
     def SetLowestVisibleOil(self, lowest_visible_oil_name: str):
@@ -819,42 +887,6 @@ class LootFilter:
             if (oil_name in rule.base_type_list):
                 return oil_name
     # End GetLowestVisibleOil
-    
-    # =========================== Unique Item Functions ===========================
-    
-    def SetUniqueTierVisibility(self, tier: int or str, visibility: RuleVisibility):
-        CheckType(tier, 'tier', (int, str))
-        CheckType(visibility, 'visibility', RuleVisibility)
-        type_tag = consts.kUniqueTypeTag
-        tier_tag = consts.kUniqueTierNames[tier] if isinstance(tier, int) else tier
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
-        rule.SetVisibility(visibility)
-    # SetUniqueTierVisibility
-    
-    def GetUniqueTierVisibility(self, tier: int or str) -> RuleVisibility:
-        CheckType(tier, 'tier', (int, str))
-        type_tag = consts.kUniqueTypeTag
-        tier_tag = consts.kUniqueTierNames[tier] if isinstance(tier, int) else tier
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
-        return rule.visibility
-    # GetUniqueTierVisibility
-    
-    def SetHideUniquesAboveTierTier(self, max_visible_tier: int):
-        CheckType(max_visible_tier, 'max_visible_tier', int)
-        for tier in range(1, consts.kNumUniqueTiers + 1):
-            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
-            self.SetUniqueTierVisibility(tier, visibility)
-    # SetHideUniquesAboveTierTier
-    
-    def GetHideUniquesAboveTierTier(self) -> int:
-        max_visible_tier: int = 0
-        for tier in range(1, consts.kNumUniqueTiers + 1):
-            if (self.GetUniqueTierVisibility(tier) == RuleVisibility.kShow):
-                max_visible_tier = tier
-            else:
-                break
-        return max_visible_tier
-    # GetHideUniquesAboveTierTier
     
     # ============================ Gem Quality Functions ============================
     

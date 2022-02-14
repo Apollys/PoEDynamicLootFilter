@@ -21,6 +21,7 @@ The `profile_name` parameter is required in all cases except for:
    - [ ] Stacked currency
    - [ ] Essences
    - [ ] Div cards
+   - [x] Unique maps
  - [ ] Stacked Currency:
    - [x] Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
    - [ ] Consider making currency stack tiers consistent with single currency tiers on import
@@ -28,7 +29,7 @@ The `profile_name` parameter is required in all cases except for:
    - Any others to add to tiering?
  - [x] Add support for essences
  - [x] Add support for div cards
- - [ ] Add support for unique map tiering
+ - [x] Add support for unique maps
  - [ ] Add first-time setup support
    - Backend function `is_first_time`
    - If yes, prompt user for profile name, create profile,
@@ -42,8 +43,11 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### Feature Wish List
+ - [ ] First time setup documentation
+ - [ ] First time setup workflow in UI
  - [x] Add support for essences
  - [x] Add support for div cards
+ - [x] Add support for unique maps
  - [x] Update flask rules - one for high ilvl (85+) and one for all ilvls
  - [x] Move currency from one tier to another
  - [x] Show/hide whole currency tier
@@ -103,11 +107,14 @@ for the detailed documentation of all available function calls.
   - *New*: `get_all_div_card_tier_visibilities`
   - *New*: `set_hide_div_cards_above_tier <tier: int>`
   - *New*: `get_hide_div_cards_above_tier`
+  - *Renamed*: `get_all_unique_item_tier_visibilities`
+  - *Renamed*: `set_hide_unique_items_above_tier <tier: int>`
+  - *Renamed*: `get_hide_unique_items_above_tier`
+  - *New*: `get_all_unique_map_tier_visibilities`
+  - *New*: `set_hide_unique_maps_above_tier <tier: int>`
+  - *New*: `get_hide_unique_maps_above_tier`
   - `set_lowest_visible_oil <oil_name: str>`
   - `get_lowest_visible_oil`
-  - `get_all_unique_tier_visibilities`
-  - `set_hide_uniques_above_tier <tier: int>`
-  - `get_hide_uniques_above_tier`
   - `set_gem_min_quality <quality: int in [1, 20]>`
   - `get_gem_min_quality`
   - `set_flask_min_quality <quality: int in [1, 20]>`
