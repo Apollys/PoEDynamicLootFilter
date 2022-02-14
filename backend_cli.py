@@ -740,7 +740,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py get_all_essence_tier_visibilities DefaultProfile
         '''
         CheckNumParams(function_params, 0)
-        for tier in range(1, consts.kMaxEssenceTier + 1):
+        for tier in range(1, consts.kNumEssenceTiers + 1):
             output_string += str(tier) + ';' + str(int(
                     loot_filter.GetEssenceTierVisibility(tier) == RuleVisibility.kShow)) + '\n'
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
@@ -772,7 +772,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py get_all_div_card_tier_visibilities DefaultProfile
         '''
         CheckNumParams(function_params, 0)
-        for tier in range(1, consts.kMaxDivCardTier + 1):
+        for tier in range(1, consts.kNumDivCardTiers + 1):
             output_string += str(tier) + ';' + str(int(
                     loot_filter.GetDivCardTierVisibility(tier) == RuleVisibility.kShow)) + '\n'
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline

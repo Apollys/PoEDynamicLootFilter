@@ -142,6 +142,36 @@ def TestCurrency():
     CheckOutput(str(0))
 # End TestCurrency
 
+def TestEssences():
+    print('Running TestEssences...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    kNumTiers = consts.kNumEssenceTiers
+    for max_visible_tier in [1, random.randint(2, kNumTiers - 1), kNumTiers]:
+        CallCliFunction('set_hide_essences_above_tier {}'.format(max_visible_tier))
+        CallCliFunction('get_hide_essences_above_tier')
+        CheckOutput(str(max_visible_tier))
+        CallCliFunction('get_all_essence_tier_visibilities')
+        expected_output_string = '\n'.join('{};{}'.format(tier, int(tier <= max_visible_tier))
+                for tier in range(1, kNumTiers + 1))
+        CheckOutput(expected_output_string)
+# End TestEssences
+
+def TestDivCards():
+    print('Running TestDivCards...')
+    ResetTestProfile()
+    CallCliFunction('import_downloaded_filter')
+    kNumTiers = consts.kNumDivCardTiers
+    for max_visible_tier in [1, random.randint(2, kNumTiers - 1), kNumTiers]:
+        CallCliFunction('set_hide_div_cards_above_tier {}'.format(max_visible_tier))
+        CallCliFunction('get_hide_div_cards_above_tier')
+        CheckOutput(str(max_visible_tier))
+        CallCliFunction('get_all_div_card_tier_visibilities')
+        expected_output_string = '\n'.join('{};{}'.format(tier, int(tier <= max_visible_tier))
+                for tier in range(1, kNumTiers + 1))
+        CheckOutput(expected_output_string)
+# End TestDivCards
+
 def TestUniqueItems():
     print('Running TestUniqueItems...')
     ResetTestProfile()
@@ -362,6 +392,8 @@ def RunAllTests():
     print()
     TestSetRuleVisibility()
     TestCurrency()
+    TestEssences()
+    TestDivCards()
     TestUniqueItems()
     TestUniqueMaps()
     TestOils()

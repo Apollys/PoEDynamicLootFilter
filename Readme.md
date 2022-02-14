@@ -19,8 +19,8 @@ The `profile_name` parameter is required in all cases except for:
 ### To-Do
  - [ ] Add tests for newly added featuers:
    - [ ] Stacked currency
-   - [ ] Essences
-   - [ ] Div cards
+   - [x] Essences
+   - [x] Div cards
    - [x] Unique maps
  - [ ] Stacked Currency:
    - [x] Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
@@ -38,7 +38,7 @@ The `profile_name` parameter is required in all cases except for:
  - [ ] Make UI display error messages on important failures
    - Failed to import filter
    - Any others to think of?
- - [ ] UI Redeisgn
+ - [ ] UI Redesign
    - Draft done
 
 - - -
