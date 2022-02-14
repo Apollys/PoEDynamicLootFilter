@@ -34,6 +34,7 @@ The `profile_name` parameter is required in all cases except for:
    - Backend function `is_first_time`
    - If yes, prompt user for profile name, create profile,
      explain how to configure options and add custom rules
+ - [x] Make backend return exit codes so front end can detect errors
  - [ ] Make UI display error messages on important failures
    - Failed to import filter
    - Any others to think of?
@@ -76,8 +77,10 @@ The AHK frontend calls the Python backend via:
 ```
 > python3 backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
 ```
-The Python backend communicates return values to AHK by writing them to the file
-`backend_cli.output`.
+The Python backend communicates output values to AHK by writing them to the file
+`backend_cli.output`.  It writes an exit code to `backend_cli.exit_code`: `-1` indicates
+in-progress, `0` indicates exit success, and `1` indicates exit with error
+(`backend_cli.log` contains error details).
 
 See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/backend_cli.py)
 for the detailed documentation of all available function calls.

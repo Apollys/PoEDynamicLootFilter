@@ -54,6 +54,7 @@ from type_checker import CheckType, CheckType2
 kLogFilename = 'backend_cli.log'
 kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
+kExitCodeFilename = 'backend_cli.exit_code'
 
 # Map of function name -> dictionary of properties indexed by the following string keywords:
 # - HasProfileParam: bool
@@ -1069,7 +1070,7 @@ kUsageErrorString = ('ill-formed command-line call\n' +
   '  Check that the function name is spelled correctly and that the syntax is as follows:\n' +
   '  > python3 backend_cli.py <function_name> <function_arguments...> <profile_name (if required)>')
 
-def main():
+def main_impl():
     # Initialize log
     logger.InitializeLog(kLogFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
@@ -1088,31 +1089,43 @@ def main():
     else:
         function_params = remaining_args
     # If importing downloaded filter, first verify that downloaded filter exists,
-    # then copy or move based on 'RemoveDownloadedFilter' value given in config
+    # then copy filter to input path.  Note: we wait to delete downloaded filter
+    # until the end, so that if any errors occurred during import, the downloaded
+    # filter will still be present (so that the user can then re-import).
     config_data = profile.ParseProfileConfig(profile_name) if profile_name else None
     if (function_name == 'import_downloaded_filter'):
-        if (not os.path.isfile(config_data['DownloadedLootFilterFullpath'])):
-            Error('downloaded loot filter: "{}" does not exist'.format(
-                    config_data['DownloadedLootFilterFullpath']))
-        if (config_data['RemoveDownloadedFilter']):
-            file_manip.MoveFile(config_data['DownloadedLootFilterFullpath'],
-                                config_data['InputLootFilterFullpath'])
-        else:
+        if (os.path.isfile(config_data['DownloadedLootFilterFullpath'])):
             file_manip.CopyFile(config_data['DownloadedLootFilterFullpath'],
                                 config_data['InputLootFilterFullpath'])
+        else:
+            Error('downloaded loot filter: "{}" does not exist'.format(
+                    config_data['DownloadedLootFilterFullpath']))
     # Input filter is read from the output filter path, unless importing downloaded filter
     output_as_input_filter: bool = (function_name != 'import_downloaded_filter')
     # Delegate function call
     # Note: we create the loot filter first and pass in as a parameter,
     # so that in case of a batch, DelegateFunctionCall can call itself recursively
     loot_filter = LootFilter(profile_name, output_as_input_filter) if profile_name else None
+    DelegateFunctionCall(loot_filter, function_name, function_params)
+    # Check if we are importing and need to delete the downloaded filter
+    if ((function_name == 'import_downloaded_filter') and config_data['RemoveDownloadedFilter']):
+        file_manip.RemoveFileIfExists(config_data['DownloadedLootFilterFullpath'])
+# End main  _impl
+
+import time
+
+# Wrap the main_impl in a try-except block, so we can detect any error
+# and notify the frontend via backend_cli.exit_code
+def main():
+    helper.WriteToFile('-1', kExitCodeFilename)  # -1 = In-progress exit code
     try:
-        DelegateFunctionCall(loot_filter, function_name, function_params)
+        main_impl()
     except Exception as e:
         traceback_message = traceback.format_exc()
         logger.Log(traceback_message)
+        helper.WriteToFile('1', kExitCodeFilename)  # 1 = Generic error exit code
         raise e
-# End main    
+    helper.WriteToFile('0', kExitCodeFilename)  # 0 = Success exit code
 
 if (__name__ == '__main__'):
     main()

@@ -19,6 +19,7 @@ def ReadFile(fullpath: str) -> List[str]:
 # End ReadFile
 
 # Writes data to the file determined by fullpath
+# Overwrites the given file if it already exists
 # If data is a non-string iterable type, then it is written as newline-separated items
 # Otherwise, str(data) is written directly to file
 # Safe against directory not existing (creates directory if missing)
