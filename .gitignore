@@ -7,6 +7,7 @@
 # Ignore backend_cli input/output files
 backend_cli.input
 backend_cli.output
+backend_cli.exit_code
 
 # Ignore PathOfExile filters (keeping the other ones for testing)
 FiltersPathOfExile/*.filter
