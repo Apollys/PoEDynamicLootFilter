@@ -1,6 +1,6 @@
-set_currency_tier "Chaos Orb" 2
-set_currency_tier "Chromatic Orb" 5
-set_currency_tier "Cartographer's Chisel" 7
+set_currency_to_tier "Chaos Orb" 2
+set_currency_to_tier "Chromatic Orb" 5
+set_currency_to_tier "Cartographer's Chisel" 7
 set_hide_uniques_above_tier 1
 set_gem_min_quality 18
 set_chaos_recipe_enabled_for Weapons 0
@@ -17,6 +17,8 @@ set_flask_visibility "Quicksilver Flask" 1
 set_flask_visibility "Silver Flask" 0
 set_rgb_item_max_size small
 set_lowest_visible_oil "Clear Oil"
-set_currency_tier_visibility 2 0
-set_hide_currency_above_tier 3
-set_currency_min_visible_stack_size 7 4
+set_currency_min_visible_stack_size 7 2
+set_currency_min_visible_stack_size 8 4
+set_currency_min_visible_stack_size 9 4
+set_currency_min_visible_stack_size tportal 4
+set_currency_min_visible_stack_size twisdom 4

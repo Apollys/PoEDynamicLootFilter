@@ -4,7 +4,7 @@ Tool to Modify your Loot Filter seamlessly while playing Path of Exile
 
 - - -
 
-### Updated syntax for backend command-line interface calls
+### Syntax for backend command-line interface calls
 
 ```
 > python3 backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
@@ -17,14 +17,14 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### To-Do
- - [ ] Add tests for newly added featuers:
-   - [ ] Stacked currency
+ - [x] Add tests for newly added featuers:
+   - [x] Stacked currency
    - [x] Essences
    - [x] Div cards
    - [x] Unique maps
- - [ ] Stacked Currency:
+ - [x] Stacked Currency:
    - [x] Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
-   - [ ] Consider making currency stack tiers consistent with single currency tiers on import
+   - [x] Make currency stack tiers consistent with single currency tiers on import
  - [ ] Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering
    - Any others to add to tiering?
  - [x] Add support for essences
