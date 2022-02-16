@@ -34,39 +34,58 @@ kTypeTierTagTemplate = '$type->{} $tier->{}'
 
 # ================================= Currency =================================
 
-kCurrencyTypeTag = 'currency'
+kUnstackedCurrencyTierTags = ['t1exalted', 't2divine', 't3annul', 't4chaos', 't5alchemy',
+        't6chrom', 't7chance', 't8trans', 't9armour', 'tportal', 'twisdom']
 
-kCurrencyTierNames = {1 : 't1exalted',
-                      2 : 't2divine',
-                      3 : 't3annul',
-                      4 : 't4chaos',
-                      5 : 't5alchemy',
-                      6 : 't6chrom',
-                      7 : 't7chance',
-                      8 : 't8trans',
-                      9 : 't9armour',
-                      10: 'tportal',
-                      11: 'twisdom'}
+kNumCurrencyTiersIncludingScrolls = len(kUnstackedCurrencyTierTags)
+kNumCurrencyTiersExcludingScrolls = kNumCurrencyTiersIncludingScrolls - 2
 
-kStackedCurrencyTags = {
-    i : list(itertools.product(
-        ('currency->stackedthree', 'currency->stackedsix'), ('t{}'.format(i), )))
-        for i in range(1, 8)}
-kStackedCurrencyTags[8] = list(itertools.product(
-        ('currency->stackedsupplieshigh', ), ('t3', 't2', 't1')))
-kStackedCurrencyTags[9] = list(itertools.product(
-        ('currency->stackedsupplieslow', ), ('t3', 't2', 't1')))
-# Use indices 10/11 for portal/wisdom scrolls
-kStackedCurrencyTags[10] = list(itertools.product(
-        ('currency->stackedsuppliesportal', ), ('t3', 't2', 't1')))
-kStackedCurrencyTags[11] = list(itertools.product(
-        ('currency->stackedsupplieswisdom', ), ('t3', 't2', 't1')))
+# Concatenating dictionaries in python, from a StackOverflow comment:
+# "1={1:2,3:4}; d2={5:6,7:9}; d3={10:8,13:22}; d4 = {**d1, **d2, **d3}"
+# <https://stackoverflow.com/a/1784128/7022459>
+kCurrencyTierStringToIntMap = dict(
+    { str(i) : i for i in range(1, kNumCurrencyTiersExcludingScrolls + 1) },
+    tportal = kNumCurrencyTiersExcludingScrolls + 1,
+    twisdom = kNumCurrencyTiersExcludingScrolls + 2
+)
 
-kMaxCurrencyTier = len(kCurrencyTierNames) - 2
+def GenerateStackedCurrencyTags():
+    stacked_currency_tags = {
+        i : list(itertools.product(
+            ('currency->stackedthree', 'currency->stackedsix'), ('t{}'.format(i), )))
+            for i in range(1, 8)}
+    stacked_currency_tags[8] = list(itertools.product(
+            ('currency->stackedsupplieshigh', ), ('t3', 't2', 't1')))
+    stacked_currency_tags[9] = list(itertools.product(
+            ('currency->stackedsupplieslow', ), ('t3', 't2', 't1')))
+    # Use indices 10/11 for portal/wisdom scrolls
+    stacked_currency_tags[10] = list(itertools.product(
+            ('currency->stackedsuppliesportal', ), ('t3', 't2', 't1')))
+    stacked_currency_tags[11] = list(itertools.product(
+            ('currency->stackedsupplieswisdom', ), ('t3', 't2', 't1')))
+    return stacked_currency_tags
+# End GenerateStackedCurrencyTags
+
+kStackedCurrencyTags = GenerateStackedCurrencyTags()
 
 kCurrencyStackSizes = [1, 2, 4, 6]
 
-kCurrencyTierNameToNumberMap = InvertedDict(kCurrencyTierNames)
+kCurrencyStackSizesByTier = {
+    tier : kCurrencyStackSizes[ : len(kStackedCurrencyTags[tier]) + 1]
+    for tier in range(1, kNumCurrencyTiersIncludingScrolls + 1)
+}
+
+kCurrencyStackSizeStringToIntMap = {
+    **{ s : int(s) for s in (str(i) for i in kCurrencyStackSizes) }, **{ 'hide_all' : 100}}
+
+# kUnifiedCurrencyTags[tier][stack_size] -> (type_tag, tier_tag)
+kUnifiedCurrencyTags = { tier :
+    { stack_size :
+        (kStackedCurrencyTags[tier][i - 1] if stack_size > 1
+        else ('currency', kUnstackedCurrencyTierTags[tier - 1]))
+        for i, stack_size in enumerate(kCurrencyStackSizesByTier[tier])
+    } for tier in range(1, kNumCurrencyTiersIncludingScrolls + 1)
+}
 
 # ================================= Map Tier =================================
 

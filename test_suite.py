@@ -80,8 +80,7 @@ def TestSetRuleVisibility():
     print('Running TestSetRuleVisibility...')
     ResetTestProfile()
     CallCliFunction('import_downloaded_filter')
-    type_tag = consts.kCurrencyTypeTag
-    tier_tag = consts.kCurrencyTierNames[1]
+    type_tag, tier_tag = consts.kUnifiedCurrencyTags[1][1]
     # Test "hide"
     CallCliFunction('set_rule_visibility {} {} hide'.format(type_tag, tier_tag))
     loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
@@ -113,33 +112,25 @@ def TestCurrency():
             tier_to_currency_map[tier] = []
         tier_to_currency_map[tier].append(currency_name)
     # Test set_currency_tier, adjust_currency_tier, and get_currency_tier
-    for original_tier in [1, consts.kMaxCurrencyTier, random.randint(2, consts.kMaxCurrencyTier - 1)]:
+    max_tier = consts.kNumCurrencyTiersExcludingScrolls
+    for original_tier in [1, random.randint(2, max_tier - 1), max_tier]:
         # Test set_currency_tier
         currency_name = random.choice(tier_to_currency_map[original_tier])
-        target_tier = random.randint(1, consts.kMaxCurrencyTier)
-        CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, target_tier))
-        CallCliFunction('get_currency_tier "{}"'.format(currency_name))
+        target_tier = random.randint(1, max_tier)
+        CallCliFunction('set_currency_to_tier "{}" {}'.format(currency_name, target_tier))
+        CallCliFunction('get_tier_of_currency "{}"'.format(currency_name))
         CheckOutput(str(target_tier))
         # Reset currency to original tier for future tests
-        CallCliFunction('set_currency_tier "{}" {}'.format(currency_name, original_tier))
-    # Test set_/get_currency_tier_visibility
-    for tier in [random.randint(1, consts.kMaxCurrencyTier)] + ['twisdom', 'tportal']:
-        for desired_visibility_flag in [0, 1]:
-            CallCliFunction('set_currency_tier_visibility {} {}'.format(
-                    tier, desired_visibility_flag))
-            CallCliFunction('get_currency_tier_visibility {}'.format(tier))
-            CheckOutput(str(desired_visibility_flag))
-    # Test set_/get_hide_currency_above_tier
-    max_visible_tier = random.randint(2, consts.kMaxCurrencyTier - 1)
-    CallCliFunction('set_hide_currency_above_tier {}'.format(max_visible_tier))
-    CallCliFunction('get_hide_currency_above_tier')
-    CheckOutput(str(max_visible_tier))
-    CallCliFunction('get_currency_tier_visibility {}'.format(max_visible_tier - 1))
-    CheckOutput(str(1))
-    CallCliFunction('get_currency_tier_visibility {}'.format(max_visible_tier))
-    CheckOutput(str(1))
-    CallCliFunction('get_currency_tier_visibility {}'.format(max_visible_tier + 1))
-    CheckOutput(str(0))
+        CallCliFunction('set_currency_to_tier "{}" {}'.format(currency_name, original_tier))
+    # Test set_/get_currency_tier_min_visible_stack_size
+    test_tier_strings = [str(random.randint(1, max_tier)), 'tportal']
+    for tier_str in test_tier_strings:
+        tier_int = consts.kCurrencyTierStringToIntMap[tier_str]
+        min_visible_stack_size = random.choice(consts.kCurrencyStackSizesByTier[tier_int])
+        CallCliFunction('set_currency_tier_min_visible_stack_size {} {}'.format(
+                tier_str, min_visible_stack_size))
+        CallCliFunction('get_currency_tier_min_visible_stack_size {}'.format(tier_str))
+        CheckOutput(str(min_visible_stack_size))
 # End TestCurrency
 
 def TestEssences():
@@ -309,13 +300,13 @@ def TestChaosRecipe():
 
 kTestBatchString = \
 '''get_all_currency_tiers
-set_currency_tier "Chromatic Orb" 3
-set_currency_tier "Chromatic Orb" 2
-get_currency_tier "Chromatic Orb"
-set_currency_tier_visibility 2 0
-get_currency_tier_visibility 2
-set_hide_currency_above_tier 3
-get_hide_currency_above_tier
+set_currency_to_tier "Chromatic Orb" 3
+set_currency_to_tier "Chromatic Orb" 2
+get_tier_of_currency "Chromatic Orb"
+set_currency_tier_min_visible_stack_size 2 4
+get_currency_tier_min_visible_stack_size 2
+set_currency_tier_min_visible_stack_size twisdom 1
+get_currency_tier_min_visible_stack_size twisdom
 get_all_unique_item_tier_visibilities
 set_hide_unique_items_above_tier 1
 get_hide_unique_items_above_tier
@@ -342,9 +333,9 @@ get_all_chaos_recipe_statuses
 # Note: '...' indicates we don't check this output
 kTestBatchExpectedOutputList = [
     '...',  # won't check get_all_currency_tiers initial output
-    '', '', '2',  # set/get_currency_tier
-    '', '0',  # set/get_currency_tier_visibility
-    '', '3',  # set/get_hide_currency_above_tier
+    '', '', '2',  # set_currency_to_tier/get_tier_of_currency
+    '', '4',  # set/get_currency_tier_min_visible_stack_size 2 (4)
+    '', '1',  # set/get_currency_tier_min_visible_stack_size twisdom (1)
     '...', '', '1',  # set/get_hide_unique_items_above_tier
     '', '18',  # set/get_gem_min_quality
     '', '13',  # set/get_hide_maps_below_tier

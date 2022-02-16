@@ -93,15 +93,14 @@ for the detailed documentation of all available function calls.
   - `run_batch`
   - `get_rule_matching_item`
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
-  - `set_currency_tier <currency_name: str> <tier: int>`
-  - `get_currency_tier <currency_name: str>`
-  - `get_all_currency_tiers`
-  - `set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>`
-  - `get_currency_tier_visibility <tier: int or tier_tag: str>`
-  - `set_hide_currency_above_tier <tier: int>`
-  - `get_hide_currency_above_tier`
-  - `set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">`
-  - `get_stacked_currency_visibility <tier: int or str>`
+  - *New/Updated*: `set_currency_to_tier <currency_name: str> <tier: int>`
+  - *New/Updated*: `get_all_currency_tiers`
+  - *New/Updated*: `set_currency_tier_min_visible_stack_size <tier: int> <visible_flag: int>`
+  - *New/Updated*: `get_currency_tier_min_visible_stack_size <tier: int>`
+  - (For test suite use: `get_tier_of_currency <currency_name: str>`)
+  - *All Other Currency Functions Removed*, notably:
+    - `set_/get_hide_currency_above_tier`
+    - `set_/get_currency_tier_visibility`
   - *New*: `set_archnemesis_mod_tier <archnemesis_mod_name: str> <tier: int>`
   - *New*: `get_all_archnemesis_mod_tiers`
   - *New*: `get_all_essence_tier_visibilities`

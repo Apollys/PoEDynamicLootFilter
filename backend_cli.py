@@ -100,17 +100,12 @@ kFunctionInfoMap = {
         'NumParamsForMatch' : 2,
     },
     # Currency
-    'set_currency_tier' : { 
+    'set_currency_to_tier' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
-    'adjust_currency_tier' : { 
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_currency_tier' : { 
+    'get_tier_of_currency' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
@@ -118,30 +113,12 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
-    'set_currency_tier_visibility' : { 
+    'set_currency_tier_min_visible_stack_size' : {
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
-    'get_currency_tier_visibility' : { 
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_hide_currency_above_tier' : { 
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_hide_currency_above_tier' : { 
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_currency_min_visible_stack_size' : {
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_stacked_currency_visibility' : { 
+    'get_currency_tier_min_visible_stack_size' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
@@ -583,105 +560,45 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
             Error('Rule with type_tag="{}", tier_tag="{}" does not exist in filter'.format(
                     type_tag, tier_tag))
     # ======================================== Currency ========================================
-    elif (function_name == 'set_currency_tier'):
+    elif (function_name == 'set_currency_to_tier'):
         '''
-        set_currency_tier <currency_name: str> <tier: int>
-         - Moves the given currency type to the specified tier
+        set_currency_to_tier <currency_name: str> <tier: int>
+         - Moves the given currency type to the specified tier for all unstacked and stacked rules
          - Output: None
-         - Example: > python3 backend_cli.py set_currency_tier "Chromatic Orb" 5 DefaultProfile
+         - Example: > python3 backend_cli.py set_currency_to_tier "Chromatic Orb" 5 DefaultProfile
         '''
         CheckNumParams(function_params, 2)
         currency_name: str = function_params[0]
         target_tier: int = int(function_params[1])
         loot_filter.SetCurrencyToTier(currency_name, target_tier)
-#    elif (function_name == 'adjust_currency_tier'):
-#        '''
-#        adjust_currency_tier <currency_name: str> <tier_delta: int>
-#         - Moves the given currency type by a relative tier_delta
-#         - Output: None
-#         - Example: > python3 backend_cli.py adjust_currency_tier "Chromatic Orb" -2 DefaultProfile
-#        '''
-#        CheckNumParams(function_params, 2)
-#        currency_name: str = function_params[0]
-#        tier_delta: int = int(function_params[1])
-#        loot_filter.AdjustTierOfCurrency(currency_name, tier_delta)
-    elif (function_name == 'get_currency_tier'):
+    elif (function_name == 'get_tier_of_currency'):
         '''
-        get_currency_tier <currency_name: str>
-         - Output: single integer, the tier of the given currency
-         - Example: python3 backend_cli.py get_currency_tier "Chromatic Orb" DefaultProfile
+        get_tier_of_currency <currency_name: str>
+         - Output: tier (int) containing the given currency type
+         - Example: > python3 backend_cli.py get_tier_of_currency "Chromatic Orb" DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         currency_name: str = function_params[0]
-        output_string += str(loot_filter.GetTierOfCurrency(currency_name))
+        output_string = str(loot_filter.GetTierOfCurrency(currency_name))
     elif (function_name == 'get_all_currency_tiers'):
         '''
         get_all_currency_tiers
-         - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`,
-           one per currency type
+         - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`
          - Example: > python3 backend_cli.py get_all_currency_tiers DefaultProfile
         '''
         CheckNumParams(function_params, 0)
-        for tier in consts.kCurrencyTierNames:
+        for tier in range(1, consts.kNumCurrencyTiersExcludingScrolls + 1):
             currency_names = loot_filter.GetAllCurrencyInTier(tier)
             output_string += ''.join((currency_name + ';' + str(tier) + '\n')
                                         for currency_name in currency_names)
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
-    elif (function_name == 'set_currency_tier_visibility'):
+    elif (function_name == 'set_currency_tier_min_visible_stack_size'):
         '''
-        set_currency_tier_visibility <tier: int or tier_tag: str> <visible_flag: int>
-         - Sets the visibility for the given currency tier
-         - First parameter may be a tier integer [1-9] or a tier tag string, such as:
-           "tportal" for Portal Scrolls, "twisdom" for Wisdom Scrolls
-         - visible_flag is 1 for True (enable), 0 for False (disable)
-         - Output: None
-         - Example: > python3 backend_cli.py set_currency_tier_visibility tportal 1 DefaultProfile
-        '''
-        CheckNumParams(function_params, 2)
-        tier = function_params[0]
-        if (tier.isdigit()): tier = int(tier)
-        visible_flag = bool(int(function_params[1]))
-        visibility = RuleVisibility.kShow if visible_flag else RuleVisibility.kHide
-        loot_filter.SetCurrencyTierVisibility(tier, visibility)
-    elif (function_name == 'get_currency_tier_visibility'):
-        '''
-        get_currency_tier_visibility <tier: int or tier_tag: str>
-         - Parameter may be a tier integer [1-9] or a tier tag string, such as:
-           "tportal" for Portal Scrolls, "twisdom" for Wisdom Scrolls
-         - Output: "1" if the given currency tier is shown, "0" otherwise
-         - Example: > python3 backend_cli.py get_currency_tier_visibility twisdom DefaultProfile
-        '''
-        CheckNumParams(function_params, 1)
-        tier = function_params[0]
-        if (tier.isdigit()): tier = int(tier)
-        output_string = str(int(
-                loot_filter.GetCurrencyTierVisibility(tier) == RuleVisibility.kShow))
-    elif (function_name == 'set_hide_currency_above_tier'):
-        '''
-        set_hide_currency_above_tier <tier: int>
-         - Sets the currency tier "above" which all will be hidden
-           (higher currency tiers are worse)
-         - Output: None
-         - Example: > python3 backend_cli.py set_hide_currency_above_tier 8 DefaultProfile
-        '''
-        CheckNumParams(function_params, 1)
-        max_visible_tier: int = int(function_params[0])
-        loot_filter.SetHideCurrencyAboveTierTier(max_visible_tier)
-    elif (function_name == 'get_hide_currency_above_tier'):
-        '''
-        get_hide_currency_above_tier
-         - Output: single integer, the tier above which all currency is hidden
-         - Example: > python3 backend_cli.py get_hide_currency_above_tier DefaultProfile
-        '''
-        CheckNumParams(function_params, 0)
-        output_string = str(loot_filter.GetHideCurrencyAboveTierTier())
-    elif (function_name == 'set_currency_min_visible_stack_size'):
-        '''
-        set_currency_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">
+        set_currency_tier_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">
          - Shows currency stacks >= stack_size and hides stacks < stack_size for the given tier
          - If stack_size is "hide_all", all currency of the given tier will be hidden
-         - Valid stack_size values: {1, 2, 4} for tiers1-7, {1, 2, 4, 8} for tiers 8-9 and scrolls
-         - tier may be an integer [1-9] or "tportal"/"twisdom" for Portal/Wisdom Scrolls
+         - Valid stack_size values: {1, 2, 4} for tiers1-7, {1, 2, 4, 6} for tiers 8-9 and scrolls
+         - tier is an integer [1-9] or "tportal"/"twisdom" for Portal/Wisdom Scrolls
          - Output: None
          - Example: > python3 backend_cli.py set_currency_min_visible_stack_size 7 6 DefaultProfile
          - Example: > python3 backend_cli.py set_currency_min_visible_stack_size twisdom hide_all DefaultProfile
@@ -689,20 +606,18 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         CheckNumParams(function_params, 2)
         tier_str: str = function_params[0]
         min_stack_size_str: str = function_params[1]
-        loot_filter.SetCurrencyMinVisibleStackSize(tier_str, min_stack_size_str)
-    elif (function_name == 'get_stacked_currency_visibility'):
+        loot_filter.SetCurrencyTierMinVisibleStackSize(tier_str, min_stack_size_str)
+    elif (function_name == 'get_currency_tier_min_visible_stack_size'):
         '''
-        get_stacked_currency_visibility <tier: int or str>
+        get_currency_tier_min_visible_stack_size <tier: int or str>
          - "tier" is an int, or "tportal"/"twisdom" for portal/wisdom scrolls
-         - Output: newline-separated list of <stack_size: int>;<visible_flag: int>
-         - Example: > python3 backend_cli.py get_stacked_currency_visibility 4 DefaultProfile
-         - Example: > python3 backend_cli.py get_stacked_currency_visibility twisdom DefaultProfile
+         - Output: min visible stack size for the given currency tier
+         - Example: > python3 backend_cli.py get_currency_tier_min_visible_stack_size 4 DefaultProfile
+         - Example: > python3 backend_cli.py get_currency_tier_min_visible_stack_size twisdom DefaultProfile
         '''
         CheckNumParams(function_params, 1)
         tier_str: str = function_params[0]
-        stacksize_visibility_pairs = loot_filter.GetStackedCurrencyVisibility(tier_str)
-        output_string = '\n'.join(str(stack_size) + ';' + str(int(visibility_flag))
-                                    for stack_size, visibility_flag in stacksize_visibility_pairs)
+        output_string = str(loot_filter.GetCurrencyTierMinVisibleStackSize(tier_str))
     # ===================================== Archnemesis Mods =====================================
     elif (function_name == 'set_archnemesis_mod_tier'):
         '''
