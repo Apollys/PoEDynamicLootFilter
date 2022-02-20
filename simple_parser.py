@@ -78,12 +78,18 @@ def ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]
     index = 0
     token_list = []
     while (0 <= index < len(line)):
-        start_index = line.find(start_seq, index) + len(start_seq)
-        end_index = line.find(end_seq, start_index + 1)
+        start_find_result = line.find(start_seq, index)
+        if (start_find_result == -1): break
+        start_index = start_find_result + len(start_seq)
+        end_find_result = line.find(end_seq, line.find(end_seq, start_index + 1))
+        if (end_find_result == -1): break
+        end_index = end_find_result
         token_list.append(line[start_index : end_index])
         index = end_index + 1
     return token_list
 # End ParseEnclosedBy
+
+# TestParseEnclosedBy()
 
 def IsInt(s: str) -> bool:
     try:
@@ -106,7 +112,7 @@ def ParseInts(line: str) -> List[int]:
     return parsed_ints
 # End ParseInts           
 
-def ParseFromTemplateTest():
+def TestParseFromTemplate():
     line1 = 'Show # $type->decorator->craftingrare $tier->raredecoratorgear '
     line2 = 'Show # $type->decorator->craftingrare $tier->raredecoratorgear $other_garbage lalal'
     template = 'Show {~}$type->{} $tier->{} {~}'
@@ -114,21 +120,29 @@ def ParseFromTemplateTest():
     print(result)
     success, result = ParseFromTemplate(line2 + ' ', template)
     print(result)
-    result == ['...', 'decorator->craftingrare', 'raredecoratorgear', '...']
+    print(result == ['decorator->craftingrare', 'raredecoratorgear'])
+# End TestParseFromTemplate
     
-    
-def ParseEnclosedByTest():
+def TestParseEnclosedBy():
     line = 'BaseType "Leather Belt" "Two-Stone Ring" "Agate Amulet"'
     result = ParseEnclosedBy(line, '"', '"')
     print(result)
-    result == ['Leather Belt', 'Two-Stone Ring', 'Agate Amulet']
+    print(result == ['Leather Belt', 'Two-Stone Ring', 'Agate Amulet'])
+    # Trickier test
+    line = 'The "quick" "brown fox" jumps over the "lazy dog '
+    result = ParseEnclosedBy(line, '"')
+    print(result)
+    print(result == ['quick', 'brown fox'])
+# End TestParseEnclosedBy
 
-def ParseIntsTest():
+def TestParseInts():
     line = 'asdf45 re2 7432'
     result = ParseInts(line)
     print(result)
-    result == [45, 2, 7432]
+    print(result == [45, 2, 7432])
+# End TestParseInts
     
-# ParseFromTemplateTest()
-# ParseEnclosedByTest()
-# ParseIntsTest()
+#TestParseFromTemplate()
+#TestParseEnclosedBy()
+#TestParseInts()
+
