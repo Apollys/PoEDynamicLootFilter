@@ -54,7 +54,7 @@ oils := ["Tainted", "Golden", "Silver", "Opalescent", "Black", "Crimson", "Viole
 ; Currency stack size options
 cstack_input_dict := {1:1, 2:2, 4:3, 100:4}
 cstack_input_dict_low := {1:1, 2:2, 4:3, 6:4, 100:5}
-cstack_options := ["1+", "2+", "4+", "6+", "None"]
+cstack_options := ["1+", "2+", "4+", "6+", "Ø"]
 cstack_values := [5, 5, 5, 5, 5, 5, 5, 5, 5]
 cstack_values_base := [5, 5, 5, 5, 5, 5, 5, 5, 5]
 options_idx := 1
@@ -101,6 +101,7 @@ Loop, 9
 {
     FileAppend, get_currency_tier_min_visible_stack_size %A_Index%`n, %ahk_out_path%
 }
+FileAppend, get_hide_div_cards_above_tier`nget_hide_unique_maps_above_tier, %ahk_out_path%
 for key in flasks
 {
     FileAppend, get_flask_visibility "%key%"`r`n, %ahk_out_path% 
@@ -144,6 +145,7 @@ Loop, parse, py_out_text, `n, `r
         rare_dict[splits[1]] := splits[2]
     Case 2:
         maphide := A_LoopField
+        base_maphide := maphide
     Case 3:
         portal_stack := cstack_input_dict_low[A_LoopField]
         base_portstack := portal_stack
@@ -154,8 +156,10 @@ Loop, parse, py_out_text, `n, `r
     ;    currhide := A_LoopField
     Case 5:
         esshide := A_LoopField
+        base_esshide := esshide
     Case 6:
         uniqhide := A_LoopField
+        base_uniqhide := uniqhide
     Case 7:
         gemmin := A_LoopField
         base_gemmin := gemmin
@@ -180,6 +184,12 @@ Loop, parse, py_out_text, `n, `r
     Case 18, 19:
         cstack_values[prog-10] := cstack_input_dict_low[A_LoopField]
         cstack_values_base[prog-10] := cstack_input_dict_low[A_LoopField]
+    Case 20:
+        divmin := A_LoopField
+        base_divmin := divmin
+    Case 21:
+        unique_mapmin := A_LoopField
+        base_unique_mapmin := unique_mapmin
     Default:
         splits := StrSplit(A_LoopField, " ")
         if (splits[1] = 1)
@@ -203,15 +213,8 @@ Loop, parse, py_out_text, `n, `r
 
 GuiBuild:
 Gui Color, 0x111122, 0x111133
-
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s16 Bold
+Gui Font, c0x00e8b2 s16 Bold, Segoe UI
 Gui Add, Text, x192 y8 w556 h26 +0x200 +Center, PoE Dynamic Loot Filter
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s10 Bold
 ; ---- CURRENCY DATA ----
 currtexts := ["", "", "", "", "", "", "", "", ""]
 For idx in curr_txt {
@@ -231,126 +234,65 @@ Loop, 5 {
 cstacktext := RegExReplace( cstacktext, "\|$" )
 cstacktext_less := RegExReplace( cstacktext_less, "\|$" )
 ; ---- CURRENCY GUI -----
+Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x16 y48 w483 h783, Currency
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x32 y168 w115 h28 +0x200, T1 Stack Size:
-Gui Add, DropDownList, % "vValueCurrencyDdlT1 gHandleCurrencyDdlEvent x120 y168 w46 Choose"cstack_values[1],  %cstacktext_less%
-Gui Font
+Gui Add, DropDownList, % "vValueCurrencyDdlT1 x120 y168 w46 Choose"cstack_values[1],  %cstacktext_less%
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y192 w135 h164 +Sort, % currtexts[1]
-Gui Font
+Gui Add, ListBox, x32 y192 w135 h164 +Sort vCurrTexts1, % currtexts[1]
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x16 y368 w469 h1 +0x10
 Gui Add, Text, x208 y48 w0 h364 +0x10
 Gui Add, Text, x176 y166 w5 h614 +0x1 +0x10
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x192 y168 w115 h28 +0x200, T2 Stack Size:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList,% "vValueCurrencyDdlT2 gHandleCurrencyDdlEvent x280 y168 w46 Choose"cstack_values[2], %cstacktext_less%
+Gui Add, DropDownList,% "vValueCurrencyDdlT2 x280 y168 w46 Choose"cstack_values[2], %cstacktext_less%
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x192 y192 w135 h164 +Sort, % currtexts[2]
-Gui Font
+Gui Add, ListBox, x192 y192 w135 h164 +Sort vCurrTexts2, % currtexts[2]
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x336 y170 w2 h607 +0x1 +0x10
 Gui Add, Text, x352 y168 w115 h28 +0x200, T3 Stack Size:
-Gui Add, DropDownList,% "vValueCurrencyDdlT3 gHandleCurrencyDdlEvent x440 y168 w48 Choose"cstack_values[3], %cstacktext_less%
-Gui Font
+Gui Add, DropDownList,% "vValueCurrencyDdlT3 x440 y168 w48 Choose"cstack_values[3], %cstacktext_less%
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y192 w135 h164 +Sort, % currtexts[3]
-Gui Font
+Gui Add, ListBox, x352 y192 w135 h164 +Sort vCurrTexts3, % currtexts[3]
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x32 y376 w115 h28 +0x200, T4 Stack Size:
 Gui Add, Text, x192 y376 w115 h28 +0x200, T5 Stack Size:
 Gui Add, Text, x352 y376 w115 h28 +0x200, T6 Stack Size:
-Gui Font
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y400 w135 h164 +Sort, % currtexts[4]
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x192 y400 w135 h164 +Sort, % currtexts[5]
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y400 w135 h164 +Sort, % currtexts[6]
-Gui Font
+Gui Add, ListBox, x32 y400 w135 h164 +Sort vCurrTexts4, % currtexts[4]
+Gui Add, ListBox, x192 y400 w135 h164 +Sort vCurrTexts5, % currtexts[5]
+Gui Add, ListBox, x352 y400 w135 h164 +Sort vCurrTexts6, % currtexts[6]
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x16 y576 w468 h1 +0x10
 Gui Add, Text, x32 y584 w115 h28 +0x200, T7 Stack Size:
 Gui Add, Text, x192 y584 w115 h28 +0x200, T8 Stack Size:
 Gui Add, Text, x352 y584 w115 h28 +0x200, T9 Stack Size:
-Gui Font
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y608 w135 h164 +Sort, % currtexts[7]
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x192 y608 w135 h164 +Sort, % currtexts[8]
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y608 w135 h164 +Sort, % currtexts[9]
-Gui Font
+Gui Add, ListBox, x32 y608 w135 h164 +Sort vCurrTexts7, % currtexts[7]
+Gui Add, ListBox, x192 y608 w135 h164 +Sort vCurrTexts8, % currtexts[8]
+Gui Add, ListBox, x352 y608 w135 h164 +Sort vCurrTexts9, % currtexts[9]
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x16 y784 w468 h2 +0x10
 Gui Add, Text, x56 y792 w115 h28 +0x200, Portal Stack Size:
-Gui Add, DropDownList, vValueCurrencyDdlTportal gHandleCurrencyDdlEvent Choose%portal_stack% x176 y792 w48, % cstacktext
+Gui Add, DropDownList, vValueCurrencyDdlTportal Choose%portal_stack% x176 y792 w48, % cstacktext
 Gui Add, Text, x256 y792 w5 h35 +0x1 +0x10
 Gui Add, Text, x288 y792 w133 h28 +0x200, Wisdom Stack Size:
-Gui Add, DropDownList, vValueCurrencyDdlTwisdom gHandleCurrencyDdlEvent Choose%wisdom_stack% x424 y792 w48, % cstacktext
+Gui Add, DropDownList, vValueCurrencyDdlTwisdom Choose%wisdom_stack% x424 y792 w48, % cstacktext
 
 ; -------- END CURRENCY ------------------
 ; -------- CHAOS RARES -------------------
 
-Gui Font
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x528 y48 w285 h169, Chaos Recipe Rares
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
+Gui Font, c0x00e8b2 s14 Norm, Segoe UI
 Gui Add, CheckBox,% "x544 y80 w123 h26" (rare_dict["Weapons"]? " Checked" : ""), Weapons
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
 Gui Add, CheckBox,% "x544 y112 w123 h26" (rare_dict["Body Armours"]? " Checked" : ""), Armours
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
 Gui Add, CheckBox,% "x544 y176 w123 h26" (rare_dict["Gloves"]? " Checked" : ""), Gloves
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
 Gui Add, CheckBox,% "x544 y144 w123 h26" (rare_dict["Helmets"]? " Checked" : ""), Helmets
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
 Gui Add, CheckBox,% "x680 y80 w123 h26" (rare_dict["Boots"]? " Checked" : ""), Boots
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
 Gui Add, CheckBox,% "x680 y112 w123 h26" (rare_dict["Belts"]? " Checked" : ""), Belts
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
 Gui Add, CheckBox,% "x680 y144 w123 h26" (rare_dict["Rings"]? " Checked" : ""), Rings
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s14, Segoe UI
 Gui Add, CheckBox,% "x680 y176 w123 h26" (rare_dict["Amulets"]? " Checked" : ""), Amulets
 
 ; ----------- END RARES -----------
@@ -359,69 +301,42 @@ Gui Add, CheckBox,% "x680 y176 w123 h26" (rare_dict["Amulets"]? " Checked" : "")
 for key, val in profiles
     ProfString .= val "|"
 RTrim(ProfString, "|")
-
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
 Gui Font, c0x00e8b2 s12 Bold, Segoe UI
 Gui Add, Text, x880 y8 w61 h29 +0x200, Profile:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList, x936 y8 w151 Choose1, %ProfString%
 Gui Add, Button, x1112 y32 w56 h0, &OK
-Gui Font
 Gui Font, c0x00e8b2 s12 Bold, Segoe UI
 Gui Add, Button, x1088 y8 w30 h30, +
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x24 y160 w467 h1 +0x10
 
 ; ---------- END PROFILE ------------
 ; ---------- MORE CURRENCY? ---------
-Gui Font
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 Gui Add, Text, x32 y120 w148 h28 +0x200 +Right, Move Currency to Tier:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList, x184 y120 w191, %all_currency%
-Gui Font
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList, x184 y120 w191 +Sort vCurrencyMoveTier_curr, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x384 y120 w16 h28 +0x200, ➔
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList, x408 y120 w41, T1|T2|T3|T4|T5|T6|T7|T8|T9
+Gui Add, Text, x384 y120 w16 h28 +0x200, % Chr(0x2192)
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList, x408 y120 w41 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+Gui Add, Button, x456 y120 w32 h30 gCurrencyMoveTier, Go
 
 ; ---------- END CURR 2 ------------
 ; ---------- META BUTTONS ----------
-Gui Font
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Button, x456 y120 w32 h30, Go
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
 Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-Gui Add, Button, x872 y752 w224 h31, &Write Filter && Close UI
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-Gui Add, Button, x872 y712 w226 h32, (Re)&Import Filter
+Gui Add, Button, x872 y752 w224 h31 gUpdate, &Write Filter && Close UI
+Gui Add, Button, x872 y712 w226 h32 gImport, (Re)&Import Filter
 
 ; ---------- END META BUTTONS -------
 ; --------- MISC --------------------
 
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x840 y56 w288 h74, Regular Maps
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x856 y88 w152 h28 +0x200, Hide Maps Below Tier:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 ; -------- FLASKS -------------------
 flask_avail := ""
 flask_high := ""
@@ -438,131 +353,129 @@ for flask, arr in flasks
 RTrim(flask_avail, "|")
 RTrim(flask_high, "|")
 RTrim(flask_low, "|")
-Gui Font
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x528 y232 w286 h417, Flask BaseTypes
-Gui Font
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, ListBox, x544 y296 w257 h104 +Sort, %flask_low%
-Gui Font
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x544 y264 w101 h28 +0x200, Any ItemLevel:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, DropDownList, x648 y264 w153, Add...||%flask_avail%
 Gui Add, Button, x592 y408 w144 h31, Remove Selected
 Gui Add, Text, x528 y400 w276 h0 +0x10
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x544 y464 w108 h28 +0x200, High ItemLevel:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x536 y448 w266 h2 +0x10
 Gui Add, DropDownList, x648 y464 w153, Add...||%flask_avail%
 Gui Add, ListBox, x544 y496 w257 h104 +Sort, %flask_high%
 Gui Add, Button, x592 y608 w144 h31, Remove Selected
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x544 y696 w120 h28 +0x200, Gem Min Quality:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x544 y736 w120 h28 +0x200, Flask Min Quality:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x544 y776 w136 h28 +0x200, RGB Max Item Size: 
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, DropDownList,% "x680 y776 w113 Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
-Gui Font
 Gui Font, c0x00e8b2 s10 Bold
+; ------------------- FILTERBLADE 1-5 TIER SHIT --------------------
 Gui Add, GroupBox, x840 y144 w288 h234, Tier Visibility
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+; ESSENCES --------- FIX THIS ---------------------- esshide
 Gui Add, Text, x856 y176 w179 h28 +0x200, Hide Essences Above Tier:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList, x1032 y176 w33, 1|2|3|4||5
-Gui Font
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList, x1032 y176 w33 Choose%esshide%, 1|2|3|4|5
+; DIV -- divmin
 Gui Add, Text, x856 y216 w185 h28 +0x200, Hide Div Cards Above Tier:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList, x1040 y216 w33, 1|2|3|4||5
-Gui Font
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList, x1040 y216 w33 Choose%divmin%, 1|2|3|4|5
+; UNIQUE ITEM -- uniqhide
 Gui Add, Text, x856 y256 w203 h28 +0x200, Hide Unique Items Above Tier:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList, x1064 y256 w33 Choose%uniqhide%, 1|2|3|4|5
+; UNIQUE MAP -- unique_maphide
 Gui Add, Text, x856 y296 w206 h28 +0x200, Hide Unique Maps Above Tier:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x856 y336 w113 h28 +0x200, Hide Oils Below:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList, x1064 y256 w33, 1|2|3|4||5
-Gui Add, DropDownList, x1064 y296 w33, 1|2|3|4||5
-; ------------- OILS -----------------------
+Gui Add, DropDownList, x1064 y296 w33 Choose%unique_maphide%, 1|2|3|4|5
+; ------------- OILS -------- min_oil
 oilstr := ""
 for key, val in oils {
     oilstr .= val "|"
 }
 RTrim(oilstr, "|")
+Gui Add, Text, x856 y336 w113 h28 +0x200, Hide Oils Below:
 Gui Add, DropDownList, x968 y336 w130 Choose%min_oil%, %oilstr%
-Gui Font
+; ---------???????????-----------------
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x840 y680 w288 h116, Filter Actions
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList,% "vValueCurrencyDdlT4 gHandleCurrencyDdlEvent x120 y376 w46 Choose"cstack_values[4], %cstacktext_less%
-Gui Add, DropDownList,% "vValueCurrencyDdlT5 gHandleCurrencyDdlEvent x280 y376 w46 Choose"cstack_values[5], %cstacktext_less%
-Gui Add, DropDownList,% "vValueCurrencyDdlT6 gHandleCurrencyDdlEvent x440 y376 w46 Choose"cstack_values[6], %cstacktext_less%
-Gui Add, DropDownList,% "vValueCurrencyDdlT7 gHandleCurrencyDdlEvent x120 y584 w46 Choose"cstack_values[7], %cstacktext_less%
-Gui Add, DropDownList,% "vValueCurrencyDdlT8 gHandleCurrencyDdlEvent x280 y584 w46 Choose"cstack_values[8], %cstacktext%
-Gui Add, DropDownList,% "vValueCurrencyDdlT9 gHandleCurrencyDdlEvent x440 y584 w46 Choose"cstack_values[9], %cstacktext%
-Gui Font
+; ----------- CURRENCY STACK DDLS, DONT BELONG HERE ----------
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList,% "vValueCurrencyDdlT4 x120 y376 w46 Choose"cstack_values[4], %cstacktext_less%
+Gui Add, DropDownList,% "vValueCurrencyDdlT5 x280 y376 w46 Choose"cstack_values[5], %cstacktext_less%
+Gui Add, DropDownList,% "vValueCurrencyDdlT6 x440 y376 w46 Choose"cstack_values[6], %cstacktext_less%
+Gui Add, DropDownList,% "vValueCurrencyDdlT7 x120 y584 w46 Choose"cstack_values[7], %cstacktext_less%
+Gui Add, DropDownList,% "vValueCurrencyDdlT8 x280 y584 w46 Choose"cstack_values[8], %cstacktext%
+Gui Add, DropDownList,% "vValueCurrencyDdlT9 x440 y584 w46 Choose"cstack_values[9], %cstacktext%
+; CURRENCY FIND TIER
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 Gui Add, Text, x32 y80 w147 h30 +0x200 +Right, Find Tier of Currency:
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, DropDownList, x186 y80 w188, %all_currency%
-Gui Font
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList, x186 y80 w188 +Sort gCurrencyFindDDL vFindCurrTier_in, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 Gui Add, Text, x384 y80 w16 h28 +0x200, ➔
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x408 y80 w31 h26 +0x200 vFindCurrTier, N/A
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, UpDown, x696 y712 w0 h2  -16, 1
-Gui Add, UpDown, x696 y696 w0 h29, 1
-Gui Add, Edit, x664 y736 w40 h28, 13
-Gui Add, Edit, x664 y696 w41 h28, 13
-Gui Font
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, Text, x408 y80 w31 h26 +0x200 vFindCurrTier_out, N/A
+; ------------- FLASK/GEM MIN QUALITY --------------- flaskmin, gemmin
+Gui Add, Edit, x664 y736 w40 h28,
+Gui Add, UpDown, x696 y712 w20 h30 Range0-20, % flaskmin
+Gui Add, Edit, x664 y696 w41 h28,
+Gui Add, UpDown, x696 y696 w20 h30 Range0-20, % gemmin
+Gui Add, Edit, x1008 y88 w40 h28, 13
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x528 y664 w286 h152, Quality and RGB Items
-Gui Font
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Edit, x1008 y88 w40 h28, 13
 
 Gui Show, w1144 h839, Window
 Return
 
 HandleCurrencyDdlEvent(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "") {
-
 }
+
+; Display tier of currency in FindCurrTier_in ddl to FindCurrTier_out text
+CurrencyFindDDL:
+Gui, Submit, NoHide
+For key, val in curr_txt
+{
+    if (val == FindCurrTier_in){
+        GuiControl, , FindCurrTier_out, % "T" curr_val[key]
+        return
+    }
+}
+GuiControl, , FindCurrTier_out, Not Found
+return
+
+; move currency CurrencyMoveTier_curr to tier CurrencyMoveTier_tier
+CurrencyMoveTier:
+Gui, Submit, NoHide
+if (CurrencyMoveTier_curr == "" or CurrencyMoveTier_tier == "")
+    return
+dst_tier := LTrim(CurrencyMoveTier_tier, "T")
+src_tier := 0
+for key, val in curr_txt
+{
+    if (val == CurrencyMoveTier_curr){
+        src_tier := curr_val[key]
+        curr_val[key] := dst_tier
+    }
+}
+currtexts := ["", "", "", "", "", "", "", "", ""]
+For idx in curr_txt {
+    currtexts[curr_val[idx]] .= curr_txt[idx] "|"
+}
+Loop, 9 {
+    currtexts[A_Index] := RegExReplace( currtexts[A_Index], "\|$" )
+}
+GuiControl, , % "CurrTexts" src_tier, % "|" currtexts[src_tier]
+GuiControl, , % "CurrTexts" dst_tier, % "|" currtexts[dst_tier]
+return
+    
+Update:
+return
+    
+Import:
+RunWait, python %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
+Reload
+ExitApp
 
 GuiEscape:
 GuiClose:
-    ExitApp
+ExitApp
