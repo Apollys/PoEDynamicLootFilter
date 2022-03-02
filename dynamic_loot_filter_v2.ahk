@@ -9,6 +9,8 @@ Menu, Tray, Icon, DLF_icon.ico
 ; File Paths for Python program/input/output
 py_prog_path := "backend_cli.py"
 py_out_path := "backend_cli.output"
+py_log_path := "backend_cli.log"
+py_exit_code_path := "backend_cli.exit_code"
 ahk_out_path := "backend_cli.input"
 
 
@@ -65,6 +67,13 @@ fake_queue := []
 profiles := []
 FileDelete, %ahk_out_path%
 RunWait, python %py_prog_path% get_all_profile_names, , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+}
+else if (exit_code == "-1")
+    MsgBox, How did you get here?
 FileRead, py_out_text, %py_out_path%
 Loop, parse, py_out_text, `n, `r
 {
@@ -89,6 +98,13 @@ for key in flasks
 
 ; Run batch
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+}
+else if (exit_code == "-1")
+    MsgBox, How did you get here?
 FileRead, py_out_text, %py_out_path%
 
 ; Parse batch output
@@ -512,6 +528,13 @@ Gui, Submit, NoHide
 if (ProfileDDL == active_profile)
     return
 RunWait, python %py_prog_path% set_active_profile %ProfileDDL%, , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+}
+else if (exit_code == "-1")
+    MsgBox, How did you get here?
 Reload
 ExitApp
 
@@ -600,10 +623,24 @@ if(maphide != maphideUD){
     FileAppend, % "set_hide_maps_below_tier " maphideUD "`n", %ahk_out_path%
 }
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+}
+else if (exit_code == "-1")
+    MsgBox, How did you get here?
 ExitApp
     
 Import:
 RunWait, python %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+}
+else if (exit_code == "-1")
+    MsgBox, How did you get here?
 Reload
 ExitApp
 
