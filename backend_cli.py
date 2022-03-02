@@ -836,7 +836,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_hide_maps_below_tier <tier: int>
          - Sets the map tier below which all will be hidden (use 0/1 to show all)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_map_below_tier 14 DefaultProfile
+         - Example: > python3 backend_cli.py set_hide_maps_below_tier 14 DefaultProfile
         '''
         min_visibile_tier: int = int(function_params[0])
         loot_filter.SetHideMapsBelowTierTier(min_visibile_tier)
@@ -844,7 +844,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_maps_below_tier
          - Output:  single integer, the tier below which all maps are hidden
-         - Example: > python3 backend_cli.py get_hide_map_below_tier DefaultProfile
+         - Example: > python3 backend_cli.py get_hide_maps_below_tier DefaultProfile
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
     # ========================================= Flasks =========================================
