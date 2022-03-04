@@ -372,8 +372,10 @@ Gui Add, GroupBox, x840 y144 w288 h234, Tier Visibility
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 ; ESSENCES --------- -------------------
 Gui Add, Text, x856 y176 w179 h28 +0x200, Hide Essences Below:
-Gui Add, DropDownList, +AltSubmit x1002 y176 w120 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
+Gui Font, s10
+Gui Add, DropDownList, +AltSubmit x1002 y178 w100 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
 ; DIV -- divmin
+Gui Font, s11
 Gui Add, Text, x856 y216 w185 h28 +0x200, Hide Div Cards Above Tier:
 Gui Add, DropDownList, +AltSubmit x1040 y216 w33 vdivminDDL Choose%divmin%, 1|2|3|4|5
 ; UNIQUE ITEM -- uniqhide
