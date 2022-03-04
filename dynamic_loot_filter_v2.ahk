@@ -2,6 +2,7 @@
 #NoEnv
 SetWorkingDir %A_ScriptDir%
 SetBatchLines -1
+
 Menu, Tray, Icon, DLF_icon.ico
 
 ; ------------ DATA STORAGE INITIALIZATION -------------
@@ -223,45 +224,45 @@ Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x16 y48 w483 h783, Currency
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x32 y168 w115 h28 +0x200, T1 Stack Size:
-Gui Add, DropDownList, % "+AltSubmit vValueCurrencyDdlT1 x120 y168 w46 Choose"cstack_values[1],  %cstacktext_less%
+Gui Add, DropDownList, % "+AltSubmit vValueCurrencyDdlT1 x124 y168 w44 Choose"cstack_values[1],  %cstacktext_less%
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y192 w135 h164 +Sort vCurrTexts1, % currtexts[1]
+Gui Add, ListBox, x32 y197 w135 h164 +Sort vCurrTexts1, % currtexts[1]
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x16 y368 w469 h1 +0x10
-Gui Add, Text, x208 y48 w0 h364 +0x10
-Gui Add, Text, x176 y166 w5 h614 +0x1 +0x10
+Gui Add, Text, x24 y368 w468 h0 +0x10  ; horizontal line
+Gui Add, Text, x208 y48 w0 h364 +0x10  ; vertical line ?
+Gui Add, Text, x178 y168 w0 h610 +0x1 +0x10  ; vertical line between column 1 and 2
 Gui Add, Text, x192 y168 w115 h28 +0x200, T2 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT2 x280 y168 w46 Choose"cstack_values[2], %cstacktext_less%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT2 x284 y168 w44 Choose"cstack_values[2], %cstacktext_less%
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x192 y192 w135 h164 +Sort vCurrTexts2, % currtexts[2]
+Gui Add, ListBox, x192 y197 w135 h164 +Sort vCurrTexts2, % currtexts[2]
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x336 y170 w2 h607 +0x1 +0x10
+Gui Add, Text, x338 y168 w0 h610 +0x1 +0x10  ; vertical line between column 2 and 3
 Gui Add, Text, x352 y168 w115 h28 +0x200, T3 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT3 x440 y168 w48 Choose"cstack_values[3], %cstacktext_less%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT3 x444 y168 w44 Choose"cstack_values[3], %cstacktext_less%
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y192 w135 h164 +Sort vCurrTexts3, % currtexts[3]
+Gui Add, ListBox, x352 y197 w135 h164 +Sort vCurrTexts3, % currtexts[3]
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x32 y376 w115 h28 +0x200, T4 Stack Size:
 Gui Add, Text, x192 y376 w115 h28 +0x200, T5 Stack Size:
 Gui Add, Text, x352 y376 w115 h28 +0x200, T6 Stack Size:
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y400 w135 h164 +Sort vCurrTexts4, % currtexts[4]
-Gui Add, ListBox, x192 y400 w135 h164 +Sort vCurrTexts5, % currtexts[5]
-Gui Add, ListBox, x352 y400 w135 h164 +Sort vCurrTexts6, % currtexts[6]
+Gui Add, ListBox, x32 y405 w135 h164 +Sort vCurrTexts4, % currtexts[4]
+Gui Add, ListBox, x192 y405 w135 h164 +Sort vCurrTexts5, % currtexts[5]
+Gui Add, ListBox, x352 y405 w135 h164 +Sort vCurrTexts6, % currtexts[6]
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x16 y576 w468 h1 +0x10
+Gui Add, Text, x24 y576 w468 h0 +0x10  ; horizontal line
 Gui Add, Text, x32 y584 w115 h28 +0x200, T7 Stack Size:
 Gui Add, Text, x192 y584 w115 h28 +0x200, T8 Stack Size:
 Gui Add, Text, x352 y584 w115 h28 +0x200, T9 Stack Size:
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y608 w135 h164 +Sort vCurrTexts7, % currtexts[7]
-Gui Add, ListBox, x192 y608 w135 h164 +Sort vCurrTexts8, % currtexts[8]
-Gui Add, ListBox, x352 y608 w135 h164 gHandleCurrencyListBoxEvent +Sort vCurrTexts9, % currtexts[9]
+Gui Add, ListBox, x32 y613 w135 h164 +Sort vCurrTexts7, % currtexts[7]
+Gui Add, ListBox, x192 y613 w135 h164 +Sort vCurrTexts8, % currtexts[8]
+Gui Add, ListBox, x352 y613 w135 h164 gHandleCurrencyListBoxEvent +Sort vCurrTexts9, % currtexts[9]
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x16 y784 w468 h2 +0x10
+Gui Add, Text, x24 y784 w468 h0 +0x10  ; horizontal line
 Gui Add, Text, x56 y792 w115 h28 +0x200, Portal Stack Size:
 Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTportal Choose%portal_stack% x176 y792 w48, % cstacktext
-Gui Add, Text, x256 y792 w5 h35 +0x1 +0x10
+Gui Add, Text, x256 y792 w0 h34 +0x1 +0x10  ; vertical line
 Gui Add, Text, x288 y792 w133 h28 +0x200, Wisdom Stack Size:
 Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTwisdom Choose%wisdom_stack% x424 y792 w48, % cstacktext
 
@@ -287,14 +288,14 @@ for key, val in profiles
     ProfString .= val "|"
 RTrim(ProfString, "|")
 Gui Font, c0x00e8b2 s12 Bold, Segoe UI
-Gui Add, Text, x880 y8 w61 h29 +0x200, Profile:
+Gui Add, Text, x845 y8 w61 h29 +0x200, Profile:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, DropDownList, x936 y8 w151 gChangeProfile vProfileDDL Choose1, %ProfString%
+Gui Add, DropDownList, x905 y8 w151 gChangeProfile vProfileDDL Choose1, %ProfString%
 Gui Add, Button, x1112 y32 w56 h0, &OK
-Gui Font, c0x00e8b2 s12 Bold, Segoe UI
-Gui Add, Button, x1088 y8 w30 h30, +
+Gui Font, c0x00e8b2 s11 Bold, Segoe UI
+Gui Add, Button, x1060 y9 w60 h26, Create
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x24 y160 w467 h1 +0x10
+Gui Add, Text, x24 y160 w468 h0 +0x10  ; horizontal line
 
 ; ---------- END PROFILE ------------
 ; ---------- MORE CURRENCY? ---------
@@ -303,11 +304,11 @@ Gui Add, Text, x32 y120 w148 h28 +0x200 +Right, Move Currency to Tier:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList, x184 y120 w191 +Sort vCurrencyMoveTier_curr, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x384 y120 w16 h28 +0x200, % Chr(0x2192)
+Gui Add, Text, x384 y120 w16 h28 +0x200, ➔
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList, x408 y120 w41 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Button, x456 y120 w32 h30 gCurrencyMoveTier, Go
+Gui Add, Button, x456 y121 w32 h26 gCurrencyMoveTier, Go
 
 ; ---------- END CURR 2 ------------
 ; ---------- META BUTTONS ----------
@@ -316,6 +317,12 @@ Gui Add, Button, x872 y752 w224 h31 gUpdate, &Write Filter && Close UI
 Gui Add, Button, x872 y712 w226 h32 gImport, (Re)&Import Filter
 
 ; ---------- END META BUTTONS -------
+
+; Status message box
+Gui Font
+Gui Font, c0x00e8b2 s11, Segoe UI
+Gui Add, Edit, x850 y530 w260 h100 +ReadOnly -VScroll, Status Message
+
 ; --------- MISC --------------------
 
 Gui Font, c0x00e8b2 s10 Bold
@@ -349,10 +356,9 @@ Gui Add, ListBox, x544 y296 w257 h104 vFlaskListAny +Sort, %flask_low%
 Gui Add, Text, x544 y264 w101 h28 +0x200, Any ItemLevel:
 Gui Add, DropDownList, x648 y264 w153 vFlaskAvailDDL1 gAddFlaskAny, Add...||%flask_avail1%
 Gui Add, Button, x592 y408 w144 h31 gRemoveFlaskAny, Remove Selected
-Gui Add, Text, x528 y400 w276 h0 +0x10
 Gui Add, Text, x544 y464 w108 h28 +0x200, High ItemLevel:
-Gui Add, Text, x536 y448 w266 h2 +0x10
-Gui Add, DropDownList, x648 y464 w153 vFlaskAvailDDL2 gAddFlaskHigh, Add...||%flask_avail2%
+Gui Add, Text, x536 y448 w270 h0 +0x10  ; horizontal line
+Gui Add, DropDownList, x650 y464 w151 vFlaskAvailDDL2 gAddFlaskHigh, Add...||%flask_avail2%
 Gui Add, ListBox, x544 y496 w257 h104 vFlaskListHigh +Sort, %flask_high%
 Gui Add, Button, x592 y608 w144 h31 gRemoveFlaskHigh, Remove Selected
 ; --------------- QUALITY AND RGB -------------------------
@@ -386,15 +392,15 @@ Gui Add, Text, x856 y336 w113 h28 +0x200, Hide Oils Below:
 Gui Add, DropDownList, +AltSubmit x968 y336 w130 vmin_oilDDL Choose%min_oil%, %oilstr%
 ; ---------???????????-----------------
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x840 y680 w288 h116, Filter Actions
+Gui Add, GroupBox, x840 y680 w288 h120, Filter Actions
 ; ----------- CURRENCY STACK DDLS, DONT BELONG HERE ----------
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT4 x120 y376 w46 Choose"cstack_values[4], %cstacktext_less%
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT5 x280 y376 w46 Choose"cstack_values[5], %cstacktext_less%
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT6 x440 y376 w46 Choose"cstack_values[6], %cstacktext_less%
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT7 x120 y584 w46 Choose"cstack_values[7], %cstacktext_less%
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT8 x280 y584 w46 Choose"cstack_values[8], %cstacktext%
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT9 x440 y584 w46 Choose"cstack_values[9], %cstacktext%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT4 x124 y376 w44 Choose"cstack_values[4], %cstacktext_less%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT5 x284 y376 w44 Choose"cstack_values[5], %cstacktext_less%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT6 x444 y376 w44 Choose"cstack_values[6], %cstacktext_less%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT7 x124 y584 w44 Choose"cstack_values[7], %cstacktext_less%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT8 x284 y584 w44 Choose"cstack_values[8], %cstacktext%
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT9 x444 y584 w44 Choose"cstack_values[9], %cstacktext%
 ; CURRENCY FIND TIER
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 Gui Add, Text, x32 y80 w147 h30 +0x200 +Right, Find Tier of Currency:
