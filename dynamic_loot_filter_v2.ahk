@@ -304,7 +304,7 @@ Gui Add, Text, x32 y120 w148 h28 +0x200 +Right, Move Currency to Tier:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList, x184 y120 w191 +Sort vCurrencyMoveTier_curr, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x384 y120 w16 h28 +0x200, ➔
+Gui Add, Text, x384 y120 w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList, x408 y120 w41 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
@@ -409,7 +409,7 @@ Gui Add, Text, x32 y80 w147 h30 +0x200 +Right, Find Tier of Currency:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList, x186 y80 w188 +Sort gCurrencyFindDDL vFindCurrTier_in, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x384 y80 w16 h28 +0x200, ➔
+Gui Add, Text, x384 y80 w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x408 y80 w31 h26 +0x200 vFindCurrTier_out, N/A
 ; ------------- FLASK/GEM MIN QUALITY --------------- flaskmin, gemmin
