@@ -35,6 +35,7 @@ base_flasks := {"Divine Life Flask" : [0, 0], "Eternal Mana Flask" : [0, 0]
     , "Quartz Flask" : [0, 0], "Granite Flask" : [0, 0], "Sulphur Flask" : [0, 0]
     , "Basalt Flask" : [0, 0], "Silver Flask" : [0, 0], "Stibnite Flask" : [0, 0]
     , "Corundum Flask" : [0, 0], "Gold Flask" : [0, 0]}
+_high := 0
 
 ; RGB size tooltips
 rgbtooltip := {"none" : "Hide everything", "small" : "2x2, 4x1, and 3x1"
@@ -147,7 +148,6 @@ Loop, parse, py_out_text, `n, `r
         rgbsize := A_LoopField
     Case 9:
         flaskmin := A_LoopField == -1? 21 : A_LoopField
-        
     Case 10:
         oil_text := StrSplit(A_LoopField, " ")
         min_oil := -1
@@ -166,17 +166,17 @@ Loop, parse, py_out_text, `n, `r
         unique_mapmin := A_LoopField
     Default:
         splits := StrSplit(A_LoopField, " ")
-        flasks[fake_queue[prog - 19]] := [0,0]
-        base_flasks[fake_queue[prog - 19]] := [0,0]
+        flasks[fake_queue[prog - 21]] := [0,0]
+        base_flasks[fake_queue[prog - 21]] := [0,0]
         if (splits[1] = 1)
         {
-            flasks[fake_queue[prog - 19]][1] := 1
-            base_flasks[fake_queue[prog - 19]][1] := 1
+            flasks[fake_queue[prog - 21]][1] := 1
+            base_flasks[fake_queue[prog - 21]][1] := 1
         }
         if (splits[2] = 1)
         {
-            flasks[fake_queue[prog - 19]][2] := 1
-            base_flasks[fake_queue[prog - 19]][2] := 1
+            flasks[fake_queue[prog - 21]][2] := 1
+            base_flasks[fake_queue[prog - 21]][2] := 1
         }
     }
 }
@@ -230,11 +230,11 @@ flask_high := ""
 flask_low := ""
 for flask, arr in flasks
 {
-    if (arr[1] == 1)
+    if (arr[2] == 1)
         flask_high .= flask "|"
     else
         flask_avail2 .= flask "|"
-    if (arr[2] == 1)
+    if (arr[1] == 1)
         flask_low .= flask "|"
     else
         flask_avail1 .= flask "|"
@@ -483,7 +483,7 @@ HandleCurrencyListBoxEvent(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "") {
 }
 
 ; _add = 0 for remove, 1 for add
-; _level = 0 for high, 1 for any
+; _level = 1 for high, 0 for any
 ModifyFlaskState(_add, _level, _flask){
     global flasks, FlaskAvailDDL1, FlaskAvailDDL2, FlaskListAny, FlaskListHigh
     flasks[_flask][_level+1] := _add
@@ -493,11 +493,11 @@ ModifyFlaskState(_add, _level, _flask){
     flask_low := ""
     for flask, arr in flasks
     {
-        if (arr[1] == 1)
+        if (arr[2] == 1)
             flask_high .= flask "|"
         else
             flask_avail2 .= flask "|"
-        if (arr[2] == 1)
+        if (arr[1] == 1)
             flask_low .= flask "|"
         else
             flask_avail1 .= flask "|"
@@ -513,36 +513,36 @@ ModifyFlaskState(_add, _level, _flask){
 }
 
 ; Add/remove flask to either list
-RemoveFlaskAny:
-any := 1
 RemoveFlaskHigh:
+_high := 1
+RemoveFlaskAny:
 Gui, Submit, NoHide
-if (any == 1){
-    flask_move := FlaskListAny
+if (_high == 1){
+    flask_move := FlaskListHigh
 }
 else{
-    flask_move := FlaskListHigh
+    flask_move := FlaskListAny
 }
 if (flask_move == "")
     return
-ModifyFlaskState(0, any, flask_move)
-any := 0
+ModifyFlaskState(0, _high, flask_move)
+_high := 0
 return
 
-AddFlaskAny:
-any := 1
 AddFlaskHigh:
+_high := 1
+AddFlaskAny:
 Gui, Submit, NoHide
-if (any == 1){
-    flask_move := FlaskAvailDDL1
+if (_high == 1){
+    flask_move := FlaskAvailDDL2
 }
 else{
-    flask_move := FlaskAvailDDL2
+    flask_move := FlaskAvailDDL1
 }
 if (flask_move == "Add...")
     return
-ModifyFlaskState(1, any, flask_move)
-any := 0
+ModifyFlaskState(1, _high, flask_move)
+_high := 0
 return
 
 
@@ -624,7 +624,7 @@ if (valueCurrencyDDLTportal != portal_stack){
 For idx, name in curr_txt
 {
     if (curr_val[idx] != curr_val_start[idx]){
-        FileAppend, % "set_currency_tier """ curr_txt[idx] """ " curr_val[idx] "`n" , %ahk_out_path%
+        FileAppend, % "set_currency_to_tier """ curr_txt[idx] """ " curr_val[idx] "`n" , %ahk_out_path%
     }
 }
 ; Rares -- rare_GUI_ids value compared vs rare_dict
@@ -637,11 +637,11 @@ For rare, value_name in rare_GUI_ids
 ; Flasks -- accurate already to flasks vs base_flasks
 for flask in flasks
 {
-    if (flasks[flask][1] != base_flasks[flask][1]){
-        FileAppend, % "set_high_ilvl_flask_visibility """ flask """ " flasks[flask][1] "`n", %ahk_out_path%
-    }
     if (flasks[flask][2] != base_flasks[flask][2]){
-        FileAppend, % "set_flask_visibility """ flask """ " flasks[flask][2] "`n", %ahk_out_path%
+        FileAppend, % "set_high_ilvl_flask_visibility """ flask """ " flasks[flask][2] "`n", %ahk_out_path%
+    }
+    if (flasks[flask][1] != base_flasks[flask][1]){
+        FileAppend, % "set_flask_visibility """ flask """ " flasks[flask][1] "`n", %ahk_out_path%
     }
 }
 ; Essences -- compare esshide vs esshideDDL
