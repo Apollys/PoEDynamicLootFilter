@@ -367,7 +367,7 @@ Gui Add, Text, x544 y736 w120 h28 +0x200, Flask Min Quality:
 Gui Add, Text, x544 y776 w136 h28 +0x200, RGB Max Item Size: 
 Gui Add, DropDownList,% "+AltSubmit x680 y776 w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
 Gui Font, c0x00e8b2 s10 Bold
-; ------------------- FILTERBLADE 1-5 TIER SHIT --------------------
+; ------------------- FILTERBLADE 1-5 TIER --------------------
 Gui Add, GroupBox, x840 y144 w288 h234, Tier Visibility
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 ; ESSENCES --------- -------------------
