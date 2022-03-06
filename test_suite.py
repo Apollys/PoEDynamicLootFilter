@@ -90,6 +90,7 @@ def TestSetRuleVisibility():
     CallCliFunction('set_rule_visibility {} {} disable'.format(type_tag, tier_tag))
     loot_filter = LootFilter(kTestProfileName, output_as_input_filter = True)
     rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
+    print(rule.visibility)
     CHECK(rule.visibility == RuleVisibility.kDisable)
     CHECK(all(line.startswith('#') for line in rule.text_lines))
     # Test "show"

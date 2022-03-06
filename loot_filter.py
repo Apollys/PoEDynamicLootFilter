@@ -68,12 +68,15 @@ class LootFilterRule:
         self.parsed_lines = [rule_parser.ParseRuleLineGeneric(line) for line in self.text_lines[1:]]
         # Parse rule visibility
         self.show_flag = helper.ParseShowFlag(rule_text_lines)
-        try:
-            self.visibility = RuleVisibility.kShow if self.show_flag else RuleVisibility.kHide
-        except Exception as e:
-            self.visibility = RuleVisibility.kUnknown
-            logger.Log(('Warning: unable to determine rule visibility for rule starting on line {}'
-                    ' of loot filter').format(start_line_index + 1))
+        self.visibility = RuleVisibility.kUnknown
+        if (all(line.startswith('#') for line in rule_text_lines)):
+            self.visibility = RuleVisibility.kDisable
+        else:
+            try:
+                self.visibility = RuleVisibility.kShow if self.show_flag else RuleVisibility.kHide
+            except Exception as e:
+                logger.Log(('Warning: unable to determine rule visibility for rule starting on line {}'
+                            ' of loot filter').format(start_line_index + 1))
         # Every rule has a "$type" and "$tier" attribute on the first line, for example:
         # Show # $type->currency $tier->t1exalted
         # TODO: custom (user-added) rules may have a comment as the first line,
@@ -158,11 +161,6 @@ class LootFilterRule:
                 if (keyword in kKeywordsToDisable):
                     self.text_lines[text_lines_index] = helper.CommentedLine(
                             self.text_lines[text_lines_index])
-        # Update "Show" or "Hide" keyword in first line of rule
-        #if ((visibility == RuleVisibility.kShow) and self.text_lines[0].startswith('Hide')):
-        #    self.text_lines[0] = 'Show' + self.text_lines[0][4:]
-        #elif ((visibility == RuleVisibility.kHide) and self.text_lines[0].startswith('Show')):
-        #    self.text_lines[0] = 'Hide' + self.text_lines[0][4:]
         self.visibility = visibility
     # End SetVisibility
     

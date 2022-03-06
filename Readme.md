@@ -22,6 +22,7 @@ The `profile_name` parameter is required in all cases except for:
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update
    - Better not to fail in this case
+ - Test suite:cChange `CHECK` macro to `CHECK_EQ`, etc
  - [ ] (Low priority) fix not parsing tags for custom rules
  - [x] Add tests for newly added featuers:
    - [x] Stacked currency
