@@ -17,7 +17,16 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### To-Do
+ - [ ] Add first-time setup support
+   - Backend function `is_first_time`
+   - If yes, prompt user for profile name, create profile,
+     explain how to configure options and add custom rules
  - [ ] Create new profile option
+ - [ ] Make UI display error messages on important failures
+   - Failed to import filter
+   - Any others to think of?
+ - [ ] Explicitly check for presence of downloaded filter,
+       give more clear error message
  - [ ] Report status of last action in text box in UI
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update
@@ -25,6 +34,11 @@ The `profile_name` parameter is required in all cases except for:
  - [ ] Test suite: Change `CHECK` macro to `CHECK_EQ`, etc
  - [ ] (Low priority) fix not parsing tags for custom rules
  - [ ] Refactor frontend AHK script
+   - [x] Reorder and organize build GUI code
+   - [ ] Write helper functions to make GUI construction more concise.
+         For example, combining setting font with creating an item
+   - [ ] Resolve minor questions in AHK script (ctr-f TODO)
+   - [ ] Refactor all of the code to use a functional style
  - [x] Add tests for newly added featuers:
    - [x] Stacked currency
    - [x] Essences
@@ -38,14 +52,7 @@ The `profile_name` parameter is required in all cases except for:
  - [x] Add support for essences
  - [x] Add support for div cards
  - [x] Add support for unique maps
- - [ ] Add first-time setup support
-   - Backend function `is_first_time`
-   - If yes, prompt user for profile name, create profile,
-     explain how to configure options and add custom rules
  - [x] Make backend return exit codes so front end can detect errors
- - [ ] Make UI display error messages on important failures
-   - Failed to import filter
-   - Any others to think of?
  - [x] UI Redesign
 
 - - -
