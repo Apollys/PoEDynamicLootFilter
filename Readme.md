@@ -17,6 +17,12 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### To-Do
+ - [ ] Create new profile option
+ - [ ] Report status of last action in text box in UI
+ - [ ] Skip unrecognized commands in Profile.changes file (with warning)
+   - Likely cause is depracated feature from version update
+   - Better not to fail in this case
+ - [ ] (Low priority) fix not parsing tags for custom rules
  - [x] Add tests for newly added featuers:
    - [x] Stacked currency
    - [x] Essences
@@ -38,8 +44,7 @@ The `profile_name` parameter is required in all cases except for:
  - [ ] Make UI display error messages on important failures
    - Failed to import filter
    - Any others to think of?
- - [ ] UI Redesign
-   - Draft done
+ - [x] UI Redesign
 
 - - -
 

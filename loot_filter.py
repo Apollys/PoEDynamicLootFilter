@@ -68,18 +68,17 @@ class LootFilterRule:
         self.parsed_lines = [rule_parser.ParseRuleLineGeneric(line) for line in self.text_lines[1:]]
         # Parse rule visibility
         self.show_flag = helper.ParseShowFlag(rule_text_lines)
-        self.visibility = RuleVisibility.kUnknown
-        if (rule_text_lines[0].startswith('Show')):
-            self.visibility = RuleVisibility.kShow
-        elif (rule_text_lines[0].startswith('Hide')):
-            self.visibility = RuleVisibility.kHide
-        elif (all(line.startswith('#') for line in rule_text_lines)):
-            self.visibility = RuleVisibility.kDisable
-        else:
+        try:
+            self.visibility = RuleVisibility.kShow if self.show_flag else RuleVisibility.kHide
+        except Exception as e:
+            self.visibility = RuleVisibility.kUnknown
             logger.Log(('Warning: unable to determine rule visibility for rule starting on line {}'
                     ' of loot filter').format(start_line_index + 1))
         # Every rule has a "$type" and "$tier" attribute on the first line, for example:
         # Show # $type->currency $tier->t1exalted
+        # TODO: custom (user-added) rules may have a comment as the first line,
+        # so this will not correctly parse their tags.  However, we are not modifying
+        # custom rules at this time, so we don't need their tags for now.
         kTypeIdentifier = '$type->'
         kTierIdentifier = '$tier->'
         first_line: str = rule_text_lines[0] + ' '  # add space so parsing is uniform
