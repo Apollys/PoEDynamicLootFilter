@@ -18,16 +18,16 @@ The `profile_name` parameter is required in all cases except for:
 
 ### To-Do
  - [ ] Add first-time setup support
-   - [ ] Backend function `is_first_time`
+   - [x] Add backend function `is_first_launch`
    - [ ] If yes, prompt user for profile name, create profile,
      explain how to configure options and add custom rules
  - [ ] Implement Create Profile button in UI
  - [ ] Implement UI display error messages on important failures
    - [ ] Failed to import filter
    - [ ] Or more generally, always report status of last action
- - [ ] Explicitly check for presence of downloaded filter,
-       give more clear error message if missing
- - [ ] Report status of last action in text box in UI
+ - [x] ~~Explicitly check for presence of downloaded filter,
+       give more clear error message if missing~~
+	   This was already done, the UI just needs to propogate the error
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update
    - Better not to fail in this case
@@ -100,6 +100,7 @@ See [`backend_cli.py`](https://github.com/Apollys/PoEDynamicLootFilter/blob/mast
 for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
+  - `is_first_launch`
   - `get_all_profile_names`
   - `create_new_profile <new_profile_name>`
   - `set_active_profile`
