@@ -289,7 +289,7 @@ Gui Add, DropDownList, x186 y80 w188 +Sort gCurrencyFindDDL vFindCurrTier_in, %a
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 Gui Add, Text, x384 y80 w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x408 y80 w31 h26 +0x200 vFindCurrTier_out, N/A
+Gui Add, Text, x408 y81 w40 h26 +0x200 vFindCurrTier_out, [Tier]
 ; Move currency to tier
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 Gui Add, Text, x32 y120 w148 h28 +0x200 +Right, Move Currency to Tier:
