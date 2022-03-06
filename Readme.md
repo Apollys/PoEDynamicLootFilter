@@ -18,15 +18,15 @@ The `profile_name` parameter is required in all cases except for:
 
 ### To-Do
  - [ ] Add first-time setup support
-   - Backend function `is_first_time`
-   - If yes, prompt user for profile name, create profile,
+   - [ ] Backend function `is_first_time`
+   - [ ] If yes, prompt user for profile name, create profile,
      explain how to configure options and add custom rules
- - [ ] Create new profile option
- - [ ] Make UI display error messages on important failures
-   - Failed to import filter
-   - Any others to think of?
+ - [ ] Implement Create Profile button in UI
+ - [ ] Implement UI display error messages on important failures
+   - [ ] Failed to import filter
+   - [ ] Or more generally, always report status of last action
  - [ ] Explicitly check for presence of downloaded filter,
-       give more clear error message
+       give more clear error message if missing
  - [ ] Report status of last action in text box in UI
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update

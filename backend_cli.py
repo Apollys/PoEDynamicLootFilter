@@ -69,6 +69,10 @@ kExitCodeFilename = 'backend_cli.exit_code'
 #   so this value would be 1 for 'adjust_currency_tier'.
 kFunctionInfoMap = {
     # Profiles
+    'is_first_launch' : {
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
     'get_all_profile_names' : {
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
@@ -478,10 +482,21 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         if (contains_mutator):
             loot_filter.SaveToFile()
     # ========================================== Profile ==========================================
+    elif (function_name == 'is_first_launch'):
+        '''
+        is_first_launch
+         - Output: "1" if this is the first launch of the program (i.e. requires setup),
+           "0" otherwise
+         - It is considered first launch iff the only profile is DefaultProfile
+         - Example: > python3 backend_cli.py is_first_launch
+        '''
+        CheckNumParams(function_params, 0)
+        profile_names_list = profile.GetAllProfileNames()
+        is_first_launch_flag: bool = (profile_names_list == ['DefaultProfile'])
+        output_string = str(int(is_first_launch_flag))
     elif (function_name == 'get_all_profile_names'):
         '''
         get_all_profile_names
-         - Note: Does *not* take a <profile_name> parameter
          - Output: newline-separated list of all profile names, with currently active profile first
          - If there is no specified active profile (e.g. if general.config is missing), first line
            will be blank
