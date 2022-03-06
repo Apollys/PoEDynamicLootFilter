@@ -68,7 +68,7 @@ def GenerateStackedCurrencyTags():
 
 kStackedCurrencyTags = GenerateStackedCurrencyTags()
 
-kCurrencyStackSizes = [1, 2, 4, 6]
+kCurrencyStackSizes = [1, 2, 4, 6, 100]  # 100 as a sentinel for hide_all
 
 kCurrencyStackSizesByTier = {
     tier : kCurrencyStackSizes[ : len(kStackedCurrencyTags[tier]) + 1]

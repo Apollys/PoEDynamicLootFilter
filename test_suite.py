@@ -12,8 +12,8 @@ from loot_filter import RuleVisibility, LootFilterRule, LootFilter
 import profile
 from type_checker import CheckType, CheckType2
 
+kPythonCommand = 'python'
 kTestLogFilename = 'test.log'
-
 kTestProfileName = 'TestProfile'
 
 kTestProfileConfigString = \
@@ -71,7 +71,7 @@ def ResetTestProfile():
 # Example: 'set_currency_tier "Chromatic Orb" 5'
 def CallCliFunction(function_call: str):
     CheckType(function_call, 'function_call', str)
-    full_command: str = 'python3 backend_cli.py ' + function_call + ' ' + kTestProfileName
+    full_command: str = kPythonCommand + ' backend_cli.py ' + function_call + ' ' + kTestProfileName
     return_value = os.system(full_command)
     CHECK(return_value == 0)
 # End RunCommand
