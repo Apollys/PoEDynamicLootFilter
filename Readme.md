@@ -22,8 +22,9 @@ The `profile_name` parameter is required in all cases except for:
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update
    - Better not to fail in this case
- - Test suite:cChange `CHECK` macro to `CHECK_EQ`, etc
+ - [ ] Test suite: Change `CHECK` macro to `CHECK_EQ`, etc
  - [ ] (Low priority) fix not parsing tags for custom rules
+ - [ ] Refactor frontend AHK script
  - [x] Add tests for newly added featuers:
    - [x] Stacked currency
    - [x] Essences
@@ -32,8 +33,8 @@ The `profile_name` parameter is required in all cases except for:
  - [x] Stacked Currency:
    - [x] Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
    - [x] Make currency stack tiers consistent with single currency tiers on import
- - [ ] Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering
-   - Any others to add to tiering?
+ - [x] ~~Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering~~
+   - No longer appliccable, as v2 shows all currency basetypes
  - [x] Add support for essences
  - [x] Add support for div cards
  - [x] Add support for unique maps

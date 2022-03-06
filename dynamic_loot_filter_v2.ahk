@@ -311,17 +311,26 @@ Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 Gui Add, Button, x456 y121 w32 h26 gCurrencyMoveTier, Go
 
 ; ---------- END CURR 2 ------------
-; ---------- META BUTTONS ----------
-Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-Gui Add, Button, x872 y752 w224 h31 gUpdate, &Write Filter && Close UI
-Gui Add, Button, x872 y712 w226 h32 gImport, (Re)&Import Filter
 
-; ---------- END META BUTTONS -------
+; ----------- Find Rule Matching Item ----------
+Gui Font, c0x00e8b2 s10 Bold
+Gui Add, GroupBox, x840 y394 w288 h240, Rule Matching
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, Button, x856 y430 w254 h28, Find Rule Matching Clipboard
+Gui Add, Edit, x856 y475 w254 h100 +ReadOnly, [Matched Rule Text]
+Gui Add, Button, x906 y590 w154 h28 +Disabled, Change to "Hide"
 
+; ----------- Filter Actions Box-----------------
+Gui Font, c0x00e8b2 s10 Bold
+Gui Add, GroupBox, x840 y660 w288 h170, Filter Actions
 ; Status message box
 Gui Font
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Edit, x850 y530 w260 h100 +ReadOnly -VScroll, Status Message
+Gui Add, Edit, x856 y685 w254 h50 +ReadOnly -VScroll, [Status Message]
+; Action buttons
+Gui Font, c0x00e8b2 s11 Bold, Segoe UI
+Gui Add, Button, x872 y745 w226 h32 gImport, &Re-Import Filter
+Gui Add, Button, x872 y785 w224 h31 gUpdate, &Write Filter && Close UI
 
 ; --------- MISC --------------------
 
@@ -350,7 +359,7 @@ RTrim(flask_avail2, "|")
 RTrim(flask_high, "|")
 RTrim(flask_low, "|")
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y232 w286 h417, Flask BaseTypes
+Gui Add, GroupBox, x528 y232 w286 h427, Flask BaseTypes
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, ListBox, x544 y296 w257 h104 vFlaskListAny +Sort, %flask_low%
 Gui Add, Text, x544 y264 w101 h28 +0x200, Any ItemLevel:
@@ -362,10 +371,10 @@ Gui Add, DropDownList, x650 y464 w151 vFlaskAvailDDL2 gAddFlaskHigh, Add...||%fl
 Gui Add, ListBox, x544 y496 w257 h104 vFlaskListHigh +Sort, %flask_high%
 Gui Add, Button, x592 y608 w144 h31 gRemoveFlaskHigh, Remove Selected
 ; --------------- QUALITY AND RGB -------------------------
-Gui Add, Text, x544 y696 w120 h28 +0x200, Gem Min Quality:
-Gui Add, Text, x544 y736 w120 h28 +0x200, Flask Min Quality:
-Gui Add, Text, x544 y776 w136 h28 +0x200, RGB Max Item Size: 
-Gui Add, DropDownList,% "+AltSubmit x680 y776 w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
+Gui Add, Text, x544 y706 w120 h28 +0x200, Gem Min Quality:
+Gui Add, Text, x544 y746 w120 h28 +0x200, Flask Min Quality:
+Gui Add, Text, x544 y786 w136 h28 +0x200, RGB Max Item Size: 
+Gui Add, DropDownList,% "+AltSubmit x680 y786 w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
 Gui Font, c0x00e8b2 s10 Bold
 ; ------------------- FILTERBLADE 1-5 TIER --------------------
 Gui Add, GroupBox, x840 y144 w288 h234, Tier Visibility
@@ -392,9 +401,6 @@ for key, val in oils {
 RTrim(oilstr, "|")
 Gui Add, Text, x856 y336 w113 h28 +0x200, Hide Oils Below:
 Gui Add, DropDownList, +AltSubmit x968 y336 w130 vmin_oilDDL Choose%min_oil%, %oilstr%
-; ---------???????????-----------------
-Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x840 y680 w288 h120, Filter Actions
 ; ----------- CURRENCY STACK DDLS, DONT BELONG HERE ----------
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT4 x124 y376 w44 Choose"cstack_values[4], %cstacktext_less%
@@ -413,16 +419,16 @@ Gui Add, Text, x384 y80 w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x408 y80 w31 h26 +0x200 vFindCurrTier_out, N/A
 ; ------------- FLASK/GEM MIN QUALITY --------------- flaskmin, gemmin
-Gui Add, Edit, x664 y736 w50 h28 vflaskminUD,
-Gui Add, UpDown, x706 y736 w20 h28 Range0-21, % flaskmin
-Gui Add, Edit, x664 y696 w50 h28 vgemminUD,
-Gui Add, UpDown, x706 y696 w20 h28 Range0-21, % gemmin
-Gui Add, Edit, x1008 y88 w50 h28 vmaphideUD, 
-Gui Add, UpDown, x1050 y88 w20 h28 Range1-16, % maphide
+Gui Add, Edit, x664 y746 w50 h28 vflaskminUD,
+Gui Add, UpDown, x706 y746 w20 h28 Range0-21, % flaskmin
+Gui Add, Edit, x664 y706 w50 h28 vgemminUD,
+Gui Add, UpDown, x706 y706 w20 h28 Range0-21, % gemmin
+Gui Add, Edit, x1012 y88 w50 h28 vmaphideUD, 
+Gui Add, UpDown, x1054 y88 w20 h28 Range1-16, % maphide
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y664 w286 h152, Quality and RGB Items
+Gui Add, GroupBox, x528 y674 w286 h152, Quality and RGB Items
 
-Gui Show, w1144 h839, PoE Dynamic Loot Filter
+Gui Show, w1144 h844, PoE Dynamic Loot Filter
 Return
 
 HandleCurrencyListBoxEvent(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "") {
