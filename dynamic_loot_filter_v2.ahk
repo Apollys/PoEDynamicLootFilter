@@ -437,7 +437,7 @@ Gui Add, GroupBox, x840 y144 w288 h234, Tier Visibility
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x856 y176 w179 h28 +0x200, Hide Essences Below:
 Gui Font, s10
-Gui Add, DropDownList, +AltSubmit x1002 y178 w100 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
+Gui Add, DropDownList, +AltSubmit x1002 y178 w111 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
 ; Divination cards (variable name: divmin)
 Gui Font, s11
 Gui Add, Text, x856 y216 w185 h28 +0x200, Hide Div Cards Above Tier:
