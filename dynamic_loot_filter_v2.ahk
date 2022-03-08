@@ -601,7 +601,7 @@ FileDelete, %ahk_out_path%
 ;RunWait, python %py_prog_path% get_rule_matching_item %active_profile%, , Hide
 ;FileRead, exit_code, %py_exit_code_path%
 ;if (exit_code == "1"){
-;    GuiControl, , GUIStatusMsg , "Filter Import Failed"
+;    GuiControl, , GUIStatusMsg , % "Clipboard Match Failed"
 ;    FileRead, error_log, %py_log_path%
 ;    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 ;    return
@@ -649,12 +649,12 @@ else{
 RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi%
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
-    GuiControl, , GUIStatusMsg , "Rule Visibility Change Failed"
+    GuiControl, , GUIStatusMsg , % "Rule Visibility Change Failed"
     FileRead, error_log, %py_log_path%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
     return
 }
-GuiControl, , GUIStatusMsg , "Rule Visibility Changed Successfully"
+GuiControl, , GUIStatusMsg , % "Rule Visibility Changed Successfully"
 GuiControl, Disable, ChangeMatchedRuleButton
 return
 
@@ -757,17 +757,17 @@ if (flaskmin != flaskminUD){
 if(maphide != maphideUD){
     FileAppend, % "set_hide_maps_below_tier " maphideUD "`n", %ahk_out_path%
 }
-GuiControl, , GUIStatusMsg , "Filter Updating..."
+GuiControl, , GUIStatusMsg , % "Filter Updating..."
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
-    GuiControl, , GUIStatusMsg , "Filter Update Failed"
+    GuiControl, , GUIStatusMsg , % "Filter Update Failed"
     FileRead, error_log, %py_log_path%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
-GuiControl, , GUIStatusMsg , "Filter Updated Successfully"
+GuiControl, , GUIStatusMsg , % "Filter Updated Successfully"
 WinActivate, Path of Exile
 return
     
@@ -775,7 +775,7 @@ Import:
 RunWait, python %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
-    GuiControl, , GUIStatusMsg , "Filter Import Failed"
+    GuiControl, , GUIStatusMsg , % "Filter Import Failed"
     FileRead, error_log, %py_log_path%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
