@@ -98,10 +98,12 @@ for key in flasks
     fake_queue.Push(key)
 }
 
-; Run batch
+; Load all filter data from backend client
+status_msg := "Filter Loaded Succesfully"
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
+    status_msg := "Filter Load Failed"
     FileRead, error_log, %py_log_path%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
@@ -457,9 +459,9 @@ Gui Add, DropDownList, +AltSubmit x968 y336 w130 vmin_oilDDL Choose%min_oil%, %o
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x840 y394 w288 h240, Rule Matching
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Button, x856 y430 w254 h28, Find Rule Matching Clipboard
-Gui Add, Edit, x856 y475 w254 h100 +ReadOnly, [Matched Rule Text]
-Gui Add, Button, x906 y590 w154 h28 +Disabled, Change to "Hide"
+Gui Add, Button, x856 y430 w254 h28 gClip_ , Find Rule Matching Clipboard
+Gui Add, Edit, x856 y475 w254 h100 vMatchedRule +ReadOnly, N/A
+Gui Add, Button, x906 y590 w154 h28 vChangeMatchedRuleButton gMatchedShowHide +Disabled, Change to "Hide"
 ; ------------- End Section: Find Rule Matching Item -------------
 
 ; ------------- Section: Filter Actions Box -------------
@@ -468,7 +470,7 @@ Gui Add, GroupBox, x840 y660 w288 h170, Filter Actions
 ; Status message box
 Gui Font
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Edit, x856 y685 w254 h50 +ReadOnly -VScroll, [Status Message]
+Gui Add, Edit, x856 y685 w254 h50 vGUIStatusMsg +ReadOnly -VScroll, %status_msg%
 ; Action buttons
 Gui Font, c0x00e8b2 s11 Bold, Segoe UI
 Gui Add, Button, x872 y745 w226 h32 gImport, &Re-Import Filter
@@ -584,6 +586,78 @@ GuiControl, , % "CurrTexts" src_tier, % "|" currtexts[src_tier]
 GuiControl, , % "CurrTexts" dst_tier, % "|" currtexts[dst_tier]
 return
 
+; Clipboard Rule Matching
+type_tag := ""
+tier_tag := ""
+rule := ""
+Clip_:
+; Reset Global Variables
+type_tag := ""
+tier_tag := ""
+rule := ""
+FileDelete, %ahk_out_path%
+;FileDelete, %py_out_path%
+;FileAppend, % Clipboard, %ahk_out_path%
+;RunWait, python %py_prog_path% get_rule_matching_item %active_profile%, , Hide
+;FileRead, exit_code, %py_exit_code_path%
+;if (exit_code == "1"){
+;    GuiControl, , GUIStatusMsg , "Filter Import Failed"
+;    FileRead, error_log, %py_log_path%
+;    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+;    return
+;}
+FileRead, py_out_text, %py_out_path%
+if (py_out_text = "")
+{
+    GuiControl, , MatchedRule, Unable to Find Matching Rule
+    return
+}
+GuiControl, , MatchedRule, %py_out_text%
+idx := 0
+Loop, parse, py_out_text, `n, `r
+{
+    if (idx = 0){
+        splits := StrSplit(A_LoopField, ":")
+        type_tag := splits[2]
+        idx := 1
+    }
+    else if (idx = 1){
+        splits := StrSplit(A_LoopField, ":")
+        tier_tag := splits[2]
+        idx := 2
+    }
+    else
+        rule .= A_LoopField "`n"
+}
+if (InStr(py_out_text, "Show #")){
+    GuiControl, , ChangeMatchedRuleButton, Change to "Hide"
+    GuiControl, Enable, ChangeMatchedRuleButton
+} else if (InStr(py_out_text, "Hide #")){
+    GuiControl, , ChangeMatchedRuleButton, Change to "Show"
+    GuiCOntrol, Enable, ChangeMatchedRuleButton
+}
+return
+
+MatchedShowHide:
+GuiControlGet, ButtonText, , ChangedMatchedRuleButton
+if (InStr(ButtonText, "Show")){
+    visi := "show"
+}
+else{
+    visi := "hide"
+}
+RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi%
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    GuiControl, , GUIStatusMsg , "Rule Visibility Change Failed"
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+    return
+}
+GuiControl, , GUIStatusMsg , "Rule Visibility Changed Successfully"
+GuiControl, Disable, ChangeMatchedRuleButton
+return
+
 ChangeProfile:
 Gui, Submit, NoHide
 if (ProfileDDL == active_profile)
@@ -600,7 +674,7 @@ Reload
 ExitApp
 
 Update:
-Gui, Submit
+Gui, Submit, NoHide
 ; Erase backend_cli.input before writing
 FileAppend, abc, %ahk_out_path%
 FileDelete, %ahk_out_path%
@@ -683,20 +757,25 @@ if (flaskmin != flaskminUD){
 if(maphide != maphideUD){
     FileAppend, % "set_hide_maps_below_tier " maphideUD "`n", %ahk_out_path%
 }
+GuiControl, , GUIStatusMsg , "Filter Updating..."
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
+    GuiControl, , GUIStatusMsg , "Filter Update Failed"
     FileRead, error_log, %py_log_path%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
-ExitApp
+GuiControl, , GUIStatusMsg , "Filter Updated Successfully"
+WinActivate, Path of Exile
+return
     
 Import:
 RunWait, python %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
+    GuiControl, , GUIStatusMsg , "Filter Import Failed"
     FileRead, error_log, %py_log_path%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
@@ -708,3 +787,11 @@ ExitApp
 GuiEscape:
 GuiClose:
 ExitApp
+
+F7::
+WinGetActiveTitle, active
+if (active == "Path of Exile")
+    WinActivate, PoE Dynamic Loot Filter
+else if (active == "PoE Dynamic Loot Filter")
+    WinActivate, Path of Exile
+return
