@@ -37,7 +37,7 @@ PlayAlertSound 6 300
 PlayEffect Red
 MinimapIcon 0 Red Star''',
 
-True),
+False),
 
 # Simple chaos orb matching test
 ('''Item Class: Stackable Currency

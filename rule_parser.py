@@ -224,10 +224,11 @@ def ParseItem(item_lines: List[str]) -> dict:
 # Implemented/ignore keywords for Rules
 kImplementedBinaryKeywords = ['Identified', 'Corrupted', 'Mirrorred', 'AlternateQuality', 'Replica']
 kImplementedOtherKeywords = ['Class', 'Rarity', 'BaseType', 'ItemLevel', 'MapTier', 'Quality',
-                             'HasInfluence', 'GemQualityType', 'StackSize']
+                             'HasInfluence', 'GemLevel', 'GemQualityType', 'StackSize']
 # Ignore any rules with any of the following conditions:
 kIgnoreKeywords = ['AreaLevel', 'AnyEnchantment', 'FracturedItem', 'SynthesisedItem',
-                   'BlightedMap', 'HasExplicitMod', 'SocketGroup']
+                   'BlightedMap', 'HasExplicitMod', 'SocketGroup',
+                   'HasSearingExarchImplicit', 'HasEaterOfWorldsImplicit', 'UberBlightedMap', 'Scourged']
 
 # We are making a few basic assumptions that the rules are written "reasonably" here:
 #  - For binary properties, there will not be a "not equals" operator, i.e.
@@ -299,42 +300,39 @@ def CheckRuleMatchesItemText(parsed_rule_lines: List[str], item_lines: List[str]
 test_item = \
 '''Item Class: Active Skill Gems
 Rarity: Gem
-Divergent Vitality
+Vitality
 --------
 Aura, Spell, AoE
-Level: 16
-Reservation: 189 Mana
+Level: 1
+Reservation: 28 Mana
 Cooldown Time: 1.20 sec
 Cast Time: Instant
-Quality: +13% (augmented)
-Alternate Quality
+Quality: +10% (augmented)
 --------
 Requirements:
-Level: 60
-Str: 103
+Level: 10
+Str: 22
 --------
 Casts an aura that grants life regeneration to you and your allies.
 --------
-+15 to radius
-You and nearby Allies Regenerate 135 Life per second
-You and nearby Allies deal 2% increased Damage while on Full Life
+20% increased Area of Effect
+You and nearby Allies Regenerate 10 Life per second
 --------
-Experience: 7879780/16039890
+Experience: 1/9569
 --------
-Place into an item socket of the right colour to gain this skill...'''
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.'''
 
 test_rule = \
-'''Show # $type->gems-exceptional $tier->divt1
-GemQualityType Divergent
+'''Show # $type->gems-generic $tier->lt1
+GemLevel >= 21
 Class "Gems"
-BaseType "Anger" "Vitality"
 SetFontSize 45
-SetTextColor 0 0 125 255
-SetBorderColor 0 0 125 255
-SetBackgroundColor 255 255 255 255
-PlayEffect Red
-MinimapIcon 0 Red Star
+SetTextColor 20 240 240 255
+SetBorderColor 240 0 0 255
+SetBackgroundColor 70 0 20 255
 PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Triangle
 '''
 
 def Test():

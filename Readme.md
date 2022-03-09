@@ -31,15 +31,18 @@ The `profile_name` parameter is required in all cases except for:
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update
    - Better not to fail in this case
- - [ ] Test suite: Change `CHECK` macro to `CHECK_EQ`, etc
+ - [ ] (Low priority) Test suite: Change `CHECK` macro to `CHECK_EQ`, etc
  - [ ] (Low priority) fix not parsing tags for custom rules
+ - [x] Fix rule matching in backend
+   - [x] Fix generic bug
+   - [x] Fix rule matching bug with GemLevel
+   - [ ] Implement temporarily disabled properties: Scourged Maps, UberBlighted Maps, ...
  - [ ] Refactor frontend AHK script
    - [x] Reorder and organize build GUI code
    - [ ] Write helper functions to make GUI construction more concise.
          For example, combining setting font with creating an item
    - [x] Resolve minor questions in AHK script (ctr-f TODO)
    - [ ] Refactor all of the code to use a functional style
- - [ ] Fix backend function get_rule_matching_item
  - [x] Add tests for newly added featuers:
    - [x] Stacked currency
    - [x] Essences

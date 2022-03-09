@@ -405,7 +405,7 @@ class LootFilter:
         item_properties: dict = rule_parser.ParseItem(item_text_lines)
         matched_continue_rule = None
         for rule_or_comment_block in self.rule_or_comment_block_list:
-            if (isinstance(rule, LootFilterRule)):
+            if (isinstance(rule_or_comment_block, LootFilterRule)):
                 rule = rule_or_comment_block
                 if ((rule.visibility != RuleVisibility.kDisable)
                         and rule.MatchesItem(item_properties)):
