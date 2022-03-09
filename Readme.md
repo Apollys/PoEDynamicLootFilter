@@ -37,7 +37,7 @@ The `profile_name` parameter is required in all cases except for:
    - [x] Reorder and organize build GUI code
    - [ ] Write helper functions to make GUI construction more concise.
          For example, combining setting font with creating an item
-   - [ ] Resolve minor questions in AHK script (ctr-f TODO)
+   - [x] Resolve minor questions in AHK script (ctr-f TODO)
    - [ ] Refactor all of the code to use a functional style
  - [ ] Fix backend function get_rule_matching_item
  - [x] Add tests for newly added featuers:

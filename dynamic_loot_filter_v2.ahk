@@ -218,6 +218,7 @@ Loop, 5 {
     }
 }
 cstacktext := RegExReplace( cstacktext, "\|$" )
+; Less excludes 6-stacks for larger currencies which can only support 1,2,4, or none
 cstacktext_less := RegExReplace( cstacktext_less, "\|$" )
 
 ; Profile data
@@ -350,15 +351,15 @@ Gui Add, ListBox, x32 y613 w135 h164 +Sort vCurrTexts7, % currtexts[7]
 ; T8 block
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x192 y584 w115 h28 +0x200, T8 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT8 x284 y584 w44 Choose"cstack_values[8], %cstacktext%  ; Why these ones not _less?
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT8 x284 y584 w44 Choose"cstack_values[8], %cstacktext%  
 Gui Font, c0x00e8b2 s10
 Gui Add, ListBox, x192 y613 w135 h164 +Sort vCurrTexts8, % currtexts[8]
 ; T9 block
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x352 y584 w115 h28 +0x200, T9 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT9 x444 y584 w44 Choose"cstack_values[9], %cstacktext%  ; Why these ones not _less?
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT9 x444 y584 w44 Choose"cstack_values[9], %cstacktext%  
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y613 w135 h164 gHandleCurrencyListBoxEvent +Sort vCurrTexts9, % currtexts[9]  ; TODO: Why is this different from the rest?
+Gui Add, ListBox, x352 y613 w135 h164 +Sort vCurrTexts9, % currtexts[9]  
 ; Portal scrolls
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x56 y792 w115 h28 +0x200, Portal Stack Size:
