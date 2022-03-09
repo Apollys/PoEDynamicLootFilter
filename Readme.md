@@ -22,9 +22,9 @@ The `profile_name` parameter is required in all cases except for:
    - [ ] If yes, prompt user for profile name, create profile,
      explain how to configure options and add custom rules
  - [ ] Implement Create Profile button in UI
- - [ ] Implement UI display error messages on important failures
-   - [ ] Failed to import filter
-   - [ ] Or more generally, always report status of last action
+ - [x] Implement UI display error messages on important failures
+   - [x] Failed to import filter
+   - [x] Or more generally, always report status of last action
  - [x] ~~Explicitly check for presence of downloaded filter,
        give more clear error message if missing~~
 	   This was already done, the UI just needs to propogate the error
@@ -39,6 +39,7 @@ The `profile_name` parameter is required in all cases except for:
          For example, combining setting font with creating an item
    - [ ] Resolve minor questions in AHK script (ctr-f TODO)
    - [ ] Refactor all of the code to use a functional style
+ - [ ] Fix backend function get_rule_matching_item
  - [x] Add tests for newly added featuers:
    - [x] Stacked currency
    - [x] Essences
