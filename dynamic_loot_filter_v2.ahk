@@ -410,6 +410,7 @@ Gui Add, Button, x592 y608 w144 h31 gRemoveFlaskHigh, Remove Selected
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x528 y674 w286 h152, Quality and RGB Items
 ; Quality gems
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x544 y706 w120 h28 +0x200, Gem Min Quality:
 Gui Add, Edit, x664 y706 w50 h28 vgemminUD,
 Gui Add, UpDown, x706 y706 w20 h28 Range0-21, % gemmin
