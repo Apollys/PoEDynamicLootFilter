@@ -598,16 +598,16 @@ type_tag := ""
 tier_tag := ""
 rule := ""
 FileDelete, %ahk_out_path%
-;FileDelete, %py_out_path%
-;FileAppend, % Clipboard, %ahk_out_path%
-;RunWait, python %py_prog_path% get_rule_matching_item %active_profile%, , Hide
-;FileRead, exit_code, %py_exit_code_path%
-;if (exit_code == "1"){
-;    GuiControl, , GUIStatusMsg , % "Clipboard Match Failed"
-;    FileRead, error_log, %py_log_path%
-;    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
-;    return
-;}
+FileDelete, %py_out_path%
+FileAppend, % Clipboard, %ahk_out_path%
+RunWait, python %py_prog_path% get_rule_matching_item %active_profile%, , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    GuiControl, , GUIStatusMsg , % "Clipboard Match Failed"
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+    return
+}
 FileRead, py_out_text, %py_out_path%
 if (py_out_text = "")
 {
