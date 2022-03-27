@@ -229,7 +229,7 @@ kImplementedOtherKeywords = ['Class', 'Rarity', 'BaseType', 'ItemLevel', 'MapTie
 kIgnoreKeywords = ['AreaLevel', 'AnyEnchantment', 'FracturedItem', 'SynthesisedItem',
                    'BlightedMap', 'HasExplicitMod', 'SocketGroup',
                    'HasSearingExarchImplicit', 'HasEaterOfWorldsImplicit', 'UberBlightedMap',
-                   'Scourged', 'ArchnemesisMod']
+                   'Scourged', 'Archnemesis Mod']
 
 # We are making a few basic assumptions that the rules are written "reasonably" here:
 #  - For binary properties, there will not be a "not equals" operator, i.e.
