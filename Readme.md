@@ -10,7 +10,7 @@
 
 1. While playing Path of Exile, press a hotkey (default: `F8`) to open the UI.
 2. Select your changes with just a couple mouse clicks.
-3. Click **Apply Changes** - the GUI will automatically close and your loot filter (on your PC) will automatically be updated.
+3. Click **Apply Changes** - the GUI will automatically close and your loot filter will automatically be updated.
 4. In-game, press `o` (options) and click the **Reload Filter** button - your changes are now visible immediately in-game!
 
 ## Why is it useful?
