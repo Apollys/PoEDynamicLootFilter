@@ -8,10 +8,10 @@
 
 ## How do I use it?
 
-1. Anytime you want to change your loot filter, press a hotkey (default: *TODO*) to open the UI
-2. Select your changes with just a couple mouse clicks, and press **Apply Changes**
-3. The GUI will automatically close and your loot filter (on your PC) will automatically be updated
-4. In-game, press O (options) and click reload filter, and see your changed in effect immediately
+1. While playing Path of Exile, press a hotkey (default: `F8`) to open the UI.
+2. Select your changes with just a couple mouse clicks.
+3. Click **Apply Changes** - the GUI will automatically close and your loot filter (on your PC) will automatically be updated.
+4. In-game, press `o` (options) and click the **Reload Filter** button - your changes are now visible immediately in-game!
 
 ## Why is it useful?
 
@@ -19,37 +19,37 @@ Normally, in order to make a change to our filter, we need to alt-tab out of PoE
 search through the Filterblade UI to find the change we want to make, make the change, save the filter,
 sync the changes to our Path of Exile account, then finally alt-tab back into PoE and reload the filter.
 
-With PoE Dynamic Loot Filter, this can all be done within a couple seconds.
+With PoE Dynamic Loot Filter, this can all be done in a couple seconds.
 
 Common highly valuable uses include:
 
 1. I'm getting to mapping and no longer want to see single portal and wisdom scrolls.  With PoE DLF,
    I can easily set the minimum visible stack size of currency by tier (portal and wisdom scrolls have their own tier).
 2. I'm farming chaos recipes, and have way too many body armors, but not enough hats.  With PoE DLF,
-   I can easily turn show/hide chaos recipe rare items by item slot.
-3. My loot filter is getting spammed by something random.  Either DLF will have a specific option to fix it
+   I can easily show/hide chaos recipe rare items by item slot.
+3. My loot filter is getting spammed by something random.  DLF may have a specific option to fix it
    (for example, if it's a cheap div card, I could raise the minimum shown div card tier threshold), or 
    I can use DLF's built-in rule-matcher to automatically detect and hide the rule that matches a given item.
    
 ## What setup is required?
 
 PoE DLF has minimal requirements and setup to make it as widely accessible as possible.  You need the following:
- * A loot filter created from [Filterblade](https://www.filterblade.xyz/) - using a builtin filter (e.g. Neversink Stable - Strict) is totally fine!
+ * A **loot filter created from [Filterblade](https://www.filterblade.xyz/)** - using a builtin filter (e.g. Neversink Stable - Strict) is totally fine!
    In fact, the less you've moved things around or created custom rules in Filterblade, the better (visual style changes are always okay though)
- * [Autohotkey](https://www.autohotkey.com/) - if you're playing PoE and don't have this already, you really should
- * [Python 3](https://www.python.org/downloads/windows/) - the version is important here, it needs to be **Python 3**
+ * **[Autohotkey](https://www.autohotkey.com/)** - if you're playing PoE and don't have this already, you really should
+ * **[Python 3](https://www.python.org/downloads/windows/)** - the version is important here, it needs to be **Python 3**
    * To verify your python is set up as required, open a command prompt and type `python`: it should launch Python 3.X)
    * No specific python packages are required, as long as Python 3 loads, you are good to go
- * DLF config: in your profile config file, tell DLF the path to your downloaded filter and the path to Path of Exile
+ * **DLF config**: in your profile config file, tell DLF the path to your downloaded filter and the path to Path of Exile
 
 ## How does it work behind the scenes?
 
 Firstly, since we are programmatically reading, analyzing, and writing filter files, note that this is all done *locally*
- - on the user's machine - rather than online
+ - on the user's machine - rather than online.
 
 Filterblade formats its loot filters in a certain way, and PoE DLF leverages that format to parse the input filter into
-a structure that it can understand and manipulate.  For example, Filterblade places "type" and "tier" tags on the first
-line of their rules, so the top tier currency rule can be found by looking for the tags `type->currency` and `tier->t1`.
+a structure that it can understand and manipulate.  For example, Filterblade places `type` and `tier` tags on the first
+line of their rules, so the tier 1 currency rule can be found by looking for the tags `type->currency` and `tier->t1`.
 
 Whenever the user wants to make a change to the filter, the corresponding rules are modified, and the filter is re-saved.
 User profiles are also updated to save the changes the user has made to the filter, so the user can re-download a filter
@@ -59,12 +59,17 @@ separate profiles (e.g. for different characters, for SSF/Trade leagues, etc) if
 All filter parsing, modification, and saving is done by a Python backend.  An AHK frontend GUI presents the program's functionality
 in a clean and efficient manner to the user, and the AHK GUI then relays commands to the Python backend to execute.
 
+Rule matching is a somewhat complicated - the python backend has to reproduce Path of Exile's entire rule-item matching algorithm.
+In general, it works pretty well, but note that some aspects of it have been shortcut slightly, as they're not super important
+and the system takes a lot of work to get perfectly.  Also, note that at new league starts, there may be significant bugs
+because of new items and loot filter attributes that are added to the game.
+
 - - -
 
 ### Syntax for backend command-line interface calls
 
 ```
-> python3 backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
+> python backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
 ```
 
 The `profile_name` parameter is required in all cases except for:
@@ -150,7 +155,7 @@ The `profile_name` parameter is required in all cases except for:
 
 The AHK frontend calls the Python backend via:
 ```
-> python3 backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
+> python backend_cli.py <function_name> <function_parameters...> <profile_name (if required)>
 ```
 The Python backend communicates output values to AHK by writing them to the file
 `backend_cli.output`.  It writes an exit code to `backend_cli.exit_code`: `-1` indicates
