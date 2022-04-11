@@ -49,7 +49,7 @@ PoE DLF has minimal requirements and setup to make it as widely accessible as po
    * No specific python packages are required, as long as Python 3 loads, you are good to go
  * **DLF config**: in your profile config file, tell DLF the path to your downloaded filter and the path to Path of Exile
 
-See [DLF First Time Setup Walkthrough](https://github.com/Apollys/PoEDynamicLootFilter/Readme.md#dlf-first-time-setup-walkthrough) below for detailed instructions on getting DLF running.
+See [DLF First Time Setup Walkthrough](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/Readme.md#dlf-first-time-setup-walkthrough) below for detailed instructions on getting DLF running.
 
 ## How does it work behind the scenes?
 
