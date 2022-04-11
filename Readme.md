@@ -15,11 +15,18 @@
 
 ## Why is it useful?
 
-Normally, in order to make a change to our filter, we need to alt-tab out of PoE, load our Filterblade filter,
-search through the Filterblade UI to find the change we want to make, make the change, save the filter,
-sync the changes to our Path of Exile account, then finally alt-tab back into PoE and reload the filter.
+Normally, in order to make a change to our filter, we need to:
+1. Alt-tab out of PoE
+2. Navigate to the Filterblade site and log in if not logged in
+3. Load our Filterblade filter
+4. Search through the Filterblade UI to find the section corresponding to the change we want to make
+5. Make the change
+6. Save the filter on Filterblade
+7. Sync the changes to our Path of Exile account
+8. Alt-tab back into PoE
+9. Reload the filter
 
-With PoE Dynamic Loot Filter, this can all be done in a couple seconds.
+With PoE Dynamic Loot Filter, this can all be done in a couple seconds. No exaggeration here.
 
 Common highly valuable uses include:
 
@@ -41,6 +48,8 @@ PoE DLF has minimal requirements and setup to make it as widely accessible as po
    * To verify your python is set up as required, open a command prompt and type `python`: it should launch Python 3.X)
    * No specific python packages are required, as long as Python 3 loads, you are good to go
  * **DLF config**: in your profile config file, tell DLF the path to your downloaded filter and the path to Path of Exile
+
+See [DLF First Time Setup Walkthrough](https://github.com/Apollys/PoEDynamicLootFilter/Readme.md#dlf-first-time-setup-walkthrough) below for detailed instructions on getting DLF running.
 
 ## How does it work behind the scenes?
 
@@ -64,7 +73,13 @@ In general, it works pretty well, but note that some aspects of it have been sho
 and the system takes a lot of work to get perfectly.  Also, note that at new league starts, there may be significant bugs
 because of new items and loot filter attributes that are added to the game.
 
+## DLF First Time Setup Walkthrough
+
+*TODO*
+
 - - -
+
+## Developer Documentation
 
 ### Syntax for backend command-line interface calls
 
