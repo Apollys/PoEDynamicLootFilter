@@ -12,6 +12,30 @@ kGeneralConfigFullpath = os.path.join(kProfileDirectory, kGeneralConfigFilename)
 
 kActiveProfileTemplate = 'Active profile: {}'
 
+kDefaultProfileConfigTemplate = \
+'''# Profile config file for profile: "{}"
+
+# Note: all blank lines and lines beginning with '#' are ignored
+# Values after the colons may be modified, values before the
+# colons are keyphrases and should be kept as-is.
+
+# Loot filter file locations
+Download directory: FiltersDownload
+Input (backup) loot filter directory: FiltersInput
+Path of Exile directory: FiltersPathOfExile
+Downloaded loot filter filename: NeversinkRegular.filter
+Output (Path of Exile) loot filter filename: DynamicLootFilter.filter
+
+# Remove filter from downloads directory when importing?
+# Filter will still be saved in Input directory even if this is True
+Remove downloaded filter: True
+
+# Loot filter options
+Hide maps below tier: 0
+Add chaos recipe rules: True
+Chaos recipe weapon classes, any height: Daggers, Rune Daggers, Wands
+Chaos recipe weapon classes, max height 3: Bows'''
+
 def GetActiveProfileName() -> str:
     if (not os.path.isdir(kProfileDirectory)):
         raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
@@ -49,6 +73,20 @@ def GetAllProfileNames() -> list:
             profile_names.append(profile_name)
     return profile_names
 # End GetAllProfileNames
+
+# Returns true if new profile was created, false if profile already exists
+def CreateNewProfile(new_profile_name: str) -> bool:
+    CheckType(new_profile_name, 'new_profile_name', str)
+    if (new_profile_name in GetAllProfileNames()):
+        return False
+    new_profile_config_text = kDefaultProfileConfigTemplate.format(new_profile_name)
+    new_profile_config_fullpath = os.path.join(kProfileDirectory, new_profile_name + '.config')
+    helper.WriteToFile(new_profile_config_text, new_profile_config_fullpath)
+    helper.WriteToFile('', os.path.join(kProfileDirectory, new_profile_name + '.changes'))
+    helper.WriteToFile('', os.path.join(kProfileDirectory, new_profile_name + '.rules'))
+    SetActiveProfile(new_profile_name)
+    return True
+# End CreateNewProfile
 
 def GetProfileConfigFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.config')

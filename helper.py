@@ -9,11 +9,16 @@ from type_checker import CheckType, CheckType2
 
 # Read lines of a file to a list of strings
 # Safe against file not existing
-def ReadFile(fullpath: str) -> List[str]:
+def ReadFile(fullpath: str, retain_newlines: bool = True) -> List[str]:
     CheckType(fullpath, 'fullpath', str)
+    CheckType(retain_newlines, 'retain_newlines', bool)
     try:
         with open(fullpath) as input_file:
-            return input_file.readlines()
+            lines = input_file.readlines()
+        if (not retain_newlines):
+            for i in range(len(lines)):
+                lines[i] = lines[i].rstrip('\n')
+        return lines
     except FileNotFoundError:
         return []
 # End ReadFile
