@@ -270,7 +270,7 @@ Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, DropDownList, x905 y8 w151 gChangeProfile vProfileDDL Choose1, %ProfString%
 ; Create Button
 Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-Gui Add, Button, x1060 y9 w60 h26, Create
+Gui Add, Button, x1060 y9 w60 h26 gCreateProfile1, Create
 ; ------------- End Section: Profiles -------------
 
 ; ------------- Section: Currency -------------
@@ -674,6 +674,22 @@ else if (exit_code == "-1")
     MsgBox, How did you get here?
 Reload
 ExitApp
+
+CreateProfile1:
+InputBox, new_prof_name, PoE Dynamic Loot Filter, Enter a name for your new profile`nThis new profile will be a copy of the default profile, , , 145
+RunWait, python %py_prog_path% create_new_profile %new_prof_name%,  , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    GuiControl, , GUIStatusMsg , % "Profile Creation Failed"
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+}
+else if (exit_code == "-1")
+    MsgBox, How did you get here?
+Reload
+return
+
+
 
 Update:
 Gui, Submit, NoHide
