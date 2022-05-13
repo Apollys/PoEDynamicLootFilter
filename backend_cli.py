@@ -514,17 +514,9 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py create_new_profile MyProfile
         '''
         CheckNumParams(function_params, 1)
-        profile_names_list = profile.GetAllProfileNames()
         new_profile_name = function_params[0]
-        create_new_profile_flag = new_profile_name not in profile_names_list
-        if (create_new_profile_flag):
-            default_profile_config_fullpath = os.path.join(
-                    profile.kProfileDirectory, 'DefaultProfile.config')
-            new_profile_config_fullpath = os.path.join(
-                    profile.kProfileDirectory, new_profile_name + '.config')
-            file_manip.CopyFile(default_profile_config_fullpath, new_profile_config_fullpath)
-            profile.SetActiveProfile(new_profile_name)
-        output_string += str(int(create_new_profile_flag))
+        profile_created_flag = profile.CreateNewProfile(new_profile_name)
+        output_string += str(int(profile_created_flag))
     elif (function_name == 'set_active_profile'):
         '''
         set_active_profile <new_active_profile_name>
