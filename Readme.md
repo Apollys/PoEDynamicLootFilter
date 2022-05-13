@@ -1,19 +1,29 @@
 # PoE Dynamic Loot Filter
 
-*TODO: insert screenshot of UI here*
+![DLF_UI_05_13_2022](https://user-images.githubusercontent.com/37650759/168293570-861da003-836d-4012-a0b2-09da2c8b037f.png)
 
 ## What is PoE Dynamic Loot Filter?
 
 **PoE Dynamic Loot Filter** (or **DLF**) is a tool to modify your loot filter seamlessly in real-time while playing Path of Exile.
 
-## How do I use it?
+## Quick Setup
+
+1. Download any [FilterBlade](https://www.filterblade.xyz/) loot filter (you can leave it in your Downloads directory).
+2. Download this repository anywhere on your PC.
+3. Open this PoEDynamicLootFilter directory in command prompt, and run `python setup.py`.
+
+Once this is complete, double click `dynamic_loot_filter.ahk` to launch PoE DLF.
+
+There are only two requirements for DLF to run: **[Autohotkey](https://www.autohotkey.com/)** and **[Python 3](https://www.python.org/downloads/windows/)**. See [below](https://github.com/Apollys/PoEDynamicLootFilter#what-setup-is-required) for more details.
+
+## In-Game Usage
 
 1. While playing Path of Exile, press a hotkey (default: `F8`) to open the UI.
 2. Select your changes with just a couple mouse clicks.
 3. Click **Apply Changes** - the GUI will automatically close and your loot filter will automatically be updated.
 4. In-game, press `o` (options) and click the **Reload Filter** button - your changes are now visible immediately in-game!
 
-## Why is it useful?
+## Why Use DLF?
 
 Normally, in order to make a change to our filter, we need to:
 1. Alt-tab out of PoE
@@ -26,7 +36,7 @@ Normally, in order to make a change to our filter, we need to:
 8. Alt-tab back into PoE
 9. Reload the filter
 
-With PoE Dynamic Loot Filter, this can all be done in a couple seconds. No exaggeration here.
+With DLF, this can all be done in a couple seconds. No exaggeration here.
 
 Common highly valuable uses include:
 
@@ -38,20 +48,18 @@ Common highly valuable uses include:
    (for example, if it's a cheap div card, I could raise the minimum shown div card tier threshold), or 
    I can use DLF's built-in rule-matcher to automatically detect and hide the rule that matches a given item.
    
-## What setup is required?
+## DLF Requirements
 
 PoE DLF has minimal requirements and setup to make it as widely accessible as possible.  You need the following:
  * A **loot filter created from [Filterblade](https://www.filterblade.xyz/)** - using a builtin filter (e.g. Neversink Stable - Strict) is totally fine!
-   In fact, the less you've moved things around or created custom rules in Filterblade, the better (visual style changes are always okay though)
+   In fact, the less you've moved things around or created custom rules in FilterBlade, the better (visual style changes are always okay though)
  * **[Autohotkey](https://www.autohotkey.com/)** - if you're playing PoE and don't have this already, you really should
  * **[Python 3](https://www.python.org/downloads/windows/)** - the version is important here, it needs to be **Python 3**
    * To verify your python is set up as required, open a command prompt and type `python`: it should launch Python 3.X)
    * No specific python packages are required, as long as Python 3 loads, you are good to go
  * **DLF config**: in your profile config file, tell DLF the path to your downloaded filter and the path to Path of Exile
 
-See [DLF First Time Setup Walkthrough](https://github.com/Apollys/PoEDynamicLootFilter/blob/master/Readme.md#dlf-first-time-setup-walkthrough) below for detailed instructions on getting DLF running.
-
-## How does it work behind the scenes?
+## Under the Hood - How Does DLF Work?
 
 Firstly, since we are programmatically reading, analyzing, and writing filter files, note that this is all done *locally*
  - on the user's machine - rather than online.
@@ -73,9 +81,9 @@ In general, it works pretty well, but note that some aspects of it have been sho
 and the system takes a lot of work to get perfectly.  Also, note that at new league starts, there may be significant bugs
 because of new items and loot filter attributes that are added to the game.
 
-## DLF First Time Setup Walkthrough
+- - -
 
-*TODO*
+**End of user Readme: non-developers may safely ignore everything below.**
 
 - - -
 
