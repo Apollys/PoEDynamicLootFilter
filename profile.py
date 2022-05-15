@@ -1,3 +1,4 @@
+form enum import Enum
 import os
 import os.path
 
@@ -12,7 +13,7 @@ kGeneralConfigFullpath = os.path.join(kProfileDirectory, kGeneralConfigFilename)
 
 kActiveProfileTemplate = 'Active profile: {}'
 
-kDefaultProfileConfigTemplate = \
+kProfileConfigTemplate = \
 '''# Profile config file for profile: "{}"
 
 # Note: all blank lines and lines beginning with '#' are ignored
@@ -22,6 +23,7 @@ kDefaultProfileConfigTemplate = \
 # Loot filter file locations
 Download directory: FiltersDownload
 Input (backup) loot filter directory: FiltersInput
+# Location of Path of Exile filters (not the game client)
 Path of Exile directory: FiltersPathOfExile
 Downloaded loot filter filename: NeversinkRegular.filter
 Output (Path of Exile) loot filter filename: DynamicLootFilter.filter
@@ -35,6 +37,59 @@ Hide maps below tier: 0
 Add chaos recipe rules: True
 Chaos recipe weapon classes, any height: Daggers, Rune Daggers, Wands
 Chaos recipe weapon classes, max height 3: Bows'''
+
+# Map of keyphrases from config file to keywords used in the config_data dictionary
+kProfileConfigKeyphraseMap = {
+        'Download directory' : 'DownloadDirectory',
+        'Input (backup) loot filter directory' : 'InputLootFilterDirectory',
+        'Path of Exile directory' : 'PathOfExileDirectory',
+        'Downloaded loot filter filename' : 'DownloadedLootFilterFilename',
+        'Output (Path of Exile) loot filter filename' : 'OutputLootFilterFilename',
+        'Remove downloaded filter' : 'RemoveDownloadedFilter',
+        'Hide maps below tier' : 'HideMapsBelowTier',
+        'Add chaos recipe rules' : 'AddChaosRecipeRules',
+        'Chaos recipe weapon classes, any height' : 'ChaosRecipeWeaponClassesAnyHeight',
+        'Chaos recipe weapon classes, max height 3' : 'ChaosRecipeWeaponClassesMaxHeight3'}
+
+class ConstructProfileEnum(Enum):
+    kConstructNew = 1
+    kParseConfig = 2
+# End ConstructProfileEnum
+
+class Profile:
+    '''
+    Member variables:
+     - name: str
+     - config_path: str
+     - changes_path: str
+     - rules_path: str
+     - config_data: dict {keyphrase : value}
+    '''
+    
+    # Note: do not call directly, instead use ConstructNewProfile or ParseProfileConfig
+    # defined below.
+    def __init__(self, name: str, construct_profile_enum: ConstructProfileEnum):
+        CheckType(name, 'name', str)
+        CheckType(construct_profile_enum, 'construct_profile_enumv', ConstructProfileEnum)
+        self.name = name
+        path_basename = os.path.join(kProfileDirectory, self.name)
+        self.config_path = path_basename + '.config'
+        self.changes_path = path_basename + '.changes'
+        self.rules_path = path_basename + '.rules'
+        if (construct_profile_enum == ConstructProfileEnum::kConstructNew):
+            pass
+        elif (construct_profile_enum == ConstructProfileEnum::kParseConfig):
+            pass
+    # End init
+
+    def LoadConfig(self):
+        pass
+    
+    def WriteConfig(self):
+        pass
+        
+    def 
+# End class Profile
 
 def GetActiveProfileName() -> str:
     if (not os.path.isdir(kProfileDirectory)):
@@ -79,7 +134,7 @@ def CreateNewProfile(new_profile_name: str) -> bool:
     CheckType(new_profile_name, 'new_profile_name', str)
     if (new_profile_name in GetAllProfileNames()):
         return False
-    new_profile_config_text = kDefaultProfileConfigTemplate.format(new_profile_name)
+    new_profile_config_text = kProfileConfigTemplate.format(new_profile_name)
     new_profile_config_fullpath = os.path.join(kProfileDirectory, new_profile_name + '.config')
     helper.WriteToFile(new_profile_config_text, new_profile_config_fullpath)
     helper.WriteToFile('', os.path.join(kProfileDirectory, new_profile_name + '.changes'))
@@ -99,19 +154,6 @@ def GetProfileRulesFullpath(profile_name: str) -> str:
 def GetProfileChangesFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.changes')
 # End GetProfileChangesFullpath
-
-# Map of keyphrases from config file to keywords used in the config_data dictionary
-kProfileConfigKeyphraseMap = {
-        'Download directory' : 'DownloadDirectory',
-        'Input (backup) loot filter directory' : 'InputLootFilterDirectory',
-        'Path of Exile directory' : 'PathOfExileDirectory',
-        'Downloaded loot filter filename' : 'DownloadedLootFilterFilename',
-        'Output (Path of Exile) loot filter filename' : 'OutputLootFilterFilename',
-        'Remove downloaded filter' : 'RemoveDownloadedFilter',
-        'Hide maps below tier' : 'HideMapsBelowTier',
-        'Add chaos recipe rules' : 'AddChaosRecipeRules',
-        'Chaos recipe weapon classes, any height' : 'ChaosRecipeWeaponClassesAnyHeight',
-        'Chaos recipe weapon classes, max height 3' : 'ChaosRecipeWeaponClassesMaxHeight3'}
 
 def ParseProfileConfig(profile_name: str) -> dict:
     CheckType(profile_name, 'profile_name', str)
@@ -213,4 +255,3 @@ DownloadedLootFilterFullpath : FiltersDownload/BrandLeaguestart.filter (str)
 InputLootFilterFullpath : FiltersInput/BrandLeaguestart.filter (str)
 OutputLootFilterFullpath : FiltersPathOfExile/DynamicLootFilter.filter (str)
 '''
-
