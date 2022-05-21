@@ -23,6 +23,22 @@ def ReadFile(fullpath: str, retain_newlines: bool = True) -> List[str]:
         return []
 # End ReadFile
 
+# Parses each line of the input file as <key>:<value>.
+# Strips key and value before inserting into dict, and ignores empty lines.
+def ReadFileToDict(fullpath: str) -> dict:
+    CheckType(fullpath, 'fullpath', str)
+    try:
+        result_dict = {}
+        with open(fullpath) as input_file:
+            for line in input_file:
+                if (line.strip() != ''):
+                    key, value = line.split(':', 1)  # maxsplit = 1
+                    result_dict[key.strip()] = value.strip()
+        return result_dict
+    except FileNotFoundError:
+        return {}
+# End ReadFile
+
 # Writes data to the file determined by fullpath
 # Overwrites the given file if it already exists
 # If data is a non-string iterable type, then it is written as newline-separated items

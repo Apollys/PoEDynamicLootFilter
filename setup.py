@@ -78,7 +78,7 @@ def main():
     helper.WriteToFile(config_lines, config_path)
     # Setup complete
     config_path = os.path.join(profile.kProfileDirectory, new_profile_name + '.profile')
-    print('\nConfig "{}" updated successfully!'.format(config_path)
+    print('\nConfig "{}" updated successfully!'.format(config_path))
     print('You can edit this file at any time later to update these settings.')
     print('\nSetup complete! Enjoy PoE Dynamic Loot Filter!')
 # End main

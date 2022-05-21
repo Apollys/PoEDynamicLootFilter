@@ -103,6 +103,7 @@ The `profile_name` parameter is required in all cases except for:
 
 ### To-Do
  - [ ] Add first-time setup support
+   - [x] Add first-time setup script `setup.py`
    - [x] Add backend function `is_first_launch`
    - [ ] If yes, prompt user for profile name, create profile,
      explain how to configure options and add custom rules
@@ -147,7 +148,7 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### Feature Wish List
- - [ ] First time setup documentation
+ - [x] First time setup documentation
  - [ ] First time setup workflow in UI
  - [x] Add support for essences
  - [x] Add support for div cards
@@ -236,4 +237,3 @@ for the detailed documentation of all available function calls.
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
   - `is_chaos_recipe_enabled_for <item_slot: str>`
   - `get_all_chaos_recipe_statuses`
-

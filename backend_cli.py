@@ -508,19 +508,23 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     elif (function_name == 'create_new_profile'):
         '''
         create_new_profile <new_profile_name>
-         - Creates a new profile by copying DefaultProfile.config, and sets new profile to active
+         - Creates a new profile from the config values given in backend_cli.input
+         - Each input line takes the form: "<keyword>:<value>", with keywords defined in profile.py
+         - Required keywords: 'DownloadDirectory', 'PathOfExileDirectory', 'DownloadedLootFilterFilename'
          - Does nothing if a profile with the given new_profile_name already exists
          - Output: "1" if the new profile was created, "0" otherwise
          - Example: > python3 backend_cli.py create_new_profile MyProfile
         '''
         CheckNumParams(function_params, 1)
         new_profile_name = function_params[0]
-        profile_created_flag = profile.CreateNewProfile(new_profile_name)
-        output_string += str(int(profile_created_flag))
+        config_values: dict = helper.ReadFileToDict(kInputFilename)
+        created_profile = profile.CreateNewProfile(new_profile_name, config_values)
+        output_string += str(int(created_profile != None))
     elif (function_name == 'set_active_profile'):
         '''
         set_active_profile <new_active_profile_name>
          - Note: Does *not* take a (current) <profile_name> parameter
+         - Raises an error if new_active_profile_name does not exist
          - Output: None
          - Example: > python3 backend_cli.py set_active_profile TestProfile
         '''
