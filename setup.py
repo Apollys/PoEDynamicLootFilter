@@ -32,53 +32,40 @@ def main():
     # Create new profile
     print('\nStep 2: Create your profile')
     new_profile_name = input('Enter new profile name: ')
-    profile.CreateNewProfile(new_profile_name)
-    print('Profile "{}" created!'.format(new_profile_name))
-    # Get Download and Path of Exile directories
+    # Potential TODO: check if new_profile_name already exists as a profile
+    # Query required config values
+    config_values = {}
+    # Required keywords: 'DownloadDirectory', 'PathOfExileDirectory', 'DownloadedLootFilterFilename'
     print('\nStep 3: Tell DLF where to find and put your filters')
     # Prompt Download directory
-    download_directory = ''
     while (True):
-        download_directory = input('Download directory fullpath: ').strip('"')
-        if (os.path.isdir(download_directory)):
+        config_values['DownloadDirectory'] = input('Download directory fullpath: ').strip('"')
+        if (os.path.isdir(config_values['DownloadDirectory'])):
             print('Download directory verified!')
             break
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
                     download_directory))
     # Prompt downloaded filter name
-    downloaded_filter_filename = input('Downloaded filter filename (e.g. "NeversinkReguler.filter"): ').strip('"')
+    config_values['DownloadedLootFilterFilename'] = input(
+            'Downloaded filter filename (e.g. "NeversinkReguler.filter"): ').strip('"')
     # Prompt Path of Exile directory
     print('\nNow your Path of Exile filters directory')
     print('Note: this is not the game install location, but rather the "Documents" location.')
     print('This is where your PoE loot filters go, and it should also have a "Screenshots" directory.')
-    path_of_exile_directory = ''
     while (True):
-        path_of_exile_directory = input('Path of Exile filters directory fullpath: ').strip('"')
-        if (os.path.isdir(path_of_exile_directory)):
+        config_values['PathOfExileDirectory'] = input('Path of Exile filters directory fullpath: ').strip('"')
+        if (os.path.isdir(config_values['PathOfExileDirectory'])):
             print('Path of Exile filters directory verified!')
             break
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
                     path_of_exile_directory))
-    # Infer Input directory from Path of Exile directory
-    input_directory = os.path.join(path_of_exile_directory, 'InputFiltersBackup')
-    # Write info to the newly created profile
-    config_path = os.path.join(profile.kProfileDirectory, new_profile_name + '.config')
-    config_lines = helper.ReadFile(config_path, retain_newlines = False)
-    for i in range(len(config_lines)):
-        if (config_lines[i].startswith(kDownloadDirectoryPrefix)):
-            config_lines[i] = kDownloadDirectoryPrefix + ' ' + download_directory
-        if (config_lines[i].startswith(kDownloadedFilterPrefix)):
-            config_lines[i] = kDownloadedFilterPrefix + ' ' + downloaded_filter_filename
-        elif (config_lines[i].startswith(kPathOfExileDirectoryPrefix)):
-            config_lines[i] = kPathOfExileDirectoryPrefix + ' ' + path_of_exile_directory
-        elif (config_lines[i].startswith(kInputDirectoryPrefix)):
-            config_lines[i] = kInputDirectoryPrefix + ' ' + input_directory
-    helper.WriteToFile(config_lines, config_path)
+    # Generate new profile from config values
+    created_profile = profile.CreateNewProfile(new_profile_name, config_values)
+    print('\nProfile "{}" created!'.format(new_profile_name))
     # Setup complete
-    config_path = os.path.join(profile.kProfileDirectory, new_profile_name + '.profile')
-    print('\nConfig "{}" updated successfully!'.format(config_path))
+    print('Config data saved to "{}".'.format(created_profile.config_path))
     print('You can edit this file at any time later to update these settings.')
     print('\nSetup complete! Enjoy PoE Dynamic Loot Filter!')
 # End main
