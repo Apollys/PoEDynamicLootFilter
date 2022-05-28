@@ -213,6 +213,8 @@ class Profile:
                 self.config_values['InputLootFilterDirectory'], self.config_values['DownloadedLootFilterFilename'])
         self.config_values['OutputLootFilterFullpath'] = os.path.join(
                 self.config_values['PathOfExileDirectory'], self.config_values['OutputLootFilterFilename'])
+        # For convenience, add changes path to config, because it's used by backend_cli.py
+        self.config_values['ChangesFullpath'] = self.changes_path
         # Check that required directories exist, raise error if not
         if (not os.path.isdir(self.config_values['DownloadDirectory'])):
             raise RuntimeError('download directory: "{}" does not exist'.format(
