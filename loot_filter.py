@@ -340,7 +340,8 @@ class LootFilter:
     def __init__(self, profile_name: str, output_as_input_filter: bool):
         CheckType(profile_name, 'profile_name', str)
         CheckType(output_as_input_filter, 'output_as_input_filter', bool)
-        self.profile_config_data = profile.ParseProfileConfig(profile_name)
+        user_profile = profile.Profile(profile_name)
+        self.profile_config_data = user_profile.config_values
         self.input_filter_fullpath = (self.profile_config_data['OutputLootFilterFullpath']
                 if output_as_input_filter else self.profile_config_data['InputLootFilterFullpath'])
         self.ParseInputFilterFile()

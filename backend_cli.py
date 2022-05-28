@@ -1008,17 +1008,21 @@ def main_impl():
         Error(kUsageErrorString)
     _, function_name, *remaining_args = sys.argv
     profile_name = None
+    config_data = None
     if (kFunctionInfoMap[function_name]['HasProfileParam']):
         if (len(sys.argv) < 3):
             Error(kUsageErrorString)
         *function_params, profile_name = remaining_args
-    else:
+        if (not profile.ProfileExists(profile_name)):
+            Error('profile "{}" does not exist'.format(profile_name))
+        user_profile = profile.Profile(profile_name)
+        config_data = user_profile.config_values
+    else:  # function does not have Profile param
         function_params = remaining_args
     # If importing downloaded filter, first verify that downloaded filter exists,
     # then copy filter to input path.  Note: we wait to delete downloaded filter
     # until the end, so that if any errors occurred during import, the downloaded
     # filter will still be present (so that the user can then re-import).
-    config_data = profile.ParseProfileConfig(profile_name) if profile_name else None
     if (function_name == 'import_downloaded_filter'):
         if (os.path.isfile(config_data['DownloadedLootFilterFullpath'])):
             file_manip.CopyFile(config_data['DownloadedLootFilterFullpath'],

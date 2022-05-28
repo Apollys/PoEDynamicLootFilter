@@ -290,7 +290,7 @@ def GetAllProfileNames() -> list[str]:
 # config_values must contain the required keywords:
 #   'DownloadDirectory', 'PathOfExileDirectory', 'DownloadedLootFilterFilename'
 # Note: config_values is dict of string -> string here, but may expect other types later
-def CreateNewProfile(profile_name: str, config_values: dict) -> bool:
+def CreateNewProfile(profile_name: str, config_values: dict) -> Profile:
     CheckType(profile_name, 'profile_name', str)
     CheckType(config_values, 'config_values', dict)
     if (profile_name in GetAllProfileNames()):
