@@ -12,9 +12,10 @@ def IsWildcard(template: str, index: int) -> Tuple[bool, bool, int]:
     return False, False, 0
 # End IsWildcard
 
-# Strings must not contain reserved kWildcardMatchChar kWildcardIgnoreChar
+# Strings must not contain reserved kWildcardMatchString or kWildcardIgnoreString,
 # other than as indicators in the template string to match/ignore a sequence of characters
 # Returns (parse_success: bool, parse_result_list: List[str]) pair
+# Example: ParseFromTemplate("abc:xyz", "{}:{~}") returns (true, ["abc"])
 def ParseFromTemplate(s: str, template: str) -> Tuple[bool, List[str]]:
     s_index: int = 0
     template_index: int = 0
