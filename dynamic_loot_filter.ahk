@@ -806,7 +806,10 @@ GuiEscape:
 GuiClose:
 ExitApp
 
-F7::
+; Toggle GUI
+; Note: the `gui_hotkey_line` tag below is used for setting the hotkey in python,
+; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
+F7::  ; $gui_hotkey_line
 WinGetActiveTitle, active
 if (active == "Path of Exile")
     WinActivate, PoE Dynamic Loot Filter
