@@ -55,17 +55,7 @@ cstack_output_dict_low := {1:1, 2:2, 3:4, 4:6, 5:100}
 cstack_options := ["1+", "2+", "4+", "6+", "Ø"]
 cstack_values := [5, 5, 5, 5, 5, 5, 5, 5, 5]
 
-; -------------- DATA LOADING -------------------------------
-; Read starting filter data from python client
-; REWRITE --------------------------------
-curr_txt := []
-curr_val := []
-curr_val_start := []
-; REWRITE ---------------------------
-all_currency := ""
-rare_dict := {"Weapons" : 1, "Body Armours" : 1, "Helmets" : 1, "Gloves" : 1, "Boots" : 1, "Amulets" : 1, "Rings" : 1, "Belts" : 1}
-rare_GUI_ids := {"Weapons" : "Rare1", "Body Armours" : "Rare2", "Helmets" : "Rare3", "Gloves" : "Rare4", "Boots" : "Rare5", "Amulets" : "Rare6", "Rings" : "Rare7", "Belts" : "Rare8"}
-fake_queue := []
+; Load profiles from python client
 profiles := []
 FileDelete, %ahk_out_path%
 RunWait, python %py_prog_path% get_all_profile_names, , Hide
@@ -84,6 +74,18 @@ Loop, parse, py_out_text, `n, `r
     profiles.push(A_LoopField)
 }
 active_profile := profiles[1]
+
+; -------------- DATA LOADING -------------------------------
+; Read starting filter data from python client
+; REWRITE --------------------------------
+curr_txt := []
+curr_val := []
+curr_val_start := []
+; REWRITE ---------------------------
+all_currency := ""
+rare_dict := {"Weapons" : 1, "Body Armours" : 1, "Helmets" : 1, "Gloves" : 1, "Boots" : 1, "Amulets" : 1, "Rings" : 1, "Belts" : 1}
+rare_GUI_ids := {"Weapons" : "Rare1", "Body Armours" : "Rare2", "Helmets" : "Rare3", "Gloves" : "Rare4", "Boots" : "Rare5", "Amulets" : "Rare6", "Rings" : "Rare7", "Belts" : "Rare8"}
+fake_queue := []
 
 ; Build batch file to get all info
 FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_min_visible_stack_size tportal`nget_currency_tier_min_visible_stack_size twisdom`nget_hide_essences_above_tier`nget_hide_unique_items_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %ahk_out_path%
@@ -702,21 +704,24 @@ Loop, 9
 {
     if (valueCurrencyDDLT%A_Index% != cstack_values[A_Index]){
         _low := A_Index > 7 ? "_low" : ""
-        ;MsgBox, % "set_currency_tier_min_visible_stack_size " A_Index " " cstack_output_dict%_low%[valueCurrencyDDLT%A_Index%]
         FileAppend, % "set_currency_tier_min_visible_stack_size " A_Index " " cstack_output_dict%_low%[valueCurrencyDDLT%A_Index%] "`n", %ahk_out_path%
+        cstack_values[A_Index] := valueCurrencyDDLT%A_Index%
     }
 }
 if (valueCurrencyDDLTwisdom != wisdom_stack){
     FileAppend, % "set_currency_tier_min_visible_stack_size twisdom " cstack_output_dict_low[valueCurrencyDDLTwisdom] "`n", %ahk_out_path%
+    wisdom_stack := valueCurrencyDDLTwisdom
 }
 if (valueCurrencyDDLTportal != portal_stack){
     FileAppend, % "set_currency_tier_min_visible_stack_size tportal " cstack_output_dict_low[valueCurrencyDDLTportal] "`n", %ahk_out_path%
+    portal_stack := valueCurrencyDDLTportal
 }
 ; Currency Tiers -- Accurate already to curr_val and curr_val_start
 For idx, name in curr_txt
 {
     if (curr_val[idx] != curr_val_start[idx]){
         FileAppend, % "set_currency_to_tier """ curr_txt[idx] """ " curr_val[idx] "`n" , %ahk_out_path%
+        curr_val_start[idx] := curr_val[idx]
     }
 }
 ; Rares -- rare_GUI_ids value compared vs rare_dict
@@ -724,6 +729,7 @@ For rare, value_name in rare_GUI_ids
 {
     if (%value_name% != rare_dict[rare]){
         FileAppend, % "set_chaos_recipe_enabled_for """ rare """ " %value_name% "`n", %ahk_out_path%
+        rare_dict[rare] := %value_name% 
     }
 }
 ; Flasks -- accurate already to flasks vs base_flasks
@@ -731,49 +737,60 @@ for flask in flasks
 {
     if (flasks[flask][2] != base_flasks[flask][2]){
         FileAppend, % "set_high_ilvl_flask_visibility """ flask """ " flasks[flask][2] "`n", %ahk_out_path%
+        base_flasks[flask][2] := flasks[flask][2]
     }
     if (flasks[flask][1] != base_flasks[flask][1]){
         FileAppend, % "set_flask_visibility """ flask """ " flasks[flask][1] "`n", %ahk_out_path%
+        base_flasks[flask][1] := flasks[flask][1]
     }
 }
 ; Essences -- compare esshide vs esshideDDL
 if (esshide != esshideDDL){
     FileAppend, % "set_hide_essences_above_tier " esshideDDL "`n", %ahk_out_path%
+    esshide := esshideDDL
 }
 ; unique -- compare uniqhide vs uniqhideDDL
 if (uniqhide != uniqhideDDL){
     FileAppend, % "set_hide_unique_items_above_tier " uniqhideDDL "`n", %ahk_out_path%
+    uniqhide := uniqhideDDL
 }
 ; uniq map -- compare unique_mapmin vs unique_mapminDDL
 if (unique_mapmin != unique_mapminDDL){
     FileAppend, % "set_hide_unique_maps_above_tier " unique_mapminDDL "`n", %ahk_out_path%
+    unique_mapmin := unique_mapminDDL
 }
 ; div -- compare divmin vs divminDDL
 if (divmin != divminDDL){
     FileAppend, % "set_hide_div_cards_above_tier " divminDDL "`n", %ahk_out_path%
+    divmin := divminDDL
 }
 ; RGB -- compare rgbsize vs rgbsizeDDL
 rgbnow := rgbmap_reversed[rgbsizeDDL]
 if (rgbsize != rgbnow){
     FileAppend, % "set_rgb_item_max_size " rgbnow "`n", %ahk_out_path%
+    rgbsize := rgbnow 
 }
 ; OIL -- compare min_oil vs min_oilDDL
 if (min_oil != min_oilDDL){
     FileAppend, % "set_lowest_visible_oil """ oils[min_oilDDL] " Oil""`n", %ahk_out_path%
+    min_oil := min_oilDDL
     
 }
 ; gem/flask quality -- compare gemmin vs gemminUD flaskmin vs flaskminUD
 if (gemmin != gemminUD){
     gemout := gemminUD == 21? -1 : gemminUD
     FileAppend, % "set_gem_min_quality " gemout "`n", %ahk_out_path%
+    gemmin := gemminUD
 }
 if (flaskmin != flaskminUD){
     flaskout := flaskminUD == 21? -1 : flaskminUD
     FileAppend, % "set_flask_min_quality " flaskout "`n", %ahk_out_path%
+    flaskmin := flaskminUD
 }
 ; map hide -- compare maphide vs maphideUD
 if(maphide != maphideUD){
     FileAppend, % "set_hide_maps_below_tier " maphideUD "`n", %ahk_out_path%
+    maphide := maphideUD
 }
 GuiControl, , GUIStatusMsg , % "Filter Updating..."
 RunWait, python %py_prog_path% run_batch %active_profile%, , Hide
