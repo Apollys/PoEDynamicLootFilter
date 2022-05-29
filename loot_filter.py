@@ -1040,7 +1040,7 @@ class LootFilter:
         current_section_id_int += 1
         to_add_string = consts.kSectionHeaderTemplate.format(
                 current_section_id_int,
-                'Custom rules from ' + self.profile_config_data['ProfileName'] + '.rules')
+                'Custom rules from ' + self.profile_config_data['RulesFullpath'])
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         custom_rules_lines = helper.ReadFile(self.profile_config_data['RulesFullpath'])
         custom_rules_lines = [line.strip() for line in custom_rules_lines]
