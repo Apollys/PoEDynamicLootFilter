@@ -678,8 +678,63 @@ Reload
 ExitApp
 
 CreateProfile1:
-InputBox, new_prof_name, PoE Dynamic Loot Filter, Enter a name for your new profile`nThis new profile will be a copy of the default profile, , , 145
-RunWait, python %py_prog_path% create_new_profile %new_prof_name%,  , Hide
+Gui, 2: Color, 0x111122
+Gui, 2: Font, c0x00e8b2 s16 Bold, Segoe UI
+Gui, 2: Add, Text, x8 y8 h26 +0x200, Profile Name
+Gui, 2: Add, Text, x8 y68 h26 +0x200, Downloaded Filter Directory
+Gui, 2: Add, Text, x8 y128 h26 +0x200, Downloaded Filter Name
+Gui, 2: Add, Text, x8 y188 h26 +0x200, Path of Exile Filter Directory
+Gui, 2: Add, Text, x8 y248 h26 +0x200, Output Filter Name
+Gui, 2: Font, s14, Segoe UI
+Gui, 2: Add, Checkbox, vRDF checked x8 y309 h26,
+Gui, 2: Add, Text, x28 y308 h26, Remove Downloaded Filter on Import
+
+Gui, 2: Font, s12 norm cblack, Segoe UI
+Gui, 2: Add, Edit, x8 y38 h26 w434 vNewProfileName, 
+Gui, 2: Add, Edit, x8 y98 h26 w434 vNewProfileDDir, C:\Users\...\Downloads
+Gui, 2: Add, Edit, x8 y158 h26 w434 vNewProfileDName, 
+Gui, 2: Add, Edit, x8 y218 h26 w434 vNewProfilePoEDir, C:\Users\...\Documents\My Games\Path of Exile
+Gui, 2: Add, Edit, x8 y278 h26 w434 vNewProfilePoEName, (Optional)
+
+
+Gui, 2: Font, s14 Bold, Segoe UI
+Gui, 2: Add, Button, x163 y338 w124 h31 gCreateProfile2, Create
+Gui, 2: Show, w450 h378, PoE Dynamic Loot Filter
+Return
+
+CreateProfile2:
+Gui, 2: Submit, NoHide
+; Erase backend_cli.input before writing
+FileAppend, abc, %ahk_out_path%
+FileDelete, %ahk_out_path%
+if (NewProfileName == ""){
+    MsgBox, Profile Name Required!
+    return
+}
+if (NewProfileDDir == ""){
+    MsgBox, Downloads Directory Required!
+    return
+}
+if (NewProfileDName == ""){
+    MsgBox, Downloaded Filter Filename Required!
+    return
+}
+if (NewProfilePoEDir == ""){
+    MsgBox, Path of Exile Filter Directory Required!
+    return
+}
+FileAppend, % "DownloadDirectory:" NewProfileDDir "`n" , %ahk_out_path%
+FileAppend, % "PathOfExileDirectory:" NewProfilePoEDir "`n" , %ahk_out_path%
+FileAppend, % "DownloadedLootFilterFilename:" NewProfileDName "`n", %ahk_out_path%
+if (NewProfilePoEName != "(Optional)" and NewProfilePoEName != ""){
+    FileAppend, % "OutputLootFilterFilename:" NewProfilePoEName "`n", %ahk_out_path%
+}
+if (!RDF){
+    FileAppend, % "RemoveDownloadedFilter:False`n", %ahk_out_path%
+    
+}
+Gui, 2: Destroy
+RunWait, python %py_prog_path% create_new_profile %NewProfileName%,  , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Profile Creation Failed"
@@ -688,9 +743,21 @@ if (exit_code == "1"){
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
+RunWait, python %py_prog_path% import_downloaded_filter %NewProfileName%,  , Hide
+FileRead, exit_code, %py_exit_code_path%
+if (exit_code == "1"){
+    GuiControl, , GUIStatusMsg , % "Filter Import Failed"
+    FileRead, error_log, %py_log_path%
+    MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+}
+else if (exit_code == "-1")
+    MsgBox, How did you get here?
 Reload
-return
+ExitApp
 
+2GuiClose:
+Gui, 2: Destroy
+return
 
 
 Update:
