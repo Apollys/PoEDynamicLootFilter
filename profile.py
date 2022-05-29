@@ -2,6 +2,7 @@ from collections import OrderedDict
 from enum import Enum
 import os
 import os.path
+from typing import List
 
 import file_manip
 import helper
@@ -264,7 +265,7 @@ def SetActiveProfile(profile_name: str):
 # If it does not exist, sets the first found profile as the active profile.
 # Returns a list of strings, each string containing the name of a profile.
 # The first item in the list is the currently active profile.
-def GetAllProfileNames() -> list[str]:
+def GetAllProfileNames() -> List[str]:
     if (not os.path.isdir(kProfileDirectory)):
         raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
     active_profile_name = GetActiveProfileName()
