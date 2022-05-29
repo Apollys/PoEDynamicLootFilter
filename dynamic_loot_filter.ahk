@@ -638,12 +638,12 @@ if (InStr(py_out_text, "Show #")){
     GuiControl, Enable, ChangeMatchedRuleButton
 } else if (InStr(py_out_text, "Hide #")){
     GuiControl, , ChangeMatchedRuleButton, Change to "Show"
-    GuiCOntrol, Enable, ChangeMatchedRuleButton
+    GuiControl, Enable, ChangeMatchedRuleButton
 }
 return
 
 MatchedShowHide:
-GuiControlGet, ButtonText, , ChangedMatchedRuleButton
+GuiControlGet, ButtonText, , ChangeMatchedRuleButton
 if (InStr(ButtonText, "Show")){
     visi := "show"
 }
