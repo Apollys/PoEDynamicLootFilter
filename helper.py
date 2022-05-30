@@ -13,7 +13,7 @@ def ReadFile(fullpath: str, retain_newlines: bool = True) -> List[str]:
     CheckType(fullpath, 'fullpath', str)
     CheckType(retain_newlines, 'retain_newlines', bool)
     try:
-        with open(fullpath) as input_file:
+        with open(fullpath, encoding='utf-8') as input_file:
             lines = input_file.readlines()
         if (not retain_newlines):
             for i in range(len(lines)):
@@ -29,7 +29,7 @@ def ReadFileToDict(fullpath: str) -> dict:
     CheckType(fullpath, 'fullpath', str)
     try:
         result_dict = {}
-        with open(fullpath) as input_file:
+        with open(fullpath, encoding='utf-8') as input_file:
             for line in input_file:
                 if (line.strip() != ''):
                     key, value = line.split(':', 1)  # maxsplit = 1
@@ -48,7 +48,7 @@ def WriteToFile(data, fullpath: str):
     parent_directory = os.path.dirname(fullpath)
     if (parent_directory != ''):
         os.makedirs(parent_directory, exist_ok = True)
-    with open(fullpath, 'w') as f:
+    with open(fullpath, 'w', encoding='utf-8') as f:
         if (isinstance(data, str)):
             f.write(data)
         else:
