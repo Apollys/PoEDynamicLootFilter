@@ -71,8 +71,11 @@ def main():
     print('\nStep 3: Create your profile')
     while (True):
         new_profile_name = input('Enter new profile name: ')
-        if (new_profile_name in profile.GetAllProfileNames()):
-            print('Error: profile "{}" already exists!\n'.format(new_profile_name))
+        if (os.path.exists('Profiles\general.config')):
+            if (new_profile_name in profile.GetAllProfileNames()):
+                print('Error: profile "{}" already exists!\n'.format(new_profile_name))
+            else:
+                break
         else:
             break
     
