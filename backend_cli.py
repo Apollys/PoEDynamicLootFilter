@@ -360,8 +360,6 @@ def ConvertChangesDictToFunctionList(changes_dict: OrderedDict) -> list:
     return function_list
 # End ConvertChangesDictToFunctionList
 
-# Assumption: not BOTH adjust_currency_tier and set_currency tier will ever
-# be used for the same currency type in the same file
 def UpdateProfileChangesFile(changes_fullpath: str,
                              new_function_name: str,
                              new_function_params: list):

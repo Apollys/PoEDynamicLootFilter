@@ -69,8 +69,12 @@ def main():
     
     # 3. Create new profile
     print('\nStep 3: Create your profile')
-    new_profile_name = input('Enter new profile name: ')
-    # Potential TODO: check if new_profile_name already exists as a profile
+    while (True):
+        new_profile_name = input('Enter new profile name: ')
+        if (new_profile_name in profile.GetAllProfileNames()):
+            print('Error: profile "{}" already exists!\n'.format(new_profile_name))
+        else:
+            break
     
     # 4. Query required config values
     config_values = {}
