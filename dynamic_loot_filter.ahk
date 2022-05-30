@@ -63,6 +63,7 @@ FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     FileRead, error_log, %py_log_path%
     If (InStr(error_log, "RuntimeError: General config")){
+        MsgBox, No existing profiles found. Create a profile here, or run setup.py to get started
         goto, CreateProfile1
     }
     else{
