@@ -447,13 +447,13 @@ Gui Add, DropDownList, +AltSubmit x1002 y178 w111 vesshideDDL Choose%esshide%, T
 ; Divination cards (variable name: divmin)
 Gui Font, s11
 Gui Add, Text, x856 y216 w185 h28 +0x200, Hide Div Cards Above Tier:
-Gui Add, DropDownList, +AltSubmit x1040 y216 w33 vdivminDDL Choose%divmin%, 1|2|3|4|5
+Gui Add, DropDownList, +AltSubmit x1040 y216 w33 vdivminDDL Choose%divmin%, 1|2|3|4|5|6|7|8
 ; Unique items (variable name: uniqhide)
 Gui Add, Text, x856 y256 w203 h28 +0x200, Hide Unique Items Above Tier:
 Gui Add, DropDownList, +AltSubmit x1064 y256 w33 vuniqhideDDL Choose%uniqhide%, 1|2|3|4|5
 ; Unique maps (variable name: unique_maphide)
 Gui Add, Text, x856 y296 w206 h28 +0x200, Hide Unique Maps Above Tier:
-Gui Add, DropDownList, +AltSubmit x1064 y296 w33 vunique_mapminDDL Choose%unique_mapmin%, 1|2|3|4|5
+Gui Add, DropDownList, +AltSubmit x1064 y296 w33 vunique_mapminDDL Choose%unique_mapmin%, 1|2|3|4
 ; Oils (variable name: min_oil)
 Gui Add, Text, x856 y336 w113 h28 +0x200, Hide Oils Below:
 Gui Add, DropDownList, +AltSubmit x968 y336 w130 vmin_oilDDL Choose%min_oil%, %oilstr%
@@ -893,7 +893,7 @@ ExitApp
 ; Toggle GUI
 ; Note: the `gui_hotkey_line` tag below is used for setting the hotkey in python,
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-F7::  ; $gui_hotkey_line
+F8::  ; $gui_hotkey_line
 WinGetActiveTitle, active
 if (active == "Path of Exile")
     WinActivate, PoE Dynamic Loot Filter
