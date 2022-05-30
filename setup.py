@@ -92,6 +92,8 @@ def main():
     # Prompt downloaded filter name
     config_values['DownloadedLootFilterFilename'] = input(
             'Downloaded filter filename (e.g. "NeversinkRegular.filter"): ').strip('"')
+    if (not os.path.exists(config_values['DownloadDirectory']+config_values['DownloadedLootFilterFilename'])):
+        print('WARNING: File {} not found in directory {}\nPlease ensure that it is present before completing setup'.format(config_values['DownloadedLootFilterFilename'], config_values['DownloadDirectory']))
     # Prompt Path of Exile directory
     print('\nNow your Path of Exile filters directory')
     print('Note: this is not the game install location, but rather the "Documents" location.')
@@ -108,6 +110,8 @@ def main():
     # 6. Generate new profile from config values
     created_profile = profile.CreateNewProfile(new_profile_name, config_values)
     print('\nProfile "{}" created!'.format(new_profile_name))
+    
+    os.system('python backend_cli.py import_downloaded_filter {}'.format(new_profile_name))
     
     # Setup complete
     print('Config data saved to "{}".'.format(created_profile.config_path))
