@@ -298,8 +298,12 @@ def GetAllProfileNames() -> List[str]:
 def CreateNewProfile(profile_name: str, config_values: dict) -> Profile:
     CheckType(profile_name, 'profile_name', str)
     CheckType(config_values, 'config_values', dict)
+    # Create general.config if does not exit
+    with open(os.path.join(kProfileDirectory, 'general.config'), 'a+') as f: pass
+    # Return None if profile already exists
     if (profile_name in GetAllProfileNames()):
         return None
+    # Create new profile
     new_profile = Profile(profile_name, config_values)
     new_profile.WriteConfigs()
     SetActiveProfile(profile_name)

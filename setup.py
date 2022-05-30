@@ -87,7 +87,7 @@ def main():
                     download_directory))
     # Prompt downloaded filter name
     config_values['DownloadedLootFilterFilename'] = input(
-            'Downloaded filter filename (e.g. "NeversinkReguler.filter"): ').strip('"')
+            'Downloaded filter filename (e.g. "NeversinkRegular.filter"): ').strip('"')
     # Prompt Path of Exile directory
     print('\nNow your Path of Exile filters directory')
     print('Note: this is not the game install location, but rather the "Documents" location.')
