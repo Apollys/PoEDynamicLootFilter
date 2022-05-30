@@ -62,7 +62,12 @@ RunWait, python %py_prog_path% get_all_profile_names, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     FileRead, error_log, %py_log_path%
+    If (InStr(error_log, "RuntimeError: General config")){
+        goto, CreateProfile1
+    }
+    else{
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+    }
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
