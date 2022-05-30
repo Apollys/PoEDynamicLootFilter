@@ -687,7 +687,7 @@ Gui, 2: Add, Text, x8 y188 h26 +0x200, Path of Exile Filter Directory
 Gui, 2: Add, Text, x8 y248 h26 +0x200, Output Filter Name
 Gui, 2: Font, s14, Segoe UI
 Gui, 2: Add, Checkbox, vRDF checked x8 y309 h26,
-Gui, 2: Add, Text, x28 y308 h26, Remove Downloaded Filter on Import
+Gui, 2: Add, Text, x28 y308 h26 w400, Remove Downloaded Filter on Import
 
 Gui, 2: Font, s12 norm cblack, Segoe UI
 Gui, 2: Add, Edit, x8 y38 h26 w434 vNewProfileName, 
