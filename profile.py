@@ -269,12 +269,14 @@ def SetActiveProfile(profile_name: str):
 # Does not perform any additional validation or modification of general.config.
 def ListProfilesRaw() -> List[str]:
     profile_files_list: list[str] = file_manip.ListFilesInDirectory(kProfileDirectory)
+    profile_names = []
     for filename in profile_files_list:
         if (filename == 'general.config'):
             continue
         profile_name, extension = os.path.splitext(filename)
         if (extension == '.config'):
             profile_names.append(profile_name)
+    return profile_names
 # def ListProfilesRaw
     
 
