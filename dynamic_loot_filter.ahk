@@ -3,6 +3,14 @@
 SetWorkingDir %A_ScriptDir%
 SetBatchLines -1
 
+RunWait, %ComSpec% /c "python --version >python_check.txt" ,  , Hide
+FileRead, python_check, python_check.txt
+If(python_check == ""){
+    MsgBox, Error: The command "python" is unable to launch Python 3.  This may be caused because python is not in the Windows path, or "python" is aliased to another command.
+    ExitApp
+}
+FileDelete, python_check.txt
+
 Menu, Tray, Icon, DLF_icon.ico
 
 ; ------------ DATA STORAGE INITIALIZATION -------------
