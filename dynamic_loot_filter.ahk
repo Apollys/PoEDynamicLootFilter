@@ -62,13 +62,7 @@ RunWait, python %py_prog_path% get_all_profile_names, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     FileRead, error_log, %py_log_path%
-    If (InStr(error_log, "RuntimeError: General config")){
-        MsgBox, No existing profiles found. Create a profile here, or run setup.py to get started
-        goto, CreateProfile1
-    }
-    else{
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
-    }
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
@@ -80,6 +74,11 @@ Loop, parse, py_out_text, `n, `r
     profiles.push(A_LoopField)
 }
 active_profile := profiles[1]
+
+if (active_profile == ""){
+    MsgBox, No existing profiles found. Create a profile here, or run setup.py to get started
+    goto, CreateProfile1
+}
 
 ; -------------- DATA LOADING -------------------------------
 ; Read starting filter data from python client
