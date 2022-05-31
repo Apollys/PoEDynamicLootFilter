@@ -120,7 +120,9 @@ def main():
     # Setup complete
     print('Config data saved to "{}".'.format(created_profile.config_path))
     print('You can edit this file at any time later to update these settings.')
+    
     print('\nSetup complete! Enjoy PoE Dynamic Loot Filter!')
+    input('Press Enter to close setup.py')
 # End main
 
 if __name__ == '__main__':
