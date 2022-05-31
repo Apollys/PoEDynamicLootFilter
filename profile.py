@@ -237,11 +237,12 @@ class Profile:
 def ProfileExists(profile_name: str) -> bool:
     return os.path.isfile(os.path.join(kProfileDirectory, profile_name + '.config'))
 
+# Returns the active profile name as a string, or None.
 def GetActiveProfileName() -> str:
     if (not os.path.isdir(kProfileDirectory)):
         raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
     if (not os.path.isfile(kGeneralConfigFullpath)):
-        raise RuntimeError('General config: "{}" does not exist'.format(kGeneralConfigFullpath))
+        return None
     general_config_lines = [line.strip() for line in helper.ReadFile(kGeneralConfigFullpath)]
     nonempty_lines = [line for line in general_config_lines if line != '']
     if (len(nonempty_lines) == 0):
@@ -263,32 +264,42 @@ def SetActiveProfile(profile_name: str):
         general_config_file.write(kActiveProfileTemplate.format(profile_name))
 # End SetActiveProfile
 
-# Checks if the active profile as defined in general config exists.
-# If it does not exist, sets the first found profile as the active profile.
-# Returns a list of strings, each string containing the name of a profile.
-# The first item in the list is the currently active profile.
-def GetAllProfileNames() -> List[str]:
-    if (not os.path.isdir(kProfileDirectory)):
-        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
-    active_profile_name = GetActiveProfileName()
-    profile_names: list[str] = [active_profile_name] if active_profile_name else ['']
+# Returns a list of profile names as defined by:
+#  - files of extensions 'config' whose name is not 'general.config'
+# Does not perform any additional validation or modification of general.config.
+def ListProfilesRaw() -> List[str]:
     profile_files_list: list[str] = file_manip.ListFilesInDirectory(kProfileDirectory)
-    found_active_profile: bool = False
     for filename in profile_files_list:
         if (filename == 'general.config'):
             continue
         profile_name, extension = os.path.splitext(filename)
         if (extension == '.config'):
-            if (profile_name == active_profile_name):
-                found_active_profile = True
-            else:
-                profile_names.append(profile_name)
-    # If we did not find the active profile name, it must have been deleted.
-    # Make the first found profile the active profile.
-    if (not found_active_profile):
-        profile_names = profile_names[1:]
-        SetActiveProfile(profile_names[0])
-    return profile_names
+            profile_names.append(profile_name)
+# def ListProfilesRaw
+    
+
+# Returns a list of strings containing all the profile names.
+# If the list is nonempty, the first item is the active profile.
+# Enforces consistency between existing profiles and general.config.
+# Consistent states are either:
+#  - general.config does not exist / is empty, and there are no profiles, or
+#  - general.config contains a valid active profile, and at least one profile exists
+# If there is an inconsistency, this is fixed by setting general.config
+# to have some valid profile as the active profile.
+def GetAllProfileNames() -> List[str]:
+    active_profile_name = GetActiveProfileName()
+    raw_profile_list = ListProfilesRaw()
+    if ((active_profile_name == None) and (len(raw_profile_list) == 0)):
+        return []
+    elif (active_profile_name not in raw_profile_list):
+        SetActiveProfile(raw_profile_list[0])
+        return raw_profile_list
+    # Otherwise, active profile name is valid and in raw_profile_list
+    # We need to place the active profile in the first position in raw_profile_list
+    i = raw_profile_list.index(active_profile_name)
+    if (i != 0):
+        raw_profile_list[0], raw_profile_list[i] = raw_profile_list[i], raw_profile_list[0]
+    return raw_profile_list
 # End GetAllProfileNames
 
 # Returns the created Profile, or None if the profile already exists.

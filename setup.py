@@ -71,11 +71,8 @@ def main():
     print('\nStep 3: Create your profile')
     while (True):
         new_profile_name = input('Enter new profile name: ')
-        if (os.path.exists('Profiles\general.config')):
-            if (new_profile_name in profile.GetAllProfileNames()):
-                print('Error: profile "{}" already exists!\n'.format(new_profile_name))
-            else:
-                break
+        if (new_profile_name in profile.GetAllProfileNames()):
+            print('Error: profile "{}" already exists!\n'.format(new_profile_name))
         else:
             break
     
@@ -93,10 +90,16 @@ def main():
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
                     download_directory))
     # Prompt downloaded filter name
-    config_values['DownloadedLootFilterFilename'] = input(
-            'Downloaded filter filename (e.g. "NeversinkRegular.filter"): ').strip('"')
-    if (not os.path.exists('{}\{}'.format(config_values['DownloadDirectory'],config_values['DownloadedLootFilterFilename']))):
-        print('WARNING: File {} not found in directory {}\nPlease ensure that it is present before completing setup'.format(config_values['DownloadedLootFilterFilename'], config_values['DownloadDirectory']))
+    while (True):
+        config_values['DownloadedLootFilterFilename'] = input(
+                'Downloaded filter filename (e.g. "NeversinkRegular.filter"): ').strip('"')
+        downloaded_filter_fullpath = os.path.join(config_values['DownloadDirectory'], config_values['DownloadedLootFilterFilename'])
+        if (os.path.isfile(downloaded_filter_fullpath)):
+            print('Downloaded filter found!')
+            break
+        else:
+            print('\nDownloaded filter "{}" not found, please ensure it is present and the name is correct'.format(
+                downloaded_filter_fullpath))
     # Prompt Path of Exile directory
     print('\nNow your Path of Exile filters directory')
     print('Note: this is not the game install location, but rather the "Documents" location.')
@@ -113,13 +116,7 @@ def main():
     # 6. Generate new profile from config values
     created_profile = profile.CreateNewProfile(new_profile_name, config_values)
     print('\nProfile "{}" created!'.format(new_profile_name))
-    
-    while (True):
-        if(os.path.exists('{}\{}'.format(config_values['DownloadDirectory'],config_values['DownloadedLootFilterFilename']))):
-            os.system('python backend_cli.py import_downloaded_filter {}'.format(new_profile_name))
-            break
-        cont = input('WARNING: File {} not found in directory {}\nPlease ensure that it is present then press enter to continue'.format(config_values['DownloadedLootFilterFilename'], config_values['DownloadDirectory']))   
-    
+       
     # Setup complete
     print('Config data saved to "{}".'.format(created_profile.config_path))
     print('You can edit this file at any time later to update these settings.')
