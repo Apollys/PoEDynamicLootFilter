@@ -4,6 +4,9 @@
 # Ignore user profiles
 *.profile
 
+# Ignore user-specific settings
+pyth_path.txt
+
 # Ignore backend_cli input/output files
 backend_cli.input
 backend_cli.output
