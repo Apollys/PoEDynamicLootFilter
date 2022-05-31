@@ -485,12 +485,12 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         is_first_launch
          - Output: "1" if this is the first launch of the program (i.e. requires setup),
            "0" otherwise
-         - It is considered first launch iff the only profile is DefaultProfile
+         - It is considered first launch iff there are no profiles
          - Example: > python3 backend_cli.py is_first_launch
         '''
         CheckNumParams(function_params, 0)
         profile_names_list = profile.GetAllProfileNames()
-        is_first_launch_flag: bool = (profile_names_list == ['DefaultProfile'])
+        is_first_launch_flag: bool = (len(profile_names_list) == 0)
         output_string = str(int(is_first_launch_flag))
     elif (function_name == 'get_all_profile_names'):
         '''
