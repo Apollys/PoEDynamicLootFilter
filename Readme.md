@@ -8,13 +8,18 @@
 
 ## Quick Setup
 
+There are only two requirements for DLF to run (see [below](https://github.com/Apollys/PoEDynamicLootFilter#what-setup-is-required) for more details):
+
+1. **[Autohotkey](https://www.autohotkey.com/)**
+2. **[Python 3](https://www.python.org/downloads/windows/)**
+
+Once you have the requirements, follow these steps to setup DLF:
+
 1. Download any [FilterBlade](https://www.filterblade.xyz/) loot filter (you can leave it in your Downloads directory).
 2. Download this repository anywhere on your PC.
 3. Open this PoEDynamicLootFilter directory in command prompt, and run `python setup.py`.
 
 Once this is complete, double click `dynamic_loot_filter.ahk` to launch PoE DLF.
-
-There are only two requirements for DLF to run: **[Autohotkey](https://www.autohotkey.com/)** and **[Python 3](https://www.python.org/downloads/windows/)**. See [below](https://github.com/Apollys/PoEDynamicLootFilter#what-setup-is-required) for more details.
 
 ## In-Game Usage
 
