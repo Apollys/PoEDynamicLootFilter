@@ -7,49 +7,47 @@ Menu, Tray, Icon, DLF_icon.ico
 
 ; ----------- PYTHON VERSION AND PATH CHECKING ----------------
 PythonChecks:
-FileRead, pyth_path, python_path.txt
-If (pyth_path == ""){
-    RunWait, %ComSpec% /c "python --version >python_check.txt" ,  , Hide
-    FileRead, python_check, python_check.txt
-    if(SubStr(python_check, 1, 7) == "Python " and SubStr(python_check, 1, 8) >= 3){
-        pyth_path := "python"
+FileRead, python_command, python_path.txt
+If (python_command == ""){
+    RunWait, %ComSpec% /c "python --version >python_version_output.txt" ,  , Hide
+    FileRead, python_version_output, python_version_output.txt
+    if(SubStr(python_version_output, 1, 7) == "Python " and SubStr(python_version_output, 1, 8) >= 3){
+        python_command := "python"
     }
     else{
-        FileDelete, python_check.txt
-        RunWait, %ComSpec% /c "py --version >python_check.txt" ,  , Hide
-        FileRead, python_check, python_check.txt
-        if(SubStr(python_check, 1, 7 ) == "Python " and SubStr(python_check, 1, 8) >= 3){
-            pyth_path := "py"
+        FileDelete, python_version_output.txt
+        RunWait, %ComSpec% /c "py --version >python_version_output.txt" ,  , Hide
+        FileRead, python_version_output, python_version_output.txt
+        if(SubStr(python_version_output, 1, 7 ) == "Python " and SubStr(python_version_output, 1, 8) >= 3){
+            python_command := "py"
         }
         else{
-            FileDelete, python_check.txt
-            RunWait, %ComSpec% /c "python3 --version >python_check.txt" ,  , Hide
-            FileRead, python_check, python_check.txt
-            if(SubStr(python_check, 1, 7) == "Python " and SubStr(python_check, 1, 8) >= 3){
-                pyth_path := "python3"
+            FileDelete, python_version_output.txt
+            RunWait, %ComSpec% /c "python3 --version >python_version_output.txt" ,  , Hide
+            FileRead, python_version_output, python_version_output.txt
+            if(SubStr(python_version_output, 1, 7) == "Python " and SubStr(python_version_output, 1, 8) >= 3){
+                python_command := "python3"
             }
             else{
-                MsgBox,  Error: The commands "python", "py", and "python3" were all unable to launch Python 3.  This may be caused because python is not in the Windows path, or because the listed commands is aliased to another program.
-                FileDelete, python_check.txt
+                MsgBox,  Error: The commands "python", "py", and "python3" were all unable to launch Python 3. Either Python 3 is not installed, Python 3 is not in the path, or the commands are aliased to other programs.
+                FileDelete, python_version_output.txt
                 ExitApp
             }
         }
     }
-    FileDelete, python_check.txt
-    FileAppend, %pyth_path%, python_path.txt
+    FileDelete, python_version_output.txt
+    FileAppend, %python_command%, python_path.txt
 }
 else{
-    RunWait, %ComSpec% /c %pyth_path% " --version >python_check.txt" ,  , Hide
-    FileRead, python_check, python_check.txt
-    if(SubStr(python_check, 1, 7) != "Python " or SubStr(python_check, 8, 1) < 3){
+    RunWait, %ComSpec% /c "%python_command% --version >python_version_output.txt" ,  , Hide
+    FileRead, python_version_output, python_version_output.txt
+    if(SubStr(python_version_output, 1, 7) != "Python " or SubStr(python_version_output, 8, 1) < 3){
         FileDelete, python_path.txt
-        FileDelete, python_check.txt
+        FileDelete, python_version_output.txt
         goto, PythonChecks
     }
-    FileDelete, python_check.txt
+    FileDelete, python_version_output.txt
 }
-
-pyth_path := "python"
 
 ; ------------ DATA STORAGE INITIALIZATION -------------
 
@@ -104,7 +102,7 @@ cstack_values := [5, 5, 5, 5, 5, 5, 5, 5, 5]
 ; Load profiles from python client
 profiles := []
 FileDelete, %ahk_out_path%
-RunWait, %pyth_path% %py_prog_path% get_all_profile_names, , Hide
+RunWait, %python_command% %py_prog_path% get_all_profile_names, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     FileRead, error_log, %py_log_path%
@@ -153,7 +151,7 @@ for key in flasks
 
 ; Load all filter data from backend client
 status_msg := "Filter Loaded Succesfully"
-RunWait, %pyth_path% %py_prog_path% run_batch %active_profile%, , Hide
+RunWait, %python_command% %py_prog_path% run_batch %active_profile%, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     status_msg := "Filter Load Failed"
@@ -653,7 +651,7 @@ rule := ""
 FileDelete, %ahk_out_path%
 FileDelete, %py_out_path%
 FileAppend, % Clipboard, %ahk_out_path%
-RunWait, %pyth_path% %py_prog_path% get_rule_matching_item %active_profile%, , Hide
+RunWait, %python_command% %py_prog_path% get_rule_matching_item %active_profile%, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Clipboard Match Failed"
@@ -701,7 +699,7 @@ if (InStr(ButtonText, "Show")){
 else{
     visi := "hide"
 }
-RunWait, %pyth_path% %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile% , , Hide
+RunWait, %python_command% %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile% , , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Rule Visibility Change Failed"
@@ -717,7 +715,7 @@ ChangeProfile:
 Gui, Submit, NoHide
 if (ProfileDDL == active_profile)
     return
-RunWait, %pyth_path% %py_prog_path% set_active_profile %ProfileDDL%, , Hide
+RunWait, %python_command% %py_prog_path% set_active_profile %ProfileDDL%, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     FileRead, error_log, %py_log_path%
@@ -785,7 +783,7 @@ if (!RDF){
     
 }
 Gui, 2: Destroy
-RunWait, %pyth_path% %py_prog_path% create_new_profile %NewProfileName%,  , Hide
+RunWait, %python_command% %py_prog_path% create_new_profile %NewProfileName%,  , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Profile Creation Failed"
@@ -794,7 +792,7 @@ if (exit_code == "1"){
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
-RunWait, %pyth_path% %py_prog_path% import_downloaded_filter %NewProfileName%,  , Hide
+RunWait, %python_command% %py_prog_path% import_downloaded_filter %NewProfileName%,  , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Filter Import Failed"
@@ -911,7 +909,7 @@ if(maphide != maphideUD){
     maphide := maphideUD
 }
 GuiControl, , GUIStatusMsg , % "Filter Updating..."
-RunWait, %pyth_path% %py_prog_path% run_batch %active_profile%, , Hide
+RunWait, %python_command% %py_prog_path% run_batch %active_profile%, , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Filter Update Failed"
@@ -925,7 +923,7 @@ WinActivate, Path of Exile
 return
     
 Import:
-RunWait, %pyth_path% %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
+RunWait, %python_command% %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Filter Import Failed"

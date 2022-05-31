@@ -5,7 +5,7 @@
 *.profile
 
 # Ignore user-specific settings
-pyth_path.txt
+python_path.txt
 
 # Ignore backend_cli input/output files
 backend_cli.input
