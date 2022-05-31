@@ -7,7 +7,7 @@ Menu, Tray, Icon, DLF_icon.ico
 
 ; ----------- PYTHON VERSION AND PATH CHECKING ----------------
 PythonChecks:
-FileRead, python_command, python_path.txt
+FileRead, python_command, python_command.txt
 If (python_command == ""){
     RunWait, %ComSpec% /c "python --version >python_version_output.txt" ,  , Hide
     FileRead, python_version_output, python_version_output.txt
@@ -36,13 +36,13 @@ If (python_command == ""){
         }
     }
     FileDelete, python_version_output.txt
-    FileAppend, %python_command%, python_path.txt
+    FileAppend, %python_command%, python_command.txt
 }
 else{
     RunWait, %ComSpec% /c "%python_command% --version >python_version_output.txt" ,  , Hide
     FileRead, python_version_output, python_version_output.txt
     if(SubStr(python_version_output, 1, 7) != "Python " or SubStr(python_version_output, 8, 1) < 3){
-        FileDelete, python_path.txt
+        FileDelete, python_command.txt
         FileDelete, python_version_output.txt
         goto, PythonChecks
     }
