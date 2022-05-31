@@ -663,7 +663,7 @@ if (InStr(ButtonText, "Show")){
 else{
     visi := "hide"
 }
-RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile%
+RunWait, python %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile% , , Hide
 FileRead, exit_code, %py_exit_code_path%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Rule Visibility Change Failed"
