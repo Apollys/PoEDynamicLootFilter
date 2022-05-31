@@ -9,9 +9,11 @@
 #  5. Optional: queries the user about other general config parameters [NYI]
 #  6. Saves all info to the newly created profile
 
+import os
 import os.path
 import sys
 
+import file_manip
 import helper
 import profile
 
@@ -116,7 +118,12 @@ def main():
     # 6. Generate new profile from config values
     created_profile = profile.CreateNewProfile(new_profile_name, config_values)
     print('\nProfile "{}" created!'.format(new_profile_name))
-       
+    
+    # Temporary fix - Import filter here
+    # Just in case, we'll also delete the Path of Exile filter, if it exists
+    file_manip.RemoveFileIfExists(created_profile.config_values['OutputLootFilterFullpath'])
+    os.system('python backend_cli.py import_downloaded_filter {}'.format(new_profile_name))
+
     # Setup complete
     print('Config data saved to "{}".'.format(created_profile.config_path))
     print('You can edit this file at any time later to update these settings.')
