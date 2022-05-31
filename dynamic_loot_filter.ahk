@@ -8,12 +8,7 @@ Menu, Tray, Icon, DLF_icon.ico
 ; ----------- PYTHON VERSION AND PATH CHECKING ----------------
 RunWait, %ComSpec% /c "python --version >python_check.txt" ,  , Hide
 FileRead, python_check, python_check.txt
-If(python_check == ""){
-    MsgBox, Error: The command "python" is unable to launch Python 3.  This may be caused because python is not in the Windows path, or "python" is aliased to another command.
-    ExitApp
-}
-is_python := SubStr(python_check, 1, 6)
-if(is_python != "Python"){
+if(SubStr(python_check, 1, 7) != "Python "){
     MsgBox,  Error: The command "python" is unable to launch Python 3.  This may be caused because python is not in the Windows path, or "python" is aliased to another command.
     ExitApp
 }
