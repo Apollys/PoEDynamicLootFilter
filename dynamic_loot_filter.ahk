@@ -3,6 +3,13 @@
 SetWorkingDir %A_ScriptDir%
 SetBatchLines -1
 
+RunWait, python --version >python_check.txt
+FileRead, python_check, python_check.txt
+If(python_check == ""){
+    MsgBox, Windows Path does not contain command "python", please add python to the Windows Path
+    ExitApp
+}
+
 Menu, Tray, Icon, DLF_icon.ico
 
 ; ------------ DATA STORAGE INITIALIZATION -------------
