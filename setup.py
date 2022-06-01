@@ -24,8 +24,13 @@ kPathOfExileDirectoryPrefix = 'Path of Exile directory:'
 kInputDirectoryPrefix = 'Input (backup) loot filter directory:'
 kDownloadedFilterPrefix = 'Downloaded loot filter filename:'
 
-# TODO
+kHotkeyAlphabet = '^+!abcdefghiujklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+# TODO: make this more rigorous
 def IsHotkeyStringValid(hotkey_string: str) -> bool:
+    for c in hotkey_string:
+        if (c not in kHotkeyAlphabet):
+            return False
     return True
 # End IsHotkeyStringValid
 
@@ -55,10 +60,10 @@ def main():
     print('\nStep 2: Set GUI toggle hotkey')
     hotkey_string = ''
     while (True):
-        print('\nHotkey syntax: Ctrl = "^", Shift = "+", Alt = "!"')
+        print('\nHotkey format: Ctrl = "^", Shift = "+", Alt = "!"')
         print('Example: Ctrl-Shift-a = "^+a"')
         print('Function keys may be typed as "F1" or "f1", ...')
-        hotkey_string = input('Enter GUI toggle hotkey (leave blank for default: "F8"): ')
+        hotkey_string = input('Type your GUI toggle hotkey (leave blank for default: "F8"): ')
         if (hotkey_string == ''):
             hotkey_string = "F8"
         if (IsHotkeyStringValid(hotkey_string)):
