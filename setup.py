@@ -147,7 +147,7 @@ def main():
             break
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
-                    download_directory))
+                    config_values['DownloadDirectory']))
     # Prompt downloaded filter name
     while (True):
         config_values['DownloadedLootFilterFilename'] = input(
@@ -170,7 +170,7 @@ def main():
             break
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
-                    path_of_exile_directory))
+                    config_values['PathOfExileDirectory']))
     
     # 6. Generate new profile from config values
     created_profile = profile.CreateNewProfile(new_profile_name, config_values)
