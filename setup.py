@@ -12,6 +12,7 @@
 import os
 import os.path
 import sys
+import unicodedata
 
 import file_manip
 import helper
@@ -24,14 +25,65 @@ kPathOfExileDirectoryPrefix = 'Path of Exile directory:'
 kInputDirectoryPrefix = 'Input (backup) loot filter directory:'
 kDownloadedFilterPrefix = 'Downloaded loot filter filename:'
 
-kHotkeyAlphabet = '^+!abcdefghiujklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+kHotkeyModifierChars = '^+!'
 
-# TODO: make this more rigorous
-def IsHotkeyStringValid(hotkey_string: str) -> bool:
+# Splits a hotkey string into modifier characters and key characters.
+# Returns a pair of (modifier_string, key_string), or (None, None) if input is ill-formed.
+def SplitHotkeyString(hotkey_string: str):
+    modifier_string: str = ''
+    key_string: str = ''
+    in_modifier: bool = True
     for c in hotkey_string:
-        if (c not in kHotkeyAlphabet):
+        if (c in kHotkeyModifierChars):
+            if (in_modifier):
+                modifier_string += c
+            else:  # not in_modifier
+                print('IsHotkeyStringValid("{}"): all modifiers must come before any key characters'.format(
+                    hotkey_string))
+                return None, None  # see modifier char after done with modifier -> invalid
+        else:  # c is not a modifier character
+            in_modifier = False
+            key_string += c
+    return modifier_string, key_string
+# End SplitHotkeyString
+
+# Determines if the given hotkey_string is a valid AHK hotkey.
+# Note: the full list of valid keys is here: https://www.autohotkey.com/docs/KeyList.htm.
+# This function only checks for the subset of most commonly used keys.
+def IsHotkeyStringValid(hotkey_string: str) -> bool:
+    # Check for any non-(letter/number/punctuation/symbol) characters
+    for c in hotkey_string:
+        if (unicodedata.category(c)[0] not in 'LNPS'):
+            print('IsHotkeyStringValid("{}"): invalid character "{}"'.format(
+                    hotkey_string, c))
             return False
-    return True
+    # Separate into modifier characters and key characters
+    modifier_string, key_string = SplitHotkeyString(hotkey_string)
+    print('modifier_string = ', modifier_string)
+    print('key_string = ', key_string)
+    if (key_string == None):
+        return False
+    # Check key_string is valid, which means it is one of the following:
+    #  - length 1
+    #  - F{#} or f{#}, where # is 1-12
+    #  - Numpad{#}, where # is 0-9
+    #  - XButton1 or XButton2
+    if (len(key_string) == 0):
+        return False
+    elif (len(key_string) == 1):
+        return True
+    # F{#} or f{#}, where # is 1-12
+    elif (key_string[0] in 'Ff'):
+        if (key_string[1:] in (str(i) for i in range(1, 13))):
+            return True
+    # Numpad{#}, where # is 0-9
+    elif (key_string.startswith('Numpad')):
+        if (key_string[6:] in (str(i) for i in range(0, 10))):
+            return True
+    # XButton1 or XButton2
+    elif (key_string in ('XButton1', 'XButton2')):
+        return True
+    return False
 # End IsHotkeyStringValid
 
 def SetGuiToggleHotkey(hotkey_string: str):
