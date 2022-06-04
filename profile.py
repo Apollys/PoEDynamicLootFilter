@@ -16,11 +16,11 @@ kGeneralConfigFullpath = os.path.join(kProfileDirectory, kGeneralConfigFilename)
 def GetProfileConfigFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.config')
 # End GetProfileConfigFullpath
-    
+
 def GetProfileRulesFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.rules')
 # End GetProfileRulesFullpath
-    
+
 def GetProfileChangesFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.changes')
 # End GetProfileChangesFullpath
@@ -77,7 +77,7 @@ kDefaultConfigValues = {
         'AddChaosRecipeRules' : True,
         'ChaosRecipeWeaponClassesAnyHeight' : 'Daggers, Rune Daggers, Wands',
         'ChaosRecipeWeaponClassesMaxHeight3' : 'Bows'}
-        
+
 kRequiredConfigKewords = [
         'DownloadDirectory',
         'PathOfExileDirectory',
@@ -137,9 +137,9 @@ class Profile:
      - rules_path: str
      - config_values: dict {keyword : value}
     '''
-    
+
     # ------------------------------ Public API ------------------------------
-    
+
     # If profile of given name exists, parses the config.
     # If profile does not exist, creates a new profile with given config values.
     # Note: config_values should be empty (default) for existing profile,
@@ -165,7 +165,7 @@ class Profile:
 
     def LoadConfigs(self):
         if (os.path.isfile(self.config_path)):
-            with open(self.config_path) as config_file:
+            with open(self.config_path, encoding="utf-8") as config_file:
                 for line in config_file:
                     parse_result = ParseProfileConfigLine(line)
                     if (parse_result):
@@ -175,7 +175,7 @@ class Profile:
             raise RuntimeError('Config file {} does not exist'.format(self.config_path))
         # TODO (maybe): also load .rules and .changes files?
     # End LoadConfigs
-    
+
     def WriteConfigs(self):
         self.UpdateAndValidateConfigValues()
         # Write .config file
@@ -190,9 +190,9 @@ class Profile:
         if (not os.path.isfile(self.rules_path)):
             helper.WriteToFile('', self.rules_path)
     # End WriteConfigs
-        
+
     # ------------------------------ Helper Functions ------------------------------
-    
+
     # Update and Validate config values:
     # 1. Verifies that all required config values are present.
     # 2. Re-computes all derived config values.
@@ -229,7 +229,7 @@ class Profile:
         os.makedirs(self.config_values['InputLootFilterDirectory'], exist_ok = True)
         # TODO: create blank .changes and .rules files if don't exist?
     # End UpdateAndValidateConfigValues
-        
+
 # End class Profile
 
 # Returns a bool indicating whether or not there is a .config file
@@ -278,7 +278,7 @@ def ListProfilesRaw() -> List[str]:
             profile_names.append(profile_name)
     return profile_names
 # def ListProfilesRaw
-    
+
 
 # Returns a list of strings containing all the profile names.
 # If the list is nonempty, the first item is the active profile.
@@ -330,7 +330,7 @@ def Test():
     all_profile_names = GetAllProfileNames()
     print('all_profile_names =', all_profile_names)
     print()
-    
+
     # parsed_config_data = ParseProfileConfig('DefaultProfile')
     # print('parsed config data:')
     #for key, value in parsed_config_data.items():
