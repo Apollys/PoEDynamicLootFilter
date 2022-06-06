@@ -165,7 +165,7 @@ class Profile:
 
     def LoadConfigs(self):
         if (os.path.isfile(self.config_path)):
-            with open(self.config_path) as config_file:
+            with open(self.config_path, encoding='utf-8') as config_file:
                 for line in config_file:
                     parse_result = ParseProfileConfigLine(line)
                     if (parse_result):
@@ -260,7 +260,7 @@ def SetActiveProfile(profile_name: str):
     profile_config_path = os.path.join(kProfileDirectory, profile_name + '.config')
     if (not ProfileExists(profile_name)):
         raise RuntimeError('Profile "{}" does not exist'.format(profile_name))
-    with open(kGeneralConfigFullpath, 'w') as general_config_file:
+    with open(kGeneralConfigFullpath, 'w', encoding='utf-8') as general_config_file:
         general_config_file.write(kActiveProfileTemplate.format(profile_name))
 # End SetActiveProfile
 
@@ -312,6 +312,7 @@ def CreateNewProfile(profile_name: str, config_values: dict) -> Profile:
     CheckType(profile_name, 'profile_name', str)
     CheckType(config_values, 'config_values', dict)
     # Create general.config if does not exit
+    # TODO: (Why) Is this necessary?  I think it shouldn't be.
     with open(os.path.join(kProfileDirectory, 'general.config'), 'a+') as f: pass
     # Return None if profile already exists
     if (profile_name in GetAllProfileNames()):

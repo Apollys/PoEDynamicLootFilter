@@ -348,7 +348,8 @@ class LootFilter:
     # End __init__
 
     def SaveToFile(self):
-        with open(self.profile_config_data['OutputLootFilterFullpath'], 'w') as output_file:
+        with open(self.profile_config_data['OutputLootFilterFullpath'],
+                'w', encoding='utf-8') as output_file:
             for line in self.header_lines:
                 output_file.write(line + '\n')
             for rule_or_comment_block in self.rule_or_comment_block_list:
@@ -989,7 +990,7 @@ class LootFilter:
     def ParseInputFilterFile(self) -> None:
         # Read in lines from file   
         self.text_lines: List[str] = []
-        with open(self.input_filter_fullpath) as input_filter_file:
+        with open(self.input_filter_fullpath, encoding='utf-8') as input_filter_file:
             for line in input_filter_file:
                 self.text_lines.append(line.strip())
         # Ensure there is a blank line at the end to make parsing algorithms cleaner
