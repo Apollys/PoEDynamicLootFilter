@@ -1,6 +1,6 @@
 # First-time setup script for PoE DLF
 #  1. Checks the python major version is correct (3)
-#  2. Prompts the user for the desired GUI toggle hotkey
+#  2. Prompts the user to set their hotkeys
 #  3. Prompts the user for a profile name, and creates the new profile
 #  4. Prompts the user for:
 #    - Download directory, and validates it exists
@@ -19,7 +19,8 @@ import helper
 import profile
 
 kDlfAhkPath = 'dynamic_loot_filter.ahk'
-kAhkGuiHotkeyTag = '$gui_hotkey_line'
+kAhkToggleGuiHotkeyTag = '$toggle_gui_hotkey_line'
+kAhkReloadFilterHotkeyTag = '$reload_filter_hotkey_line'
 kDownloadDirectoryPrefix = 'Download directory:'
 kPathOfExileDirectoryPrefix = 'Path of Exile directory:'
 kInputDirectoryPrefix = 'Input (backup) loot filter directory:'
@@ -59,8 +60,6 @@ def IsHotkeyStringValid(hotkey_string: str) -> bool:
             return False
     # Separate into modifier characters and key characters
     modifier_string, key_string = SplitHotkeyString(hotkey_string)
-    print('modifier_string = ', modifier_string)
-    print('key_string = ', key_string)
     if (key_string == None):
         return False
     # Check key_string is valid, which means it is one of the following:
@@ -86,15 +85,19 @@ def IsHotkeyStringValid(hotkey_string: str) -> bool:
     return False
 # End IsHotkeyStringValid
 
-def SetGuiToggleHotkey(hotkey_string: str):
+def SetHotkey(tag: str, hotkey_string: str):
     dlf_ahk_script_lines = helper.ReadFile(kDlfAhkPath, retain_newlines=False)
+    found_flag = False
     for i in range(len(dlf_ahk_script_lines)):
-        if (kAhkGuiHotkeyTag in dlf_ahk_script_lines[i]):
+        if (tag in dlf_ahk_script_lines[i]):
+            found_flag = True
             split_result = dlf_ahk_script_lines[i].split('::', maxsplit=1)
             split_result[0] = hotkey_string
             dlf_ahk_script_lines[i] = '::'.join(split_result)
+    if (not found_flag):
+        raise RuntimeError('tag {} not found in {}'.format(tag, kDlfAhkPath))
     helper.WriteToFile(dlf_ahk_script_lines, kDlfAhkPath)
-# End SetGuiToggleHotkey
+# End SetHotkey
 
 def main():
     print('Welcome to the first-time setup script for PoE DLF!')
@@ -108,22 +111,36 @@ def main():
         sys.exit()
     print('Python version {} detected, success!'.format(python_major_version))
     
-    # 2. Query GUI toggle hotkey
-    print('\nStep 2: Set GUI toggle hotkey')
+    # 2a. Query toggle GUI hotkey
+    print('\nStep 2: Set your hotkeys')
     hotkey_string = ''
     while (True):
         print('\nHotkey format: Ctrl = "^", Shift = "+", Alt = "!"')
         print('Example: Ctrl-Shift-a = "^+a"')
         print('Function keys may be typed as "F1" or "f1", ...')
-        hotkey_string = input('Type your GUI toggle hotkey (leave blank for default: "F8"): ')
+        print()
+        hotkey_string = input('Type your toggle GUI hotkey (leave blank for default: "F7"): ')
+        if (hotkey_string == ''):
+            hotkey_string = "F7"
+        if (IsHotkeyStringValid(hotkey_string)):
+            break
+        print('Invalid hotkey entered: "{}"'.format(hotkey_string))
+    SetHotkey(kAhkToggleGuiHotkeyTag, hotkey_string)
+    print('\nGUI toggle hotkey has been set to "{}"'.format(hotkey_string))
+    
+    # 2b. Query reload filter hotkey
+    print('\nStep 2: Set reload filter hotkey')
+    hotkey_string = ''
+    while (True):
+        hotkey_string = input('Type your reload filter hotkey (leave blank for default: "F8"): ')
         if (hotkey_string == ''):
             hotkey_string = "F8"
         if (IsHotkeyStringValid(hotkey_string)):
             break
         print('Invalid hotkey entered: "{}"'.format(hotkey_string))
-    SetGuiToggleHotkey(hotkey_string)
+    SetHotkey(kAhkReloadFilterHotkeyTag, hotkey_string)
     print('\nGUI toggle hotkey has been set to "{}"'.format(hotkey_string))
-    print('To change the hotkey later, either scroll to the bottom of {}'.format(kDlfAhkPath))
+    print('To change your hotkeys later, either edit them directly at the bottom of {}'.format(kDlfAhkPath))
     print('or re-run this script, and use Ctrl-C to exit after this step.')
     
     # 3. Create new profile
@@ -139,7 +156,7 @@ def main():
     config_values = {}
     # Required keywords: 'DownloadDirectory', 'PathOfExileDirectory', 'DownloadedLootFilterFilename'
     print('\nStep 4: Tell DLF where to find and put your filters')
-    # Prompt Download directory
+    # 4a. Prompt Download directory
     while (True):
         config_values['DownloadDirectory'] = input('Download directory fullpath: ').strip('"')
         if (os.path.isdir(config_values['DownloadDirectory'])):
@@ -148,7 +165,7 @@ def main():
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
                     config_values['DownloadDirectory']))
-    # Prompt downloaded filter name
+    # 4b. Prompt downloaded filter name
     while (True):
         config_values['DownloadedLootFilterFilename'] = input(
                 'Downloaded filter filename (e.g. "NeversinkRegular.filter"): ').strip('"')
@@ -159,7 +176,7 @@ def main():
         else:
             print('\nDownloaded filter "{}" not found, please ensure it is present and the name is correct'.format(
                 downloaded_filter_fullpath))
-    # Prompt Path of Exile directory
+    # 4c. Prompt Path of Exile directory
     print('\nNow your Path of Exile filters directory')
     print('Note: this is not the game install location, but rather the "Documents" location.')
     print('This is where your PoE loot filters go, and it should also have a "Screenshots" directory.')
@@ -171,6 +188,9 @@ def main():
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
                     config_values['PathOfExileDirectory']))
+    
+    # 5. Query additional profile options
+    # [NYI]
     
     # 6. Generate new profile from config values
     created_profile = profile.CreateNewProfile(new_profile_name, config_values)
