@@ -311,9 +311,6 @@ def GetAllProfileNames() -> List[str]:
 def CreateNewProfile(profile_name: str, config_values: dict) -> Profile:
     CheckType(profile_name, 'profile_name', str)
     CheckType(config_values, 'config_values', dict)
-    # Create general.config if does not exit
-    # TODO: (Why) Is this necessary?  I think it shouldn't be.
-    with open(os.path.join(kProfileDirectory, 'general.config'), 'a+') as f: pass
     # Return None if profile already exists
     if (profile_name in GetAllProfileNames()):
         return None
@@ -323,6 +320,33 @@ def CreateNewProfile(profile_name: str, config_values: dict) -> Profile:
     SetActiveProfile(profile_name)
     return new_profile
 # End CreateNewProfile
+
+# TODO: If original_profile_name is the currently active profile,
+# update the active profile in general.config.
+def RenameProfile(original_profile_name: str, new_profile_name: str):
+    CheckType(original_profile_name, 'original_profile_name', str)
+    CheckType(new_profile_name, 'new_profile_name', str)
+    if (original_profile_name not in ListProfilesRaw()):
+        raise RuntimeError('profile {} does not exist'.format(original_profile_name))
+    # Rename all files with basename equal to original_profile_name
+    for filename in file_manip.ListFilesInDirectory(kProfileDirectory):
+        profile_name, extension = os.path.splitext(filename)
+        if (profile_name == original_profile_name):
+            source_path = os.path.join(kProfileDirectory, filename)
+            target_path = os.path.join(kProfileDirectory, new_profile_name + extension)
+            file_manip.MoveFile(source_path, target_path)
+# End RenameProfile
+
+# TODO: update general.config if profile_name is active profile
+def DeleteProfile(profile_name: str):
+    CheckType(profile_name, 'profile_name', str)
+    if (profile_name not in ListProfilesRaw()):
+        raise RuntimeError('profile {} does not exist'.format(profile_name))
+    # Remove all files with basename equal to profile_name
+    for filepath in file_manip.ListFilesInDirectory(kProfileDirectory, fullpath=True):
+        if (file_manip.FilenameWithoutExtension(filepath) == profile_name):
+            os.remove(filepath)
+# DeleteProfile
 
 def Test():
     print('Test')

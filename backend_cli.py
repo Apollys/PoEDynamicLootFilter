@@ -81,6 +81,14 @@ kFunctionInfoMap = {
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
+    'rename_profile' : { 
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
+    'delete_profile' : { 
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
     'set_active_profile' : { 
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
@@ -277,11 +285,6 @@ kFunctionInfoMap = {
         'ModifiesFilter' : False,
     },
 }
-
-# Functions that don't require a profile parameter in the CLI
-# These are the functions that do not interact with the loot filter in any way
-kNoProfileParameterFunctionNames = [
-        'get_all_profile_names', 'create_new_profile', 'set_active_profile']
 
 def Error(e):
     logger.Log('Error ' + str(e))
@@ -518,6 +521,28 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         config_values: dict = helper.ReadFileToDict(kInputFilename)
         created_profile = profile.CreateNewProfile(new_profile_name, config_values)
         output_string += str(int(created_profile != None))
+    elif (function_name == 'rename_profile'):
+        '''
+        rename_profile <original_profile_name> <new_profile_name>
+         - Renames a profile, renaming all the corresponding config files,
+         - Updates general.config if needed
+         - Raises an error if the profile original_profile_name does not exist
+         - Example: > python3 backend_cli.py rename_profile MyProfile MyFancyProfile
+        '''
+        CheckNumParams(function_params, 2)
+        original_profile_name, new_profile_name = function_params
+        profile.RenameProfile(original_profile_name, new_profile_name)
+    elif (function_name == 'delete_profile'):
+        '''
+        delete_profile <profile_name>
+         - Deletes the given profile, removing all corresponding config files
+         - Updates general.config if needed
+         - Raises an error if the profile profile_name does not exist
+         - Example: > python3 backend_cli.py delete_profile MyProfile
+        '''
+        CheckNumParams(function_params, 1)
+        profile_name = function_params[0]
+        profile.DeleteProfile(profile_name)
     elif (function_name == 'set_active_profile'):
         '''
         set_active_profile <new_active_profile_name>

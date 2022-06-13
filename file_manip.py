@@ -63,7 +63,17 @@ def ClearFileIfExists(filepath: str):
         open(filepath, 'w').close()
 # End ClearFileIfExists
 
-def ListFilesInDirectory(directory_path: str):
-    return [f for f in os.listdir(directory_path)
+def FilenameWithoutExtension(filepath: str):
+    CheckType(filepath, 'filepath', str)
+    return os.path.splitext(os.path.basename(filepath))[0]
+# End FilenameWithoutExtension
+
+# Lists all the files in the given directory
+# By default, lists only filenames; if paths are desired, use fullpath=True
+def ListFilesInDirectory(directory_path: str, fullpath=False):
+    filenames = [f for f in os.listdir(directory_path)
             if os.path.isfile(os.path.join(directory_path, f))]
+    if (not fullpath):
+        return filenames
+    return [os.path.join(directory_path, filename) for filename in filenames]
 # End ListFilesInDirectory
