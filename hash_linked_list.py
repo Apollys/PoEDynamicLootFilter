@@ -47,7 +47,13 @@ class HashLinkedList:
         self.insert_before(key, value, successor_key=None)
     
     def __contains__(self, key) -> bool:
-        return key in index_to_node_map
+        return key in self.key_to_node_map
+    
+    def __getitem__(self, key):
+        return self.key_to_node_map[key].value
+    
+    def __setitem__(self, key, value):
+        self.key_to_node_map[key].value = value
         
     def __iter__(self):
         return HashLinkedListIterator(self)

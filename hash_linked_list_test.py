@@ -39,9 +39,19 @@ def LargerTest():
         AssertEqual(expected_value, value)
     print('LargerTest passed!')
 
+def BracketAccessTest():
+    hll = HashLinkedList()
+    for key in range(10):
+        hll.append(key, str(key))
+    AssertEqual(hll[5], str(5))
+    hll[5] = 'five'
+    AssertEqual(hll[5], 'five')
+    print('BracketAccessTest passed!')
+
 def main():
     SimpleTest()
     LargerTest()
+    BracketAccessTest()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

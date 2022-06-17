@@ -112,15 +112,10 @@ def UncommentedLine(line: str) -> str:
     return line  # already uncommented
 # End UncommentedLine
 
-kTagLinePattern = re.compile(r'^\s*#?\s*(Show|Hide|Disable)')
-
-# Finds the index of the Show/Hide/Disable line, or returns -1 if no such line found
-def FindTagLineIndex(rule_text_lines: str) -> int:
-    for i in reversed(range(len(rule_text_lines))):
-        if (re.search(kTagLinePattern, rule_text_lines[i])):
-            return i
-    return -1
-# End FindTagLineIndex
+def IsCommented(line: str) -> bool:
+    CheckType(line, 'line', str)
+    return line.strip().startswith('#')
+# End IsCommented
 
 # Returns True if the given line is a section declaration or section group
 # declaration, and False otherwise.
