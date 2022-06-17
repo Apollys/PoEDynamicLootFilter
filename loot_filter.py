@@ -1083,7 +1083,6 @@ class LootFilter:
         to_add_string = consts.kHighIlvlFlaskRuleTemplate
         to_add_string_list.extend(to_add_string.split('\n') + [''])
         # Add chaos recipe rules
-        # TODO: comment out if config says don't add chaos recipe rules
         current_section_id_int += 1
         to_add_string = consts.kSectionHeaderTemplate.format(
                 current_section_id_int, 'Show chaos recipe rares by item +slot')
