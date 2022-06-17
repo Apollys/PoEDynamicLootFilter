@@ -74,6 +74,8 @@ def ParseFromTemplate(s: str, template: str) -> Tuple[bool, List[str]]:
     return True, token_list
 # End ParseFromTemplate
 
+# Example: parsing the string 'BaseType "Leather Belt" "Two-Stone Ring" "Agate Amulet"'
+# with start_seq = '"' yields ['Leather Belt', 'Two-Stone Ring', 'Agate Amulet'].
 def ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]:
     if (end_seq == None): end_seq = start_seq
     index = 0
@@ -82,15 +84,13 @@ def ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]
         start_find_result = line.find(start_seq, index)
         if (start_find_result == -1): break
         start_index = start_find_result + len(start_seq)
-        end_find_result = line.find(end_seq, line.find(end_seq, start_index + 1))
+        end_find_result = line.find(end_seq, start_index + 1)
         if (end_find_result == -1): break
         end_index = end_find_result
         token_list.append(line[start_index : end_index])
         index = end_index + 1
     return token_list
 # End ParseEnclosedBy
-
-# TestParseEnclosedBy()
 
 def IsInt(s: str) -> bool:
     try:
@@ -111,39 +111,4 @@ def ParseInts(line: str) -> List[int]:
         elif c.isdigit():
             current_int_string += c
     return parsed_ints
-# End ParseInts           
-
-def TestParseFromTemplate():
-    line1 = 'Show # $type->decorator->craftingrare $tier->raredecoratorgear '
-    line2 = 'Show # $type->decorator->craftingrare $tier->raredecoratorgear $other_garbage lalal'
-    template = 'Show {~}$type->{} $tier->{} {~}'
-    success, result = ParseFromTemplate(line1 + ' ', template)
-    print(result)
-    success, result = ParseFromTemplate(line2 + ' ', template)
-    print(result)
-    print(result == ['decorator->craftingrare', 'raredecoratorgear'])
-# End TestParseFromTemplate
-    
-def TestParseEnclosedBy():
-    line = 'BaseType "Leather Belt" "Two-Stone Ring" "Agate Amulet"'
-    result = ParseEnclosedBy(line, '"', '"')
-    print(result)
-    print(result == ['Leather Belt', 'Two-Stone Ring', 'Agate Amulet'])
-    # Trickier test
-    line = 'The "quick" "brown fox" jumps over the "lazy dog '
-    result = ParseEnclosedBy(line, '"')
-    print(result)
-    print(result == ['quick', 'brown fox'])
-# End TestParseEnclosedBy
-
-def TestParseInts():
-    line = 'asdf45 re2 7432'
-    result = ParseInts(line)
-    print(result)
-    print(result == [45, 2, 7432])
-# End TestParseInts
-    
-#TestParseFromTemplate()
-#TestParseEnclosedBy()
-#TestParseInts()
-
+# End ParseInts

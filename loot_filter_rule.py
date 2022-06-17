@@ -3,8 +3,8 @@ from enum import Enum
 from typing import Dict, List, Tuple
 
 from hash_linked_list import HashLinkedList
-import helper
 import logger
+import parse_helper
 import profile
 import rule_parser
 from type_checker import CheckType
@@ -65,11 +65,11 @@ class LootFilterRule:
             logger.Log('Error: emtpy rule encountered')
         # Find the index of the line containing Show/Hide
         # Everything above that line should be commented, and is assigned to self.header_comment_lines
-        show_hide_line_index = rule_parser.FindShowHideLineIndex(text_lines)
+        show_hide_line_index = parse_helper.FindShowHideLineIndex(text_lines)
         if (show_hide_line_index == None):
             raise RuntimeError('did not find Show/Hide line in rule:\n{}'.format(text_lines))
         for i in range(show_hide_line_index):
-            if (not helper.IsCommented(text_lines[i])):
+            if (not parse_helper.IsCommented(text_lines[i])):
                 raise RuntimeError('Header line is not commented: {}'.format(text_lines[i]))
         self.header_comment_lines = text_lines[:show_hide_line_index]
         self.rule_text_lines = text_lines[show_hide_line_index:]
@@ -86,11 +86,11 @@ class LootFilterRule:
             keyword, operator, values_list = rule_parser.ParseRuleLineGeneric(line)
             self.parsed_lines_hll.append(keyword, (operator, values_list))
         # Parse rule visibility
-        cleaned_show_hide_line = helper.UncommentedLine(self.rule_text_lines[0]).strip()
+        cleaned_show_hide_line = parse_helper.UncommentedLine(self.rule_text_lines[0]).strip()
         if (not (cleaned_show_hide_line.startswith('Show') or cleaned_show_hide_line.startswith('Hide'))):
             raise RuntimeError('Show/Hide line invalid: {}'.format(self.rule_text_lines[0]))
         is_show: bool = cleaned_show_hide_line.startswith('Show')
-        is_enabled: bool = not all(helper.IsCommented(line) for line in self.rule_text_lines)
+        is_enabled: bool = not all(parse_helper.IsCommented(line) for line in self.rule_text_lines)
         self.visibility = RuleVisibility.kUnknown
         if (is_show and is_enabled):
             self.visibility = RuleVisibility.kShow
@@ -132,7 +132,7 @@ class LootFilterRule:
             line += keyword
             if (operator != ''):
                 line += ' ' + operator
-            values_string = rule_parser.ConvertValuesListToString(values_list)
+            values_string = parse_helper.ConvertValuesListToString(values_list)
             if (values_string != ''):
                 line += ' ' + values_string
             self.rule_text_lines.append(line)

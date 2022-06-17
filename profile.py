@@ -4,8 +4,8 @@ import os
 import os.path
 from typing import List
 
-import file_manip
-import helper
+import file_helper
+import parse_helper
 import simple_parser
 from type_checker import CheckType
 
@@ -182,13 +182,13 @@ class Profile:
         keywords = [v for k, v in kProfileConfigKeyphraseToKeywordOrderedMap.items()]
         format_params = [self.name] + [self.config_values[keyword] for keyword in keywords]
         config_string = kProfileConfigTemplate.format(*format_params)
-        helper.WriteToFile(config_string, self.config_path)
+        file_helper.WriteToFile(config_string, self.config_path)
         # Create blank .changes file, if does not exist
         if (not os.path.isfile(self.changes_path)):
-            helper.WriteToFile('', self.changes_path)
+            file_helper.WriteToFile('', self.changes_path)
         # Create blank .rules file, if does not exist
         if (not os.path.isfile(self.rules_path)):
-            helper.WriteToFile('', self.rules_path)
+            file_helper.WriteToFile('', self.rules_path)
     # End WriteConfigs
         
     # ------------------------------ Helper Functions ------------------------------
@@ -243,7 +243,7 @@ def GetActiveProfileName() -> str:
         raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
     if (not os.path.isfile(kGeneralConfigFullpath)):
         return None
-    general_config_lines = [line.strip() for line in helper.ReadFile(kGeneralConfigFullpath)]
+    general_config_lines = [line.strip() for line in file_helper.ReadFile(kGeneralConfigFullpath)]
     nonempty_lines = [line for line in general_config_lines if line != '']
     if (len(nonempty_lines) == 0):
         return None

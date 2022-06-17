@@ -10,7 +10,7 @@ import helper
 import logger
 from loot_filter import RuleVisibility, LootFilterRule, LootFilter
 import profile
-from type_checker import CheckType, CheckType2
+from type_checker import CheckType
 
 kPythonCommand = 'python'
 kTestLogFilename = 'test.log'

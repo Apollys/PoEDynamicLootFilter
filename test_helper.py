@@ -13,3 +13,7 @@ def AssertFalse(value):
     if (value != False):
         raise RuntimeError('AssertFalse failed:\n  value is: {}'.format(value))
 # End AssertFalse
+
+def AssertFailure():
+    raise RuntimeError('AssertFailure reached: this code should be unreachable')
+# End AssertFalse

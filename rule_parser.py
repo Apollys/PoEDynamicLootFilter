@@ -1,44 +1,12 @@
 import operator
-import re
 from typing import List, Tuple
 
 import multiset
+import parse_helper
 import simple_parser
-from type_checker import CheckType, CheckType2
-
-# =================================== Generic Helper ===================================
-
-# Parses values string into a list of items
-# Items in values string can be either space-separated, or enclosed in quotes
-# Assumes a single convention is used for all items in the same rule
-def ConvertValuesStringToList(values_string: str) -> List[str]:
-    CheckType(values_string, 'values_string', str)
-    if ('"' in values_string):  # assume all values are enclosed in quotes
-        values_list = simple_parser.ParseEnclosedBy(values_string, '"')
-    else:
-        values_list = values_string.split(' ')
-    return values_list
-# End ConvertValuesStringToList
-
-# Converts list of values into a single value string
-# Values are separated by spaces, and only enclosed in quotes if necessary
-def ConvertValuesListToString(values_list: List[str]) -> str:
-    if (any(' ' in s for s in values_list)):
-        return '"' + '" "'.join(values_list) + '"'
-    return ' '.join(values_list)
-# ConvertValuesListToString
+from type_checker import CheckType
 
 # ==================================== Rule Parsing ====================================
-
-kTagLinePattern = re.compile(r'^\s*#?\s*(Show|Hide)')
-
-# Returns the index of the Show/Hide line, or None if no such line found
-def FindShowHideLineIndex(rule_text_lines: str) -> int:
-    for i in reversed(range(len(rule_text_lines))):
-        if (re.search(kTagLinePattern, rule_text_lines[i])):
-            return i
-    return None
-# End FindTagLineIndex
 
 # Note: not using this currently
 kConditionsKeywordToTemplateMap = {
@@ -101,7 +69,7 @@ def ParseRuleLineGeneric(line: str) -> Tuple[str, str, List[str]]:
             values_string = ' '.join(space_split_list[2:])
         else:
             values_string = ' '.join(space_split_list[1:])
-    values_list = ConvertValuesStringToList(values_string)
+    values_list = parse_helper.ConvertValuesStringToList(values_string)
     return keyword, operator, values_list
 
 # ==================================== Item Parsing ====================================
@@ -140,7 +108,7 @@ kInfluenceProperties = ['Shaper Item', 'Elder Item', 'Crusader Item', 'Warlord I
 
 kOtherImportantProperties = ['Item Level', 'Stack Size', 'Map Tier', 'Quality', 'Gem Level']
 
-# Keywords in items have spaces, in loot filter ruels they don't
+# Keywords in items have spaces, in loot filter rules they don't
 # This function allows us to translate between the two.
 # Note: it modifies the input dict and does not return anything.
 def RemoveSpacesFromKeys(d: dict):

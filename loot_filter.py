@@ -11,7 +11,7 @@ import helper
 import logger
 import profile
 import rule_parser
-from type_checker import CheckType, CheckType2
+from type_checker import CheckType
 
 # -----------------------------------------------------------------------------
 
