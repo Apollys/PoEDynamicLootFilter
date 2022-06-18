@@ -1,4 +1,5 @@
 from hash_linked_list import HashLinkedList
+
 from test_helper import AssertEqual
 
 def SimpleTest():

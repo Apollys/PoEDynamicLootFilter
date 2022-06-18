@@ -1,8 +1,30 @@
+'''
+Auxiliary free functions:
+ - GetProfileConfigFullpath(profile_name: str) -> str
+ - GetProfileChangesFullpath(profile_name: str) -> str
+ - GetProfileRulesFullpath(profile_name: str) -> str
+ - ListProfilesRaw() -> List[str]
+ - ProfileExists(profile_name: str) -> bool
+ - GetActiveProfileName() -> str
+ - SetActiveProfile(profile_name: str)
+ - GetAllProfileNames() -> List[str]
+
+Higher level profile functions:
+ - CreateNewProfile(profile_name: str, config_values: dict) -> Profile
+ - RenameProfile(original_profile_name: str, new_profile_name: str)
+ - DeleteProfile(profile_name: str)
+
+Internal helper functions:
+ - ParseProfileConfigLine(line: str) -> Tuple[str, Any]
+
+It also defines a class Profile for manipulating profiles.
+'''
+
 from collections import OrderedDict
 from enum import Enum
 import os
 import os.path
-from typing import List
+from typing import Any, List, Tuple
 
 import file_helper
 import parse_helper
@@ -17,13 +39,85 @@ def GetProfileConfigFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.config')
 # End GetProfileConfigFullpath
     
-def GetProfileRulesFullpath(profile_name: str) -> str:
-    return os.path.join(kProfileDirectory, profile_name + '.rules')
-# End GetProfileRulesFullpath
-    
 def GetProfileChangesFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.changes')
 # End GetProfileChangesFullpath
+    
+def GetProfileRulesFullpath(profile_name: str) -> str:
+    return os.path.join(kProfileDirectory, profile_name + '.rules')
+# End GetProfileRulesFullpath
+
+# Returns a list of profile names as defined by:
+#  - files of extensions 'config' whose name is not 'general.config'
+# Does not perform any additional validation or modification of general.config.
+def ListProfilesRaw() -> List[str]:
+    profile_files_list: list[str] = file_helper.ListFilesInDirectory(kProfileDirectory)
+    profile_names = []
+    for filename in profile_files_list:
+        if (filename == 'general.config'):
+            continue
+        profile_name, extension = os.path.splitext(filename)
+        if (extension == '.config'):
+            profile_names.append(profile_name)
+    return profile_names
+# End ListProfilesRaw
+
+# Returns a bool indicating whether or not there is a .config file
+# corresponding to the given profile name.
+def ProfileExists(profile_name: str) -> bool:
+    return profile_name in ListProfilesRaw()
+# End ProfileExists
+
+# Returns the active profile name as a string, or None.
+def GetActiveProfileName() -> str:
+    if (not os.path.isdir(kProfileDirectory)):
+        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
+    if (not os.path.isfile(kGeneralConfigFullpath)):
+        return None
+    general_config_lines = [line.strip() for line in file_helper.ReadFile(kGeneralConfigFullpath)]
+    nonempty_lines = [line for line in general_config_lines if line != '']
+    if (len(nonempty_lines) == 0):
+        return None
+    parse_success, parse_results = simple_parser.ParseFromTemplate(
+            nonempty_lines[0], kActiveProfileTemplate)
+    return  parse_results[0] if parse_success else None
+# End GetActiveProfileName
+
+# Sets the currently active profile to the profile of the given name.
+# Raises an error if the given profile does not exist.
+def SetActiveProfile(profile_name: str):
+    if (not os.path.isdir(kProfileDirectory)):
+        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
+    profile_config_path = os.path.join(kProfileDirectory, profile_name + '.config')
+    if (not ProfileExists(profile_name)):
+        raise RuntimeError('Profile "{}" does not exist'.format(profile_name))
+    with open(kGeneralConfigFullpath, 'w', encoding='utf-8') as general_config_file:
+        general_config_file.write(kActiveProfileTemplate.format(profile_name))
+# End SetActiveProfile
+    
+# Returns a list of strings containing all the profile names.
+# If the list is nonempty, the first item is the active profile.
+# Enforces consistency between existing profiles and general.config.
+# Consistent states are either:
+#  - general.config does not exist / is empty, and there are no profiles, or
+#  - general.config contains a valid active profile, and at least one profile exists
+# If there is an inconsistency, this is fixed by setting general.config
+# to have some valid profile as the active profile.
+def GetAllProfileNames() -> List[str]:
+    active_profile_name = GetActiveProfileName()
+    raw_profile_list = ListProfilesRaw()
+    if ((active_profile_name == None) and (len(raw_profile_list) == 0)):
+        return []
+    elif (active_profile_name not in raw_profile_list):
+        SetActiveProfile(raw_profile_list[0])
+        return raw_profile_list
+    # Otherwise, active profile name is valid and in raw_profile_list
+    # We need to place the active profile in the first position in raw_profile_list
+    i = raw_profile_list.index(active_profile_name)
+    if (i != 0):
+        raw_profile_list[0], raw_profile_list[i] = raw_profile_list[i], raw_profile_list[0]
+    return raw_profile_list
+# End GetAllProfileNames
 
 kActiveProfileTemplate = 'Active profile: {}'
 
@@ -84,7 +178,7 @@ kRequiredConfigKewords = [
         'DownloadedLootFilterFilename']
 
 # Returns a (keyword, value) pair, or None
-def ParseProfileConfigLine(line: str):
+def ParseProfileConfigLine(line: str) -> Tuple[str, Any]:
     CheckType(line, 'line', str)
     stripped_line = line.strip()
     if ((stripped_line == '') or stripped_line.startswith('#')):
@@ -206,6 +300,7 @@ class Profile:
                 raise RuntimeError('Profile {} missing required field: "{}"'.format(
                         self.name, keyword))
         # Compute derived config values
+        self.config_values['ProfileName'] = self.name
         self.config_values['DownloadedLootFilterFullpath'] = os.path.join(
                 self.config_values['DownloadDirectory'], self.config_values['DownloadedLootFilterFilename'])
         self.config_values['InputLootFilterDirectory'] = os.path.join(
@@ -232,78 +327,6 @@ class Profile:
         
 # End class Profile
 
-# Returns a bool indicating whether or not there is a .config file
-# corresponding to the given profile name.
-def ProfileExists(profile_name: str) -> bool:
-    return os.path.isfile(os.path.join(kProfileDirectory, profile_name + '.config'))
-
-# Returns the active profile name as a string, or None.
-def GetActiveProfileName() -> str:
-    if (not os.path.isdir(kProfileDirectory)):
-        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
-    if (not os.path.isfile(kGeneralConfigFullpath)):
-        return None
-    general_config_lines = [line.strip() for line in file_helper.ReadFile(kGeneralConfigFullpath)]
-    nonempty_lines = [line for line in general_config_lines if line != '']
-    if (len(nonempty_lines) == 0):
-        return None
-    parse_success, parse_results = simple_parser.ParseFromTemplate(
-            nonempty_lines[0], kActiveProfileTemplate)
-    return  parse_results[0] if parse_success else None
-# End GetActiveProfileName
-
-# Sets the currently active profile to the profile of the given name.
-# Raises an error if the given profile does not exist.
-def SetActiveProfile(profile_name: str):
-    if (not os.path.isdir(kProfileDirectory)):
-        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
-    profile_config_path = os.path.join(kProfileDirectory, profile_name + '.config')
-    if (not ProfileExists(profile_name)):
-        raise RuntimeError('Profile "{}" does not exist'.format(profile_name))
-    with open(kGeneralConfigFullpath, 'w', encoding='utf-8') as general_config_file:
-        general_config_file.write(kActiveProfileTemplate.format(profile_name))
-# End SetActiveProfile
-
-# Returns a list of profile names as defined by:
-#  - files of extensions 'config' whose name is not 'general.config'
-# Does not perform any additional validation or modification of general.config.
-def ListProfilesRaw() -> List[str]:
-    profile_files_list: list[str] = file_manip.ListFilesInDirectory(kProfileDirectory)
-    profile_names = []
-    for filename in profile_files_list:
-        if (filename == 'general.config'):
-            continue
-        profile_name, extension = os.path.splitext(filename)
-        if (extension == '.config'):
-            profile_names.append(profile_name)
-    return profile_names
-# def ListProfilesRaw
-    
-
-# Returns a list of strings containing all the profile names.
-# If the list is nonempty, the first item is the active profile.
-# Enforces consistency between existing profiles and general.config.
-# Consistent states are either:
-#  - general.config does not exist / is empty, and there are no profiles, or
-#  - general.config contains a valid active profile, and at least one profile exists
-# If there is an inconsistency, this is fixed by setting general.config
-# to have some valid profile as the active profile.
-def GetAllProfileNames() -> List[str]:
-    active_profile_name = GetActiveProfileName()
-    raw_profile_list = ListProfilesRaw()
-    if ((active_profile_name == None) and (len(raw_profile_list) == 0)):
-        return []
-    elif (active_profile_name not in raw_profile_list):
-        SetActiveProfile(raw_profile_list[0])
-        return raw_profile_list
-    # Otherwise, active profile name is valid and in raw_profile_list
-    # We need to place the active profile in the first position in raw_profile_list
-    i = raw_profile_list.index(active_profile_name)
-    if (i != 0):
-        raw_profile_list[0], raw_profile_list[i] = raw_profile_list[i], raw_profile_list[0]
-    return raw_profile_list
-# End GetAllProfileNames
-
 # Returns the created Profile, or None if the profile already exists.
 # config_values must contain the required keywords:
 #   'DownloadDirectory', 'PathOfExileDirectory', 'DownloadedLootFilterFilename'
@@ -329,23 +352,27 @@ def RenameProfile(original_profile_name: str, new_profile_name: str):
     if (original_profile_name not in ListProfilesRaw()):
         raise RuntimeError('profile {} does not exist'.format(original_profile_name))
     # Rename all files with basename equal to original_profile_name
-    for filename in file_manip.ListFilesInDirectory(kProfileDirectory):
+    for filename in file_helper.ListFilesInDirectory(kProfileDirectory):
         profile_name, extension = os.path.splitext(filename)
         if (profile_name == original_profile_name):
             source_path = os.path.join(kProfileDirectory, filename)
             target_path = os.path.join(kProfileDirectory, new_profile_name + extension)
-            file_manip.MoveFile(source_path, target_path)
+            file_helper.MoveFile(source_path, target_path)
 # End RenameProfile
 
-# TODO: update general.config if profile_name is active profile
 def DeleteProfile(profile_name: str):
     CheckType(profile_name, 'profile_name', str)
     if (profile_name not in ListProfilesRaw()):
         raise RuntimeError('profile {} does not exist'.format(profile_name))
     # Remove all files with basename equal to profile_name
-    for filepath in file_manip.ListFilesInDirectory(kProfileDirectory, fullpath=True):
-        if (file_manip.FilenameWithoutExtension(filepath) == profile_name):
+    for filepath in file_helper.ListFilesInDirectory(kProfileDirectory, fullpath=True):
+        if (file_helper.FilenameWithoutExtension(filepath) == profile_name):
             os.remove(filepath)
+    # Update general.config if we deleted the active profile
+    if (GetActiveProfileName() == profile_name):
+        # A little hacky, since GetAllProfileNames enforces the consistency
+        # between general.config and profiles that we desire, we just call it.
+        GetAllProfileNames()
 # DeleteProfile
 
 def Test():

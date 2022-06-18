@@ -73,7 +73,7 @@ def ReadFileToDict(filepath: str) -> dict:
 def WriteToFile(data, filepath: str):
     parent_directory = os.path.dirname(filepath)
     if (parent_directory != ''):
-        os.makedirs(parent_directory, exist_ok = True)
+        os.makedirs(parent_directory, exist_ok=True)
     with open(filepath, 'w', encoding='utf-8') as f:
         if (isinstance(data, str)):
             f.write(data)
@@ -99,7 +99,7 @@ def CopyFile(source_path: str, destination_path: str):
     CheckType(source_path, 'source_path', str)
     CheckType(destination_path, 'destination_path', str)
     destination_directory: str = os.path.dirname(destination_path)
-    os.makedirs(destination_directory, exist_ok = True)
+    os.makedirs(destination_directory, exist_ok=True)
     # Copies source file to destination, overwriting if destination exists
     shutil.copyfile(source_path, destination_path)
 # End CopyFile
@@ -110,7 +110,7 @@ def MoveFile(source_path: str, destination_path: str):
     CheckType(source_path, 'source_path', str)
     CheckType(destination_path, 'destination_path', str)
     destination_directory: str = os.path.dirname(destination_path)
-    os.makedirs(destination_directory, exist_ok = True)
+    os.makedirs(destination_directory, exist_ok=True)
     # Moves a file from source to destination, overwriting if destination exists
     os.replace(source_path, destination_path)
 # End MoveFile
