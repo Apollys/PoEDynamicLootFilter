@@ -1,5 +1,6 @@
 '''
 General parsing functions:
+ - IsSubstringInLines(s: str, lines: List[str] or str) -> bool
  - FindFirstMatchingPredicate(s: str, predicate) -> int
  - MakeUniqueId(new_id: str, used_ids) -> str
  - ParseNumberFromString(input_string: str, starting_index: int = 0) -> int
@@ -10,12 +11,14 @@ Loot filter related functions:
  - IsCommented(line: str) -> bool
  - IsSectionOrGroupDeclaration(line: str) -> bool
  - ParseSectionOrGroupDeclarationLine(line) -> Tuple[bool, str, str]
+ - FindShowHideLineIndex(rule_text_lines: List[str]) -> int
+ - ParseTypeTierTags(rule_text_lines: List[str]) -> Tuple(str, str)
  - ConvertValuesStringToList(values_string: str) -> List[str]
  - ConvertValuesListToString(values_list: List[str]) -> str
 '''
 
 import re
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 import consts
 import simple_parser
@@ -24,6 +27,18 @@ from type_checker import CheckType
 kShowHideLinePattern = re.compile(r'^\s*#?\s*(Show|Hide)')
 
 # ========================== Generic Helper Methods ==========================
+
+# Returns true if s is a substring of any of the strings in lines.
+def IsSubstringInLines(s: str, lines: List[str] or str) -> bool:
+    CheckType(s, 's', str)
+    if (isinstance(lines, str)):
+        return s in lines
+    CheckType(lines, 'lines', list, str)
+    for line in lines:
+        if s in line:
+            return True
+    return False
+# End IsSubstringInLines
 
 # Given a string and a predicate (function mapping character to bool),
 # returns the index of the first character in the string for which
@@ -85,14 +100,6 @@ def IsCommented(line: str) -> bool:
     return line.strip().startswith('#')
 # End IsCommented
 
-# Returns the index of the Show/Hide line, or None if no such line found
-def FindShowHideLineIndex(rule_text_lines: str) -> int:
-    for i in reversed(range(len(rule_text_lines))):
-        if (re.search(kShowHideLinePattern, rule_text_lines[i])):
-            return i
-    return None
-# End FindTagLineIndex
-
 # Returns True if the given line is a section declaration or section group
 # declaration, and False otherwise.
 def IsSectionOrGroupDeclaration(line: str) -> bool:
@@ -136,20 +143,6 @@ def IsRuleStart(lines: List[str], index: int) -> bool:
     return False
 # End IsRuleStart()
 
-# TODO: ParseShowFlag should be unnecessary now
-def ParseShowFlag(lines: List[str]) -> bool:
-    CheckType2(lines, 'lines', list, str)
-    for line in lines:
-        if (line.startswith('#')):
-            line = line[1:].strip()
-        if (line.startswith('Show')):
-            return True
-        elif (line.startswith('Hide')):
-            return False
-    raise RuntimeError(
-            'Could not determine if rule is Show or Hide from rule:\n{}'.format('\n'.join(lines)))
-# End ParseShowFlag
-
 # Returns (is_section_group, section_id, section_name) triplet
 # Example: "# [[1000]] High Level Crafting Bases" -> "1000", "High Level Crafting Bases"
 # Or: "# [1234] ILVL 86" -> "1234", "ILVL 86" 
@@ -183,6 +176,27 @@ def ParseSectionOrGroupDeclarationLine(line) -> Tuple[bool, str, str]:
     return is_section_group, section_id, section_name
 # End ParseSectionOrGroupDeclarationLine
 
+# Returns the index of the Show/Hide line, or None if no such line found.
+def FindShowHideLineIndex(rule_text_lines: List[str]) -> int:
+    CheckType(rule_text_lines, 'rule_text_lines', list, str)
+    for i in reversed(range(len(rule_text_lines))):
+        if (re.search(kShowHideLinePattern, rule_text_lines[i])):
+            return i
+    return None
+# End FindShowHideLineIndex
+
+# Returns type_tag, tier_tag if rule has tags, else None, None.
+def ParseTypeTierTags(rule_text_lines: List[str]) -> Tuple[str, str]:
+    CheckType(rule_text_lines, 'rule_text_lines', list, str)
+    tag_line_index = FindShowHideLineIndex(rule_text_lines)
+    if (tag_line_index == -1):
+        return None, None
+    tag_line = rule_text_lines[tag_line_index]
+    success, tag_list = simple_parser.ParseFromTemplate(
+        tag_line + ' ', template='{~}$type->{} $tier->{} {~}')
+    return tuple(tag_list) if success else None
+# End ParseTypeTierTags
+
 # Convert a list of string values to a single string.  For example:
 #  - '"Orb of Chaos" "Orb of Alchemy"' -> ['Orb of Chaos', 'Orb of Alchemy']
 #  = 'Boots Gloves Helmets' -> ['Boots', 'Gloves', 'Helmets']
@@ -205,43 +219,3 @@ def ConvertValuesListToString(values_list: List[str]) -> str:
         return '"' + '" "'.join(values_list) + '"'
     return ' '.join(values_list)
 # ConvertValuesListToString
-
-# TODO: this shouldn't be needed anymore
-# Given the BaseType text line from a loot filter rule, return list of base type strings
-# Example: BaseType "Orb of Alchemy" "Orb of Chaos" -> ["Orb of Alchemy", "Orb of Chaos"]
-# Also works on the following line formats:
-# # BaseType "Orb of Alchemy" "Orb of Chaos"  (commented line)
-# BaseType == "Orb of Alchemy" "Orb of Chaos"  (double equals)
-# BaseType Alchemy Chaos  (result would be ["Alchemy", "Chaos"])
-def ParseBaseTypeLine(line: str) -> List[str]:
-    CheckType(line, 'line', str)
-    # First remove 'BaseType' and anything before it from line
-    start_index = line.find('BaseType') + len('BaseType') + 1
-    line = line[start_index:]
-    if (line == ''):
-        return []
-    if ('"' in line):
-        start_index = line.find('"')
-        end_index = line.rfind('"')
-        return line[start_index + 1 : end_index].split('" "')
-    # Otherwise, items are just split by spaces
-    return line.split(' ')
-# End ParseBaseTypeLine
-
-# TODO: I don't think this is used anyhere
-# Encloses the string in double quotes if it contains a space or single quote,
-# otherwise just returns the given string.  Note: does not check for double quotes in string.
-def QuoteStringIfRequired(input_string: str) -> str:
-    if ((" " in input_string) or ("'" in input_string)):
-        return '"' + input_string + '"'
-    return input_string
-# End QuoteStringIfRequired
-
-# TODO: shouldn't use this anymore
-# Given a list of strings, joins the strings with a space,
-# and additionally encloses any string that contains a single quote or space in ""
-def JoinParams(params_list: List[str]) -> str:
-    CheckType2(params_list, 'params_list', list, str)
-    return ' '.join(QuoteStringIfRequired(param) for param in params_list)
-# End JoinParams
-

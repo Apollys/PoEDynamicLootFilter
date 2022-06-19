@@ -11,6 +11,7 @@ File read/write functions:
  - ReadFile(filepath, retain_newlines=True) -> List[str]
  - ReadFileToDict(filepath) -> dict
  - WriteToFile(data, filepath)
+ - NumLines(filepath) -> int
  - IsFileEmpty(filepath) -> bool
 
 File manipulation functions:
@@ -18,6 +19,7 @@ File manipulation functions:
  - MoveFile(source_path, destination_path)
  - RemoveFileIfExists(filepath)
  - ClearFileIfExists(filepath)
+ - ClearAndRemoveDirectory(path)
 
 Path-related functions:
  - FilenameWithoutExtension(filepath) -> str
@@ -35,7 +37,7 @@ from type_checker import CheckType
 
 # Read lines of a file to a list of strings
 # Safe against file not existing
-def ReadFile(filepath: str, retain_newlines: bool = True) -> List[str]:
+def ReadFile(filepath: str, *, retain_newlines=True, strip=False) -> List[str]:
     CheckType(filepath, 'filepath', str)
     CheckType(retain_newlines, 'retain_newlines', bool)
     try:
@@ -44,6 +46,9 @@ def ReadFile(filepath: str, retain_newlines: bool = True) -> List[str]:
         if (not retain_newlines):
             for i in range(len(lines)):
                 lines[i] = lines[i].rstrip('\n')
+        if (strip):
+            for i in range(len(lines)):
+                lines[i] = lines[i].strip()
         return lines
     except FileNotFoundError:
         return []
@@ -86,6 +91,16 @@ def WriteToFile(data, filepath: str):
                 f.write(str(data))
 # End WriteToFile
 
+def NumLines(filepath) -> int:
+    num_lines = 0
+    with open(filepath) as f:
+        for line in f:
+            num_lines += 1
+    return num_lines
+# End NumLines
+
+# Returns True if the file exists and is empty.
+# Returns False if the file is nonempty, or does not exist.
 def IsFileEmpty(filepath: str) -> bool:
     CheckType(filepath, 'filepath', str)
     return os.path.isfile(filepath) and (os.path.getsize(filepath) == 0)
@@ -99,7 +114,8 @@ def CopyFile(source_path: str, destination_path: str):
     CheckType(source_path, 'source_path', str)
     CheckType(destination_path, 'destination_path', str)
     destination_directory: str = os.path.dirname(destination_path)
-    os.makedirs(destination_directory, exist_ok=True)
+    if (destination_directory != ''):
+        os.makedirs(destination_directory, exist_ok=True)
     # Copies source file to destination, overwriting if destination exists
     shutil.copyfile(source_path, destination_path)
 # End CopyFile
@@ -130,6 +146,13 @@ def ClearFileIfExists(filepath: str):
     if (os.path.isfile(filepath)):
         open(filepath, 'w').close()
 # End ClearFileIfExists
+
+# Removes the directory and deletes all its contents, if it exists.
+# Does nothing if the directory does not exist.
+def ClearAndRemoveDirectory(path: str):
+    CheckType(path, 'path', str)
+    shutil.rmtree(path, ignore_errors=True)
+# End ClearAndRemoveDirectory
 
 # ========================== Path-related Functionality ==========================
 

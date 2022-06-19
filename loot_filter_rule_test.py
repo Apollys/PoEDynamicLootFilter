@@ -1,6 +1,17 @@
 from loot_filter_rule import RuleVisibility, LootFilterRule
 from test_helper import AssertEqual, AssertTrue, AssertFalse
 
+kCommentBlockText = \
+'''#===============================================================================================================
+# NeverSink's Indepth Loot Filter - for Path of Exile
+#===============================================================================================================
+# VERSION:  8.6.0
+# TYPE:     1-REGULAR
+# STYLE:    DEFAULT
+# AUTHOR:   NeverSink
+# BUILDNOTES: Filter generated with NeverSink's FilterpolishZ and the domainlanguage Exo.
+# xShow'''
+
 kInputRuleText = \
 '''# Splinter stacks rule
 # Let's add a second comment line for testing
@@ -16,6 +27,37 @@ PlayEffect Purple
 MinimapIcon 0 Purple Kite
 PlayAlertSound 2 300'''
 
+kCommentedRuleText = \
+'''#Hide  # $type->jewels->clustereco $tier->n6_i75_t1
+#	ItemLevel >= 75
+#	Rarity <= Rare
+#	EnchantmentPassiveNum 6
+#	BaseType "Medium Cluster Jewel"
+#	SetFontSize 45
+#	SetTextColor 150 0 255 255
+#	SetBorderColor 240 100 0 255
+#	SetBackgroundColor 255 255 255 255
+#	PlayEffect Red
+#	MinimapIcon 0 Red Star
+#PlayAlertSound 1 300'''
+
+def TestIsParsableAsRule():
+    AssertFalse(LootFilterRule.IsParsableAsRule(kCommentBlockText))
+    AssertTrue(LootFilterRule.IsParsableAsRule(kInputRuleText))
+    AssertTrue(LootFilterRule.IsParsableAsRule(kCommentedRuleText))
+    print('TestIsParsableAsRule passed!')
+
+def TestBasicRuleParse():
+    rule = LootFilterRule(kInputRuleText)
+    AssertEqual(rule.visibility, RuleVisibility.kShow)
+    AssertEqual(rule.type_tag, 'currency->stackedsplintershigh')
+    AssertEqual(rule.tier_tag, 't3')
+    rule = LootFilterRule(kCommentedRuleText)
+    AssertEqual(rule.visibility, RuleVisibility.kDisabledHide)
+    AssertEqual(rule.type_tag, 'jewels->clustereco')
+    AssertEqual(rule.tier_tag, 'n6_i75_t1')
+    print('TestBasicRuleParse passed!')
+
 def TestAddRemoveBaseTypes():
     rule = LootFilterRule(kInputRuleText)
     rule.AddBaseType('Simulacrum Splinter')
@@ -29,6 +71,7 @@ def TestAddRemoveBaseTypes():
     print('TestAddRemoveBaseTypes passed!')
 
 def TestRemoveAllBaseTypes():
+    # Remove individually
     rule = LootFilterRule(kInputRuleText)
     rule.RemoveBaseType('Splinter of Chayula')
     rule.RemoveBaseType('Splinter of Uul-Netol')
@@ -36,22 +79,45 @@ def TestRemoveAllBaseTypes():
     rule.RemoveBaseType('Timeless Templar Splinter')
     AssertTrue(RuleVisibility.IsDisabled(rule.visibility))
     AssertTrue(all(line.strip().startswith('#') for line in rule.rule_text_lines))
+    # Use ClearBaseTypeList
+    rule = LootFilterRule(kInputRuleText)
+    rule.ClearBaseTypeList()
+    AssertTrue(RuleVisibility.IsDisabled(rule.visibility))
+    AssertTrue(all(line.strip().startswith('#') for line in rule.rule_text_lines))
     print('TestRemoveAllBaseTypes passed!')
 
 def TestChangeVisibility():
     rule = LootFilterRule(kInputRuleText)
+    # Use Show/Hide/Disable funtions
+    # Hide
     rule.Hide()
     AssertEqual(rule.visibility, RuleVisibility.kHide)
     AssertTrue(rule.rule_text_lines[0].strip().startswith('Hide'))
+    # Show
     rule.Show()
     AssertEqual(rule.visibility, RuleVisibility.kShow)
     AssertTrue(rule.rule_text_lines[0].strip().startswith('Show'))
+    # Hide then Disable
     rule.Hide()
     rule.Disable()
     AssertEqual(rule.visibility, RuleVisibility.kDisabledHide)
     AssertTrue(all(line.strip().startswith('#') for line in rule.rule_text_lines))
     AssertEqual('Hide' in rule.rule_text_lines[0], True)
+    # Enable
     rule.Enable()
+    AssertEqual(rule.visibility, RuleVisibility.kHide)
+    AssertTrue(rule.rule_text_lines[0].strip().startswith('Hide'))
+    # Use SetVisibility directly
+    # RuleVisibility.kShow
+    rule.SetVisibility(RuleVisibility.kShow)
+    AssertEqual(rule.visibility, RuleVisibility.kShow)
+    AssertTrue(rule.rule_text_lines[0].strip().startswith('Show'))
+    # RuleVisibility.kDisabledAny
+    rule.SetVisibility(RuleVisibility.kDisabledAny)
+    AssertTrue(RuleVisibility.IsDisabled(rule.visibility))
+    AssertTrue(all(line.strip().startswith('#') for line in rule.rule_text_lines))
+    # RuleVisibility.kHide
+    rule.SetVisibility(RuleVisibility.kHide)
     AssertEqual(rule.visibility, RuleVisibility.kHide)
     AssertTrue(rule.rule_text_lines[0].strip().startswith('Hide'))
     print('TestChangeVisibility passed!')
@@ -72,6 +138,8 @@ def TestModifyLine():
     print('TestModifyLine passed!')
 
 def main():
+    TestIsParsableAsRule()
+    TestBasicRuleParse()
     TestAddRemoveBaseTypes()
     TestRemoveAllBaseTypes()
     TestChangeVisibility()

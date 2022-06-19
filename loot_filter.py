@@ -1,409 +1,110 @@
-import os.path
-import re
-import itertools
-
-from collections import OrderedDict
 from enum import Enum
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 import consts
-import helper
+import file_helper
+from hash_linked_list import HllNode, HashLinkedList
 import logger
+from loot_filter_rule import RuleVisibility, LootFilterRule
+import os.path
+import parse_helper
 import profile
 import rule_parser
 from type_checker import CheckType
 
-# -----------------------------------------------------------------------------
+kTextBlockKey = 'text_block'
 
-class RuleVisibility(Enum):
-    kShow = 1
-    kHide = 2
-    kDisable = 3  # rule is commented out
-    kUnknown = 4
-# End class RuleVisibility
 
-# -----------------------------------------------------------------------------
+class InputFilterSource(Enum):
+    kDownload = 1
+    kInput = 2
+    kOutput = 3
+# End class InputFilterSource
 
-class LootFilterRule:
+# Holds either a LootFilterRule or a list of strings
+class RuleOrTextBlock:
     '''
     Member variables:
+     - self.is_rule: bool
+     - self.rule: LootFilterRule
      - self.text_lines: List[str]
-     - self.parsed_lines: list of (keyword, operator, values_list) triplets
-     - self.has_continue: bool - indicates whether this rule has a "Continue" line
-     - self.start_line_index: int - line index of this rule in the original filter file
-     - self.visibility: RuleVisibility
-     - self.show_flag: bool - true for Show, false for Hide
-     - self.type_tag: str - identifier found after "$type->" in the first line of the rule
-     - self.tier_tag: str - identifier found after "$tier->" in the first line of the rule
-     - self.base_type_list: List[str]
-       - Note: not all rules must have BaseType, so base_type_list may be empty
-     - self.base_type_line_index: int - index into self.text_lines (not full loot filter)
-     - self.archnemesis_mod_list: List[str]
-     - self.archnemesis_mod_line_index: int
     '''
-
-    def __init__(self, rule_text_lines: str or List[str], start_line_index: int):
-        if (isinstance(rule_text_lines, str)):
-            rule_text_lines = rule_text_lines.split('\n')
-        # Now rule is a list of line strings
-        CheckType(rule_text_lines, 'rule_text_lines', list)
-        CheckType(start_line_index, 'start_line_index', int)
-        if (len(rule_text_lines) == 0):
-            logger.Log('Error: emtpy rule found starting on line {} of loot filter'.format(
-                    start_line_index + 1))
-        self.text_lines = rule_text_lines
-        self.start_line_index = start_line_index  # index in full loot filter file
-        # Find the line index containing Show/Hide/Disable and save as self.tag_line_index
-        self.tag_line_index = helper.FindTagLineIndex(self.text_lines)
-        if (self.tag_line_index == -1):
-            raise RuntimeError('did not find Show/Hide/Disable line in rule:\n{}'.format(
-                    self.text_lines))
-        # Generate self.parsed_lines and check for 'Continue' keyword
-        self.parsed_lines = []
-        self.has_continue = False
-        for line in self.text_lines[1:]:
-            self.parsed_lines.append(rule_parser.ParseRuleLineGeneric(line))
-            if (helper.UncommentedLine(line).startswith('Continue')):
-                self.has_continue = True
-        self.parsed_lines = [rule_parser.ParseRuleLineGeneric(line) for line in self.text_lines[1:]]
-        # Parse rule visibility
-        self.show_flag = helper.ParseShowFlag(rule_text_lines)
-        self.visibility = RuleVisibility.kUnknown
-        if (all(line.startswith('#') for line in rule_text_lines)):
-            self.visibility = RuleVisibility.kDisable
+    
+    def __init__(self, rule_or_text_block, is_rule: bool):
+        CheckType(is_rule, 'is_rule', bool)
+        self.is_rule = is_rule
+        if (is_rule):
+            CheckType(rule_or_text_block, 'rule_or_text_block', LootFilterRule)
+            self.rule = rule_or_text_block
         else:
-            try:
-                self.visibility = RuleVisibility.kShow if self.show_flag else RuleVisibility.kHide
-            except Exception as e:
-                logger.Log(('Warning: unable to determine rule visibility for rule starting on line {}'
-                            ' of loot filter').format(start_line_index + 1))
-        # Every rule has a "$type" and "$tier" attribute on the first line, for example:
-        # Show # $type->currency $tier->t1exalted
-        # TODO: custom (user-added) rules may have a comment as the first line,
-        # so this will not correctly parse their tags.  However, we are not modifying
-        # custom rules at this time, so we don't need their tags for now.
-        kTypeIdentifier = '$type->'
-        kTierIdentifier = '$tier->'
-        first_line: str = rule_text_lines[0] + ' '  # add space so parsing is uniform
-        type_start_index = first_line.find(kTypeIdentifier) + len(kTypeIdentifier)
-        type_end_index = first_line.find(' ', type_start_index)
-        tier_start_index = first_line.find(kTierIdentifier) + len(kTierIdentifier)
-        tier_end_index = first_line.find(' ', tier_start_index)
-        self.type_tag: str = first_line[type_start_index : type_end_index]
-        self.tier_tag: str = first_line[tier_start_index : tier_end_index]
-        # Parse base type list
-        # Note - not all rules may have a base type, in which case base type list is empty
-        self.base_type_list = []
-        self.base_type_line_index = -1
-        for i in range(len(self.text_lines)):
-            line: str = self.text_lines[i]
-            if (line.startswith('BaseType') or line.startswith('#BaseType') or
-                    line.startswith('# BaseType')):
-                self.base_type_line_index = i
-                self.base_type_list = helper.ParseBaseTypeLine(line)
-        # Parse archnemesis mod list
-        # Note - not all rules may have a base type, in which case base type list is empty
-        self.archnemesis_mod_list = []
-        self.archnemesis_mod_line_index = -1
-        for i in range(len(self.text_lines)):
-            line: str = self.text_lines[i]
-            if (line.startswith('ArchnemesisMod') or line.startswith('#ArchnemesisMod') or
-                    line.startswith('# ArchnemesisMod')):
-                self.archnemesis_mod_line_index = i
-                self.archnemesis_mod_list = helper.ParseArchnemesisModLine(line)
-        # TODO: parse size, color, etc...
+            CheckType(rule_or_text_block, 'rule_or_text_block', list, str)
+            self.text_lines = rule_or_text_block
     # End __init__
-        
-    def __repr__(self):
-        return '\n'.join(self.text_lines)
-    # End __repr__
-    
-    # Adds type and tier tags to the Show/Hide/Disable line, and updates
-    # self.type_tag and self.tier_tag accordingly
-    def AddTypeTierTags(self, type_tag: str, tier_tag: str):
-        self.type_tag = type_tag
-        self.tier_tag = tier_tag
-        self.text_lines[self.tag_line_index] += ' # ' + consts.kTypeTierTagTemplate.format(
-                type_tag, tier_tag)
-    # End AddTypeTierTags
-    
-    def MatchesItem(self, item_properties: dict) -> bool:
-        return rule_parser.CheckRuleMatchesItem(self.parsed_lines, item_properties)
-    # End MatchesItem
-        
-    def GetVisibility(self) -> RuleVisibility:
-        return self.visibility
-    # End GetVisibility
-    
-    def SetVisibility(self, visibility: RuleVisibility) -> None:
-        CheckType(visibility, 'visibility', RuleVisibility)
-        if (self.visibility == visibility): return
-        # Case: Disable - comment all lines
-        if (visibility == RuleVisibility.kDisable):
-            self.text_lines = [helper.CommentedLine(line) for line in self.text_lines]
-        # Case: Show - set first word to "Show" and uncomment all lines
-        elif (visibility == RuleVisibility.kShow):
-            self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
-            if (not self.show_flag):
-                self.text_lines[0] = 'Show' + self.text_lines[0][4:]
-            self.show_flag = True
-        # Case: Hide - set first word to hide and comment effect lines
-        elif (visibility == RuleVisibility.kHide):
-            self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
-            if (self.show_flag):
-                self.text_lines[0] = 'Hide' + self.text_lines[0][4:]
-            self.show_flag = False
-            #  Disable beams, minimap icons, and drop sounds
-            kKeywordsToDisable = ['PlayEffect', 'MinimapIcon', 'PlayAlertSound']
-            for parsed_lines_index in range(len(self.parsed_lines)):
-                text_lines_index = parsed_lines_index + 1
-                keyword, _, _ = self.parsed_lines[parsed_lines_index]
-                if (keyword in kKeywordsToDisable):
-                    self.text_lines[text_lines_index] = helper.CommentedLine(
-                            self.text_lines[text_lines_index])
-        self.visibility = visibility
-    # End SetVisibility
-    
-    # Uncomments the rule if it was commented before
-    def Enable(self) -> None:
-        if (self.visibility == RuleVisibility.kDisable):
-            self.text_lines = [helper.UncommentedLine(line) for line in self.text_lines]
-            self.visibility = RuleVisibility.kShow if self.show_flag else RuleVisibility.kHide
-    # End Enable
-        
-    # Adds base_type_name to this rule's BaseType line, if it's not there already
-    # Note: BaseType names are *not* quoted in base_type_list
-    # TODO: If we add a basetype to a rule that was disabled (because its basetype line
-    # was previously emptied), do we re-enable the rule properly?
-    def AddBaseType(self, base_type_name: str):
-        CheckType(base_type_name, 'base_type_name', str)
-        if (base_type_name in self.base_type_list):
-            return
-        # Check if rule is missing BaseType line, and add if so
-        if (self.base_type_line_index == -1):
-            base_type_line = "BaseType"
-            if (self.visibility == RuleVisibility.kDisable):
-                base_type_line = '# ' + base_type_line
-            self.base_type_line_index = len(self.text_lines)
-            self.text_lines.append(base_type_line)
-        quoted_base_type_name = '"' + base_type_name + '"'
-        self.base_type_list.append(base_type_name)
-        self.text_lines[self.base_type_line_index] += ' ' + quoted_base_type_name
-    # End AddBaseType
-    
-    # Removes base_type_name from this rule's BaseType line, if it's there
-    def RemoveBaseType(self, base_type_name: str):
-        CheckType(base_type_name, 'base_type_name', str)
-        quoted_base_type_name = '"' + base_type_name + '"'
-        # TODO: potential bug here, this checks two things, removal could fail after
-        if ((base_type_name not in self.base_type_list) and
-                (quoted_base_type_name not in self.base_type_list)):
-            return
-        self.base_type_list.remove(base_type_name)
-        # Remove base_type_name from rule text
-        index = self.base_type_line_index  # for convenience
-        if (quoted_base_type_name in self.text_lines[index]):
-            self.text_lines[index] = '{}BaseType {}'.format(
-                    '# ' if self.visibility == RuleVisibility.kDisable else '',
-                    '"' + '" "'.join(self.base_type_list) + '"')
-        # Now if the BaseType line is empty, it will generate an error in PoE,
-        # so we need to comment out the rule if no base types left
-        if (len(self.base_type_list) == 0):
-            self.SetVisibility(RuleVisibility.kDisable)
-            # Also, need to eliminate the ' ""'  in the list
-            self.text_lines[index] = self.text_lines[index][:-3]
-    # End RemoveBaseType
-    
-    def AddBaseTypes(self, base_type_list: list):
-        CheckType2(base_type_list, 'base_type_list', list, str)
-        for base_type_name in base_type_list:
-            self.AddBaseType(base_type_name)
-    # End AddBaseTypes
-    
-    def ClearBaseTypeList(self):
-        while (len(self.base_type_list) > 0):
-            self.RemoveBaseType(self.base_type_list[-1])
-    # End ClearBaseTypeList
-        
-    # ArchnemesisModList functions: analogous to BaseType functions above
-    # Adds archnemesis_mod_name to the rule's ArchnemesisMod line (if not there already)
-    def AddArchnemesisMod(self, archnemesis_mod_name: str):
-        CheckType(archnemesis_mod_name, 'archnemesis_mod_name', str)
-        if (archnemesis_mod_name in self.archnemesis_mod_list):
-            return
-        # Check if rule is missing ArchnemesisMod line, and add if so
-        if (self.archnemesis_mod_line_index == -1):
-            archnemesis_mod_line = "ArchnemesisMod"
-            if (self.visibility == RuleVisibility.kDisable):
-                archnemesis_mod_line = '# ' + archnemesis_mod_line
-            self.archnemesis_mod_line_index = len(self.text_lines)
-            self.text_lines.append(archnemesis_mod_line)
-        quoted_archnemesis_mod_name = '"' + archnemesis_mod_name + '"'
-        self.archnemesis_mod_list.append(archnemesis_mod_name)
-        self.text_lines[self.archnemesis_mod_line_index] += ' ' + quoted_archnemesis_mod_name
-    # End AddArchnemesisMod
-    
-    # Removes archnemesis_mod_name from this rule's ArchnemesisMod line, if it's there
-    def RemoveArchnemesisMod(self, archnemesis_mod_name: str):
-        CheckType(archnemesis_mod_name, 'archnemesis_mod_name', str)
-        quoted_archnemesis_mod_name = '"' + archnemesis_mod_name + '"'
-        if (archnemesis_mod_name not in self.archnemesis_mod_list):
-            return
-        self.archnemesis_mod_list.remove(archnemesis_mod_name)
-        # Remove archnemesis_mod_name from rule text
-        index = self.archnemesis_mod_line_index  # for convenience
-        if (quoted_archnemesis_mod_name in self.text_lines[index]):
-            self.text_lines[index] = '{}ArchnemesisMod {}'.format(
-                    '# ' if self.visibility == RuleVisibility.kDisable else '',
-                    '"' + '" "'.join(self.archnemesis_mod_list) + '"')
-        # Now if the line is empty, it will generate an error in PoE,
-        # so we need to comment out the rule if no archnemesis mods left
-        if (len(self.archnemesis_mod_list) == 0):
-            self.SetVisibility(RuleVisibility.kDisable)
-            # Also, need to eliminate the ' ""'  in the list
-            self.text_lines[index] = self.text_lines[index][:-3]
-    # End RemoveArchnemesisMod
-    
-    def ClearArchnemesisModList(self):
-        while (len(self.archnemesis_mod_list) > 0):
-            self.RemoveArchnemesisMod(self.archnemesis_mod_list[-1])
-    # End ClearArchnemesisModList
-    
-    # Returns a bool indicating whether or not the line identified by the given keyword was found
-    # Updates both parsed_item_lines and text_lines
-    def ModifyLine(self, keyword: str, new_operator: str,
-                   new_value_or_values: str or int or list[str]) -> bool:
-        CheckType(keyword, 'keyword', str)
-        CheckType(new_operator, 'new_operator', str)
-        CheckType(new_value_or_values, 'new_value_or_values', (str, int, list))
-        found_index: int = -1
-        for i in range(len(self.parsed_lines)):
-            if (self.parsed_lines[i][0] == keyword):
-                found_index = i
-                break
-        if (found_index == -1):
-            return False
-        new_values_list = (new_value_or_values if isinstance(new_value_or_values, list)
-                          else [str(new_value_or_values)])
-        self.parsed_lines[found_index] = keyword, new_operator, new_values_list
-        text_line: str = keyword
-        if (new_operator != ''):
-            text_line += ' ' + new_operator
-        use_quotes: bool = any(' ' in value_string for value_string in new_values_list)
-        text_line += ' ' + ('"' + '" "'.join(new_values_list) + '"' if use_quotes
-                            else ' '.join(new_values_list))
-        # The index in text_lines is 1 greater than in parsed_lines,
-        # because parsed_lines excludes the first (Show/Hide) line
-        self.text_lines[found_index + 1] = text_line
-        return True
-    # End ModifyLine
-    
-    def GetSize(self) -> int:
-        pass
-    # End GetSize
-        
-    def SetSize(self, size: int) -> None:
-        pass
-    # End SetSize
-        
-    def GetRuleTextLines(self) -> List[str]:
-        return self.text_lines
-    # End GetRuleTextLines
-    
-# End class LootFilterRule
-
-# -----------------------------------------------------------------------------
+# End class RuleOrTextLines
 
 class LootFilter:
     '''
     Member variables:
-     - self.profile_config_data: dict
-     - self.input_filter_fullpath: str
-     - self.text_lines: List[str]
-     - self.header_lines: list[str] - the lines of the loot filter up to the start of the rules
-     - self.parser_index: int
-     - self.rules_start_line_index: int
-     - self.rule_or_comment_block_list: list[LootFilterRule or list[str]]
-     - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
-       Example: self.type_tier_rule_map['currency']['t1exalted']
-    
-    Old, removed or no longer using:
-     - self.section_map: OrderedDict[id: str, name: str]
-     - self.inverse_section_map: Dict[name: str, id: str]
-     - self.section_rule_map: OrderedDict[section_name: str, List[LootFilterRule]]
-     - self.line_index_rule_map: OrderedDict[line_index: int, LootFilterRule]
+     - self.profile_obj: Profile
+     - self.input_filter_source: InputFilterSource
+     - self.rule_or_text_block_hll: HashLinkedList mapping a key to RuleOrTextBlock
+        - in the case of a LootFilterRule, the key is (type_tag, tier_tag)
+        - in the case of text block, the key is (kTextBlockKey, id) where id is a unique integer
+     - self.num_raw_text_blocks: int
+        - used to create unique keys for raw text blocks
+     - self.num_untagged_rules: int
+        - used to create unique tags for untagged rules
     '''
 
     # ================================= Public API =================================
     
-    # Construct LootFilter object, parsing the given loot filter file
-    def __init__(self, profile_name: str, output_as_input_filter: bool):
+    # Construct the LootFilter, parsing the file indicated by the config values of
+    # the given profile and the value of input_filter_source.
+    def __init__(self, profile_name: str, input_filter_source: InputFilterSource):
         CheckType(profile_name, 'profile_name', str)
-        CheckType(output_as_input_filter, 'output_as_input_filter', bool)
-        user_profile = profile.Profile(profile_name)
-        self.profile_config_data = user_profile.config_values
-        self.input_filter_fullpath = (self.profile_config_data['OutputLootFilterFullpath']
-                if output_as_input_filter else self.profile_config_data['InputLootFilterFullpath'])
+        CheckType(input_filter_source, 'input_filter_source', InputFilterSource)
+        self.profile_obj = profile.Profile(profile_name)
+        self.input_filter_source = input_filter_source
+        self.rule_or_text_block_hll = HashLinkedList()
+        self.num_raw_text_blocks = 0
+        self.num_untagged_rules = 0
         self.ParseInputFilterFile()
+        # If input source is download, after parsing we copy downloaded filter
+        # to input directory and check if downloaded filter should be deleted.
+        if (self.input_filter_source == InputFilterSource.kDownload):
+            file_helper.CopyFile(
+                    self.profile_obj.config_values['DownloadedLootFilterFullpath'],
+                    self.profile_obj.config_values['InputLootFilterFullpath'])
+            if (self.profile_obj.config_values['RemoveDownloadedFilter']):
+                file_helper.RemoveFileIfExists(
+                        self.profile_obj.config_values['DownloadedLootFilterFullpath'])
     # End __init__
 
     def SaveToFile(self):
-        with open(self.profile_config_data['OutputLootFilterFullpath'],
+        with open(self.profile_obj.config_values['OutputLootFilterFullpath'],
                 'w', encoding='utf-8') as output_file:
-            for line in self.header_lines:
-                output_file.write(line + '\n')
-            for rule_or_comment_block in self.rule_or_comment_block_list:
-                if (isinstance(rule_or_comment_block, LootFilterRule)):
-                    rule = rule_or_comment_block
-                    for line in rule.text_lines:
-                        output_file.write(line + '\n')
-                    #output_file.writelines(rule.text_lines)
-                else:
-                    comment_block = rule_or_comment_block
-                    for line in comment_block:
-                        output_file.write(line + '\n')
-                    #output_file.writelines(comment_block)
-                output_file.write('\n')
-            '''
-            line_index: int = 0
-            previous_line: str = ''
-            while (line_index < len(self.text_lines)):
-                line: str = self.text_lines[line_index]
-                # If not a new rule start, just write input line back out
-                if (not helper.IsRuleStart(self.text_lines, line_index)):
-                    output_file.write(line + '\n')
-                    line_index += 1
-                # Otherwise is a new rule - write out the rule from line_index_rule_map
-                else:  # IsRuleStart
-                    # Ensure there is a blank line before each rule start
-                    if (previous_line.strip() != ''):
-                        output_file.write('\n')
-                    rule = self.line_index_rule_map[line_index]
-                    output_file.write(str(rule) + '\n')
-                    line_index += len(rule.text_lines)
-                previous_line = line
-            '''
+            for key, rule_or_text_block in self.rule_or_text_block_hll:
+                text_lines = (rule_or_text_block.rule.rule_text_lines
+                        if rule_or_text_block.is_rule else rule_or_text_block.text_lines)
+                output_file.write('\n'.join(text_lines) + '\n\n')
     # End SaveToFile
-    
-    # In NeverSink's fitler, type_tags plus tier_tags form a unique key for rules,
-    # *except* for rules that have no type or tier tags.
-    # When parsing, we create unique tags for rules missing tags, to create a unique key.
-    def GetRuleByTypeTier(self, type_tag: str, tier_tag: str) -> LootFilterRule:
+
+    # Note: when parsing, we create unique tags for rules missing tags.
+    # Rules not missing tags are assumed to have unique (type_tag, tier_tag) keys.
+    def GetRule(self, type_tag: str, tier_tag: str) -> LootFilterRule:
         CheckType(type_tag, 'type_tag', str)
         CheckType(tier_tag, 'tier_tag', str)
-        return self.type_tier_rule_map[type_tag][tier_tag]
-    # End GetRulesByTypeTier
-    
+        return self.rule_or_text_block_hll[(type_tag, tier_tag)].rule
+    # End GetRule
+
     # ============================= Rule-Item Matching =============================
     
-    # Finds the first rule in the filter matching the given item
-    # Returns type_tag, tier_tag to uniquely identify the matched rule
-    # Returns None, None if no rule matched
-    # Cannot match AreaLevel restrictions:
-    #  - if a rule has an AreaLevel requirement, it will never match any item
-    # TODO: shouldn't this just return the rule itself?
-    def GetRuleMatchingItem(self, item_text_lines: List[str]) -> Tuple[str, str]:
-        CheckType2(item_text_lines, 'item_text_lines', list, str)
+    # TODO: This is probably broken with the refactor.
+    # Returns the first non-Continue rule in the filter matching the given item,
+    # None if no rule matches the item, or the last matched Continue rule otherwise.
+    # If a rule has an AreaLevel requirement, it will never match any item.
+    def GetRuleMatchingItem(self, item_text_lines: List[str]) -> LootFilterRule:
+        CheckType(item_text_lines, 'item_text_lines', list, str)
         item_properties: dict = rule_parser.ParseItem(item_text_lines)
         matched_continue_rule = None
         for rule_or_comment_block in self.rule_or_comment_block_list:
@@ -414,101 +115,28 @@ class LootFilter:
                     if (rule.has_continue):
                         matched_continue_rule = rule
                     else:
-                        return rule.type_tag, rule.tier_tag
+                        return rule
         if (matched_continue_rule):
-            return matched_continue_rule.type_tag, matched_continue_rule.tier_tag
-        return None, None
+            return matched_continue_rule
+        return None
     # End GetRuleMatchingItem
     
-    def SetRuleVisibility(self, type_tag: str, tier_tag: str, visibility: RuleVisibility) -> bool:
-        CheckType(type_tag, 'type_tag', str)
-        CheckType(tier_tag, 'tier_tag', str)
-        CheckType(visibility, 'visibility', RuleVisibility)
-        try:
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
-        except KeyError:
-            return False
-        else:
-            rule.SetVisibility(visibility)
-            return True
-    # End SetRuleVisibility
-    
-    # ========================= Section-Related Functions =========================
-    '''   
-    def ContainsSection(self, section_name: str) -> bool:
-        CheckType(section_name, 'section_name', str)
-        return section_name in self.inverse_section_map
-    # End ContainsSection
-    
-    def ContainsSectionId(self, section_id: str) -> bool:
-        CheckType(section_id, 'section_id', str)
-        return section_id in self.section_map
-    # End ContainsSectionId
-    
-    def GetSectionId(self, section_name: str) -> str:
-        CheckType(section_name, 'section_name', str)
-        return self.inverse_section_map[section_name]
-    # End GetSectionId
-    
-    def GetSectionName(self, section_id: str) -> str:
-        CheckType(section_id, 'section_id', str)
-        return self.section_map[section_id]
-    # End GetSectionName
-
-    # Returns a list of section names containing all the given keywords (case insensitive)
-    # keywords must either be of type List[str] or a single str
-    def SearchSectionNames(self, keywords) -> List[str]:
-        CheckType(keywords, 'keywords', (str, list))
-        # Make keywords into a list of strings if input was a single keyword
-        if isinstance(keywords, str):
-            keywords = [keywords]
-        matching_section_names: List[str] = []
-        for section_name in self.inverse_section_map:
-            contains_all_keywords = all(
-                    keyword.lower() in section_name.lower() for keyword in keywords)
-            if (contains_all_keywords):
-                matching_section_names.append(section_name)
-        return matching_section_names
-    # End SearchSectionNames
-    
-    def GetSectionRules(self, section_name: str) -> List[LootFilterRule]:
-        CheckType(section_name, 'section_name', str)
-        section_id: str = self.inverse_section_map[section_name]
-        return self.section_rule_map[section_id]
-    # End GetSectionRules
-    
-    def ChangeRuleVisibility(self, section_name: str, rule_index: int,
-                             visibility: RuleVisibility) -> None:
-        CheckType(section_name, 'section_name', str)
-        CheckType(rule_index, 'rule_index', int)
-        self.GetSectionRules(section_name)[rule_index].SetVisibility(visibility)
-    # End ChangeRuleVisibility
-    '''
     # =========================== Map-Related Functions ===========================
     
     def SetHideMapsBelowTierTier(self, tier: int) -> int:
         CheckType(tier, 'tier', int)
         type_name = 'dlf_hide_maps_below_tier'
         tier_name = type_name
-        rule = self.type_tier_rule_map[type_name][tier_name]
-        for i in range(len(rule.text_lines)):
-            line = rule.text_lines[i]
-            keystring: str = 'MapTier < '
-            if (keystring in line):
-                maptier_start_index = line.find(keystring) + len(keystring)
-                rule.text_lines[i] = line[:maptier_start_index] + str(tier)
-                break
+        rule = self.GetRule(type_name, tier_name)
+        rule.ModifyLine('MapTier', '<', tier)
     # End SetHideMapsBelowTierTier
     
     def GetHideMapsBelowTierTier(self) -> int:
         type_name = 'dlf_hide_maps_below_tier'
         tier_name = type_name
-        rule = self.type_tier_rule_map[type_name][tier_name]
-        for line in rule.text_lines:
-            keystring: str = 'MapTier < '
-            if (keystring in line):
-                maptier_start_index = line.find(keystring) + len(keystring)
-                return helper.ParseNumberFromString(line, maptier_start_index)
+        rule = self.GetRule(type_name, tier_name)
+        op, [tier_str] = rule.parsed_lines_hll['MapTier']
+        return int(tier_str)
     # End GetHideMapsBelowTierTier
     
     # =========================== Flask-Related Functions ==========================
@@ -519,12 +147,12 @@ class LootFilter:
         CheckType(high_ilvl_flag, 'high_ilvl_flag', bool)
         type_tag = 'dlf_flasks'
         tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         if (enable_flag):
             rule.AddBaseType(flask_base_type)
             # Rule may have been disabled if BaseType line was previously empty
-            rule.SetVisibility(RuleVisibility.kShow)
-        else:  # disable
+            rule.Enable()
+        else:
             rule.RemoveBaseType(flask_base_type)
     # End SetFlaskRuleEnabledFor
     
@@ -532,19 +160,19 @@ class LootFilter:
         CheckType(flask_base_type, 'flask_base_type', str)
         type_tag = 'dlf_flasks'
         tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         if (rule.visibility != RuleVisibility.kShow):
             return False
-        return flask_base_type in rule.base_type_list
+        return flask_base_type in rule.GetBaseTypeList()
     # End IsFlaskRuleEnabledFor
     
     def GetAllVisibleFlaskTypes(self, high_ilvl_flag: bool) -> List[str]:
         type_tag = 'dlf_flasks'
         tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         if (rule.visibility != RuleVisibility.kShow):
             return []
-        return rule.base_type_list
+        return rule.GetBaseTypeList()
     
     # ========================= Currency-Related Functions =========================
     
@@ -552,22 +180,7 @@ class LootFilter:
     # are consistent.  This condition is enforced upon import and maintained within
     # all currency tier modification functions.
     
-    # Standardizes all stacked currency tiers to their unstacked counterparts
-    # Called automatically on filter import
-    def StandardizeCurrencyTiers(self):
-        for tier in range(1, consts.kNumCurrencyTiersExcludingScrolls + 1):
-            unstacked_type_tag, unstacked_tier_tag = consts.kUnifiedCurrencyTags[tier][1]
-            unstacked_rule = self.type_tier_rule_map[unstacked_type_tag][unstacked_tier_tag]
-            # Skip first (size 1) when iterating through stack sizes
-            for stack_size in consts.kCurrencyStackSizesByTier[tier][1:]:
-                stacked_type_tag, stacked_tier_tag = consts.kUnifiedCurrencyTags[tier][stack_size]
-                stacked_rule = self.type_tier_rule_map[stacked_type_tag][stacked_tier_tag]
-                stacked_rule.ClearBaseTypeList()
-                stacked_rule.AddBaseTypes(unstacked_rule.base_type_list)
-                stacked_rule.Enable()
-    # End StandarizeCurrencyTiers
-    
-    # Sets the specified currency to the given tier, in unstacked and all stacked rules
+    # Sets the specified currency to the given tier, in unstacked and all stacked rules.
     def SetCurrencyToTier(self, currency_name: str, target_tier: int):
         CheckType(currency_name, 'currency_name', str)
         CheckType(target_tier, 'target_tier', int)
@@ -575,15 +188,16 @@ class LootFilter:
         self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
     # End MoveCurrencyToTier
     
-    # Returns the integer tier to which the given currency belongs
-    # (Result is based on the unstacked currency rules)
+    # Returns the integer tier to which the given currency belongs.
+    # (Result is based on the unstacked currency rules, but since tier
+    # consistency is enforced, this is only an implementation detail.)
     def GetTierOfCurrency(self, currency_name: str) -> int:
         CheckType(currency_name, 'currency_name', str)
         for tier in range(1, consts.kNumCurrencyTiersIncludingScrolls + 1):
             stack_size = 1
             type_tag, tier_tag = consts.kUnifiedCurrencyTags[tier][stack_size]
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
-            if (currency_name in rule.base_type_list):
+            rule = self.GetRule(type_tag, tier_tag)
+            if (currency_name in rule.GetBaseTypeList()):
                 return tier
         logger.Log('Warning: currency "{}" not found in normal currency tiers'.format(
                            currency_name))
@@ -598,12 +212,13 @@ class LootFilter:
             return []
         stack_size = 1
         type_tag, tier_tag = consts.kUnifiedCurrencyTags[tier][stack_size]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
-        return list(rule.base_type_list)  # make copy
+        rule = self.GetRule(type_tag, tier_tag)
+        return list(rule.GetBaseTypeList())  # returns a copy
     # End GetAllCurrencyInTier
     
-    # Handles both stacked and unstacked currency
-    # Assumes consistency in stacked and unstacked currency tiers
+    # Implementation function for SetCurrencyToTier - not part of public API.
+    # Handles both stacked and unstacked currency.
+    # Assumes consistency between stacked and unstacked currency tiers.
     def MoveCurrencyFromTierToTier(self, currency_name: str, original_tier: int, target_tier: int):
         CheckType(currency_name, 'currency_name', str)
         CheckType(original_tier, 'original_tier', int)
@@ -618,22 +233,26 @@ class LootFilter:
         if (original_tier != -1):
             for stack_size in consts.kCurrencyStackSizesByTier[original_tier]:
                 type_tag, tier_tag = consts.kUnifiedCurrencyTags[original_tier][stack_size]
-                rule = self.type_tier_rule_map[type_tag][tier_tag]
+                rule = self.GetRule(type_tag, tier_tag)
                 rule.RemoveBaseType(currency_name)
         # Add currency_name to target_tier rule
         for stack_size in consts.kCurrencyStackSizesByTier[target_tier]:
             type_tag, tier_tag = consts.kUnifiedCurrencyTags[target_tier][stack_size]
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            rule = self.GetRule(type_tag, tier_tag)
             rule.RemoveBaseType(currency_name)
             rule.AddBaseType(currency_name)
             rule.Enable()
     # End MoveCurrencyFromTierToTier
     
-    def SetCurrencyTierMinVisibleStackSize(self, tier_str: str, min_stack_size_str: str):
-        CheckType(tier_str, 'tier_str', str)
-        CheckType(min_stack_size_str, 'min_stack_size_str', str)
-        tier: int = consts.kCurrencyTierStringToIntMap[tier_str]
-        min_stack_size: int = consts.kCurrencyStackSizeStringToIntMap[min_stack_size_str]
+    def SetCurrencyTierMinVisibleStackSize(self, tier_param: str or int, min_stack_size_param: str or int):
+        if (isinstance(tier_param, int)):
+            tier_param = str(tier_param)
+        if (isinstance(min_stack_size_param, int)):
+            min_stack_size_param = str(min_stack_size_param)
+        CheckType(tier_param, 'tier_param', str)
+        CheckType(min_stack_size_param, 'min_stack_size_param', str)
+        tier: int = consts.kCurrencyTierStringToIntMap[tier_param]
+        min_stack_size: int = consts.kCurrencyStackSizeStringToIntMap[min_stack_size_param]
         # Check if min_stack_size is valid
         hide_all_sentinel = consts.kCurrencyStackSizeStringToIntMap['hide_all']
         valid_stack_sizes = consts.kCurrencyStackSizesByTier[tier] + [hide_all_sentinel]
@@ -643,81 +262,61 @@ class LootFilter:
         # Hide all stacks lower than stack_size, show all stacks greater than or equal to stack size
         for stack_size in consts.kCurrencyStackSizesByTier[tier]:
             type_tag, tier_tag = consts.kUnifiedCurrencyTags[tier][stack_size]
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
-            target_visibility = \
-                    RuleVisibility.kShow if stack_size >= min_stack_size else RuleVisibility.kHide
-            rule.SetVisibility(target_visibility)
+            rule = self.GetRule(type_tag, tier_tag)
+            if (stack_size < min_stack_size):
+                rule.Hide()
+            else:
+                rule.Show()
     # End SetCurrencyMinVisibleStackSize
     
     # Returns the min visible stack size for the given tier,
     # or the sentinel value (100, defined in consts.py) to indicate hide_all-
-    def GetCurrencyTierMinVisibleStackSize(self, tier_str: str) -> int:
-        CheckType(tier_str, 'tier_str', str)
-        tier: int = consts.kCurrencyTierStringToIntMap[tier_str]
+    def GetCurrencyTierMinVisibleStackSize(self, tier_param: str or int) -> int:
+        if (isinstance(tier_param, int)):
+            tier_param = str(tier_param)
+        CheckType(tier_param, 'tier_param', str)
+        tier: int = consts.kCurrencyTierStringToIntMap[tier_param]
         for stack_size in consts.kCurrencyStackSizesByTier[tier]:
             type_tag, tier_tag = consts.kUnifiedCurrencyTags[tier][stack_size]
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            rule = self.GetRule(type_tag, tier_tag)
             if (rule.visibility == RuleVisibility.kShow):
                 return stack_size
         # None are visible -> return hide_all sentinel
         return consts.kCurrencyStackSizeStringToIntMap['hide_all']
     # End GetCurrencyTierMinVisibleStackSize
-    
-    
-    # =========================== Archnemesis Functions ===========================
-    
-    # Note: highest tier = hide
-    def SetArchnemesisModToTier(self, archnemesis_mod: str, target_tier: int):
-        CheckType(archnemesis_mod, 'archnemesis_mod', str)
-        CheckType(target_tier, 'target_tier', int)
-        for tier in range(1, consts.kNumArchnemesisTiers + 1):
-            type_tag, tier_tag = consts.kArchnemesisTags[tier]
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
-            if (tier != target_tier):
-                rule.RemoveArchnemesisMod(archnemesis_mod)
-            else:
-                rule.AddArchnemesisMod(archnemesis_mod)
-                rule.Enable()
-    # End SetArchnemesisModToTier
-    
-    def GetAllArchnemesisModsInTier(self, tier: int) -> list:
-        CheckType(tier, 'tier', int)
-        type_tag, tier_tag = consts.kArchnemesisTags[tier]
-        return self.type_tier_rule_map[type_tag][tier_tag].archnemesis_mod_list
-    # End GetAllArchnemesisModsInTier
-    
+
     # ============================= Essence Functions =============================
     
     def SetEssenceTierVisibility(self, tier: int, visibility: RuleVisibility):
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
         type_tag, tier_tag = consts.kEssenceTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetEssenceTierVisibility
     
     def GetEssenceTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kEssenceTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetUniqueTierVisibility
     
     def SetHideEssencesAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumEssenceTiers + 1):
-            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            visibility = (RuleVisibility.kHide if tier > max_visible_tier
+                    else RuleVisibility.kShow)
             self.SetEssenceTierVisibility(tier, visibility)
     # SetHideEssencesAboveTierTier
     
     def GetHideEssencesAboveTierTier(self) -> int:
-        max_visible_tier: int = 0
-        for tier in range(1, consts.kNumEssenceTiers + 1):
+        # Iterate from highest to lowest tier
+        for tier in range(consts.kNumEssenceTiers, 0, -1):
             if (self.GetEssenceTierVisibility(tier) == RuleVisibility.kShow):
-                max_visible_tier = tier
-            else:
-                break
-        return max_visible_tier
+                return tier
+        # No tiers are visible
+        return 0
     # GetHideEssencesAboveTierTier
     
     # ============================= Div Card Functions =============================
@@ -726,33 +325,33 @@ class LootFilter:
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
         type_tag, tier_tag = consts.kDivCardTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetDivCardTierVisibility
     
     def GetDivCardTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kDivCardTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetDivCardTierVisibility
     
     def SetHideDivCardsAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumDivCardTiers + 1):
-            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            visibility = (RuleVisibility.kHide if tier > max_visible_tier
+                    else RuleVisibility.kShow)
             self.SetDivCardTierVisibility(tier, visibility)
-    # SetHideDivCardAboveTierTier
+    # SetHideDivCardsAboveTierTier
     
     def GetHideDivCardsAboveTierTier(self) -> int:
-        max_visible_tier: int = 0
-        for tier in range(1, consts.kNumDivCardTiers + 1):
+        # Iterate from highest to lowest tier
+        for tier in range(consts.kNumDivCardTiers, 0, -1):
             if (self.GetDivCardTierVisibility(tier) == RuleVisibility.kShow):
-                max_visible_tier = tier
-            else:
-                break
-        return max_visible_tier
-    # GetHideDivCardAboveTierTier
+                return tier
+        # No tiers are visible
+        return 0
+    # GetHideDivCardsAboveTierTier
     
     # =========================== Unique Item Functions ===========================
     
@@ -760,32 +359,32 @@ class LootFilter:
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
         type_tag, tier_tag = consts.kUniqueItemTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetUniqueItemTierVisibility
     
     def GetUniqueItemTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kUniqueItemTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetUniqueItemTierVisibility
     
     def SetHideUniqueItemsAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumUniqueItemTiers + 1):
-            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            visibility = (RuleVisibility.kHide if tier > max_visible_tier
+                    else RuleVisibility.kShow)
             self.SetUniqueItemTierVisibility(tier, visibility)
     # SetHideUniqueItemsAboveTierTier
     
     def GetHideUniqueItemsAboveTierTier(self) -> int:
-        max_visible_tier: int = 0
-        for tier in range(1, consts.kNumUniqueItemTiers + 1):
+        # Iterate from highest to lowest tier
+        for tier in range(consts.kNumUniqueItemTiers, 0, -1):
             if (self.GetUniqueItemTierVisibility(tier) == RuleVisibility.kShow):
-                max_visible_tier = tier
-            else:
-                break
-        return max_visible_tier
+                return tier
+        # No tiers are visible
+        return 0
     # GetHideUniqueItemsAboveTierTier
     
     # ============================ Unique Map Functions ============================
@@ -794,32 +393,32 @@ class LootFilter:
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
         type_tag, tier_tag = consts.kUniqueMapTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetUniqueMapTierVisibility
     
     def GetUniqueMapTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kUniqueMapTags[tier]
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetUniqueMapTierVisibility
     
     def SetHideUniqueMapsAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumUniqueMapTiers + 1):
-            visibility = RuleVisibility.kHide if tier > max_visible_tier else RuleVisibility.kShow
+            visibility = (RuleVisibility.kHide if tier > max_visible_tier
+                    else RuleVisibility.kShow)
             self.SetUniqueMapTierVisibility(tier, visibility)
     # SetHideUniqueMapsAboveTierTier
     
     def GetHideUniqueMapsAboveTierTier(self) -> int:
-        max_visible_tier: int = 0
-        for tier in range(1, consts.kNumUniqueMapTiers + 1):
+        # Iterate from highest to lowest tier
+        for tier in range(consts.kNumUniqueMapTiers, 0, -1):
             if (self.GetUniqueMapTierVisibility(tier) == RuleVisibility.kShow):
-                max_visible_tier = tier
-            else:
-                break
-        return max_visible_tier
+                return tier
+        # No tiers are visible
+        return 0
     # GetHideUniqueMapsAboveTierTier
     
     # =========================== Oil-Related Functions ===========================
@@ -827,14 +426,18 @@ class LootFilter:
     def SetLowestVisibleOil(self, lowest_visible_oil_name: str):
         type_tag = consts.kOilTypeTag
         visible_flag = True
+        hide_rule = self.GetRule(type_tag, consts.kOilHideTierTag)
         for oil_name, tier in consts.kOilTierList:
             tier_tag = 't' + str(tier)
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            rule = self.GetRule(type_tag, tier_tag)
             if (visible_flag):
+                hide_rule.RemoveBaseType(oil_name)
                 rule.AddBaseType(oil_name)
                 rule.Enable()
             else:
                 rule.RemoveBaseType(oil_name)
+                hide_rule.AddBaseType(oil_name)
+                hide_rule.Enable()
             if (oil_name == lowest_visible_oil_name):
                 visible_flag = False  # hide rest below this oil
     # End SetLowestVisibleOil
@@ -844,8 +447,8 @@ class LootFilter:
         # Iterate upwards from bottom oil to find first visible
         for oil_name, tier in reversed(consts.kOilTierList):
             tier_tag = 't' + str(tier)
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
-            if (oil_name in rule.base_type_list):
+            rule = self.GetRule(type_tag, tier_tag)
+            if (oil_name in rule.GetBaseTypeList()):
                 return oil_name
     # End GetLowestVisibleOil
     
@@ -857,40 +460,39 @@ class LootFilter:
     #  - Show # %D2 $type->gems-generic $tier->qt4   (1-13)
     def SetGemMinQuality(self, min_quality: int):
         CheckType(min_quality, 'min_quality', int)
-        type_tag: str = 'gems-generic'
-        tier_tag_base: str = 'qt'
-        quality_t2_rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(2)]
-        quality_t3_rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(3)]
-        quality_t4_rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(4)]
+        type_tag = consts.kQualityGemsTypeTag
+        tier_tag_base = 'qt'
+        quality_t2_rule = self.GetRule(type_tag, tier_tag_base + str(2))
+        quality_t3_rule = self.GetRule(type_tag, tier_tag_base + str(3))
+        quality_t4_rule = self.GetRule(type_tag, tier_tag_base + str(4))
         if (19 <= min_quality <= 20):
-            quality_t2_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t2_rule.Show()
             quality_t2_rule.ModifyLine('Quality', '>=', min_quality)
-            quality_t3_rule.SetVisibility(RuleVisibility.kDisable)
-            quality_t4_rule.SetVisibility(RuleVisibility.kDisable)
+            quality_t3_rule.Disable()
+            quality_t4_rule.Disable()
         elif (14 <= min_quality <= 18):
-            quality_t2_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t2_rule.Show()
             quality_t2_rule.ModifyLine('Quality', '>=', 19)
-            quality_t3_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t3_rule.Show()
             quality_t3_rule.ModifyLine('Quality', '>=', min_quality)
-            quality_t4_rule.SetVisibility(RuleVisibility.kDisable)
+            quality_t4_rule.Disable()
         elif (1 <= min_quality <= 13):
-            quality_t2_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t2_rule.Show()
             quality_t2_rule.ModifyLine('Quality', '>=', 19)
-            quality_t3_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t3_rule.Show()
             quality_t3_rule.ModifyLine('Quality', '>=', 14)
-            quality_t4_rule.SetVisibility(RuleVisibility.kShow)
+            quality_t4_rule.Show()
             quality_t4_rule.ModifyLine('Quality', '>=', min_quality)
     # End SetGemMinQuality
     
     def GetGemMinQuality(self):
-        type_tag: str = 'gems-generic'
-        tier_tag_base: str = 'qt'
+        type_tag = consts.kQualityGemsTypeTag
+        tier_tag_base = 'qt'
         for tier in [4, 3, 2, 1]:
-            rule = self.type_tier_rule_map[type_tag][tier_tag_base + str(tier)]
+            rule = self.GetRule(type_tag, tier_tag_base + str(tier))
             if (rule.visibility == RuleVisibility.kShow):
-                for keyword, operator, value_string_list in rule.parsed_lines:
-                    if keyword == 'Quality':
-                        return int(value_string_list[0])
+                op, [quality_string] = rule.parsed_lines_hll['Quality']
+                return int(quality_string)
         return -1  # indicates all gem quality rules are disabled/hidden
     
     # ============================ Flask Quality Functions ============================
@@ -901,32 +503,31 @@ class LootFilter:
     # Note: any min_quality value outside the range [1, 20] will disable all flask quality rules
     def SetFlaskMinQuality(self, min_quality: int):
         CheckType(min_quality, 'min_quality', int)
-        type_tag: str = 'endgameflasks'
-        quality_high_rule = self.type_tier_rule_map[type_tag]['qualityhigh']
-        quality_low_rule = self.type_tier_rule_map[type_tag]['qualitylow']
+        type_tag = consts.kQualityFlasksTypeTag
+        quality_high_rule = self.GetRule(type_tag, 'qualityhigh')
+        quality_low_rule = self.GetRule(type_tag, 'qualitylow')
         if (14 <= min_quality <= 20):
-            quality_high_rule.SetVisibility(RuleVisibility.kShow)
+            quality_high_rule.Show()
             quality_high_rule.ModifyLine('Quality', '>=', min_quality)
-            quality_low_rule.SetVisibility(RuleVisibility.kDisable)
+            quality_low_rule.Disable()
         elif (1 <= min_quality <= 13):
-            quality_high_rule.SetVisibility(RuleVisibility.kShow)
+            quality_high_rule.Show()
             quality_high_rule.ModifyLine('Quality', '>=', 14)
-            quality_low_rule.SetVisibility(RuleVisibility.kShow)
+            quality_low_rule.Show()
             quality_low_rule.ModifyLine('Quality', '>=', min_quality)        
         else:  # out of range [1, 20] --> disable all flask quality rules
-            quality_high_rule.SetVisibility(RuleVisibility.kDisable)
-            quality_low_rule.SetVisibility(RuleVisibility.kDisable)
+            quality_high_rule.Disable()
+            quality_low_rule.Disable()
     # End SetFlaskMinQuality
     
     def GetFlaskMinQuality(self):
-        type_tag: str = 'endgameflasks'
-        tier_tag_list: list[str] = ['qualitylow', 'qualityhigh']
+        type_tag = consts.kQualityFlasksTypeTag
+        tier_tag_list = ['qualitylow', 'qualityhigh']
         for tier_tag in tier_tag_list:
-            rule = self.type_tier_rule_map[type_tag][tier_tag]
+            rule = self.GetRule(type_tag, tier_tag)
             if (rule.visibility == RuleVisibility.kShow):
-                for keyword, operator, value_string_list in rule.parsed_lines:
-                    if keyword == 'Quality':
-                        return int(value_string_list[0])
+                op, [quality_string] = rule.parsed_lines_hll['Quality']
+                return int(quality_string)
         return -1  # indicates all flask quality rules are disabled/hidden
     
     # ============================== RGB Item Functions ==============================
@@ -939,19 +540,21 @@ class LootFilter:
         max_size_int, _ = consts.kRgbSizesMap[max_size_string]
         for _, (size_int, tier_tag_list) in consts.kRgbSizesMap.items():
             for tier_tag in tier_tag_list:
-                target_visibility = (RuleVisibility.kShow if size_int <= max_size_int
-                                     else RuleVisibility.kHide)
-                self.type_tier_rule_map[type_tag][tier_tag].SetVisibility(
-                        target_visibility)
+                rule = self.GetRule(type_tag, tier_tag)
+                if (size_int > max_size_int):
+                    rule.Hide()
+                else:
+                    rule.Show()
     # End SetRgbItemMaxSize
     
     def GetRgbItemMaxSize(self) -> str:
         type_tag = consts.kRgbTypeTag
         max_size_string = 'none'
         max_size_int = 0
+        # Iterating in a random order, so no early out
         for size_string, (size_int, tier_tag_list) in consts.kRgbSizesMap.items():
             for tier_tag in tier_tag_list:
-                rule = self.type_tier_rule_map[type_tag][tier_tag]
+                rule = self.GetRule(type_tag, tier_tag)
                 if ((size_int > max_size_int) and (rule.visibility == RuleVisibility.kShow)):
                     max_size_string = size_string
                     max_size_int = size_int
@@ -970,214 +573,185 @@ class LootFilter:
         type_tag: str = 'dlf_chaos_recipe_rares'
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
-        rule.SetVisibility(RuleVisibility.kShow if enable_flag else RuleVisibility.kDisable)
+        rule = self.GetRule(type_tag, tier_tag)
+        if (enable_flag):
+            rule.Show()
+        else:
+            rule.Disable()
     # End IsChaosRecipeItemSlotEnabled
     
     def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
         CheckType(item_slot, 'item_slot', str)
         if ((item_slot == 'Weapons') or (item_slot == 'weapons')):
             return self.IsChaosRecipeEnabledFor('WeaponsX')
-        type_tag: str = 'dlf_chaos_recipe_rares'
+        type_tag = consts.kChaosRecipeTypeTag
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
-        rule = self.type_tier_rule_map[type_tag][tier_tag]
+        rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility == RuleVisibility.kShow
     # End IsChaosRecipeItemSlotEnabled
     
     # ======================== Private Parser Methods ========================
     
+    def AddBlockToHll(self, block: List[str], successor_key=None):
+        CheckType(block, 'block', list, str)
+        if (len(block) == 0):
+            return
+        elif (LootFilterRule.IsParsableAsRule(block)):
+            rule = LootFilterRule(block)
+            key = rule.type_tag, rule.tier_tag
+            if ((not rule.type_tag) or (not rule.tier_tag)):
+                self.num_untagged_rules += 1
+                rule.SetTypeTierTags(consts.kUntaggedRuleTypeTag, str(self.num_untagged_rules))
+            self.rule_or_text_block_hll.insert_before(
+                    key, RuleOrTextBlock(rule, is_rule=True), successor_key)
+        else:  # not parsable as rule
+            self.num_raw_text_blocks += 1
+            key = kTextBlockKey, str(self.num_raw_text_blocks)
+            self.rule_or_text_block_hll.insert_before(
+                    key, RuleOrTextBlock(block, is_rule=False), successor_key)
+    # End AddBlockToHll
+    
     def ParseInputFilterFile(self) -> None:
-        # Read in lines from file   
-        self.text_lines: List[str] = []
-        with open(self.input_filter_fullpath, encoding='utf-8') as input_filter_file:
-            for line in input_filter_file:
-                self.text_lines.append(line.strip())
-        # Ensure there is a blank line at the end to make parsing algorithms cleaner
-        if (self.text_lines[-1] != ''):
-            self.text_lines.append('')
-        self.rules_start_line_index = self.FindRulesStartLineIndex()
-        self.header_lines = self.text_lines[: self.rules_start_line_index]
-        self.parser_index = self.rules_start_line_index
-        # Add custom user-defiend rules plus DLF-generated rules like chaos recipe rules
-        self.AddDlfRulesIfMissing()
-        self.ParseLootFilterRules()
+        source_to_keyword_map = {
+                InputFilterSource.kDownload : 'DownloadedLootFilterFullpath',
+                InputFilterSource.kInput : 'InputLootFilterFullpath',
+                InputFilterSource.kOutput : 'OutputLootFilterFullpath'}
+        input_filter_fullpath = self.profile_obj.config_values[
+                source_to_keyword_map[self.input_filter_source]]
+        if (not os.path.isfile(input_filter_fullpath)):
+            raise RuntimeError('Input filter {} does not exist'.format(input_filter_fullpath))
+        input_lines = file_helper.ReadFile(input_filter_fullpath, strip=True)
+        # Break input lines into "blocks". A block is a group of consecutive lines
+        # of text without any empty (whitespace-only) lines.
+        # Each block will then be parsed into a RuleOrTextLines object.
+        current_block = []
+        for input_line in input_lines:
+            if (input_line == ''):
+                self.AddBlockToHll(current_block)
+                current_block = []
+            else:
+                current_block.append(input_line)
+        # Apply import changes if needed
+        if (self.input_filter_source != InputFilterSource.kOutput):
+            self.ApplyImportChanges()
     # End ParseLootFilterFile()
     
-    def FindRulesStartLineIndex(self) -> int:
-        found_table_of_contents: bool = False
-        for line_index in range(len(self.text_lines)):
-            line: str = self.text_lines[line_index]
-            if (consts.kTableOfContentsIdentifier in line):
-                found_table_of_contents = True
-            elif(not found_table_of_contents):
-                continue
-            # Blank line indicates end of table of contents
-            elif (line == ''):
-                return line_index + 1
-        return -1  # never found table of contents
-    # End FindRulesStartLineIndex
-    
-    def AddDlfRulesIfMissing(self):
-        index = self.rules_start_line_index
-        for index in range(self.rules_start_line_index, len(self.text_lines)):
-            line: str = self.text_lines[index]
-            if (helper.IsSectionOrGroupDeclaration(line)):
-                _, section_id, section_name = helper.ParseSectionDeclarationLine(line)
-                if (section_id == consts.kDlfAddedRulesSectionGroupId
-                        and section_name == consts.kDlfAddedRulesSectionGroupName):
-                    # found DLF rules, so we can just return
-                    return
-                break  # as soon as we encounter any section declaration, we're done
-        # Add DLF rules
-        to_add_string_list: List[str] = []
+    # Returns the HllNode containing the Table of Contents block.
+    # Raises an error if Table of Contents cannot be found.
+    def FindTableOfContentsNode(self) -> HllNode:
+        for key, rule_or_text_block in self.rule_or_text_block_hll:
+            if (not rule_or_text_block.is_rule):
+                text_lines = rule_or_text_block.text_lines
+                toc_identifier = consts.kTableOfContentsIdentifier
+                if (parse_helper.IsSubstringInLines(toc_identifier, text_lines)):
+                    return self.rule_or_text_block_hll.get_node(key)
+        raise RuntimeError('Table of Contents not found')
+    # End FindTableOfContentsBlock
+
+    def GenerateDlfRuleText(self) -> List[str]:
+        text = ''
+        current_section_id_int = int(consts.kDlfAddedRulesSectionGroupId)
         # Add section group header
-        to_add_string: str = consts.kSectionGroupHeaderTemplate.format(
-                consts.kDlfAddedRulesSectionGroupId,
-                consts.kDlfAddedRulesSectionGroupName)
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
-        current_section_id_int: int = int(consts.kDlfAddedRulesSectionGroupId)
+        text += consts.kSectionGroupHeaderTemplate.format(current_section_id_int,
+                consts.kDlfAddedRulesSectionGroupName) + '\n\n'
         # Add custom user-defined rules
         current_section_id_int += 1
-        to_add_string = consts.kSectionHeaderTemplate.format(
-                current_section_id_int,
-                'Custom rules from ' + self.profile_config_data['RulesFullpath'])
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
-        custom_rules_lines = helper.ReadFile(self.profile_config_data['RulesFullpath'])
-        custom_rules_lines = [line.strip() for line in custom_rules_lines]
-        custom_rules_lines.append('')  # append blank line to handle end uniformly
-        current_rule_lines: List[str] = []
-        custom_rule_count: int = 0
-        for line_index in range(len(custom_rules_lines)):
-            line: str = custom_rules_lines[line_index]
-            if (line == ''):
-                if (len(current_rule_lines) == 0):
-                    continue
-                else:
-                    # End of rule -> add rule, reset lines, and increment count
-                    to_add_string_list.extend(current_rule_lines + [''])
-                    current_rule_lines = []
-                    custom_rule_count += 1
-            elif (helper.IsRuleStart(custom_rules_lines, line_index)):
-                type_tag = 'custom_rule'
-                tier_tag = str(custom_rule_count)
-                current_rule_lines.append(
-                        line + ' # $type->{} $tier->{}'.format(type_tag, tier_tag))
-            else:  # nonempty line
-                current_rule_lines.append(line)
+        text += consts.kSectionHeaderTemplate.format(current_section_id_int,
+                'Custom rules from ' + self.profile_obj.config_values['RulesFullpath']) + '\n\n'
+        custom_rules_lines = file_helper.ReadFile(
+                self.profile_obj.config_values['RulesFullpath'], strip=True)
+        text += '\n'.join(custom_rules_lines) + '\n\n'
         # Add "Hide maps below tier" rule
         current_section_id_int += 1
-        to_add_string = consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Hide all maps below specified tier')
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
-        to_add_string = consts.kHideMapsBelowTierRuleTemplate.format(
-                self.profile_config_data['HideMapsBelowTier'])
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Hide all maps below specified tier') + '\n\n'
+        text += consts.kHideMapsBelowTierRuleTemplate.format(
+                self.profile_obj.config_values['HideMapsBelowTier']) + '\n\n'
         # Add flask rules
         current_section_id_int += 1
-        to_add_string = consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Show specific flask BaseTypes')
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
-        to_add_string = consts.kFlaskRuleTemplate
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
-        to_add_string = consts.kHighIlvlFlaskRuleTemplate
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show specific flask BaseTypes') + '\n\n'
+        text += consts.kFlaskRuleTemplate + '\n\n'
+        text += consts.kHighIlvlFlaskRuleTemplate + '\n\n'
         # Add chaos recipe rules
         current_section_id_int += 1
-        to_add_string = consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Show chaos recipe rares by item +slot')
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show chaos recipe rares by item slot') + '\n\n'
         # Weapons handled separately, since config tells us which classes to use
         item_slot = 'WeaponsX'
-        weapon_classes = self.profile_config_data['ChaosRecipeWeaponClassesAnyHeight']
-        to_add_string = consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes)
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        weapon_classes = self.profile_obj.config_values['ChaosRecipeWeaponClassesAnyHeight']
+        text += consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes) + '\n\n'
         item_slot = 'Weapons3'
-        weapon_classes = self.profile_config_data['ChaosRecipeWeaponClassesMaxHeight3']
-        to_add_string = consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes)
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
+        weapon_classes = self.profile_obj.config_values['ChaosRecipeWeaponClassesMaxHeight3']
+        text += consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes) + '\n\n'
         # Handle the rest of chaos recipe rules
         for chaos_recipe_rule_string in consts.kChaosRecipeRuleStrings:
-            to_add_string_list.extend(chaos_recipe_rule_string.split('\n') + [''])
-        # Add Archnemesis rules
-        current_section_id_int += 1
-        to_add_string = consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Highlight specific Archnemesis ingredients')
-        to_add_string_list.extend(to_add_string.split('\n') + [''])
-        for archnemesis_rule_template in consts.kArchnemesisRuleTemplates:
-            to_add_string = archnemesis_rule_template
-            to_add_string_list.extend(to_add_string.split('\n') + [''])
-        # Update self.text_lines to contain the newly added rules
-        # Python trick to insert one list into another: https://stackoverflow.com/a/5805910
-        insert_index: int = self.rules_start_line_index
-        self.text_lines[insert_index : insert_index] = to_add_string_list
-    # End AddDlfRulesIfMissing
-    
-    def ParseLootFilterRules(self) -> None:
-        '''
-        This function parses self.text_lines into:
-         - self.rule_or_comment_block_list: list[LootFilterRule or list[str]]
-         - self.type_tier_rule_map: 2d dict - (type_tag, tier_tag) maps to a unique LootFilterRule
-           Note: parser ensures that (type_tag, tier_tag) forms a unique key for rules
-           Example: self.type_tier_rule_map['currency']['t1'] 
-        '''
-        # Initialize data structures to store parsed data
-        self.rule_or_comment_block_list = []
-        self.type_tier_rule_map = {}
-        # Set up parsing loop
-        current_block: list[str] = []
-        untagged_rule_count = 0
-        while (self.parser_index < len(self.text_lines)):
-            current_line = self.text_lines[self.parser_index]
-            # Check for end of block
-            if ((current_line.strip() == '') and (len(current_block) > 0)):
-                is_comment_block: bool = (helper.FindTagLineIndex(current_block) == -1)
-                if (is_comment_block):
-                    self.rule_or_comment_block_list.append(current_block)
-                else:  # is rule
-                    new_rule = LootFilterRule(current_block, self.parser_index - len(current_block))
-                    # Generate unique type-tier tag pair if no tags
-                    # (For now we assume it either has both or none)
-                    if ((new_rule.type_tag == '') and (new_rule.tier_tag == '')):
-                        new_rule.type_tag = 'untagged_rule'
-                        new_rule.tier_tag = str(untagged_rule_count)
-                        new_rule.AddTypeTierTags(new_rule.type_tag, new_rule.tier_tag)
-                        untagged_rule_count += 1
-                    # Add rule to type tier rule map
-                    if (new_rule.type_tag not in self.type_tier_rule_map):
-                        self.type_tier_rule_map[new_rule.type_tag] = {}
-                    self.type_tier_rule_map[new_rule.type_tag][new_rule.tier_tag] = new_rule
-                    # Add rule to rule orStacked Cu comment block list
-                    self.rule_or_comment_block_list.append(new_rule)
+            text += chaos_recipe_rule_string + '\n\n'
+        return text.split('\n')
+    # End GenerateDlfRuleText
+
+    # Insert the DLF rules immediately after the Table of Contents text block.
+    def AddDlfRules(self):
+        # If DLF HideMapsBelowTier rule already exists, return immediately.
+        if (consts.kHideMapsBelowTierTags in self.rule_or_text_block_hll):
+            return
+        # Add DLF rules - very similar to ParseInputFilterFile code
+        dlf_rule_text = self.GenerateDlfRuleText()
+        successor_key = self.FindTableOfContentsNode().next_node.key
+        current_block = []
+        for line in dlf_rule_text:
+            if (line == ''):
+                self.AddBlockToHll(current_block, successor_key)
                 current_block = []
-            else:  # not end of block
-                current_block.append(current_line)
-            self.parser_index += 1
-    # End ParseLootFilterRules
+            else:
+                current_block.append(line)
+    # End AddDlfRules
+    
+    # Standardizes all stacked currency tiers to their unstacked counterparts.
+    # Called automatically on filter import.
+    def StandardizeCurrencyTiers(self):
+        for tier in range(1, consts.kNumCurrencyTiersExcludingScrolls + 1):
+            unstacked_type_tag, unstacked_tier_tag = consts.kUnifiedCurrencyTags[tier][1]
+            unstacked_rule = self.GetRule(unstacked_type_tag, unstacked_tier_tag)
+            # Skip first (size 1) when iterating through stack sizes
+            for stack_size in consts.kCurrencyStackSizesByTier[tier][1:]:
+                stacked_type_tag, stacked_tier_tag = consts.kUnifiedCurrencyTags[tier][stack_size]
+                stacked_rule = self.GetRule(stacked_type_tag, stacked_tier_tag)
+                stacked_rule.ClearBaseTypeList()
+                stacked_rule.AddBaseTypes(unstacked_rule.GetBaseTypeList())
+                stacked_rule.Enable()
+    # End StandarizeCurrencyTiers
     
     # Apply changes that need to be made to the filter on import only
     def ApplyImportChanges(self):
-        # Place oils in appropriate tiers
-        oil_hide_rule = self.type_tier_rule_map[consts.kOilTypeTag][consts.kOilHideTierTag]
-        oil_hide_rule.SetVisibility(RuleVisibility.kHide)
-        for oil_tier in range(1, consts.kMaxOilTier + 1):
-            rule = self.type_tier_rule_map[consts.kOilTypeTag]['t' + str(oil_tier)]
-            rule.ClearBaseTypeList()
-        for oil_name, oil_tier in consts.kOilTierList:
-            rule = self.type_tier_rule_map[consts.kOilTypeTag]['t' + str(oil_tier)]
-            rule.AddBaseType(oil_name)
-            rule.SetVisibility(RuleVisibility.kShow)
+        # Add DLF header
+        dlf_header_string = consts.kDlfHeaderTemplate.format(consts.kDlfVersion)
+        dlf_header_rule_or_text_block = RuleOrTextBlock(
+                dlf_header_string.split('\n'), is_rule=False)
+        self.rule_or_text_block_hll.insert_at_index(
+                consts.kDlfHeaderKey, dlf_header_rule_or_text_block, index=0)
+        # Add DLF-generated rules and custom user rules
+        self.AddDlfRules()
         # Make all stacked currency tiers match their unstacked counterparts
         self.StandardizeCurrencyTiers()
         # Set currency stack size thresholds to those defined in consts.kCurrencyStackSizes
         for tier, tag_pairs in consts.kStackedCurrencyTags.items():
             for i, (type_tag, tier_tag) in enumerate(tag_pairs):
                 stack_size = consts.kCurrencyStackSizes[i + 1]
-                rule = self.type_tier_rule_map[type_tag][tier_tag]
-                # Find "StackSize" line and rewrite stack size threshold
-                for j in range(len(rule.text_lines)):
-                    if ('StackSize' in rule.text_lines[j]):
-                        rule.text_lines[j] = 'StackSize >= {}'.format(stack_size)
+                rule = self.GetRule(type_tag, tier_tag)
+                rule.ModifyLine('StackSize', '>=', stack_size)
+        # Place oils in appropriate tiers
+        oil_hide_rule = self.GetRule(consts.kOilTypeTag, consts.kOilHideTierTag)
+        oil_hide_rule.Hide()
+        oil_hide_rule.ClearBaseTypeList()  # disables the rule
+        for oil_tier in range(1, consts.kMaxOilTier + 1):
+            rule = self.GetRule(consts.kOilTypeTag, 't' + str(oil_tier))
+            rule.ClearBaseTypeList()
+        for oil_name, oil_tier in consts.kOilTierList:
+            rule = self.GetRule(consts.kOilTypeTag, 't' + str(oil_tier))
+            rule.AddBaseType(oil_name)
+            rule.Show()
     # End ApplyImportChanges
 
 # -----------------------------------------------------------------------------

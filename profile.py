@@ -186,8 +186,7 @@ def ParseProfileConfigLine(line: str) -> Tuple[str, Any]:
     # Parse line
     parse_success, parse_results = simple_parser.ParseFromTemplate(stripped_line, '{}:{}')
     if (not parse_success):
-        raise RuntimeError('failed to parse line {} of {}.config file'.format(
-                line_number, profile_name))
+        raise RuntimeError('failed to parse profile config line: {} '.format(stripped_line))
     [keyphrase, value] = [s.strip() for s in parse_results]
     keyword = kProfileConfigKeyphraseToKeywordOrderedMap[keyphrase]
     # Perform additional specialized parsing for non-string types
@@ -360,9 +359,10 @@ def RenameProfile(original_profile_name: str, new_profile_name: str):
             file_helper.MoveFile(source_path, target_path)
 # End RenameProfile
 
+# Raises an error if the profile does not exist.
 def DeleteProfile(profile_name: str):
     CheckType(profile_name, 'profile_name', str)
-    if (profile_name not in ListProfilesRaw()):
+    if (not ProfileExists(profile_name)):
         raise RuntimeError('profile {} does not exist'.format(profile_name))
     # Remove all files with basename equal to profile_name
     for filepath in file_helper.ListFilesInDirectory(kProfileDirectory, fullpath=True):

@@ -4,12 +4,21 @@ import re
 def InvertedDict(input_dict):
     return {value : key for key, value in input_dict.items()}
 
+kDlfVersion = '1.1.0'
+
 #=================================== Items ===================================
 
 kRarityList = ['Normal', 'Magic', 'Rare', 'Unique']
 kInverseRarityMap = {rarity : index for index, rarity in enumerate(kRarityList)}
 
 # =================================== Misc ===================================
+
+kDlfHeaderTemplate = \
+'''#==============================================================================================================#
+# PoE Dynamic Loot Filter: This filter has been modified by Dynamic Loot Filter version {}.                 #
+#==============================================================================================================#'''
+
+kDlfHeaderKey = ('dlf_header', 'dlf_header')
 
 kTableOfContentsIdentifier = '[WELCOME] TABLE OF CONTENTS'
 kDlfAddedRulesSectionGroupId = '9900'
@@ -24,13 +33,15 @@ kSectionGroupHeaderTemplate = \
 # 0: Numerical section id code
 # 1: Section name
 kSectionHeaderTemplate = \
-'''#----------------------------------------------------
+'''#-------------------------------------------------------------------------------
 #   [{0}] {1}
-#----------------------------------------------------'''
+#-------------------------------------------------------------------------------'''
 
 kSectionRePattern = re.compile(r'\[\d+\]+ .*')
 
 kTypeTierTagTemplate = '$type->{} $tier->{}'
+
+kUntaggedRuleTypeTag = 'untagged_rule'
 
 # ================================= Currency =================================
 
@@ -89,12 +100,15 @@ kUnifiedCurrencyTags = { tier :
 
 # ================================= Map Tier =================================
 
+kHideMapsBelowTierTags = ('dlf_hide_maps_below_tier', 'dlf_hide_maps_below_tier')
+
 # No idea if the ShapedMap matters, but NeverSink used it in his filters
 kHideMapsBelowTierRuleTemplate = \
-'''Hide # $type->dlf_hide_maps_below_tier $tier->dlf_hide_maps_below_tier
+'''Hide # $type->{} $tier->{}
 Class Maps
 ShapedMap False
-MapTier < {}'''
+Rarity ! Unique
+MapTier < {}'''.format(*kHideMapsBelowTierTags, '{}')
 
 # ================================= Essences =================================
 
@@ -154,57 +168,6 @@ kHighIlvlFlaskRuleTemplate = \
 # PlayEffect Green Temp
 # MinimapIcon 0 Green Raindrop'''
 
-# ================================== Archnemesis ==================================
-
-kArchnemesisTierTags = ['t1', 't2', 't3', 'thide'] 
-kArchnemesisTags = { i + 1 : ('dlf_archnemesis', kArchnemesisTierTags[i])
-        for i in range(len(kArchnemesisTierTags))}
-kNumArchnemesisTiers = len(kArchnemesisTierTags)
-
-kArchnemesisRuleTemplates = [
-'''# Show # $type->dlf_archnemesis $tier->t1
-# ArchnemesisMod
-# Class "Archnemesis Mod"
-# SetFontSize 45
-# SetTextColor 252 3 144 255
-# SetBorderColor 252 3 144 255
-# SetBackgroundColor 0 0 0 255
-# PlayAlertSound 3 300
-# PlayEffect Pink
-# MinimapIcon 0 Pink Pentagon''',
-
-'''# Show # $type->dlf_archnemesis $tier->t2
-# ArchnemesisMod
-# Class "Archnemesis Mod"
-# SetFontSize 45
-# SetTextColor 3 252 240 255
-# SetBorderColor 3 252 240 255
-# SetBackgroundColor 0 0 0 255
-# PlayAlertSound 3 300
-# PlayEffect Cyan
-# MinimapIcon 0 Cyan Pentagon''',
-
-'''# Show # $type->dlf_archnemesis $tier->t3
-# ArchnemesisMod
-# Class "Archnemesis Mod"
-# SetFontSize 45
-# SetTextColor 74 230 58 255
-# SetBorderColor 74 230 58 255
-# SetBackgroundColor 0 0 0 255
-# PlayAlertSound 3 300
-# PlayEffect Green
-# MinimapIcon 0 Green Pentagon''',
-
-'''# Hide # $type->dlf_archnemesis $tier->thide
-# ArchnemesisMod
-# Class "Archnemesis Mod"
-# SetFontSize 30
-# SetTextColor 74 230 58 255
-# SetBorderColor 74 230 58 255
-# SetBackgroundColor 0 0 0 255'''
-]
-
-
 # =============================== Chaos Recipe ===============================
 
 # 0: tier tag (we will use the item slot for this)
@@ -235,6 +198,8 @@ kChaosRecipeItemSlots = ['Weapons',
 kChaosRecipeItemSlotsMinusWeapons = kChaosRecipeItemSlots[1:]
 
 kChaosRecipeItemSlotsInternal = ['WeaponsX', 'Weapons3'] + kChaosRecipeItemSlotsMinusWeapons
+
+kChaosRecipeTypeTag = 'dlf_chaos_recipe_rares'
 
 # Need no spaces in tier tags
 kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
@@ -316,6 +281,12 @@ kAllFlaskTypes = [
         'Ruby Flask', 'Sapphire Flask', 'Topaz Flask', 'Aquamarine Flask',
         'Diamond Flask', 'Granite Flask', 'Jade Flask', 'Quartz Flask', 'Sulphur Flask',
         'Basalt Flask', 'Silver Flask', 'Stibnite Flask']
+
+# Quality Gems and Flasks tags
+
+kQualityGemsTypeTag = 'gems-generic'
+
+kQualityFlasksTypeTag = 'endgameflasks'
 
 # RGB Item consts
 

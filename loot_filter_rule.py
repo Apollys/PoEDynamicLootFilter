@@ -17,9 +17,11 @@ class RuleVisibility(Enum):
     kHide = 2
     kDisabledShow = 3  # rule is commented out
     kDisabledHide = 4  # rule is commented out
-    kUnknown = 5
+    kDisabledAny = 5  # used as input parameter to set visibility only
+    # kDisabledAny will never be the visibility state of a rule
+    kUnknown = 6
     
-    # Note: both IsEnabled and IsDisabled could be false if the value is kUnknown
+    # Note: both IsEnabled and IsDisabled could be false if the value is kUnknown.
     
     @staticmethod
     def IsEnabled(visibility) -> bool:
@@ -28,7 +30,8 @@ class RuleVisibility(Enum):
     
     @staticmethod
     def IsDisabled(visibility) -> bool:
-        return visibility in (RuleVisibility.kDisabledShow, RuleVisibility.kDisabledHide)
+        return visibility in (RuleVisibility.kDisabledShow,
+                RuleVisibility.kDisabledHide, RuleVisibility.kDisabledAny)
     # End IsDisabled
     
     @staticmethod
@@ -51,18 +54,31 @@ class LootFilterRule:
      - self.header_comment_lines: List[str] - all lines before the Show/Hide/Disable line
      - self.rule_text_lines: List[str] - text lines excluding header comment lines
      - self.parsed_lines_hll: hash_linked_list mapping keyword to (operator, values_list) pairs
+        - keyword: str, operator: str, value_list: List[str]
      - self.visibility: RuleVisibility
      - self.type_tag: str - identifier found after "$type->" in the first line of the rule
      - self.tier_tag: str - identifier found after "$tier->" in the first line of the rule
+        - Tags will be None (but contructor will not error) if tags do not exist in input text
     '''
 
-    def __init__(self, text_lines: str or List[str]):
+    # We define a block of text lines to be parsable as a LootFilterRule
+    # if it contains a Show/Hide line, as defined by parse_helper.FindShowHideLineIndex.
+    # If this function returns True, the LootFilterRule constructor is guaranteed not to
+    # raise an error on the same input.
+    @staticmethod
+    def IsParsableAsRule(text_lines: List[str] or str):
         if (isinstance(text_lines, str)):
             text_lines = text_lines.split('\n')
-        # Now text_lines should be a list of strings, one for each line
         CheckType(text_lines, 'text_lines', list, str)
-        if (len(text_lines) == 0):
-            logger.Log('Error: emtpy rule encountered')
+        return parse_helper.FindShowHideLineIndex(text_lines) != None
+
+    def __init__(self, text_lines: List[str] or str):
+        if (isinstance(text_lines, str)):
+            text_lines = text_lines.split('\n')
+        CheckType(text_lines, 'text_lines', list, str)
+        if (not LootFilterRule.IsParsableAsRule(text_lines)):
+            raise RuntimeError('given text_lines cannot be parsed as a LootFilterRule:\n'
+                    '{}'.format(text_lines))
         # Find the index of the line containing Show/Hide
         # Everything above that line should be commented, and is assigned to self.header_comment_lines
         show_hide_line_index = parse_helper.FindShowHideLineIndex(text_lines)
@@ -73,6 +89,7 @@ class LootFilterRule:
                 raise RuntimeError('Header line is not commented: {}'.format(text_lines[i]))
         self.header_comment_lines = text_lines[:show_hide_line_index]
         self.rule_text_lines = text_lines[show_hide_line_index:]
+        self.type_tag, self.tier_tag = parse_helper.ParseTypeTierTags(self.rule_text_lines)
         self.ParseRuleTextLines()
     # End __init__
     
@@ -100,16 +117,6 @@ class LootFilterRule:
             self.visibility = RuleVisibility.kDisabledShow
         elif (not is_show and not is_enabled):
             self.visibility = RuleVisibility.kDisabledHide
-        # Parse "$type" and "$tier" tags on the Show/Hide line of the rule, for example:
-        # Show # $type->currency $tier->t1exalted
-        # TODO: What if rule doesn't have type and tier tags?
-        tag_line: str = self.rule_text_lines[0] + ' '  # add space so parsing is uniform
-        type_start_index = tag_line.find(kTypeIdentifier) + len(kTypeIdentifier)
-        type_end_index = tag_line.find(' ', type_start_index)
-        tier_start_index = tag_line.find(kTierIdentifier) + len(kTierIdentifier)
-        tier_end_index = tag_line.find(' ', tier_start_index)
-        self.type_tag: str = tag_line[type_start_index : type_end_index]
-        self.tier_tag: str = tag_line[tier_start_index : tier_end_index]
     # End ParseTextLines
     
     # Call when a change is made to the object's state (other than rule_text_lines).
@@ -146,6 +153,8 @@ class LootFilterRule:
     
     # Sets type and tier tags and updates the rule text lines accordingly
     def SetTypeTierTags(self, type_tag: str, tier_tag: str):
+        CheckType(type_tag, 'type_tag', str)
+        CheckType(tier_tag, 'tier_tag', str)
         self.type_tag = type_tag
         self.tier_tag = tier_tag
         self.UpdateRuleTextLines()
@@ -189,7 +198,25 @@ class LootFilterRule:
             self.visibility = RuleVisibility.kHide
             self.UpdateRuleTextLines()
     # End Hide
-        
+    
+    # Assumes visibility argument is either kShow, kHide, or kDisabledAny.
+    def SetVisibility(self, visibility):
+        if (RuleVisibility.IsDisabled(visibility)):
+            self.Disable()
+        elif (visibility == RuleVisibility.kShow):
+            self.Show()
+        elif (visibility == RuleVisibility.kHide):
+            self.Hide()
+        else:
+            raise RuntimeError('Unsupported argument passed to SetVisibility: '
+                    '{}'.format(visibility))
+    # End SetVisibility
+    
+    def GetBaseTypeList(self) -> List[str]:
+        op, base_type_list = self.parsed_lines_hll['BaseType']
+        return base_type_list
+    # End GetBaseTypeList
+    
     # Adds base_type_name to this rule's BaseType line, if it's not there already.
     # Does not enable the rule if it is disabled. Callers should call Enable() after
     # if they expect the rule to be enabled.
@@ -198,7 +225,7 @@ class LootFilterRule:
         CheckType(base_type_name, 'base_type_name', str)
         if ('BaseType' not in self.parsed_lines_hll):
             raise RuntimeError('rule does not have a BaseType line:\n{}'.format(self.rule_text_lines))
-        _, base_type_list = self.parsed_lines_hll['BaseType']
+        base_type_list = self.GetBaseTypeList()
         if (base_type_name in base_type_list):
             return
         base_type_list.append(base_type_name)
@@ -206,18 +233,19 @@ class LootFilterRule:
     # End AddBaseType
     
     def AddBaseTypes(self, base_type_list: list):
-        CheckType2(base_type_list, 'base_type_list', list, str)
+        CheckType(base_type_list, 'base_type_list', list, str)
         for base_type_name in base_type_list:
             self.AddBaseType(base_type_name)
     # End AddBaseTypes
     
     # Removes base_type_name from this rule's BaseType line, if it's there.
+    # Does nothing if given base_type_name is not present.
     # If this results in an empty base type list, disables the rule (otherwise PoE generates error).
     def RemoveBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         if ('BaseType' not in self.parsed_lines_hll):
             raise RuntimeError('rule does not have a BaseType line:\n{}'.format(self.rule_text_lines))
-        _, base_type_list = self.parsed_lines_hll['BaseType']
+        base_type_list = self.GetBaseTypeList()
         quoted_base_type_name = '"' + base_type_name + '"'
         # Check raw (unquoted) BaseType name
         if (base_type_name in base_type_list):
@@ -235,8 +263,9 @@ class LootFilterRule:
     
     # Note: This disables the rule, since an empty BaseType line generates an error in PoE.
     def ClearBaseTypeList(self):
-        while (len(self.base_type_list) > 0):
-            self.RemoveBaseType(self.base_type_list[-1])
+        base_type_list = self.GetBaseTypeList()
+        while (len(base_type_list) > 0):
+            self.RemoveBaseType(base_type_list[-1])
     # End ClearBaseTypeList
     
     # Returns a bool indicating whether or not the line identified by the given keyword was found
