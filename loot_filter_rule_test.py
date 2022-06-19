@@ -41,6 +41,18 @@ kCommentedRuleText = \
 #	MinimapIcon 0 Red Star
 #PlayAlertSound 1 300'''
 
+kEmptyBaseTypeRuleText = \
+'''#Show  # %HS3 $type->currency->stackedthree $tier->t6
+#       StackSize >= 3
+#       Class "Currency"
+#       SetFontSize 45
+#       SetTextColor 30 200 200 255
+#       SetBorderColor 30 200 200 255
+#       SetBackgroundColor 0 0 69
+#       MinimapIcon 2 Cyan Raindrop
+#PlayAlertSound 2 300
+#DisableDropSound True'''
+
 def TestIsParsableAsRule():
     AssertFalse(LootFilterRule.IsParsableAsRule(kCommentBlockText))
     AssertTrue(LootFilterRule.IsParsableAsRule(kInputRuleText))
@@ -137,6 +149,15 @@ def TestModifyLine():
     AssertTrue('MinimapIcon 0 Cyan Moon' in rule_text)
     print('TestModifyLine passed!')
 
+def TestEmptyBaseTypeList():
+    rule = LootFilterRule(kEmptyBaseTypeRuleText)
+    rule.ClearBaseTypeList()
+    added_base_type = 'Orb of Alteration'
+    rule.AddBaseType(added_base_type)
+    AssertTrue(added_base_type in rule.GetBaseTypeList())
+    AssertTrue(RuleVisibility.IsDisabled(rule.visibility))
+    print('TestEmptyBaseTypeList passed!')
+
 def main():
     TestIsParsableAsRule()
     TestBasicRuleParse()
@@ -145,6 +166,7 @@ def main():
     TestChangeVisibility()
     TestChangeTags()
     TestModifyLine()
+    TestEmptyBaseTypeList()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

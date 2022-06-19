@@ -107,76 +107,19 @@ The `profile_name` parameter is required in all cases except for:
 - - -
 
 ### To-Do
- - [ ] Add first-time setup support
-   - [x] Add first-time setup script `setup.py`
-   - [x] Add backend function `is_first_launch`
-   - [ ] If yes, prompt user for profile name, create profile,
-     explain how to configure options and add custom rules
- - [ ] Implement Create Profile button in UI
- - [x] Implement UI display error messages on important failures
-   - [x] Failed to import filter
-   - [x] Or more generally, always report status of last action
- - [x] ~~Explicitly check for presence of downloaded filter,
-       give more clear error message if missing~~
-	   This was already done, the UI just needs to propogate the error
+
+Feature suggestions and bug reports are now tracked in GitHub issues.
+I will just leave items that do not have a corresponding GitHub issue here for now.
+
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update
    - Better not to fail in this case
- - [ ] (Low priority) Test suite: Change `CHECK` macro to `CHECK_EQ`, etc
- - [ ] (Low priority) fix not parsing tags for custom rules
- - [x] Fix rule matching in backend
-   - [x] Fix generic bug
-   - [x] Fix rule matching bug with GemLevel
-   - [ ] Implement temporarily disabled properties: Scourged Maps, UberBlighted Maps, ...
  - [ ] Refactor frontend AHK script
    - [x] Reorder and organize build GUI code
    - [ ] Write helper functions to make GUI construction more concise.
          For example, combining setting font with creating an item
    - [x] Resolve minor questions in AHK script (ctr-f TODO)
-   - [ ] Refactor all of the code to use a functional style
- - [x] Add tests for newly added featuers:
-   - [x] Stacked currency
-   - [x] Essences
-   - [x] Div cards
-   - [x] Unique maps
- - [x] Stacked Currency:
-   - [x] Change 2, 4, 8 to 2, 4, 6 (8 doesn't drop naturally)
-   - [x] Make currency stack tiers consistent with single currency tiers on import
- - [x] ~~Add Harbinger Shard, Horizon Shard, Chaos Shard to tiering~~
-   - No longer appliccable, as v2 shows all currency basetypes
- - [x] Add support for essences
- - [x] Add support for div cards
- - [x] Add support for unique maps
- - [x] Make backend return exit codes so front end can detect errors
- - [x] UI Redesign
-
-- - -
-
-### Feature Wish List
- - [x] First time setup documentation
- - [ ] First time setup workflow in UI
- - [x] Add support for essences
- - [x] Add support for div cards
- - [x] Add support for unique maps
- - [x] Update flask rules - one for high ilvl (85+) and one for all ilvls
- - [x] Move currency from one tier to another
- - [x] Show/hide whole currency tier
- - [x] Chaos recipe - show/hide by item slot
- - [x] Hide maps below tier
- - [x] Show/hide flasks by type
- - [x] Save profile data - persistent changes with redownloaded filter
- - [x] Manipulate unique item visibility
- - [x] Simulate - find rule matching item
-   - All done except socket colors
- - [x] Set Gem min quality
- - [x] Set Flask min quality
- - [x] Set RGB item max size
- - [x] Set Blight Oil min tier
- - [x] Profile rework
-   - Formatting of profile file could probably be improved
- - [x] Add user-defined custom rules (user writes custom rules in a text file,
-   whenever the filter is imported those rules are automatically added.
-   Useful for adding any rule FilterBlade doesn't support, like "3 sockets, at least 2 blues"
+   - [ ] Refactor all of the code to be more modular
 
 - - -
 
@@ -199,32 +142,28 @@ for the detailed documentation of all available function calls.
   - `get_all_profile_names`
   - `create_new_profile <new_profile_name>`
   - `set_active_profile`
-  - `import_downloaded_filter <optional keyword: "only_if_missing">`
+  - `import_downloaded_filter`
+  - `reload_input_filter`
   - `run_batch`
   - `get_rule_matching_item`
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
-  - *New/Updated*: `set_currency_to_tier <currency_name: str> <tier: int>`
-  - *New/Updated*: `get_all_currency_tiers`
-  - *New/Updated*: `set_currency_tier_min_visible_stack_size <tier: int> <visible_flag: int>`
-  - *New/Updated*: `get_currency_tier_min_visible_stack_size <tier: int>`
+  - `set_currency_to_tier <currency_name: str> <tier: int>`
+  - `get_all_currency_tiers`
+  - `set_currency_tier_min_visible_stack_size <tier: int> <visible_flag: int>`
+  - `get_currency_tier_min_visible_stack_size <tier: int>`
   - (For test suite use: `get_tier_of_currency <currency_name: str>`)
-  - *All Other Currency Functions Removed*, notably:
-    - `set_/get_hide_currency_above_tier`
-    - `set_/get_currency_tier_visibility`
-  - *New*: `set_archnemesis_mod_tier <archnemesis_mod_name: str> <tier: int>`
-  - *New*: `get_all_archnemesis_mod_tiers`
-  - *New*: `get_all_essence_tier_visibilities`
-  - *New*: `set_hide_essences_above_tier <tier: int>`
-  - *New*: `get_hide_essences_above_tier`
-  - *New*: `get_all_div_card_tier_visibilities`
-  - *New*: `set_hide_div_cards_above_tier <tier: int>`
-  - *New*: `get_hide_div_cards_above_tier`
-  - *Renamed*: `get_all_unique_item_tier_visibilities`
-  - *Renamed*: `set_hide_unique_items_above_tier <tier: int>`
-  - *Renamed*: `get_hide_unique_items_above_tier`
-  - *New*: `get_all_unique_map_tier_visibilities`
-  - *New*: `set_hide_unique_maps_above_tier <tier: int>`
-  - *New*: `get_hide_unique_maps_above_tier`
+  - `get_all_essence_tier_visibilities`
+  - `set_hide_essences_above_tier <tier: int>`
+  - `get_hide_essences_above_tier`
+  - `get_all_div_card_tier_visibilities`
+  - `set_hide_div_cards_above_tier <tier: int>`
+  - `get_hide_div_cards_above_tier`
+  - `get_all_unique_item_tier_visibilities`
+  - `set_hide_unique_items_above_tier <tier: int>`
+  - `get_hide_unique_items_above_tier`
+  - `get_all_unique_map_tier_visibilities`
+  - `set_hide_unique_maps_above_tier <tier: int>`
+  - `get_hide_unique_maps_above_tier`
   - `set_lowest_visible_oil <oil_name: str>`
   - `get_lowest_visible_oil`
   - `set_gem_min_quality <quality: int in [1, 20]>`

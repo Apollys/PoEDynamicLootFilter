@@ -4268,7 +4268,9 @@ MinimapIcon 1 Yellow Pentagon
 
 # Large N9 T2
 
-Show # $type->jewels->clustereco $tier->n9_i84_t2
+# TAGLESS RULE
+# Note: This rule's tags specially removed for testing
+Show
 ItemLevel >= 84
 Rarity <= Rare
 EnchantmentPassiveNum 9

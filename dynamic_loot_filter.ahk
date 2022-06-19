@@ -942,7 +942,7 @@ ExitApp
 ; Toggle GUI
 ; Note: the `toggle_gui_hotkey_line` tag below is used for setting the hotkey in python,
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-F7::  ; $toggle_gui_hotkey_line
+^F1::  ; $toggle_gui_hotkey_line
 WinGetActiveTitle, active
 if (active == "Path of Exile")
     WinActivate, PoE Dynamic Loot Filter
@@ -953,7 +953,7 @@ return
 ; Reload Filter
 ; Note: the `reload_filter_hotkey_line` tag below is used for setting the hotkey in python,
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-F8::  ; $reload_filter_hotkey_line
++F2::  ; $reload_filter_hotkey_line
 ; TODO: check that Path of Exile is active
 Send {Enter}/filter DynamicLootFilter{Enter}
 return

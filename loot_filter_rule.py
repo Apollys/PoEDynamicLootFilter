@@ -89,7 +89,8 @@ class LootFilterRule:
                 raise RuntimeError('Header line is not commented: {}'.format(text_lines[i]))
         self.header_comment_lines = text_lines[:show_hide_line_index]
         self.rule_text_lines = text_lines[show_hide_line_index:]
-        self.type_tag, self.tier_tag = parse_helper.ParseTypeTierTags(self.rule_text_lines)
+        tags = parse_helper.ParseTypeTierTags(self.rule_text_lines)
+        self.type_tag, self.tier_tag = tags if (tags != None) else (None, None)
         self.ParseRuleTextLines()
     # End __init__
     
@@ -213,6 +214,8 @@ class LootFilterRule:
     # End SetVisibility
     
     def GetBaseTypeList(self) -> List[str]:
+        if ('BaseType' not in self.parsed_lines_hll):
+            return []
         op, base_type_list = self.parsed_lines_hll['BaseType']
         return base_type_list
     # End GetBaseTypeList
@@ -224,7 +227,7 @@ class LootFilterRule:
     def AddBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         if ('BaseType' not in self.parsed_lines_hll):
-            raise RuntimeError('rule does not have a BaseType line:\n{}'.format(self.rule_text_lines))
+            self.parsed_lines_hll.insert_at_index('BaseType', ('', ['']), index=0)
         base_type_list = self.GetBaseTypeList()
         if (base_type_name in base_type_list):
             return

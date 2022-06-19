@@ -8,7 +8,7 @@ import logger
 from loot_filter_rule import RuleVisibility, LootFilterRule
 import os.path
 import parse_helper
-import profile
+from profile import Profile
 import rule_parser
 from type_checker import CheckType
 
@@ -60,24 +60,24 @@ class LootFilter:
     
     # Construct the LootFilter, parsing the file indicated by the config values of
     # the given profile and the value of input_filter_source.
-    def __init__(self, profile_name: str, input_filter_source: InputFilterSource):
-        CheckType(profile_name, 'profile_name', str)
+    def __init__(self, profile_param: Profile or str, input_filter_source: InputFilterSource):
+        CheckType(profile_param, 'profile_param', (Profile, str))
         CheckType(input_filter_source, 'input_filter_source', InputFilterSource)
-        self.profile_obj = profile.Profile(profile_name)
+        self.profile_obj = (profile_param if isinstance(profile_param, Profile)
+                else Profile(profile_param))
+        # Copy/move Download filter to Input filter if appropriate
+        config_values = self.profile_obj.config_values
         self.input_filter_source = input_filter_source
+        if (self.input_filter_source == InputFilterSource.kDownload):
+            file_helper.CopyFile(config_values['DownloadedLootFilterFullpath'],
+                    config_values['InputLootFilterFullpath'])
+            if (config_values['RemoveDownloadedFilter']):
+                file_helper.RemoveFileIfExists(config_values['DownloadedLootFilterFullpath'])
+        # Initialize remaining member variables and parse input filter
         self.rule_or_text_block_hll = HashLinkedList()
         self.num_raw_text_blocks = 0
         self.num_untagged_rules = 0
         self.ParseInputFilterFile()
-        # If input source is download, after parsing we copy downloaded filter
-        # to input directory and check if downloaded filter should be deleted.
-        if (self.input_filter_source == InputFilterSource.kDownload):
-            file_helper.CopyFile(
-                    self.profile_obj.config_values['DownloadedLootFilterFullpath'],
-                    self.profile_obj.config_values['InputLootFilterFullpath'])
-            if (self.profile_obj.config_values['RemoveDownloadedFilter']):
-                file_helper.RemoveFileIfExists(
-                        self.profile_obj.config_values['DownloadedLootFilterFullpath'])
     # End __init__
 
     def SaveToFile(self):
@@ -613,12 +613,10 @@ class LootFilter:
     # End AddBlockToHll
     
     def ParseInputFilterFile(self) -> None:
-        source_to_keyword_map = {
-                InputFilterSource.kDownload : 'DownloadedLootFilterFullpath',
-                InputFilterSource.kInput : 'InputLootFilterFullpath',
-                InputFilterSource.kOutput : 'OutputLootFilterFullpath'}
         input_filter_fullpath = self.profile_obj.config_values[
-                source_to_keyword_map[self.input_filter_source]]
+                'OutputLootFilterFullpath'
+                if (self.input_filter_source == InputFilterSource.kOutput)
+                else 'InputLootFilterFullpath']
         if (not os.path.isfile(input_filter_fullpath)):
             raise RuntimeError('Input filter {} does not exist'.format(input_filter_fullpath))
         input_lines = file_helper.ReadFile(input_filter_fullpath, strip=True)

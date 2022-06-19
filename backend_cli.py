@@ -41,13 +41,13 @@ import shlex
 import shutil
 import sys
 import traceback
-from typing import List
+from typing import List, Tuple
 
 import consts
-import file_manip
-import helper
+import file_helper
 import logger
-from loot_filter import RuleVisibility, LootFilterRule, LootFilter
+from loot_filter import InputFilterSource, LootFilter
+from loot_filter_rule import RuleVisibility
 import profile
 from type_checker import CheckType
 
@@ -93,11 +93,18 @@ kFunctionInfoMap = {
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
-    # General
+    # Import and Reload
+    # These are *not* considered as mutator functions,
+    # because they do not contribute to Profile.changes.
     'import_downloaded_filter' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
+    'reload_input_filter' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    # Miscellaneous
     'run_batch' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
@@ -131,16 +138,6 @@ kFunctionInfoMap = {
         'NumParamsForMatch' : 1,
     },
     'get_currency_tier_min_visible_stack_size' : { 
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Archnemesis
-    'set_archnemesis_mod_tier' : { 
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_all_archnemesis_mod_tiers' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
@@ -305,6 +302,22 @@ def CheckNumParams(params_list: List[str], required_num_params: int):
         Error(error_message)
 # End CheckNumParams
 
+# Encloses the string in double quotes if it contains a space or single quote,
+# otherwise just returns the given string.  Note: does not check for double quotes in string.
+def QuoteStringIfRequired(input_string: str) -> str:
+    CheckType(input_string, 'input_string', str)
+    if ((" " in input_string) or ("'" in input_string)):
+        return '"' + input_string + '"'
+    return input_string
+# End QuoteStringIfRequired
+
+# Given a list of strings, joins the strings with a space,
+# and additionally encloses any string that contains a single quote or space in ""
+def JoinParams(params_list: List[str]) -> str:
+    CheckType(params_list, 'params_list', list, str)
+    return ' '.join(QuoteStringIfRequired(param) for param in params_list)
+# End JoinParams
+
 def WriteOutput(output_string: str):
     CheckType(output_string, 'output_string', str)
     with open(kOutputFilename, 'w') as output_file:
@@ -319,7 +332,7 @@ def AppendFunctionOutput(function_output_string: str):
 # End AppendFunctionOutput
 
 def AddFunctionToChangesDict(function_tokens: List[str], changes_dict: OrderedDict):
-    CheckType2(function_tokens, 'function_tokens', list, str)
+    CheckType(function_tokens, 'function_tokens', list, str)
     CheckType(changes_dict, 'changes_dict', OrderedDict)
     function_name = function_tokens[0]
     num_params_for_match = kFunctionInfoMap[function_name]['NumParamsForMatch']
@@ -338,9 +351,9 @@ def AddFunctionToChangesDict(function_tokens: List[str], changes_dict: OrderedDi
 # [['adjust_currency_tier', 'Chromatic Orb', '1'],
 #  ['hide_uniques_above_tier', '3']]
 def ConvertChangesDictToFunctionListRec(changes_dict: OrderedDict or str,
-                                        current_prefix_list: List[str] = []) -> list:
+                                        current_prefix_list: List[str] = []) -> List[List[str]]:
     CheckType(changes_dict, 'changes_dict', (OrderedDict, str))
-    CheckType2(current_prefix_list, 'current_prefix_list', list, str)
+    CheckType(current_prefix_list, 'current_prefix_list', list, str)
     # changes_dict may just be final parameter, in which case it's a string
     if (isinstance(changes_dict, str)):
         last_param: str = changes_dict
@@ -353,29 +366,29 @@ def ConvertChangesDictToFunctionListRec(changes_dict: OrderedDict or str,
     return result_list
 # End ConvertChangesDictToFunctionListRec
 
-def ConvertChangesDictToFunctionList(changes_dict: OrderedDict) -> list:
+def ConvertChangesDictToFunctionList(changes_dict: OrderedDict) -> List[str]:
     CheckType(changes_dict, 'changes_dict', OrderedDict)
     # Get list of lists of function tokens from recursive function above
     token_lists = ConvertChangesDictToFunctionListRec(changes_dict)
     function_list = []
     for token_list in token_lists:
-        function_list.append(helper.JoinParams(token_list))
+        function_list.append(JoinParams(token_list))
     return function_list
 # End ConvertChangesDictToFunctionList
 
 def UpdateProfileChangesFile(changes_fullpath: str,
                              new_function_name: str,
-                             new_function_params: list):
+                             new_function_params: List[str]):
     CheckType(changes_fullpath, 'changes_fullpath', str)
     CheckType(new_function_name, 'new_function_name', str)
-    CheckType2(new_function_params, 'new_function_params', list, str)
+    CheckType(new_function_params, 'new_function_params', list, str)
     # Parse changes file as chain of OrderedDicts:
     # function_name -> param1 -> param2 -> ... -> last_param
     #  > set_currency_tier "Chaos Orb" 3
     # 'set_currency_tier' -> 'Chaos Orb' -> '3':
     # {'set_currency_tier' : {'Chaos Orb' : '3'}}
     parsed_changes_dict = OrderedDict()
-    changes_lines_list = helper.ReadFile(changes_fullpath)
+    changes_lines_list = file_helper.ReadFile(changes_fullpath)
     for line in changes_lines_list:
         tokens_list = shlex.split(line.strip())
         AddFunctionToChangesDict(tokens_list, parsed_changes_dict)
@@ -405,9 +418,10 @@ def UpdateProfileChangesFile(changes_fullpath: str,
     # Convert our parsed_changes_dict into a list of functions
     changes_list = ConvertChangesDictToFunctionList(parsed_changes_dict)
     # Write updated profile changes
-    helper.WriteToFile(changes_list, changes_fullpath)
+    file_helper.WriteToFile(changes_list, changes_fullpath)
 # End UpdateProfileChangesFile
 
+# Note: loot_filter is None iff the command does not have a profile name parameter.
 def DelegateFunctionCall(loot_filter: LootFilter or None,
                          function_name: str,
                          function_params: List[str],
@@ -419,44 +433,41 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     CheckType(function_params, 'function_params_list', list)
     CheckType(in_batch, 'in_batch', bool)
     CheckType(suppress_output, 'suppress_output', bool)
-    # Alias config_data for convenience
-    config_data = loot_filter.profile_config_data if loot_filter else None
+    # Alias config_values for convenience
+    config_values = loot_filter.profile_obj.config_values if loot_filter else None
     # 
     output_string = ''
-    # Save function call to profile data if it is a mutator function
+    # Save function call to Profile.changes if it is a mutator function
     # Note: suppress_output also functioning as an indicator to not save profile data here
     if (kFunctionInfoMap[function_name]['ModifiesFilter'] and not suppress_output):
         # We use the syntax some_list[:] to create a copy of some_list
-        UpdateProfileChangesFile(config_data['ChangesFullpath'], function_name, function_params[:])
+        UpdateProfileChangesFile(config_values['ChangesFullpath'], function_name, function_params[:])
     # =============================== Import Downloaded Filter ===============================
-    if (function_name == 'import_downloaded_filter'):
+    if ((function_name in ('import_downloaded_filter', 'reload_input_filter')) and not in_batch):
         '''
-        import_downloaded_filter <optional keyword: "only_if_missing">
-         - Reads the filter located in the downloads directory, applies all DLF
-           custom changes to it, and saves the result in the Path Of Exile directory.
-         - If the argument "only_if_missing" is present, does nothing if the filter already is
-           present in the Path of Exile filters directory.
-         - Assumes this is NOT called as part of a batch
+        import_downloaded_filter
+         - Copies or moves the downloaded filter to the input directory (depending on profile
+           config), parses the input filter, adds DLF-generated rules, applies profile changes,
+           and writes the final result to the output filter
          - Output: None
-         - Example: > python3 backend_cli.py import_downloaded_filter
-         - Example: > python3 backend_cli.py import_downloaded_filter only_if_missing
+         - Example: > python3 backend_cli.py import_downloaded_filter MyProfile
+         
+        reload_input_filter
+         - Parses the input filter, adds DLF-generated rules, applies profile changes,
+           and writes the final result to the output filter
+         - Output: None
+         - Example: > python3 backend_cli.py reload_input_filter MyProfile
         '''
-        import_flag = True
-        if ((len(function_params) == 1) and (function_params[0] == 'only_if_missing')):
-            import_flag = not FileExists(config_data['OutputLootFilterFullpath'])
-        else:
-            CheckNumParams(function_params, 0)
-        if (import_flag):
-            loot_filter.ApplyImportChanges()
-            changes_lines: List[str] = helper.ReadFile(config_data['ChangesFullpath'])
-            for function_call_string in changes_lines:
-                _function_name, *_function_params = shlex.split(function_call_string)
-                DelegateFunctionCall(loot_filter, _function_name, _function_params,
-                                     in_batch = True, suppress_output = True)
-            loot_filter.SaveToFile()
+        CheckNumParams(function_params, 0)
+        changes_lines: List[str] = file_helper.ReadFile(config_values['ChangesFullpath'])
+        # Changes are applied in backend_cli rather than within the LootFilter class,
+        # because they are formatted as backend_cli calls within the Profile.changes file.
+        for function_call_string in changes_lines:
+            _function_name, *_function_params = shlex.split(function_call_string)
+            DelegateFunctionCall(loot_filter, _function_name, _function_params,
+                                 in_batch = True, suppress_output = True)
+        loot_filter.SaveToFile()
     # ======================================= Run Batch =======================================
-    # Note: cannot run_batch from within a run_batch command, as there would be no place for
-    # batch function call list, and this should be unnecessary
     elif ((function_name == 'run_batch') and not in_batch):
         '''
         run_batch
@@ -464,12 +475,12 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Format is one function call per line, given as: <function_name> <function_params...>
          - Output: concatenation of the outputs of all the functions, with each function output
            separated by the line containing the single character: `@`
-         - Example: > python3 run_batch
+         - Example: > python3 run_batch MyProfile
         '''
         CheckNumParams(function_params, 0)
         WriteOutput('')  # clear the output file, since we will be appending output in batch
         contains_mutator = False
-        function_call_list: List[str] = helper.ReadFile(kInputFilename)
+        function_call_list: List[str] = file_helper.ReadFile(kInputFilename)
         for function_call_string in function_call_list:
             if (function_call_string.strip() == ''):
                 continue
@@ -499,8 +510,6 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_all_profile_names
          - Output: newline-separated list of all profile names, with currently active profile first
-         - If there is no specified active profile (e.g. if general.config is missing), first line
-           will be blank
          - Example: > python3 backend_cli.py get_all_profile_names
         '''
         CheckNumParams(function_params, 0)
@@ -518,7 +527,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 1)
         new_profile_name = function_params[0]
-        config_values: dict = helper.ReadFileToDict(kInputFilename)
+        config_values: dict = file_helper.ReadFileToDict(kInputFilename)
         created_profile = profile.CreateNewProfile(new_profile_name, config_values)
         output_string += str(int(created_profile != None))
     elif (function_name == 'rename_profile'):
@@ -546,16 +555,16 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     elif (function_name == 'set_active_profile'):
         '''
         set_active_profile <new_active_profile_name>
-         - Note: Does *not* take a (current) <profile_name> parameter
          - Raises an error if new_active_profile_name does not exist
          - Output: None
-         - Example: > python3 backend_cli.py set_active_profile TestProfile
+         - Example: > python3 backend_cli.py set_active_profile MyFancyProfile
         '''
         CheckNumParams(function_params, 1)
         profile.SetActiveProfile(function_params[0])
     # ====================================== Rule Matching ======================================
     elif (function_name == 'get_rule_matching_item'):
         '''
+        TODO: this is probably broken with refactor.
         get_rule_matching_item
          - Takes an item text as input in backend_cli.input
          - Finds the rule in the PoE filter matching the item and writes it to backend_cli.output
@@ -563,43 +572,40 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            these two tags together form a unique key for the rule
          - Ignores rules with AreaLevel conditions, as well as many other niche keywords
          - Socket rules only implemented as numeric counting for now, ignores color requirements
-         - Example: > python3 backend_cli.py get_rule_matching_item DefaultProfile
+         - Example: > python3 backend_cli.py get_rule_matching_item MyProfile
         '''
         CheckNumParams(function_params, 0)
-        item_text_lines: List[str] = helper.ReadFile(kInputFilename)
+        item_text_lines: List[str] = file_helper.ReadFile(kInputFilename)
         type_tag, tier_tag = loot_filter.GetRuleMatchingItem(item_text_lines)
         output_string = 'type_tag:{}\ntier_tag:{}\n'.format(str(type_tag), str(tier_tag))
         if ((type_tag != None) and (tier_tag != None)):
-            matched_rule = loot_filter.GetRuleByTypeTier(type_tag, tier_tag)
+            matched_rule = loot_filter.GetRule(type_tag, tier_tag)
             output_string += '\n'.join(matched_rule.text_lines)        
     elif (function_name == 'set_rule_visibility'):
         '''
         set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>
          - Shows, hides, or disables the rule specified by the given type and tier tags
          - The visibility parameter is one of: `show`, `hide`, `disable`
-         - Output: None (for now, can output a success flag if needed)
+         - Output: None (could output rule_found_flag if needed)
          - Example > python3 backend_cli.py set_rule_visibility "rare->redeemer" t12 show
          - Note: quotes (either type) are necessary for tags containing a ">" character,
            since the shell will normally iterpret as the output redirection signal
-         - Example: > python3 backend_cli.py set_rule_visibility uniques 5link 0 DefaultProfile
+         - Example: > python3 backend_cli.py set_rule_visibility uniques 5link disable MyProfile
         '''
         CheckNumParams(function_params, 3)
         type_tag, tier_tag, visibility_string = function_params
-        kVisibilityMap = {'show': RuleVisibility.kShow, 'hide': RuleVisibility.kHide,
-                          'disable': RuleVisibility.kDisable}
-        success_flag = loot_filter.SetRuleVisibility(
-                type_tag, tier_tag, kVisibilityMap[visibility_string])
-        # Error out on incorrect tags for now to make testing easierlensing
-        if (not success_flag):
-            Error('Rule with type_tag="{}", tier_tag="{}" does not exist in filter'.format(
-                    type_tag, tier_tag))
+        visibility_map = {
+                'show': RuleVisibility.kShow,
+                'hide': RuleVisibility.kHide,
+                'disable': RuleVisibility.kDisabledAny}
+        loot_filter.GetRule(type_tag, tier_tag).SetVisibility(visibility_map[visibility_string])
     # ======================================== Currency ========================================
     elif (function_name == 'set_currency_to_tier'):
         '''
         set_currency_to_tier <currency_name: str> <tier: int>
          - Moves the given currency type to the specified tier for all unstacked and stacked rules
          - Output: None
-         - Example: > python3 backend_cli.py set_currency_to_tier "Chromatic Orb" 5 DefaultProfile
+         - Example: > python3 backend_cli.py set_currency_to_tier "Chromatic Orb" 5 MyProfile
         '''
         CheckNumParams(function_params, 2)
         currency_name: str = function_params[0]
@@ -609,7 +615,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_tier_of_currency <currency_name: str>
          - Output: tier (int) containing the given currency type
-         - Example: > python3 backend_cli.py get_tier_of_currency "Chromatic Orb" DefaultProfile
+         - Example: > python3 backend_cli.py get_tier_of_currency "Chromatic Orb" MyProfile
         '''
         CheckNumParams(function_params, 1)
         currency_name: str = function_params[0]
@@ -618,7 +624,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_all_currency_tiers
          - Output: newline-separated sequence of `<currency_name: str>;<tier: int>`
-         - Example: > python3 backend_cli.py get_all_currency_tiers DefaultProfile
+         - Example: > python3 backend_cli.py get_all_currency_tiers MyProfile
         '''
         CheckNumParams(function_params, 0)
         for tier in range(1, consts.kNumCurrencyTiersExcludingScrolls + 1):
@@ -634,8 +640,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Valid stack_size values: {1, 2, 4} for tiers1-7, {1, 2, 4, 6} for tiers 8-9 and scrolls
          - tier is an integer [1-9] or "tportal"/"twisdom" for Portal/Wisdom Scrolls
          - Output: None
-         - Example: > python3 backend_cli.py set_currency_min_visible_stack_size 7 6 DefaultProfile
-         - Example: > python3 backend_cli.py set_currency_min_visible_stack_size twisdom hide_all DefaultProfile
+         - Example: > python3 backend_cli.py set_currency_min_visible_stack_size 7 6 MyProfile
+         - Example: > python3 backend_cli.py set_currency_min_visible_stack_size twisdom hide_all MyProfile
         '''
         CheckNumParams(function_params, 2)
         tier_str: str = function_params[0]
@@ -646,47 +652,19 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_currency_tier_min_visible_stack_size <tier: int or str>
          - "tier" is an int, or "tportal"/"twisdom" for portal/wisdom scrolls
          - Output: min visible stack size for the given currency tier
-         - Example: > python3 backend_cli.py get_currency_tier_min_visible_stack_size 4 DefaultProfile
-         - Example: > python3 backend_cli.py get_currency_tier_min_visible_stack_size twisdom DefaultProfile
+         - Example: > python3 backend_cli.py get_currency_tier_min_visible_stack_size 4 MyProfile
+         - Example: > python3 backend_cli.py get_currency_tier_min_visible_stack_size twisdom MyProfile
         '''
         CheckNumParams(function_params, 1)
         tier_str: str = function_params[0]
         output_string = str(loot_filter.GetCurrencyTierMinVisibleStackSize(tier_str))
-    # ===================================== Archnemesis Mods =====================================
-    elif (function_name == 'set_archnemesis_mod_tier'):
-        '''
-        set_archnemesis_mod_tier <archnemesis_mod_name: str> <tier: int>
-         - Moves the given archnemesis mod to the specified tier
-         - Note: use last tier (4) to hide specific mod
-         - Output: None
-         - Example: > python3 backend_cli.py set_archnemesis_mod_tier "Frenzied" 1 DefaultProfile
-         - Example: > python3 backend_cli.py set_archnemesis_mod_tier "Gargantuan" 4 DefaultProfile
-        '''
-        CheckNumParams(function_params, 2)
-        archnemesis_mod_name: str = function_params[0]
-        target_tier: int = int(function_params[1])
-        loot_filter.SetArchnemesisModToTier(archnemesis_mod_name, target_tier)
-    elif (function_name == 'get_all_archnemesis_mod_tiers'):
-        '''
-        get_all_archnemesis_mod_tiers
-         - Output: newline-separated sequence of `<archnemesis_mod_name: str>;<tier: int>`
-           Note: last tier is a "hide" tier
-         - Example: > python3 backend_cli.py get_all_archnemesis_mod_tiers DefaultProfile
-        '''
-        CheckNumParams(function_params, 0)
-        for tier in range(1, consts.kNumArchnemesisTiers):  # omit last tier, as it's hide all
-            archnemesis_mod_names = loot_filter.GetAllArchnemesisModsInTier(tier)
-            output_string += ''.join((archnemesis_mod_name + ';' + str(tier) + '\n')
-                                        for archnemesis_mod_name in archnemesis_mod_names)
-        if ((len(output_string) > 0) and (output_string[-1] == '\n')):
-            output_string = output_string[:-1]  # remove final newline
     # ========================================= Essences =========================================
     elif (function_name == 'get_all_essence_tier_visibilities'):
         '''
         get_all_essence_tier_visibilities
          - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
          - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
-         - Example: > python3 backend_cli.py get_all_essence_tier_visibilities DefaultProfile
+         - Example: > python3 backend_cli.py get_all_essence_tier_visibilities MyProfile
         '''
         CheckNumParams(function_params, 0)
         for tier in range(1, consts.kNumEssenceTiers + 1):
@@ -699,7 +677,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the essence tier "above" which all will be hidden
            (higher essence tiers are worse)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_essences_above_tier 3 DefaultProfile
+         - Example: > python3 backend_cli.py set_hide_essences_above_tier 3 MyProfile
         '''
         CheckNumParams(function_params, 1)
         max_visible_tier: int = int(function_params[0])
@@ -708,7 +686,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_essences_above_tier
          - Output: single integer, the tier above which all essences are hidden
-         - Example: > python3 backend_cli.py get_hide_essences_above_tier DefaultProfile
+         - Example: > python3 backend_cli.py get_hide_essences_above_tier MyProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideEssencesAboveTierTier())
@@ -718,7 +696,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_div_card_tier_visibilities
          - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
          - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
-         - Example: > python3 backend_cli.py get_all_div_card_tier_visibilities DefaultProfile
+         - Example: > python3 backend_cli.py get_all_div_card_tier_visibilities MyProfile
         '''
         CheckNumParams(function_params, 0)
         for tier in range(1, consts.kNumDivCardTiers + 1):
@@ -731,7 +709,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the essence tier "above" which all will be hidden
            (higher tiers are worse)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_essences_above_tier 3 DefaultProfile
+         - Example: > python3 backend_cli.py set_hide_essences_above_tier 3 MyProfile
         '''
         CheckNumParams(function_params, 1)
         max_visible_tier: int = int(function_params[0])
@@ -740,7 +718,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_div_cards_above_tier
          - Output: single integer, the tier above which all essences are hidden
-         - Example: > python3 backend_cli.py get_hide_div_cards_above_tier DefaultProfile
+         - Example: > python3 backend_cli.py get_hide_div_cards_above_tier MyProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideDivCardsAboveTierTier())
@@ -750,7 +728,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_unique_item_tier_visibilities
          - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
          - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
-         - Example: > python3 backend_cli.py get_all_unique_item_tier_visibilities DefaultProfile
+         - Example: > python3 backend_cli.py get_all_unique_item_tier_visibilities MyProfile
         '''
         CheckNumParams(function_params, 0)
         for tier in range(1, consts.kNumUniqueItemTiers + 1):
@@ -763,7 +741,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the unique item tier "above" which all will be hidden
            (higher tiers are less valuable)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_unique_items_above_tier 3 DefaultProfile
+         - Example: > python3 backend_cli.py set_hide_unique_items_above_tier 3 MyProfile
         '''
         CheckNumParams(function_params, 1)
         max_visible_tier: int = int(function_params[0])
@@ -772,7 +750,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_unique_items_above_tier
          - Output: single integer, the tier above which all unique items are hidden
-         - Example: > python3 backend_cli.py get_hide_unique_items_above_tier DefaultProfile
+         - Example: > python3 backend_cli.py get_hide_unique_items_above_tier MyProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideUniqueItemsAboveTierTier())
@@ -782,7 +760,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_unique_map_tier_visibilities
          - Output: newline-separated sequence of `<tier>;<visible_flag>`, one per tier
          - <tier> is an integer representing the tier, <visibile_flag> is 1/0 for True/False
-         - Example: > python3 backend_cli.py get_all_unique_map_tier_visibilities DefaultProfile
+         - Example: > python3 backend_cli.py get_all_unique_map_tier_visibilities MyProfile
         '''
         CheckNumParams(function_params, 0)
         for tier in range(1, consts.kNumUniqueMapTiers + 1):
@@ -795,7 +773,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the unique map tier "above" which all will be hidden
            (higher tiers are less valuable)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_unique_maps_above_tier 3 DefaultProfile
+         - Example: > python3 backend_cli.py set_hide_unique_maps_above_tier 3 MyProfile
         '''
         CheckNumParams(function_params, 1)
         max_visible_tier: int = int(function_params[0])
@@ -804,7 +782,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_unique_maps_above_tier
          - Output: single integer, the tier above which all unique maps are hidden
-         - Example: > python3 backend_cli.py get_hide_unique_maps_above_tier DefaultProfile
+         - Example: > python3 backend_cli.py get_hide_unique_maps_above_tier MyProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideUniqueMapsAboveTierTier())
@@ -814,7 +792,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_lowest_visible_oil <oil_name: str>
          - Sets the lowest-value blight oil which to be shown
          - Output: None
-         - Example: > python3 backend_cli.py set_lowest_visible_oil "Violet Oil" DefaultProfile
+         - Example: > python3 backend_cli.py set_lowest_visible_oil "Violet Oil" MyProfile
         '''
         CheckNumParams(function_params, 1)
         loot_filter.SetLowestVisibleOil(function_params[0])
@@ -822,7 +800,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_lowest_visible_oil
          - Output: the name of the lowest-value blight oil that is shown
-         - Example: > python3 backend_cli.py get_lowest_visible_oil DefaultProfile
+         - Example: > python3 backend_cli.py get_lowest_visible_oil MyProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = loot_filter.GetLowestVisibleOil()
@@ -832,7 +810,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_gem_min_quality <quality: int in [1, 20]>
          - Sets the minimum quality below which gems will not be shown by gem quality rules
          - Output: None
-         - Example: > python3 backend_cli.py set_gem_min_quality 10 DefaultProfile
+         - Example: > python3 backend_cli.py set_gem_min_quality 10 MyProfile
         '''
         CheckNumParams(function_params, 1)
         min_quality: int = int(function_params[0])
@@ -841,7 +819,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_gem_min_quality
          - Output: single integer, minimum shown gem quality for gem quality rules
-         - Example: > python3 backend_cli.py get_gem_min_quality DefaultProfile
+         - Example: > python3 backend_cli.py get_gem_min_quality MyProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetGemMinQuality())
@@ -851,7 +829,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_flask_min_quality <quality: int in [1, 20]>
          - Sets the minimum quality below which flasks will not be shown by flask quality rules
          - Output: None
-         - Example: > python3 backend_cli.py set_flask_min_quality 14 DefaultProfile
+         - Example: > python3 backend_cli.py set_flask_min_quality 14 MyProfile
         '''
         CheckNumParams(function_params, 1)
         min_quality: int = int(function_params[0])
@@ -860,7 +838,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_flask_min_quality
          - Output: single integer, minimum shown flask quality for flask quality rules
-         - Example: > python3 backend_cli.py get_flask_min_quality DefaultProfile
+         - Example: > python3 backend_cli.py get_flask_min_quality MyProfile
         '''
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetFlaskMinQuality())
@@ -870,7 +848,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_hide_maps_below_tier <tier: int>
          - Sets the map tier below which all will be hidden (use 0/1 to show all)
          - Output: None
-         - Example: > python3 backend_cli.py set_hide_maps_below_tier 14 DefaultProfile
+         - Example: > python3 backend_cli.py set_hide_maps_below_tier 14 MyProfile
         '''
         min_visibile_tier: int = int(function_params[0])
         loot_filter.SetHideMapsBelowTierTier(min_visibile_tier)
@@ -878,7 +856,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_hide_maps_below_tier
          - Output:  single integer, the tier below which all maps are hidden
-         - Example: > python3 backend_cli.py get_hide_maps_below_tier DefaultProfile
+         - Example: > python3 backend_cli.py get_hide_maps_below_tier MyProfile
         '''
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
     # ========================================= Flasks =========================================
@@ -890,7 +868,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <base_type> is any valid flask BaseType
          - enable_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Output: None
-         - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1 DefaultProfile
+         - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1 MyProfile
         '''
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
@@ -905,7 +883,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <base_type> is any valid flask BaseType
          - enable_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Output: None
-         - Example: > python3 backend_cli.py set_high_ilvl_flask_rule_enabled_for "Quartz Flask" 1 DefaultProfile
+         - Example: > python3 backend_cli.py set_high_ilvl_flask_rule_enabled_for "Quartz Flask" 1 MyProfile
         '''
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
@@ -915,8 +893,9 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_flask_visibility <base_type: str>
          - <base_type> is any valid flask BaseType
-         - Output: "1" if given flask base type is shown by DLF rule, else "0"
-         - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask" DefaultProfile
+         - Output: `{0 or 1} {0 or 1}`: e.g. `0 1`
+           - First value indicates generic visibility, second indicates high ilvl visibility
+         - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask" MyProfile
         '''
         flask_base_type: str = function_params[0]
         high_ilvl_flag: bool = False
@@ -933,7 +912,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         get_all_flask_visibilities
          - Output: newline-separated sequence of <flask_basetype>;<visibility_flag: int>
          - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
-         - Example: > python3 backend_cli.py get_all_enabled_flask_types DefaultProfile
+         - Example: > python3 backend_cli.py get_all_enabled_flask_types MyProfile
         '''
         visible_flask_types = loot_filter.GetAllVisibleFlaskTypes(False)
         visible_flask_types_set = set(visible_flask_types)
@@ -950,7 +929,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Sets the maximum size at which an RGB item is shown
          - "small" = 4, "medium" = 6, "large" = 8
          - Output: None
-         - Example: > python3 backend_cli.py set_rgb_item_max_size small DefaultProfile
+         - Example: > python3 backend_cli.py set_rgb_item_max_size small MyProfile
         '''
         rgb_item_max_size: str = function_params[0]
         loot_filter.SetRgbItemMaxSize(rgb_item_max_size)
@@ -958,7 +937,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_rgb_item_max_size
          - Output:  max-size of shown RGB items, one of {none, small, medium, large}
-         - Example: > python3 backend_cli.py get_rgb_item_max_size DefaultProfile
+         - Example: > python3 backend_cli.py get_rgb_item_max_size MyProfile
         '''
         output_string = loot_filter.GetRgbItemMaxSize()
     # =================================== Chaos Recipe Rares ===================================
@@ -969,7 +948,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            "Boots", "Amulets", "Rings", "Belts"
          - enable_flag is 1 for True (enable), 0 for False (disable)
          - Output: None
-         - Example: > python3 backend_cli.py set_chaos_recipe_enabled_for Weapons 0 DefaultProfile
+         - Example: > python3 backend_cli.py set_chaos_recipe_enabled_for Weapons 0 MyProfile
         '''
         item_slot: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
@@ -980,7 +959,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
            "Boots", "Amulets", "Rings", "Belts"  (defined in consts.py)
          - Output: "1" if chaos recipe items are showing for the given item_slot, else "0"
-         - Example: > python3 backend_cli.py is_chaos_recipe_enabled_for "Body Armours" DefaultProfile
+         - Example: > python3 backend_cli.py is_chaos_recipe_enabled_for "Body Armours" MyProfile
         '''
         item_slot: str = function_params[0]
         output_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
@@ -991,7 +970,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <item_slot> is one of: "Weapons", "Body Armours", "Helmets", "Gloves",
            "Boots", "Amulets", "Rings", "Belts"
          - <enabled_flag> is "1" if chaos recipe items are showing for given item_slot, else "0"
-         - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses DefaultProfile
+         - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses MyProfile
         '''
         for item_slot in consts.kChaosRecipeItemSlots:
             enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
@@ -999,7 +978,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
     # ================================= Unmatched Function Name =================================
     else:
-        error_message: str = 'Function "{}" not found'.format(function_name)
+        error_message: str = 'command not supported: {} {}'.format(function_name, function_arguments)
         logger.Log('Error: ' + error_message)
         raise RuntimeError(error_message)
     # ============================= End Function Call Delegation ================================
@@ -1019,66 +998,58 @@ kUsageErrorString = ('ill-formed command-line call\n' +
   '  Check that the function name is spelled correctly and that the syntax is as follows:\n' +
   '  > python3 backend_cli.py <function_name> <function_arguments...> <profile_name (if required)>')
 
+# Returns function_name, function_params, profile_name.
+# If there is no profile param, returned profile_name is None.
+def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
+    # Always require at least 2 params: script_name, function_name
+    if (len(sys.argv) < 2):
+        Error(kUsageErrorString)
+    _, function_name, *remaining_args = sys.argv
+    function_params = []
+    # Check if there should be a profile param, and separate
+    # remaining params into profile_name and function_params
+    profile_name = None
+    if (kFunctionInfoMap[function_name]['HasProfileParam']):
+        if (len(remaining_args) == 0):
+            Error(kUsageErrorString)
+        *function_params, profile_name = remaining_args
+        if (not profile.ProfileExists(profile_name)):
+            Error('profile "{}" does not exist'.format(profile_name))
+    else:  # function does not have Profile param
+        function_params = remaining_args
+    return function_name, function_params, profile_name
+# End ValidateAndParseArguments
+    
 def main_impl():
     # Initialize log
     logger.InitializeLog(kLogFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
     logger.Log(argv_info_message)
-    # Check that there are enough params:
-    #  - For non-profile-parameterized functions: script name, function name, ...
-    #  - Otherwise: script name, function name, profile name, ...
-    if (len(sys.argv) < 2):
-        Error(kUsageErrorString)
-    _, function_name, *remaining_args = sys.argv
-    profile_name = None
-    config_data = None
-    if (kFunctionInfoMap[function_name]['HasProfileParam']):
-        if (len(sys.argv) < 3):
-            Error(kUsageErrorString)
-        *function_params, profile_name = remaining_args
-        if (not profile.ProfileExists(profile_name)):
-            Error('profile "{}" does not exist'.format(profile_name))
-        user_profile = profile.Profile(profile_name)
-        config_data = user_profile.config_values
-    else:  # function does not have Profile param
-        function_params = remaining_args
-    # If importing downloaded filter, first verify that downloaded filter exists,
-    # then copy filter to input path.  Note: we wait to delete downloaded filter
-    # until the end, so that if any errors occurred during import, the downloaded
-    # filter will still be present (so that the user can then re-import).
-    if (function_name == 'import_downloaded_filter'):
-        if (os.path.isfile(config_data['DownloadedLootFilterFullpath'])):
-            file_manip.CopyFile(config_data['DownloadedLootFilterFullpath'],
-                                config_data['InputLootFilterFullpath'])
-        else:
-            Error('downloaded loot filter: "{}" does not exist'.format(
-                    config_data['DownloadedLootFilterFullpath']))
-    # Input filter is read from the output filter path, unless importing downloaded filter
-    output_as_input_filter: bool = (function_name != 'import_downloaded_filter')
-    # Delegate function call
-    # Note: we create the loot filter first and pass in as a parameter,
-    # so that in case of a batch, DelegateFunctionCall can call itself recursively
-    loot_filter = LootFilter(profile_name, output_as_input_filter) if profile_name else None
+    function_name, function_params, profile_name = ValidateAndParseArguments()
+    # Set input filter source based on function name
+    input_filter_source = (
+            InputFilterSource.kDownload if (function_name == 'import_downloaded_filter')
+            else InputFilterSource.kInput if (function_name == 'reload_input_filter')
+            else InputFilterSource.kOutput)
+    # Delegate function call:
+    # We create the loot filter first and pass in as a parameter, so that
+    # DelegateFunctionCall can call itself recursively in run_batch.
+    loot_filter = LootFilter(profile_name, input_filter_source) if profile_name else None
     DelegateFunctionCall(loot_filter, function_name, function_params)
-    # Check if we are importing and need to delete the downloaded filter
-    if ((function_name == 'import_downloaded_filter') and config_data['RemoveDownloadedFilter']):
-        file_manip.RemoveFileIfExists(config_data['DownloadedLootFilterFullpath'])
-# End main  _impl
-
-import time
+# End main_impl
 
 # Wrap the main_impl in a try-except block, so we can detect any error
 # and notify the frontend via backend_cli.exit_code
 def main():
-    helper.WriteToFile('-1', kExitCodeFilename)  # -1 = In-progress exit code
+    file_helper.WriteToFile('-1', kExitCodeFilename)  # -1 = In-progress exit code
     try:
         main_impl()
     except Exception as e:
         traceback_message = traceback.format_exc()
         logger.Log(traceback_message)
-        helper.WriteToFile('1', kExitCodeFilename)  # 1 = Generic error exit code
+        file_helper.WriteToFile('1', kExitCodeFilename)  # 1 = Generic error exit code
         raise e
-    helper.WriteToFile('0', kExitCodeFilename)  # 0 = Success exit code
+    file_helper.WriteToFile('0', kExitCodeFilename)  # 0 = Success exit code
 
 if (__name__ == '__main__'):
     main()

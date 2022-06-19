@@ -14,8 +14,7 @@ import os.path
 import sys
 import unicodedata
 
-import file_manip
-import helper
+import file_helper
 import profile
 
 kDlfAhkPath = 'dynamic_loot_filter.ahk'
@@ -86,7 +85,7 @@ def IsHotkeyStringValid(hotkey_string: str) -> bool:
 # End IsHotkeyStringValid
 
 def SetHotkey(tag: str, hotkey_string: str):
-    dlf_ahk_script_lines = helper.ReadFile(kDlfAhkPath, retain_newlines=False)
+    dlf_ahk_script_lines = file_helper.ReadFile(kDlfAhkPath, retain_newlines=False)
     found_flag = False
     for i in range(len(dlf_ahk_script_lines)):
         if (tag in dlf_ahk_script_lines[i]):
@@ -96,7 +95,7 @@ def SetHotkey(tag: str, hotkey_string: str):
             dlf_ahk_script_lines[i] = '::'.join(split_result)
     if (not found_flag):
         raise RuntimeError('tag {} not found in {}'.format(tag, kDlfAhkPath))
-    helper.WriteToFile(dlf_ahk_script_lines, kDlfAhkPath)
+    file_helper.WriteToFile(dlf_ahk_script_lines, kDlfAhkPath)
 # End SetHotkey
 
 def main():
@@ -126,7 +125,7 @@ def main():
             break
         print('Invalid hotkey entered: "{}"'.format(hotkey_string))
     SetHotkey(kAhkToggleGuiHotkeyTag, hotkey_string)
-    print('\nGUI toggle hotkey has been set to "{}"'.format(hotkey_string))
+    print('\nToggle GUI hotkey set to: "{}"'.format(hotkey_string))
     
     # 2b. Query reload filter hotkey
     print('\nStep 2: Set reload filter hotkey')
@@ -139,7 +138,7 @@ def main():
             break
         print('Invalid hotkey entered: "{}"'.format(hotkey_string))
     SetHotkey(kAhkReloadFilterHotkeyTag, hotkey_string)
-    print('\nGUI toggle hotkey has been set to "{}"'.format(hotkey_string))
+    print('\nReload Filter hotkey set to: "{}"'.format(hotkey_string))
     print('To change your hotkeys later, either edit them directly at the bottom of {}'.format(kDlfAhkPath))
     print('or re-run this script, and use Ctrl-C to exit after this step.')
     
@@ -147,9 +146,12 @@ def main():
     print('\nStep 3: Create your profile')
     while (True):
         new_profile_name = input('Enter new profile name: ')
-        if (new_profile_name in profile.GetAllProfileNames()):
-            print('Error: profile "{}" already exists!\n'.format(new_profile_name))
+        if (new_profile_name == ''):
+            print('Profile name cannot be empty')
+        elif (new_profile_name in profile.GetAllProfileNames()):
+            print('Profile "{}" already exists!\n'.format(new_profile_name))
         else:
+            print('Profile name validated! [{}]\n'.format(new_profile_name))
             break
     
     # 4. Query required config values
@@ -160,7 +162,7 @@ def main():
     while (True):
         config_values['DownloadDirectory'] = input('Download directory fullpath: ').strip('"')
         if (os.path.isdir(config_values['DownloadDirectory'])):
-            print('Download directory verified!')
+            print('Download directory found! [{}]'.format(config_values['DownloadDirectory']))
             break
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
@@ -171,7 +173,7 @@ def main():
                 'Downloaded filter filename (e.g. "NeversinkRegular.filter"): ').strip('"')
         downloaded_filter_fullpath = os.path.join(config_values['DownloadDirectory'], config_values['DownloadedLootFilterFilename'])
         if (os.path.isfile(downloaded_filter_fullpath)):
-            print('Downloaded filter found!')
+            print('Downloaded filter found! [{}]'.format(downloaded_filter_fullpath))
             break
         else:
             print('\nDownloaded filter "{}" not found, please ensure it is present and the name is correct'.format(
@@ -183,7 +185,7 @@ def main():
     while (True):
         config_values['PathOfExileDirectory'] = input('Path of Exile filters directory fullpath: ').strip('"')
         if (os.path.isdir(config_values['PathOfExileDirectory'])):
-            print('Path of Exile filters directory verified!')
+            print('Path of Exile filters directory found! [{}]'.format(config_values['PathOfExileDirectory']))
             break
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
@@ -198,7 +200,7 @@ def main():
     
     # Temporary fix - Import filter here
     # Just in case, we'll also delete the Path of Exile filter, if it exists
-    file_manip.RemoveFileIfExists(created_profile.config_values['OutputLootFilterFullpath'])
+    file_helper.RemoveFileIfExists(created_profile.config_values['OutputLootFilterFullpath'])
     os.system('python backend_cli.py import_downloaded_filter {}'.format(new_profile_name))
 
     # Setup complete
