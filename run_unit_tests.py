@@ -1,16 +1,29 @@
+'''
+Usage: python run_unit_tests <(optional) skip_slow_tests: int = 1>
+'''
+
 import os
+import sys
 
 import file_helper
+
+kSlowTestFilenames = ['backend_cli_test.py']
 
 kHorizontalSeparator = '================================================================================'
 
 def main():
+    print(sys.argv)
+    skip_slow_tests = True
+    if ((len(sys.argv) >= 2) and not bool(int(sys.argv[1]))):
+        skip_slow_tests = False
     filenames = file_helper.ListFilesInDirectory('.')
     unit_test_filenames = [f for f in filenames if f.endswith('_test.py')]
     failed_unit_tests = []
     print(kHorizontalSeparator)
-    # Run all unit tests
+    # Run tests
     for unit_test_filename in unit_test_filenames:
+        if (skip_slow_tests and unit_test_filename in kSlowTestFilenames):
+            continue
         command = 'python {}'.format(unit_test_filename)
         print('Running: {} ...\n'.format(unit_test_filename))
         return_code = os.system(command)

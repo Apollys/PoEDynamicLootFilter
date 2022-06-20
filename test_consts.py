@@ -1,6 +1,6 @@
 import os.path
 
-kTestResourcesDirectory = 'TestResources'
+kTestResourcesDirectory = os.path.join('Resources', 'Test')
 
 kTestBaseFilter = os.path.join(
         kTestResourcesDirectory, 'TestNeversinkStrict.filter')

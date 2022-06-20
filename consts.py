@@ -1,5 +1,8 @@
 import itertools
+import os.path
 import re
+
+import file_helper
 
 def InvertedDict(input_dict):
     return {value : key for key, value in input_dict.items()}
@@ -291,12 +294,8 @@ def GenerateChaosRecipeWeaponRule(item_slot: str, weapon_classes: str) -> str:
 # End GenerateChaosRecipeWeaponRule
 
 # List of all Flask BaseTypes
-kAllFlaskTypes = [
-        'Divine Life Flask', 'Eternal Life Flask', 'Divine Mana Flask', 'Eternal Mana Flask',
-        'Hallowed Hybrid Flask', 'Quicksilver Flask', 'Bismuth Flask', 'Amethyst Flask',
-        'Ruby Flask', 'Sapphire Flask', 'Topaz Flask', 'Aquamarine Flask',
-        'Diamond Flask', 'Granite Flask', 'Jade Flask', 'Quartz Flask', 'Sulphur Flask',
-        'Basalt Flask', 'Silver Flask', 'Stibnite Flask']
+kFlaskBaseTypesTxtFilepath = os.path.join('Resources', 'flask_base_types.txt')
+kAllFlaskTypes = file_helper.ReadFile(kFlaskBaseTypesTxtFilepath, strip=True)
 
 # Quality Gems and Flasks tags
 
