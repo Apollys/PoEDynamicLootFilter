@@ -93,6 +93,11 @@ kFunctionInfoMap = {
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
+    # Check Filters Exist
+    'check_filters_exist' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
     # Import and Reload
     # These are *not* considered as mutator functions,
     # because they do not contribute to Profile.changes.
@@ -442,8 +447,25 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     if (kFunctionInfoMap[function_name]['ModifiesFilter'] and not suppress_output):
         # We use the syntax some_list[:] to create a copy of some_list
         UpdateProfileChangesFile(config_values['ChangesFullpath'], function_name, function_params[:])
-    # =============================== Import Downloaded Filter ===============================
-    if ((function_name in ('import_downloaded_filter', 'reload_input_filter')) and not in_batch):
+    # ================================== Check Filters Exist ==================================
+    if (function_name == 'check_filters_exist'):
+        '''
+        check_filters_exist
+         - Outputs a sequence of integer flags (1 or 0), one per line, indicating whether
+           each of the following filters exist:
+            - Downloaded filter
+            - Input filter
+            - Output filter
+         - Example: > python3 backend_cli.py check_filters_exist MyProfile
+        '''
+        CheckNumParams(function_params, 0)
+        downloaded_filter_exists = os.path.isfile(config_values['DownloadedLootFilterFullpath'])
+        input_filter_exists = os.path.isfile(config_values['InputLootFilterFullpath'])
+        output_filter_exists = os.path.isfile(config_values['OutputLootFilterFullpath'])
+        output_string += '\n'.join(str(int(flag)) for flag in
+                (downloaded_filter_exists, input_filter_exists, output_filter_exists))
+    # ================================= Import / Reload Filter =================================
+    elif ((function_name in ('import_downloaded_filter', 'reload_input_filter')) and not in_batch):
         '''
         import_downloaded_filter
          - Copies or moves the downloaded filter to the input directory (depending on profile
@@ -978,7 +1000,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
     # ================================= Unmatched Function Name =================================
     else:
-        error_message: str = 'command not supported: {} {}'.format(function_name, function_arguments)
+        error_message: str = 'command not supported: {} {}'.format(
+                function_name, JoinParams(function_params))
         logger.Log('Error: ' + error_message)
         raise RuntimeError(error_message)
     # ============================= End Function Call Delegation ================================

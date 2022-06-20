@@ -142,6 +142,7 @@ for the detailed documentation of all available function calls.
   - `get_all_profile_names`
   - `create_new_profile <new_profile_name>`
   - `set_active_profile`
+  - `check_filters_exist`
   - `import_downloaded_filter`
   - `reload_input_filter`
   - `run_batch`

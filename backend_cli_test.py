@@ -50,7 +50,8 @@ def TearDown():
 #  - run_batch
 #  - get_rule_matching_item
 kTestBatchString = \
-'''set_rule_visibility "jewels->abyss" highrare disable
+'''check_filters_exist
+set_rule_visibility "jewels->abyss" highrare disable
 set_rule_visibility "jewels->abyss" highrare hide
 set_currency_to_tier "Chromatic Orb" 2
 get_tier_of_currency "Chromatic Orb"
