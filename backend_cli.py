@@ -242,6 +242,20 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
+    # Generic BaseTypes
+    'set_basetype_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'get_basetype_visibility' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_all_visible_basetypes' : { 
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
     # Flasks Types
     'set_flask_visibility' : { 
         'HasProfileParam' : True,
@@ -260,7 +274,6 @@ kFunctionInfoMap = {
     'get_all_flask_visibilities' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
-        'NumParamsForMatch' : 0,
     },
     # RGB Items
     'set_rgb_item_max_size' : { 
@@ -872,6 +885,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: None
          - Example: > python3 backend_cli.py set_hide_maps_below_tier 14 MyProfile
         '''
+        CheckNumParams(function_params, 1)
         min_visibile_tier: int = int(function_params[0])
         loot_filter.SetHideMapsBelowTierTier(min_visibile_tier)
     elif (function_name == 'get_hide_maps_below_tier'):
@@ -880,7 +894,56 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output:  single integer, the tier below which all maps are hidden
          - Example: > python3 backend_cli.py get_hide_maps_below_tier MyProfile
         '''
+        CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
+    # ==================================== Generic BaseTypes ====================================
+    elif (function_name == 'set_basetype_visibility'):
+        '''
+        set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>
+         - This function never hides BaseTypes, it only modifies its own "Show" rule.
+         - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
+         - rare_only_flag is 1 for rare items, 0 for any non-unique items
+         - rare_only_flag should *only* be specified when visibility_flag is 1;
+           when visibility_flag is 0, the base_type is removed from both rules.
+         - Output: None
+         - Example: > python3 backend_cli.py set_basetype_visibility "Hubris Circlet" 1 0 MyProfile
+        '''
+        if (len(function_params) == 2):
+            function_params.append('0')
+        CheckNumParams(function_params, 3)
+        base_type: str = function_params[0]
+        enable_flag: bool = bool(int(function_params[1]))
+        rare_only_flag: bool = bool(int(function_params[2]))
+        loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag, rare_only_flag)
+    elif (function_name == 'get_basetype_visibility'):
+        '''
+        get_flask_visibility <base_type: str>
+         - rare_only_flag is 1 for rare items, 0 for any non-unique items
+         - Output: "<any non-unique visibility> <rare visibility>": e.g. "0 1"
+            - 1 indicates visible, 0 indicates not present in DLF rule
+         - Example: > python3 backend_cli.py get_basetype_visibility "Hubris Circlet" MyProfile
+        '''
+        CheckNumParams(function_params, 1)
+        base_type: str = function_params[0]
+        any_visibility_flag = loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=False)
+        rare_visibility_flag = loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=True)
+        output_string = '{} {}'.format(int(any_visibility_flag), int(rare_visibility_flag))
+    elif (function_name == 'get_all_visible_basetypes'):
+        '''
+        get_all_visible_basetypes
+         - Output: newline-separated sequence of <base_type>;<rare_only_flag: int>
+         - rare_only_flag is 1 for rare items, 0 for any non-unique items
+         - Example: > python3 backend_cli.py get_all_visible_basetypes MyProfile
+        '''
+        visible_base_types_any = loot_filter.GetAllVisibleBaseTypes(rare_flag=False)
+        visible_base_types_rare = loot_filter.GetAllVisibleBaseTypes(rare_flag=True)
+        # Compute rare BaseTypes that are not also in any
+        visible_base_types_rare_only = list(set(visible_base_types_rare) - set(visible_base_types_any))
+        for base_type in visible_base_types_any:
+            output_string += '{};0\n'.format(base_type)
+        for base_type in visible_base_types_rare_only:
+            output_string += '{};1\n'.format(base_type)
+        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
     # ========================================= Flasks =========================================
     elif (function_name == 'set_flask_visibility'):
         '''
@@ -888,10 +951,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Note: this does not overwrite any original filter rules, only adds a rule on top.
            This function never hides flasks, it only modifies its own "Show" rule.
          - <base_type> is any valid flask BaseType
-         - enable_flag is 1 for True (visible), 0 for False (not included in DLF rule)
+         - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Output: None
          - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1 MyProfile
         '''
+        CheckNumParams(function_params, 2)
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
         high_ilvl_flag: bool = False
@@ -903,10 +967,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            This function never hides flasks, it only modifies its own "Show" rule.
          - "High" item level threshold is defined in consts.py, currently 85
          - <base_type> is any valid flask BaseType
-         - enable_flag is 1 for True (visible), 0 for False (not included in DLF rule)
+         - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
          - Output: None
          - Example: > python3 backend_cli.py set_high_ilvl_flask_rule_enabled_for "Quartz Flask" 1 MyProfile
         '''
+        CheckNumParams(function_params, 2)
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
         high_ilvl_flag: bool = True
@@ -919,6 +984,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            - First value indicates generic visibility, second indicates high ilvl visibility
          - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask" MyProfile
         '''
+        CheckNumParams(function_params, 1)
         flask_base_type: str = function_params[0]
         high_ilvl_flag: bool = False
         generic_rule_visibility_flag = \

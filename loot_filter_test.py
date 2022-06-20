@@ -68,7 +68,39 @@ def TestMaps():
     AssertEqual(rule.parsed_lines_hll['MapTier'], ('<', [str(tier)]))
     print('TestMaps passed!')
 
-def TestFlasks():
+def TestGeneralBaseTypes():
+    SetUp()
+    loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
+    # Enable for any non-unique
+    base_type = 'Sorcerer\'s Gloves'
+    loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag=True, rare_only_flag=False)
+    AssertTrue(loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=False))
+    AssertTrue(loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=True))
+    # Enable for rare only
+    loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag=True, rare_only_flag=True)
+    AssertFalse(loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=False))
+    AssertTrue(loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=True))
+    # Add another BaseType for any non-unique
+    other_base_type = 'Driftwood Wand'
+    loot_filter.SetBaseTypeRuleEnabledFor(other_base_type, enable_flag=True, rare_only_flag=False)
+    # Verify GetAllVisibleBaseTypes is correct
+    base_types_any = loot_filter.GetAllVisibleBaseTypes(rare_flag=False)
+    base_types_rare = loot_filter.GetAllVisibleBaseTypes(rare_flag=True)
+    AssertEqual(base_types_any, [other_base_type])
+    AssertEqual(sorted(base_types_rare), sorted([base_type, other_base_type]))
+    # Disable and verify
+    loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag=False)
+    AssertFalse(loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=True))
+    AssertFalse(loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=False))
+    AssertTrue(loot_filter.IsBaseTypeRuleEnabledFor(other_base_type, rare_flag=True))
+    # Check rule directly
+    type_tag = consts.kBaseTypeTypeTag
+    tier_tag_rare = consts.kBaseTypeTierTagRare
+    rule = loot_filter.GetRule(type_tag, tier_tag_rare)
+    AssertTrue(other_base_type in rule.GetBaseTypeList())
+    print('TestGeneralBaseTypes passed!')
+
+def TestFlaskBaseTypes():
     SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     # First, non high ilvl flask
@@ -94,7 +126,7 @@ def TestFlasks():
     tier_tag = 'dlf_flasks_high_ilvl'
     rule = loot_filter.GetRule(type_tag, tier_tag)
     AssertTrue(flask_base_type in rule.GetBaseTypeList())
-    print('TestFlasks passed!')
+    print('TestFlaskBaseTypes passed!')
 
 def TestAddDlfHeader():
     SetUp()
@@ -390,7 +422,8 @@ def TestChaosRecipeItems():
 def main():
     TestParseWriteFilter()
     TestMaps()
-    TestFlasks()
+    TestGeneralBaseTypes()
+    TestFlaskBaseTypes()
     TestAddDlfHeader()
     TestStandardizeCurrencyTiers()
     TestApplyDlfCurrencyStackSizes()

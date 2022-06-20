@@ -80,6 +80,10 @@ set_flask_min_quality 11
 get_flask_min_quality
 set_hide_maps_below_tier 13
 get_hide_maps_below_tier
+set_basetype_visibility "Hubris Circlet" 1 0
+set_basetype_visibility "Hubris Circlet" 1 1
+get_basetype_visibility "Hubris Circlet"
+get_all_visible_basetypes
 set_flask_visibility "Quicksilver Flask" 1
 set_flask_visibility "Quicksilver Flask" 0
 set_high_ilvl_flask_visibility "Quicksilver Flask" 1

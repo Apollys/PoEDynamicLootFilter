@@ -1,3 +1,6 @@
+# Ignore local cache
+cache/*
+
 # Ignore log files
 *.log
 

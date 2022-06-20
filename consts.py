@@ -145,11 +145,28 @@ kUniqueMapTags = {
 }
 kNumUniqueMapTiers = len(kUniqueMapTierTags)
 
+# ================================== BaseTypes ==================================
+
+kBaseTypeTypeTag = 'dlf_base_types'
+kBaseTypeTierTagRare = 'rare'
+kBaseTypeTierTagAny = 'any_non_unique'
+
+kBaseTypeRuleTemplateRare = \
+'''# Show # $type->{} $tier->{}
+# Rarity == Rare
+# SetFontSize 44
+# PlayEffect Yellow Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagRare)
+
+kBaseTypeRuleTemplateAny = \
+'''# Show # $type->{} $tier->{}
+# Rarity ! Unique
+# SetFontSize 44
+# PlayEffect White Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagAny)
+
 # ================================== Flasks ==================================
 
 kFlaskRuleTemplate = \
 '''# Show # $type->dlf_flasks $tier->dlf_flasks
-# BaseType
 # Rarity <= Magic
 # SetFontSize 44
 # SetBorderColor 50 200 125 255
@@ -159,7 +176,6 @@ kFlaskRuleTemplate = \
 
 kHighIlvlFlaskRuleTemplate = \
 '''# Show # $type->dlf_flasks $tier->dlf_flasks_high_ilvl
-# BaseType
 # ItemLevel >= 84
 # Rarity <= Magic
 # SetFontSize 44

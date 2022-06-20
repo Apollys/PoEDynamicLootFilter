@@ -7,7 +7,8 @@ Menu, Tray, Icon, DLF_icon.ico
 
 ; ----------- PYTHON VERSION AND PATH CHECKING ----------------
 PythonChecks:
-FileRead, python_command, python_command.txt
+python_command_txt := "cache/python_command.txt"
+FileRead, python_command, %python_command_txt%
 If (python_command == ""){
     RunWait, %ComSpec% /c "python --version >python_version_output.txt" ,  , Hide
     FileRead, python_version_output, python_version_output.txt
@@ -36,13 +37,13 @@ If (python_command == ""){
         }
     }
     FileDelete, python_version_output.txt
-    FileAppend, %python_command%, python_command.txt
+    FileAppend, %python_command%, %python_command_txt%
 }
 else{
     RunWait, %ComSpec% /c "%python_command% --version >python_version_output.txt" ,  , Hide
     FileRead, python_version_output, python_version_output.txt
     if(SubStr(python_version_output, 1, 7) != "Python " or SubStr(python_version_output, 8, 1) < 3){
-        FileDelete, python_command.txt
+        FileDelete, %python_command_txt%
         FileDelete, python_version_output.txt
         goto, PythonChecks
     }
@@ -145,7 +146,7 @@ Loop, 9
 FileAppend, get_hide_div_cards_above_tier`nget_hide_unique_maps_above_tier`n, %ahk_out_path%
 for key in flasks
 {
-    FileAppend, get_flask_visibility "%key%"`r`n, %ahk_out_path% 
+    FileAppend, get_flask_visibility "%key%"`r`n, %ahk_out_path%
     fake_queue.Push(key)
 }
 
@@ -204,7 +205,7 @@ Loop, parse, py_out_text, `n, `r
     Case 10:
         oil_text := StrSplit(A_LoopField, " ")
         min_oil := -1
-        for idx, val in oils 
+        for idx, val in oils
         {
             if (val = oil_text[1])
                 min_oil := idx
@@ -402,15 +403,15 @@ Gui Add, ListBox, x32 y613 w135 h164 +Sort vCurrTexts7, % currtexts[7]
 ; T8 block
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x192 y584 w115 h28 +0x200, T8 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT8 x284 y584 w44 Choose"cstack_values[8], %cstacktext%  
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT8 x284 y584 w44 Choose"cstack_values[8], %cstacktext%
 Gui Font, c0x00e8b2 s10
 Gui Add, ListBox, x192 y613 w135 h164 +Sort vCurrTexts8, % currtexts[8]
 ; T9 block
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x352 y584 w115 h28 +0x200, T9 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT9 x444 y584 w44 Choose"cstack_values[9], %cstacktext%  
+Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT9 x444 y584 w44 Choose"cstack_values[9], %cstacktext%
 Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y613 w135 h164 +Sort vCurrTexts9, % currtexts[9]  
+Gui Add, ListBox, x352 y613 w135 h164 +Sort vCurrTexts9, % currtexts[9]
 ; Portal scrolls
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x56 y792 w115 h28 +0x200, Portal Stack Size:
@@ -470,7 +471,7 @@ Gui Add, Text, x544 y746 w120 h28 +0x200, Flask Min Quality:
 Gui Add, Edit, x664 y746 w50 h28 vflaskminUD,
 Gui Add, UpDown, x706 y746 w20 h28 Range0-21, % flaskmin
 ; RGB items
-Gui Add, Text, x544 y786 w136 h28 +0x200, RGB Max Item Size: 
+Gui Add, Text, x544 y786 w136 h28 +0x200, RGB Max Item Size:
 Gui Add, DropDownList,% "+AltSubmit x680 y786 w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
 ; ------------- End Section: Quality and RGB Items ------------
 
@@ -482,7 +483,7 @@ Gui Add, GroupBox, x840 y56 w288 h74, Regular Maps
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Text, x856 y88 w152 h28 +0x200, Hide Maps Below Tier:
 ; Edit & UpDown
-Gui Add, Edit, x1012 y88 w50 h28 vmaphideUD, 
+Gui Add, Edit, x1012 y88 w50 h28 vmaphideUD,
 Gui Add, UpDown, x1054 y88 w20 h28 Range0-17, % maphide
 ; ------------- End Section: Hide Maps Below Tier -------------
 
@@ -739,9 +740,9 @@ Gui, 2: Add, Checkbox, vRDF checked x8 y309 h26,
 Gui, 2: Add, Text, x28 y308 h26 w400, Remove Downloaded Filter on Import
 
 Gui, 2: Font, s12 norm cblack, Segoe UI
-Gui, 2: Add, Edit, x8 y38 h26 w434 vNewProfileName, 
+Gui, 2: Add, Edit, x8 y38 h26 w434 vNewProfileName,
 Gui, 2: Add, Edit, x8 y98 h26 w434 vNewProfileDDir, C:\Users\...\Downloads
-Gui, 2: Add, Edit, x8 y158 h26 w434 vNewProfileDName, 
+Gui, 2: Add, Edit, x8 y158 h26 w434 vNewProfileDName,
 Gui, 2: Add, Edit, x8 y218 h26 w434 vNewProfilePoEDir, C:\Users\...\Documents\My Games\Path of Exile
 Gui, 2: Add, Edit, x8 y278 h26 w434 vNewProfilePoEName, (Optional)
 
@@ -780,7 +781,7 @@ if (NewProfilePoEName != "(Optional)" and NewProfilePoEName != ""){
 }
 if (!RDF){
     FileAppend, % "RemoveDownloadedFilter:False`n", %ahk_out_path%
-    
+
 }
 Gui, 2: Destroy
 RunWait, %python_command% %py_prog_path% create_new_profile %NewProfileName%,  , Hide
@@ -845,7 +846,7 @@ For rare, value_name in rare_GUI_ids
 {
     if (%value_name% != rare_dict[rare]){
         FileAppend, % "set_chaos_recipe_enabled_for """ rare """ " %value_name% "`n", %ahk_out_path%
-        rare_dict[rare] := %value_name% 
+        rare_dict[rare] := %value_name%
     }
 }
 ; Flasks -- accurate already to flasks vs base_flasks
@@ -884,13 +885,13 @@ if (divmin != divminDDL){
 rgbnow := rgbmap_reversed[rgbsizeDDL]
 if (rgbsize != rgbnow){
     FileAppend, % "set_rgb_item_max_size " rgbnow "`n", %ahk_out_path%
-    rgbsize := rgbnow 
+    rgbsize := rgbnow
 }
 ; OIL -- compare min_oil vs min_oilDDL
 if (min_oil != min_oilDDL){
     FileAppend, % "set_lowest_visible_oil """ oils[min_oilDDL] " Oil""`n", %ahk_out_path%
     min_oil := min_oilDDL
-    
+
 }
 ; gem/flask quality -- compare gemmin vs gemminUD flaskmin vs flaskminUD
 if (gemmin != gemminUD){
@@ -921,7 +922,7 @@ else if (exit_code == "-1")
 GuiControl, , GUIStatusMsg , % "Filter Updated Successfully"
 WinActivate, Path of Exile
 return
-    
+
 Import:
 RunWait, %python_command% %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
 FileRead, exit_code, %py_exit_code_path%

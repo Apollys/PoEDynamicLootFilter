@@ -139,7 +139,56 @@ class LootFilter:
         return int(tier_str)
     # End GetHideMapsBelowTierTier
     
-    # =========================== Flask-Related Functions ==========================
+    # =========================== Generic BaseType Functions ==========================
+    
+    # The rare_only_flag should only be specified when enable_flag is True.
+    # When enable_flag is False, the base_type is removed from both rules.
+    def SetBaseTypeRuleEnabledFor(self, base_type: str, enable_flag: bool, rare_only_flag: bool = False):
+        CheckType(base_type, 'base_type', str)
+        CheckType(enable_flag, 'enable_flag', bool)
+        CheckType(rare_only_flag, 'rare_only_flag', bool)
+        # If enabling, start by disabling from all rules for a clean slate
+        if (enable_flag):
+            self.SetBaseTypeRuleEnabledFor(base_type, enable_flag=False)
+        type_tag = consts.kBaseTypeTypeTag
+        rare_tier_tag = consts.kBaseTypeTierTagRare
+        any_tier_tag = consts.kBaseTypeTierTagAny
+        rules = [self.GetRule(type_tag, rare_tier_tag)]
+        if (not rare_only_flag):
+            rules.append(self.GetRule(type_tag, any_tier_tag))
+        for rule in rules:
+            if (enable_flag):
+                rule.AddBaseType(base_type)
+                rule.Enable()
+            else:
+                rule.RemoveBaseType(base_type)
+    # End SetBaseTypeRuleEnabledFor
+    
+    # If rare_flag is True, checks the rare rule.
+    # If rare_flag is False, checks the any non-unique rule.
+    def IsBaseTypeRuleEnabledFor(self, base_type: str, rare_flag: bool) -> bool:
+        CheckType(base_type, 'base_type', str)
+        CheckType(rare_flag, 'rare_flag', bool)
+        type_tag = consts.kBaseTypeTypeTag
+        tier_tag = consts.kBaseTypeTierTagRare if rare_flag else consts.kBaseTypeTierTagAny
+        rule = self.GetRule(type_tag, tier_tag)
+        if (rule.visibility != RuleVisibility.kShow):
+            return False
+        return base_type in rule.GetBaseTypeList()
+    # End IsBaseTypeRuleEnabledFor
+    
+    # If rare_flag is True, checks the rare rule.
+    # If rare_flag is False, checks the any non-unique rule.
+    def GetAllVisibleBaseTypes(self, rare_flag: bool) -> List[str]:
+        CheckType(rare_flag, 'rare_flag', bool)
+        type_tag = consts.kBaseTypeTypeTag
+        tier_tag = consts.kBaseTypeTierTagRare if rare_flag else consts.kBaseTypeTierTagAny
+        rule = self.GetRule(type_tag, tier_tag)
+        if (rule.visibility != RuleVisibility.kShow):
+            return []
+        return rule.GetBaseTypeList()
+    
+    # =========================== Flask BaseType Functions ==========================
     
     def SetFlaskRuleEnabledFor(self, flask_base_type: str, enable_flag: bool, high_ilvl_flag: bool):
         CheckType(flask_base_type, 'flask_base_type', str)
@@ -158,6 +207,7 @@ class LootFilter:
     
     def IsFlaskRuleEnabledFor(self, flask_base_type: str, high_ilvl_flag: bool) -> bool:
         CheckType(flask_base_type, 'flask_base_type', str)
+        CheckType(high_ilvl_flag, 'high_ilvl_flag', bool)
         type_tag = 'dlf_flasks'
         tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
         rule = self.GetRule(type_tag, tier_tag)
@@ -167,6 +217,7 @@ class LootFilter:
     # End IsFlaskRuleEnabledFor
     
     def GetAllVisibleFlaskTypes(self, high_ilvl_flag: bool) -> List[str]:
+        CheckType(high_ilvl_flag, 'high_ilvl_flag', bool)
         type_tag = 'dlf_flasks'
         tier_tag = type_tag + ('_high_ilvl' if high_ilvl_flag else '')
         rule = self.GetRule(type_tag, tier_tag)
@@ -655,8 +706,10 @@ class LootFilter:
                 consts.kDlfAddedRulesSectionGroupName) + '\n\n'
         # Add custom user-defined rules
         current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(current_section_id_int,
-                'Custom rules from ' + self.profile_obj.config_values['RulesFullpath']) + '\n\n'
+        section_title_string = 'Custom rules from "{}"'.format(
+                self.profile_obj.config_values['RulesFullpath'])
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, section_title_string) + '\n\n'
         custom_rules_lines = file_helper.ReadFile(
                 self.profile_obj.config_values['RulesFullpath'], strip=True)
         text += '\n'.join(custom_rules_lines) + '\n\n'
@@ -666,7 +719,13 @@ class LootFilter:
                 current_section_id_int, 'Hide all maps below specified tier') + '\n\n'
         text += consts.kHideMapsBelowTierRuleTemplate.format(
                 self.profile_obj.config_values['HideMapsBelowTier']) + '\n\n'
-        # Add flask rules
+        # Add BaseType rules
+        current_section_id_int += 1
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show specific BaseTypes') + '\n\n'
+        text += consts.kBaseTypeRuleTemplateRare + '\n\n'
+        text += consts.kBaseTypeRuleTemplateAny + '\n\n'
+        # Add flask BaseType rules
         current_section_id_int += 1
         text += consts.kSectionHeaderTemplate.format(
                 current_section_id_int, 'Show specific flask BaseTypes') + '\n\n'

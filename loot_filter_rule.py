@@ -227,7 +227,7 @@ class LootFilterRule:
     def AddBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         if ('BaseType' not in self.parsed_lines_hll):
-            self.parsed_lines_hll.insert_at_index('BaseType', ('', ['']), index=0)
+            self.parsed_lines_hll.insert_at_index('BaseType', ('', []), index=0)
         base_type_list = self.GetBaseTypeList()
         if (base_type_name in base_type_list):
             return
@@ -242,12 +242,12 @@ class LootFilterRule:
     # End AddBaseTypes
     
     # Removes base_type_name from this rule's BaseType line, if it's there.
-    # Does nothing if given base_type_name is not present.
+    # Does nothing if given base_type_name is not present, or rule does not have a BaseType line.
     # If this results in an empty base type list, disables the rule (otherwise PoE generates error).
     def RemoveBaseType(self, base_type_name: str):
         CheckType(base_type_name, 'base_type_name', str)
         if ('BaseType' not in self.parsed_lines_hll):
-            raise RuntimeError('rule does not have a BaseType line:\n{}'.format(self.rule_text_lines))
+            return
         base_type_list = self.GetBaseTypeList()
         quoted_base_type_name = '"' + base_type_name + '"'
         # Check raw (unquoted) BaseType name
