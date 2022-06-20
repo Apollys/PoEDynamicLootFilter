@@ -1,11 +1,24 @@
-﻿#SingleInstance Force
+﻿/*
+GUI construction code is labeled with headers for each section,
+so the code is searchable by looking for "[section-name]", where
+section-name is the title of the GroupBox dispalyed in the GUI.
+
+Example: search "[Chaos Recipe Rares]" to find the code that
+builds the chaos recipe rares section of the GUI.
+*/
+
+#SingleInstance Force
 #NoEnv
 SetWorkingDir %A_ScriptDir%
 SetBatchLines -1
 
 Menu, Tray, Icon, DLF_icon.ico
 
-; ----------- PYTHON VERSION AND PATH CHECKING ----------------
+; ---------------- Global Parameters ----------------
+kWindowWidth := 1144
+kWindowHeight := 894
+
+; ---------------- PYTHON VERSION AND PATH CHECKING ----------------
 PythonChecks:
 python_command_txt := "cache/python_command.txt"
 FileRead, python_command, %python_command_txt%
@@ -50,7 +63,7 @@ else{
     FileDelete, python_version_output.txt
 }
 
-; ------------ DATA STORAGE INITIALIZATION -------------
+; ---------------- DATA STORAGE INITIALIZATION ----------------
 
 ; File Paths for Python program/input/output
 py_prog_path := "backend_cli.py"
@@ -125,7 +138,7 @@ if (active_profile == ""){
     goto, CreateProfile1
 }
 
-; -------------- DATA LOADING -------------------------------
+; ---------------- DATA LOADING ----------------
 ; Read starting filter data from python client
 ; REWRITE --------------------------------
 curr_txt := []
@@ -325,7 +338,7 @@ Gui Font, c0x00e8b2 s11 Bold, Segoe UI
 Gui Add, Button, x1060 y9 w60 h26 gCreateProfile1, Create
 ; ------------- End Section: Profiles -------------
 
-; ------------- Section: Currency -------------
+; ------------- Section: [Currency] -------------
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x16 y48 w483 h783, Currency
@@ -420,9 +433,9 @@ Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTportal Choose%portal_stack% 
 Gui Font, c0x00e8b2 s11, Segoe UI
 Gui Add, Text, x288 y792 w133 h28 +0x200, Wisdom Stack Size:
 Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTwisdom Choose%wisdom_stack% x424 y792 w48, % cstacktext
-; ------------- End Section: Currency -------------
+; ------------- End Section: [Currency] -------------
 
-; ------------- Section: Chaos Rares -------------
+; ------------- Section: [Chaos Recipe Rares] -------------
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x528 y48 w285 h169, Chaos Recipe Rares
@@ -436,46 +449,63 @@ Gui Add, CheckBox, % "x680 y80 w123 h26 v" rare_GUI_ids["Boots"] " "  (rare_dict
 Gui Add, CheckBox, % "x680 y112 w123 h26 v" rare_GUI_ids["Belts"] " "  (rare_dict["Belts"]? " Checked" : ""), Belts
 Gui Add, CheckBox, % "x680 y144 w123 h26 v" rare_GUI_ids["Rings"] " "  (rare_dict["Rings"]? " Checked" : ""), Rings
 Gui Add, CheckBox, % "x680 y176 w123 h26 v" rare_GUI_ids["Amulets"] " "  (rare_dict["Amulets"]? " Checked" : ""), Amulets
-; ------------- End Section: Chaos Rares -------------
+; ------------- End Section: [Chaos Recipe Rares] -------------
 
-; ------------- Section: Flasks ------------
+; ------------- Section: [General BaseTypes] ------------
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y232 w286 h427, Flask BaseTypes
-; Any ItemLevel flasks
+Gui Add, GroupBox, x528 y228 w286 h250, General BaseTypes
+; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x544 y264 w101 h28 +0x200, Any ItemLevel:
-Gui Add, DropDownList, x648 y264 w153 vFlaskAvailDDL1 gAddFlaskAny, Add...||%flask_avail1%
-Gui Add, ListBox, x544 y296 w257 h104 vFlaskListAny +Sort, %flask_low%
-Gui Add, Button, x592 y408 w144 h31 gRemoveFlaskAny, Remove Selected
-; Divider
-Gui Add, Text, x536 y448 w270 h0 +0x10  ; horizontal line between flask sections
-; High ItemLevel flasks
-Gui Add, Text, x544 y464 w108 h28 +0x200, High ItemLevel:
-Gui Add, DropDownList, x650 y464 w151 vFlaskAvailDDL2 gAddFlaskHigh, Add...||%flask_avail2%
-Gui Add, ListBox, x544 y496 w257 h104 vFlaskListHigh +Sort, %flask_high%
-Gui Add, Button, x592 y608 w144 h31 gRemoveFlaskHigh, Remove Selected
-; ------------- End Section: Flasks ------------
+Gui Add, DropDownList, x546 y264 w250 vGeneralBaseTypesDDL +Sort, Select BaseType...||Sorcerer's Gloves|Hubris Circlet
+; High ilvl checkbox and Add button
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, CheckBox, x548 y296 h26 vGeneralBaseTypesRareCheckBox, Rare items only
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+Gui Add, Button, x730 y296 w66 h26, Add
+; Text box and Remove button
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, ListBox, x542 y330 w257 h110 vGeneralBaseTypeListBox +Sort
+Gui Add, Button, x596 y440 w144 h31, Remove Selected
+; ------------- End Section: [General BaseTypes] ------------
 
-; ------------- Section: Quality and RGB Items ------------
+; ------------- Section: [Flask BaseTypes] ------------
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y674 w286 h152, Quality and RGB Items
+Gui Add, GroupBox, x528 y490 w286 h230, Flask BaseTypes
+; DDL
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, DropDownList, x546 y526 w250 vFlaskAvailDDL1 +Sort, Select BaseType...||%flask_avail1%
+; High ilvl checkbox and Add button
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, CheckBox, x548 y558 h26 vFlaskHighIlvlCheckBox, High ilvl (84+) only
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+Gui Add, Button, x730 y558 w66 h26, Add
+; Text box and Remove button
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Add, ListBox, x542 y592 w257 h90 vFlaskListAny +Sort, %flask_low%
+Gui Add, Button, x596 y682 w144 h31 gRemoveFlaskAny, Remove Selected
+; ------------- End Section: [Flask BaseTypes] ------------
+
+; ------------- Section: [Quality and RGB Items] ------------
+; GroupBox
+Gui Font, c0x00e8b2 s10 Bold
+Gui Add, GroupBox, x528 y732 w286 h152, Quality and RGB Items
 ; Quality gems
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x544 y706 w120 h28 +0x200, Gem Min Quality:
-Gui Add, Edit, x664 y706 w50 h28 vgemminUD,
-Gui Add, UpDown, x706 y706 w20 h28 Range0-21, % gemmin
+Gui Add, Text, x544 y764 w120 h28 +0x200, Gem Min Quality:
+Gui Add, Edit, x664 y764 w50 h28 vgemminUD,
+Gui Add, UpDown, x706 y764 w20 h28 Range0-21, % gemmin
 ; Quality flasks
-Gui Add, Text, x544 y746 w120 h28 +0x200, Flask Min Quality:
-Gui Add, Edit, x664 y746 w50 h28 vflaskminUD,
-Gui Add, UpDown, x706 y746 w20 h28 Range0-21, % flaskmin
+Gui Add, Text, x544 y804 w120 h28 +0x200, Flask Min Quality:
+Gui Add, Edit, x664 y804 w50 h28 vflaskminUD,
+Gui Add, UpDown, x706 y804 w20 h28 Range0-21, % flaskmin
 ; RGB items
-Gui Add, Text, x544 y786 w136 h28 +0x200, RGB Max Item Size:
-Gui Add, DropDownList,% "+AltSubmit x680 y786 w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
-; ------------- End Section: Quality and RGB Items ------------
+Gui Add, Text, x544 y844 w136 h28 +0x200, RGB Max Item Size:
+Gui Add, DropDownList,% "+AltSubmit x680 y844 w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
+; ------------- End Section: [Quality and RGB Items] ------------
 
-; ------------- Section: Hide Maps Below Tier -------------
+; ------------- Section: [Regular Maps] -------------
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x840 y56 w288 h74, Regular Maps
@@ -485,9 +515,9 @@ Gui Add, Text, x856 y88 w152 h28 +0x200, Hide Maps Below Tier:
 ; Edit & UpDown
 Gui Add, Edit, x1012 y88 w50 h28 vmaphideUD,
 Gui Add, UpDown, x1054 y88 w20 h28 Range0-17, % maphide
-; ------------- End Section: Hide Maps Below Tier -------------
+; ------------- End Section: [Regular Maps] -------------
 
-; ------------- Section: Misc Tier Visibilities -------------
+; ------------- Section: [Tier Visibility] -------------
 Gui Add, GroupBox, x840 y144 w288 h234, Tier Visibility
 ; Essences
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
@@ -507,31 +537,31 @@ Gui Add, DropDownList, +AltSubmit x1064 y296 w33 vunique_mapminDDL Choose%unique
 ; Oils (variable name: min_oil)
 Gui Add, Text, x856 y336 w113 h28 +0x200, Hide Oils Below:
 Gui Add, DropDownList, +AltSubmit x968 y336 w130 vmin_oilDDL Choose%min_oil%, %oilstr%
-; ------------- End Section: Misc Tier Visibilities -------------
+; ------------- End Section: [Tier Visibility] -------------
 
-; ------------- Section: Find Rule Matching Item -------------
+; ------------- Section: [Rule Matching] -------------
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x840 y394 w288 h240, Rule Matching
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 Gui Add, Button, x856 y430 w254 h28 gClip_ , Find Rule Matching Clipboard
 Gui Add, Edit, x856 y475 w254 h100 vMatchedRule +ReadOnly, N/A
 Gui Add, Button, x906 y590 w154 h28 vChangeMatchedRuleButton gMatchedShowHide +Disabled, Change to "Hide"
-; ------------- End Section: Find Rule Matching Item -------------
+; ------------- End Section: [Rule Matching] -------------
 
-; ------------- Section: Filter Actions Box -------------
+; ------------- Section: [Filter Actions] -------------
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x840 y660 w288 h170, Filter Actions
+Gui Add, GroupBox, x840 y692 w288 h182, Filter Actions
 ; Status message box
 Gui Font
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Edit, x856 y685 w254 h50 vGUIStatusMsg +ReadOnly -VScroll, %status_msg%
+Gui Add, Edit, x856 y725 w254 h50 vGUIStatusMsg +ReadOnly -VScroll, %status_msg%
 ; Action buttons
 Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-Gui Add, Button, x872 y745 w226 h32 gImport, &Re-Import Filter
-Gui Add, Button, x872 y785 w224 h31 gUpdate, &Write Filter && Close UI
-; ------------- End Section: Filter Actions Box -------------
+Gui Add, Button, x872 y785 w226 h32 gImport, Import Downloaded Filter
+Gui Add, Button, x872 y825 w224 h31 gUpdate, [&W]rite Filter
+; ------------- End Section: [Filter Actions] -------------
 
-Gui Show, w1144 h844, PoE Dynamic Loot Filter
+Gui Show, w%kWindowWidth% h%kWindowHeight%, PoE Dynamic Loot Filter
 Return
 
 HandleCurrencyListBoxEvent(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "") {
