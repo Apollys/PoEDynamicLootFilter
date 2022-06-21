@@ -2,42 +2,6 @@
 
 Item Class: Wands
 Rarity: Rare
-You cannot use this item. Its stats will be ignored
---------
-Phoenix Song
-Imbued Wand
---------
-Wand
-Quality: +20% (augmented)
-Physical Damage: 35-64 (augmented)
-Elemental Damage: 60-103 (augmented), 49-85 (augmented), 9-164 (augmented)
-Critical Strike Chance: 9.66% (augmented)
-Attacks per Second: 1.68 (augmented)
---------
-Requirements:
-Level: 72
-Str: 73
-Int: 188 (unmet)
---------
-Sockets: B-B-R 
---------
-Item Level: 85
---------
-37% increased Spell Damage (implicit)
---------
-Adds 60 to 103 Fire Damage
-Adds 49 to 85 Cold Damage
-Adds 9 to 164 Lightning Damage
-38% increased Critical Strike Chance
-+38% to Global Critical Strike Multiplier
-12% increased Attack Speed (crafted)
---------
-Mirrored
-
-================================================================================
-
-Item Class: Wands
-Rarity: Rare
 Phoenix Song
 Imbued Wand
 --------
@@ -114,30 +78,6 @@ Splinter of Uul-Netol
 Stack Size: 34/100
 --------
 Combine 100 Splinters to create Uul-Netol's Breachstone.
-Shift click to unstack.
-
-================================================================================
-
-Item Class: Stackable Currency
-Rarity: Currency
-Simulacrum Splinter
---------
-Stack Size: 1,112/300
---------
-Combine 300 Splinters to create a Simulacrum.
-Shift click to unstack.
---------
-Note: ~skip 
-
-================================================================================
-
-Item Class: Stackable Currency
-Rarity: Currency
-Timeless Vaal Splinter
---------
-Stack Size: 97/100
---------
-Combine 100 Splinters to create a Timeless Vaal Emblem.
 Shift click to unstack.
 
 ================================================================================
@@ -374,18 +314,6 @@ Unidentified
 
 ================================================================================
 
-Item Class: Amulets
-Rarity: Rare
-Lapis Amulet
---------
-Item Level: 80
---------
-+22 to Intelligence (implicit)
---------
-Unidentified
-
-================================================================================
-
 Item Class: Maps
 Rarity: Magic
 Twinned Marshes Map of Impotence
@@ -489,34 +417,6 @@ Casts an aura that grants life regeneration to you and your allies.
 You and nearby Allies Regenerate 10 Life per second
 --------
 Experience: 1/9569
---------
-Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
-
-================================================================================
-
-Item Class: Active Skill Gems
-Rarity: Gem
-Divergent Vitality
---------
-Aura, Spell, AoE
-Level: 16
-Reservation: 189 Mana
-Cooldown Time: 1.20 sec
-Cast Time: Instant
-Quality: +13% (augmented)
-Alternate Quality
---------
-Requirements:
-Level: 60
-Str: 103
---------
-Casts an aura that grants life regeneration to you and your allies.
---------
-+15 to radius
-You and nearby Allies Regenerate 135 Life per second
-You and nearby Allies deal 2% increased Damage while on Full Life
---------
-Experience: 7879780/16039890
 --------
 Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
 

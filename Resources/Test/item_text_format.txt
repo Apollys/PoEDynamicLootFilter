@@ -1,0 +1,121 @@
+{Header Block}
+Item Class: <Item Class>
+Rarity: <Rarity>
+(Optional) Name: <Name>
+<BaseType>
+(*Caveat*: if Rarity is Magic, the BaseType line will look like:
+  <Prefix> BaseType of <Suffix>
+--------
+{Properties Block}
+(Depending on item type, may have)
+ - Quality: +<value>%
+ - Armour/Energy Shield/Evasion Rating: <value>
+ - Damage/Crit/APS
+ - Gem Tags
+ - Level: <value> (gem level only afaik)
+ - Flask Duration
+ - Stack Size: <value>/<max-value>
+ - Map Tier: <value>
+ - Atlas Region: <region>
+ - "Alternate Quality" (exactly this line)
+--------
+{Requirements Block}
+Requiremets:
+(Optional) Level: <value>
+(Optional) Str: <value>
+(Optional) Dex: <value>
+(Optional) Int: <value>
+--------
+{Sockets Block}
+Sockets: <sockets string> (example: R R-B-B)
+--------
+{Item Level Block}
+Item Level: <value> (Optional: "(Max)")
+--------
+{Enchant Block}
+(Example: Used when you Hit a Rare or Unique Enemy, if not already in effect (enchant))
+--------
+{Implicit Affixes Block}
+(Example: Creates Consecrated Ground on Use (implicit))
+--------
+{Explicit Affixes Block}
+--------
+{Experience Block}
+Experience: <current>/<next-level>
+--------
+{Flavour Text Block}
+(Example: A tourniquet for the soul, squeezing ethereal into physical.)
+--------
+{Unidentified Block +}
+Unidentified
+Searing Exarch Item
+Eater of Worlds Item
+(Yes, these are all in the same block, for some reason)
+--------
+{Instructional Text Block}
+(Example: Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.)
+--------
+{Influence Block}
+Shaper Item
+Redeemer Item
+--------
+{Mirrored Block}
+Mirrored
+--------
+{Corrupted Block}
+Corrupted
+--------
+{Synthesized Block}
+Synthesized Item
+--------
+{Fractured Block}
+Fractured Item
+--------
+{Note Block}
+Note: <note> (example: ~price 1 exalted)
+
+================================================================================
+
+Note: there are some other properties that are not relevant to drop filters,
+such as 'Split'', that I haven't included here.
+Also veiled is not included just for simplicity.
+
+================================================================================
+
+Parsing Algorithm:
+
+High Level Idea: overwrite the text lines so they can be parsed simply as:
+{keyword}: {value}, where any line that doesn't fit this format can be safely ignored.
+
+ 1. Identify the header block, defined as the lines from start to the first horizontal break.
+	 - Prepend 'BaseType: ' to the last line
+	 - If there are four lines, prepend 'Name: ' to the second to last line
+ 2. Find the requirements block, defined as block whose first line is 'Requirements:'
+	 - Note: Requirements block is optional
+	 - Rewrite the first line to the empty string
+	 - Prepend 'Required ' to each of the remaining lines
+	 - Example: 'Str: 50' -> 'Required Str: 50'
+ 3. Re-traverse updated item text lines, attemping to parse each line from the template:
+    {keyword}: {value}
+	 - If the line cannot be parsed, move on
+	 - If it can, save the keyword-value pair to a dictionary
+ 4. Handle binary properties (mirrored, corrupted, etc).  These properties only display
+    their keyword when they are present.
+	Build a set of binary keywords:
+	 - {Shaper Item, Redeemer Item, ..., Alternate Quality, Unidentified, Mirrored, Corrupted,
+       Synthesized Item, Fractured Item}
+	 - (There are probably many more)
+	 - Add each of these binary keywords to the item dictionary, with an associated value of False
+	 - Traverse the list of text lines again, checking if each line is in the binary keywords set.
+	   If yes, set the associated value to True.
+ 5. Apply specific modifications to some of the values:
+     - Stack Size: value looks like '<a>/<b>' -> parse and keep only the numerator
+	 - Quality: value looks like '+<x>%' -> parse and keep only the integer value
+	 - Level: verify that the Item Class is gem, and convert the key to "Gem Level" to avoid ambiguity
+	 - Unidentified: negate the value and store with key 'Identified'
+ 6. TODO Parse Magic BaseType:
+     - If rarity is Magic, current BaseType string looks like <Prefix> BaseType of <Suffix>
+	 - If we had a list of all BaseTypes, we could parse this exactly.
+	 - Without a list of BaseTypes, it's impossible to do from non-alt-copied text:
+	    - The Shaper's Coral Ring of the Lynx -> prefix = The Shaper's
+        - Coral Ring of the Lynx -> prefix = None (not Coral)

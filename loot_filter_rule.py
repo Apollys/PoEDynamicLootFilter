@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from enum import Enum
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from hash_linked_list import HashLinkedList
 import logger

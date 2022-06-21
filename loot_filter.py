@@ -671,6 +671,11 @@ class LootFilter:
         if (not os.path.isfile(input_filter_fullpath)):
             raise RuntimeError('Input filter {} does not exist'.format(input_filter_fullpath))
         input_lines = file_helper.ReadFile(input_filter_fullpath, strip=True)
+        # Check that input filter is a FilterBlade filter
+        if (not parse_helper.IsSubstringInLines(
+                consts.kFilterBladeHeaderIdentifier, input_lines[:100])):
+            raise RuntimeError('Filter "{}" does not appear to be a FilterBlade filter.'
+                    ' DLF requires a FilterBlade input filter.'.format(input_filter_fullpath))
         # Break input lines into "blocks". A block is a group of consecutive lines
         # of text without any empty (whitespace-only) lines.
         # Each block will then be parsed into a RuleOrTextLines object.

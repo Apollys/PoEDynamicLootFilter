@@ -16,6 +16,9 @@ kInverseRarityMap = {rarity : index for index, rarity in enumerate(kRarityList)}
 
 # =================================== Misc ===================================
 
+# Used to determine if the input filter is a FilterBlade filter
+kFilterBladeHeaderIdentifier = "NeverSink's Indepth Loot Filter - for Path of Exile"
+
 kDlfHeaderTemplate = \
 '''#==============================================================================================================#
 # PoE Dynamic Loot Filter: This filter has been modified by Dynamic Loot Filter version {}.                 #

@@ -1,0 +1,58 @@
+================================================================================
+If you cannot use an item, but it is "equipped" on your character, the header
+block is split into two and an extra line is added.  This does not happen if the
+item is in your stash or inventory, so it should not be an issue.
+================================================================================
+
+Item Class: Wands
+Rarity: Rare
+You cannot use this item. Its stats will be ignored
+--------
+Phoenix Song
+Imbued Wand
+--------
+Wand
+Quality: +20% (augmented)
+Physical Damage: 35-64 (augmented)
+Elemental Damage: 60-103 (augmented), 49-85 (augmented), 9-164 (augmented)
+Critical Strike Chance: 9.66% (augmented)
+Attacks per Second: 1.68 (augmented)
+--------
+Requirements:
+Level: 72
+Str: 73
+Int: 188 (unmet)
+--------
+Sockets: B-B-R 
+--------
+Item Level: 85
+--------
+37% increased Spell Damage (implicit)
+--------
+Adds 60 to 103 Fire Damage
+Adds 49 to 85 Cold Damage
+Adds 9 to 164 Lightning Damage
+38% increased Critical Strike Chance
++38% to Global Critical Strike Multiplier
+12% increased Attack Speed (crafted)
+--------
+Mirrored
+
+================================================================================
+When the current stack size reached 1000, a comma will be added in the stack
+size number.  This does not happen with gem experience.  Realistically this
+should never be an issue with dropped items.
+================================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Simulacrum Splinter
+--------
+Stack Size: 1,112/300
+--------
+Combine 300 Splinters to create a Simulacrum.
+Shift click to unstack.
+--------
+Note: ~skip
+
+================================================================================

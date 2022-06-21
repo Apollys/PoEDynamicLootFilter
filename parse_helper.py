@@ -1,5 +1,6 @@
 '''
 General parsing functions:
+ - FindElement(element, collection) -> int
  - IsSubstringInLines(s: str, lines: List[str] or str) -> bool
  - FindFirstMatchingPredicate(s: str, predicate) -> int
  - MakeUniqueId(new_id: str, used_ids) -> str
@@ -28,6 +29,16 @@ kShowHideLinePattern = re.compile(r'^\s*#?\s*(Show|Hide)')
 
 # ========================== Generic Helper Methods ==========================
 
+# Returns the index of the element in the collection if present,
+# or None if the element is not present.
+# TODO: Write unit tests for this.
+def FindElement(element, collection) -> int:
+    for i, value in enumerate(collection):
+        if (value == element):
+            return i
+    return None
+# End FindElement
+ 
 # Returns true if s is a substring of any of the strings in lines.
 def IsSubstringInLines(s: str, lines: List[str] or str) -> bool:
     CheckType(s, 's', str)

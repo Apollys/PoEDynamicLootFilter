@@ -1,4 +1,13 @@
-from typing import List, Tuple
+'''
+ - ParseFromTemplate(s: str, template: str) -> Tuple[bool, List[str]]
+ - ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]
+ - IsInt(s: str or int) -> bool
+ - ParseInts(line: str or int) -> List[int]
+ - ParseValueDynamic(s: str) -> Any
+ 
+'''
+
+from typing import List, Tuple, Any
 
 from type_checker import CheckType
 
@@ -93,7 +102,9 @@ def ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]
     return token_list
 # End ParseEnclosedBy
 
-def IsInt(s: str) -> bool:
+def IsInt(s: str or int) -> bool:
+    if (isinstance(s, int)):
+        return s
     CheckType(s, 's', str)
     try:
         int(s)
@@ -102,7 +113,9 @@ def IsInt(s: str) -> bool:
     return True
 # End IsInt
 
-def ParseInts(line: str) -> List[int]:
+def ParseInts(line: str or int) -> List[int]:
+    if (isinstance(line, int)):
+        return [line]
     CheckType(line, 'line', str)
     parsed_ints = []
     current_int_string = ''
@@ -115,3 +128,15 @@ def ParseInts(line: str) -> List[int]:
             current_int_string += c
     return parsed_ints
 # End ParseInts
+
+# Attempts to parse the string as a value of various types, and returns the parsed value:
+#  - If the string's lowercase is 'true' or 'false', returns bool
+#  - If the string can be parsed as an int, returns int
+#  - Otherwise, returns the input string
+def ParseValueDynamic(s: str) -> Any:
+    if (s.lower() in ('true', 'false')):
+        return s.lower() == 'true'
+    elif (IsInt(s)):
+        return int(s)
+    return s
+# End ParseValueDynamic
