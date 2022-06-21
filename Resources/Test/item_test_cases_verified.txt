@@ -34,38 +34,184 @@ Mirrored
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Wands]
-[Rarity], [Rare]
-[Name], [Phoenix Song]
-[BaseType], [Imbued Wand]
-[Quality], [20]
-[Physical Damage], [35-64 (augmented)]
-[Elemental Damage], [60-103 (augmented), 49-85 (augmented), 9-164 (augmented)]
-[Critical Strike Chance], [9.66% (augmented)]
-[Attacks per Second], [1.68 (augmented)]
-[Required Level], [72]
-[Required Str], [73]
-[Required Int], [188]
-[Sockets], [B-B-R]
-[Item Level], [85]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [True]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+AttacksperSecond | 1.68 (augmented)
+BaseType | Imbued Wand
+Class | Wands
+Corrupted | False
+CriticalStrikeChance | 9.66% (augmented)
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+ElementalDamage | 60-103 (augmented), 49-85 (augmented), 9-164 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 85
+LinkedSockets | 3
+Mirrored | True
+Name | Phoenix Song
+NumSockets | 3
+PhysicalDamage | 35-64 (augmented)
+Quality | 20
+Rarity | Rare
+RedeemerItem | False
+RequiredInt | 188
+RequiredLevel | 72
+RequiredStr | 73
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'B', 'B', 'R'}]
+Sockets | {'B', 'B', 'R'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+================================================================================
+
+Item Class: Body Armours
+Rarity: Rare
+Morbid Carapace
+Saint's Hauberk
+--------
+Armour: 672 (augmented)
+Energy Shield: 134 (augmented)
+--------
+Requirements:
+Level: 67
+Str: 109
+Int: 94
+--------
+Sockets: B-B-B-B B-R
+--------
+Item Level: 81
+--------
++5 to Armour
+50% increased Armour and Energy Shield
++13 to maximum Energy Shield
++15 to maximum Mana
++42% to Cold Resistance
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+Armour | 672 (augmented)
+BaseType | Saint's Hauberk
+Class | Body Armours
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 134 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 81
+LinkedSockets | 4
+Mirrored | False
+Name | Morbid Carapace
+NumSockets | 6
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredInt | 94
+RequiredLevel | 67
+RequiredStr | 109
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'B', 'B', 'B', 'B'}, {'B', 'R'}]
+Sockets | {'B', 'B', 'B', 'B', 'B', 'R'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+================================================================================
+
+Item Class: Two Hand Axes
+Rarity: Rare
+Wrath Beak
+Void Axe
+--------
+Two Handed Axe
+Physical Damage: 98-149 (augmented)
+Elemental Damage: 3-6 (augmented)
+Critical Strike Chance: 6.00%
+Attacks per Second: 1.25
+Weapon Range: 13
+--------
+Requirements:
+Level: 68
+Str: 149
+Dex: 76
+--------
+Sockets: G-R-R-R-R-R
+--------
+Item Level: 81
+--------
+Adds 2 to 5 Physical Damage
+Adds 3 to 6 Cold Damage
++10% to Global Critical Strike Multiplier
++182 to Accuracy Rating
+--------
+Note: ~price 8 chaos
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+AttacksperSecond | 1.25
+BaseType | Void Axe
+Class | Two Hand Axes
+Corrupted | False
+CriticalStrikeChance | 6.00%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+ElementalDamage | 3-6 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 81
+LinkedSockets | 6
+Mirrored | False
+Name | Wrath Beak
+Note | ~price 8 chaos
+NumSockets | 6
+PhysicalDamage | 98-149 (augmented)
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredDex | 76
+RequiredLevel | 68
+RequiredStr | 149
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'G', 'R', 'R', 'R', 'R', 'R'}]
+Sockets | {'G', 'R', 'R', 'R', 'R', 'R'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+WeaponRange | 13
 
 ================================================================================
 
@@ -93,30 +239,35 @@ Fractured Item
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Abyss Jewels]
-[Rarity], [Rare]
-[Name], [Whispering Vision]
-[BaseType], [Searching Eye Jewel]
-[Required Level], [30]
-[Item Level], [48]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [True]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [True]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Searching Eye Jewel
+Class | Abyss Jewels
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | True
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 48
+Mirrored | False
+Name | Whispering Vision
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 30
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -133,28 +284,33 @@ Shift click to unstack.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Stackable Currency]
-[Rarity], [Currency]
-[BaseType], [Chaos Orb]
-[Stack Size], [37]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Chaos Orb
+Class | Stackable Currency
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Currency
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+StackSize | 37
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -169,28 +325,33 @@ Shift click to unstack.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Stackable Currency]
-[Rarity], [Currency]
-[BaseType], [Splinter of Uul-Netol]
-[Stack Size], [34]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Splinter of Uul-Netol
+Class | Stackable Currency
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Currency
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+StackSize | 34
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -221,33 +382,41 @@ Regenerate 5.6 Life per second
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Boots]
-[Rarity], [Rare]
-[Name], [Domination March]
-[BaseType], [Scholar Boots]
-[Energy Shield], [76 (augmented)]
-[Required Level], [60]
-[Required Int], [59]
-[Sockets], [R-B-B-B]
-[Item Level], [72]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Scholar Boots
+Class | Boots
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 76 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 72
+LinkedSockets | 4
+Mirrored | False
+Name | Domination March
+NumSockets | 4
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredInt | 59
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R', 'B', 'B', 'B'}]
+Sockets | {'R', 'B', 'B', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -274,36 +443,44 @@ Item Level: 69
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Two Hand Swords]
-[Rarity], [Normal]
-[BaseType], [Wraith Sword]
-[Physical Damage], [52-109]
-[Critical Strike Chance], [5.00%]
-[Attacks per Second], [1.35]
-[Weapon Range], [13]
-[Required Level], [54]
-[Required Str], [93]
-[Required Dex], [93]
-[Sockets], [R-R G]
-[Item Level], [69]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+AttacksperSecond | 1.35
+BaseType | Wraith Sword
+Class | Two Hand Swords
+Corrupted | False
+CriticalStrikeChance | 5.00%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 69
+LinkedSockets | 2
+Mirrored | False
+NumSockets | 3
+PhysicalDamage | 52-109
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+RequiredDex | 93
+RequiredLevel | 54
+RequiredStr | 93
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R', 'R'}, {'G'}]
+Sockets | {'R', 'R', 'G'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+WeaponRange | 13
 
 ================================================================================
 
@@ -320,27 +497,32 @@ Can be used in a personal Map Device to add modifiers to a Map.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Map Fragments]
-[Rarity], [Normal]
-[BaseType], [Rusted Breach Scarab]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Rusted Breach Scarab
+Class | Map Fragments
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -354,27 +536,32 @@ Life isn't what you make of it, it's already been made for you.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Divination Cards]
-[Rarity], [Divination Card]
-[BaseType], [Chaotic Disposition]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Chaotic Disposition
+Class | Divination Cards
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Divination Card
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -405,36 +592,43 @@ Item Level: 72
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Gloves]
-[Rarity], [Rare]
-[Name], [Mind Grip]
-[BaseType], [Conjurer Gloves]
-[Quality], [20]
-[Energy Shield], [178 (augmented)]
-[Required Level], [70]
-[Required Str], [151]
-[Required Dex], [68]
-[Required Int], [155]
-[Sockets], [R R-B-B]
-[Item Level], [72]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Conjurer Gloves
+Class | Gloves
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 178 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 72
+LinkedSockets | 3
+Mirrored | False
+Name | Mind Grip
+NumSockets | 4
+Quality | 20
+Rarity | Rare
+RedeemerItem | False
+RequiredDex | 68
+RequiredInt | 155
+RequiredLevel | 70
+RequiredStr | 151
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R'}, {'R', 'B', 'B'}]
+Sockets | {'R', 'R', 'B', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -460,31 +654,39 @@ and never will the light blind you.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Belts]
-[Rarity], [Unique]
-[Name], [Darkness Enthroned]
-[BaseType], [Stygian Vise]
-[Required Level], [60]
-[Sockets], [A A]
-[Item Level], [79]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Stygian Vise
+Class | Belts
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 79
+LinkedSockets | 1
+Mirrored | False
+Name | Darkness Enthroned
+NumSockets | 2
+Quality | 0
+Rarity | Unique
+RedeemerItem | False
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'A'}, {'A'}]
+Sockets | {'A', 'A'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -519,38 +721,46 @@ Note: ~price 20 exalted
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Body Armours]
-[Rarity], [Unique]
-[Name], [Replica Farrul's Fur]
-[BaseType], [Triumphant Lamellar]
-[Armour], [764 (augmented)]
-[Evasion Rating], [959 (augmented)]
-[Required Level], [69]
-[Required Str], [95]
-[Required Dex], [116]
-[Sockets], [R-R-G-R G]
-[Item Level], [75]
-["Attempt #120], [the prototype has finally achieved power similar to the original]
-[Note], [~price 20 exalted]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Replica Unique], [True]
-[Identified], [True]
+"Attempt#120 | the prototype has finally achieved power similar to the original
+AlternateQuality | False
+Armour | 764 (augmented)
+BaseType | Triumphant Lamellar
+Class | Body Armours
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EvasionRating | 959 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 75
+LinkedSockets | 4
+Mirrored | False
+Name | Replica Farrul's Fur
+Note | ~price 20 exalted
+NumSockets | 5
+Quality | 0
+Rarity | Unique
+RedeemerItem | False
+Replica | True
+RequiredDex | 116
+RequiredLevel | 69
+RequiredStr | 95
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R', 'R', 'G', 'R'}, {'G'}]
+Sockets | {'R', 'R', 'G', 'R', 'G'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -583,36 +793,43 @@ Redeemer Item
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Shields]
-[Rarity], [Rare]
-[Name], [Soul Weaver]
-[BaseType], [Titanium Spirit Shield]
-[Quality], [20]
-[Chance to Block], [25%]
-[Energy Shield], [157 (augmented)]
-[Required Level], [70]
-[Required Dex], [155]
-[Required Int], [159]
-[Sockets], [G-G-B]
-[Item Level], [84]
-[Unidentified], [False]
-[Redeemer Item], [True]
-[Alternate Quality], [False]
-[Shaper Item], [True]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Titanium Spirit Shield
+ChancetoBlock | 25%
+Class | Shields
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 157 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Redeemer', 'Shaper']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 84
+LinkedSockets | 3
+Mirrored | False
+Name | Soul Weaver
+NumSockets | 3
+Quality | 20
+Rarity | Rare
+RedeemerItem | True
+RequiredDex | 155
+RequiredInt | 159
+RequiredLevel | 70
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | True
+SocketGroups | [{'G', 'G', 'B'}]
+Sockets | {'G', 'G', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -642,30 +859,34 @@ Right click to drink. Can only hold charges while in belt. Refills as you kill m
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Utility Flasks]
-[Rarity], [Magic]
-[BaseType], [Chemist's Quartz Flask of Grounding]
-[Quality], [20]
-[Required Level], [27]
-[Item Level], [81]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Chemist's Quartz Flask of Grounding
+Class | Utility Flasks
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 81
+Mirrored | False
+Quality | 20
+Rarity | Magic
+RedeemerItem | False
+RequiredLevel | 27
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -693,35 +914,43 @@ Unidentified
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Daggers]
-[Rarity], [Rare]
-[BaseType], [Gutting Knife]
-[Physical Damage], [19-76]
-[Critical Strike Chance], [6.50%]
-[Attacks per Second], [1.40]
-[Weapon Range], [10]
-[Required Dex], [113]
-[Required Int], [78]
-[Sockets], [G-B-B]
-[Item Level], [82]
-[Unidentified], [True]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [False]
+AlternateQuality | False
+AttacksperSecond | 1.40
+BaseType | Gutting Knife
+Class | Daggers
+Corrupted | False
+CriticalStrikeChance | 6.50%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 82
+LinkedSockets | 3
+Mirrored | False
+NumSockets | 3
+PhysicalDamage | 19-76
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredDex | 113
+RequiredInt | 78
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'G', 'B', 'B'}]
+Sockets | {'G', 'B', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+WeaponRange | 10
 
 ================================================================================
 
@@ -744,33 +973,38 @@ Travel to this Map by using it in a personal Map Device. Maps can only be used o
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Maps]
-[Rarity], [Magic]
-[BaseType], [Twinned Marshes Map of Impotence]
-[Map Tier], [11]
-[Atlas Region], [Glennach Cairns]
-[Item Quantity], [+32% (augmented)]
-[Item Rarity], [+19% (augmented)]
-[Monster Pack Size], [+12% (augmented)]
-[Item Level], [82]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+AtlasRegion | Glennach Cairns
+BaseType | Twinned Marshes Map of Impotence
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 82
+ItemQuantity | +32% (augmented)
+ItemRarity | +19% (augmented)
+MapTier | 11
+Mirrored | False
+MonsterPackSize | +12% (augmented)
+Quality | 0
+Rarity | Magic
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -784,27 +1018,32 @@ Can be used in a personal Map Device.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Map Fragments]
-[Rarity], [Normal]
-[BaseType], [Fragment of Constriction]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Fragment of Constriction
+Class | Map Fragments
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -826,31 +1065,95 @@ Travel to this Map by using it in a personal Map Device. Maps can only be used o
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Maps]
-[Rarity], [Rare]
-[BaseType], [Maze of the Minotaur Map]
-[Map Tier], [16]
-[Item Quantity], [+19% (augmented)]
-[Quality], [19]
-[Item Level], [82]
-[Unidentified], [True]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [False]
+AlternateQuality | False
+BaseType | Maze of the Minotaur Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Shaper']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 82
+ItemQuantity | +19% (augmented)
+MapTier | 16
+Mirrored | False
+Quality | 19
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+================================================================================
+
+Item Class: Maps
+Rarity: Rare
+Terror Shadows
+Thicket Map
+--------
+Map Tier: 16
+Item Quantity: +69% (augmented)
+Item Rarity: +31% (augmented)
+Monster Pack Size: +20% (augmented)
+Quality: +17% (augmented)
+--------
+Item Level: 82
+--------
+Area is influenced by The Elder (implicit)
+Map is occupied by The Eradicator (implicit)
+--------
+23% increased number of Rare Monsters
+Monsters deal 102% extra Physical Damage as Fire
+Monsters steal Power, Frenzy and Endurance charges on Hit
+Players gain 50% reduced Flask Charges
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Thicket Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Elder']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 82
+ItemQuantity | +69% (augmented)
+ItemRarity | +31% (augmented)
+MapTier | 16
+Mirrored | False
+MonsterPackSize | +20% (augmented)
+Name | Terror Shadows
+Quality | 17
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -867,30 +1170,35 @@ Travel to this Map by using it in a personal Map Device. Maps can only be used o
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Maps]
-[Rarity], [Normal]
-[BaseType], [Terrace Map]
-[Map Tier], [16]
-[Atlas Region], [Tirn's End]
-[Item Level], [83]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+AtlasRegion | Tirn's End
+BaseType | Terrace Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 83
+MapTier | 16
+Mirrored | False
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -916,31 +1224,36 @@ Note: ~price 1 exalted
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Support Skill Gems]
-[Rarity], [Gem]
-[BaseType], [Enlighten Support]
-[Level], [1]
-[Required Level], [1]
-[Experience], [54217488]
-[Note], [~price 1 exalted]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [True]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Enlighten Support
+Class | Support Skill Gems
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+Experience | 54217488
+FracturedItem | False
+GemLevel | 1
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Note | ~price 1 exalted
+Quality | 0
+Rarity | Gem
+RedeemerItem | False
+RequiredLevel | 1
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -970,35 +1283,39 @@ Place into an item socket of the right colour to gain this skill. Right click to
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Active Skill Gems]
-[Rarity], [Gem]
-[BaseType], [Vitality]
-[Level], [1]
-[Reservation], [28 Mana]
-[Cooldown Time], [1.20 sec]
-[Cast Time], [Instant]
-[Quality], [10]
-[Required Level], [10]
-[Required Str], [22]
-[Experience], [1]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Vitality
+CastTime | Instant
+Class | Active Skill Gems
+CooldownTime | 1.20 sec
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+Experience | 1
+FracturedItem | False
+GemLevel | 1
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 10
+Rarity | Gem
+RedeemerItem | False
+RequiredLevel | 10
+RequiredStr | 22
+Reservation | 28 Mana
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1035,37 +1352,42 @@ Note: ~price 10 chaos
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Active Skill Gems]
-[Rarity], [Gem]
-[BaseType], [Divergent Fireball]
-[Level], [17]
-[Cost], [22 Mana]
-[Cast Time], [0.75 sec]
-[Critical Strike Chance], [6.00%]
-[Effectiveness of Added Damage], [240%]
-[Quality], [10]
-[Required Level], [60]
-[Required Int], [134]
-[Experience], [1692380]
-[Note], [~price 10 chaos]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [True]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | True
+BaseType | Fireball
+CastTime | 0.75 sec
+Class | Active Skill Gems
+Corrupted | False
+Cost | 22 Mana
+CriticalStrikeChance | 6.00%
+CrusaderItem | False
+EaterofWorldsItem | False
+EffectivenessofAddedDamage | 240%
+ElderItem | False
+Experience | 1692380
+FracturedItem | False
+GemLevel | 17
+GemQualityType | Divergent
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Note | ~price 10 chaos
+Quality | 10
+Rarity | Gem
+RedeemerItem | False
+RequiredInt | 134
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1093,33 +1415,38 @@ Note: ~price 20 blessed
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Support Skill Gems]
-[Rarity], [Gem]
-[BaseType], [Awakened Fire Penetration Support]
-[Level], [1]
-[Cost & Reservation Multiplier], [130%]
-[Required Level], [72]
-[Required Str], [114]
-[Experience], [1]
-[Note], [~price 20 blessed]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Awakened Fire Penetration Support
+Class | Support Skill Gems
+Corrupted | False
+Cost&ReservationMultiplier | 130%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+Experience | 1
+FracturedItem | False
+GemLevel | 1
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Note | ~price 20 blessed
+Quality | 0
+Rarity | Gem
+RedeemerItem | False
+RequiredLevel | 72
+RequiredStr | 114
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1145,31 +1472,36 @@ Corrupted
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Support Skill Gems]
-[Rarity], [Gem]
-[BaseType], [Enhance Support]
-[Level], [4]
-[Cost & Reservation Multiplier], [120%]
-[Required Level], [60]
-[Required Dex], [96]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [True]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Enhance Support
+Class | Support Skill Gems
+Corrupted | True
+Cost&ReservationMultiplier | 120%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+GemLevel | 4
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Gem
+RedeemerItem | False
+RequiredDex | 96
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1204,31 +1536,35 @@ Right click to drink. Can only hold charges while in belt. Refills as you kill m
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Utility Flasks]
-[Rarity], [Unique]
-[Name], [Bottled Faith]
-[BaseType], [Sulphur Flask]
-[Quality], [20]
-[Required Level], [35]
-[Item Level], [85]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Sulphur Flask
+Class | Utility Flasks
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 85
+Mirrored | False
+Name | Bottled Faith
+Quality | 20
+Rarity | Unique
+RedeemerItem | False
+RequiredLevel | 35
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1257,30 +1593,35 @@ Corrupted
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Rings]
-[Rarity], [Rare]
-[Name], [Morbid Coil]
-[BaseType], [Two-Stone Ring]
-[Required Level], [57]
-[Item Level], [80]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [True]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [True]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Two-Stone Ring
+Class | Rings
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 80
+Mirrored | True
+Name | Morbid Coil
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 57
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1300,29 +1641,34 @@ Corrupted
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Maps]
-[Rarity], [Rare]
-[BaseType], [Crimson Township Map]
-[Map Tier], [13]
-[Item Level], [83]
-[Unidentified], [True]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [True]
-[Identified], [False]
+AlternateQuality | False
+BaseType | Crimson Township Map
+Class | Maps
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 83
+MapTier | 13
+Mirrored | False
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1343,29 +1689,34 @@ Note: ~price 5 chaos
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Amulets]
-[Rarity], [Unique]
-[BaseType], [Onyx Amulet]
-[Item Level], [85]
-[Note], [~price 5 chaos]
-[Unidentified], [True]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [True]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [True]
-[Corrupted], [False]
-[Identified], [False]
+AlternateQuality | False
+BaseType | Onyx Amulet
+Class | Amulets
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | True
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | True
+HasInfluence | ['None']
+HasSearingExarchImplicit | True
+HunterItem | False
+Identified | False
+ItemLevel | 85
+Mirrored | False
+Note | ~price 5 chaos
+Quality | 0
+Rarity | Unique
+RedeemerItem | False
+SearingExarchItem | True
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1399,31 +1750,36 @@ Note: ~b/o 1 chaos
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Amulets]
-[Rarity], [Rare]
-[Name], [Rift Rosary]
-[BaseType], [Astrolabe Amulet]
-[Required Level], [69]
-[Item Level], [80]
-[Note], [~b/o 1 chaos]
-[Unidentified], [False]
-[Redeemer Item], [True]
-[Alternate Quality], [False]
-[Shaper Item], [True]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [True]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [True]
-[Synthesised Item], [False]
-[Hunter Item], [True]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [True]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Astrolabe Amulet
+Class | Amulets
+Corrupted | False
+CrusaderItem | True
+EaterofWorldsItem | False
+ElderItem | True
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Crusader', 'Elder', 'Hunter', 'Redeemer', 'Shaper', 'Warlord']
+HasSearingExarchImplicit | False
+HunterItem | True
+Identified | True
+ItemLevel | 80
+Mirrored | False
+Name | Rift Rosary
+Note | ~b/o 1 chaos
+Quality | 0
+Rarity | Rare
+RedeemerItem | True
+RequiredLevel | 69
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | True
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | True
 
 ================================================================================
 
@@ -1446,30 +1802,98 @@ Veiled Suffix
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Rings]
-[Rarity], [Rare]
-[Name], [Damnation Eye]
-[BaseType], [Sapphire Ring]
-[Required Level], [59]
-[Item Level], [84]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [True]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Sapphire Ring
+Class | Rings
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 84
+Mirrored | False
+Name | Damnation Eye
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 59
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | True
+WarlordItem | False
+
+================================================================================
+
+Item Class: Sentinel
+Rarity: Rare
+Ominous Machine
+Cobalt Apex Sentinel
+--------
+Duration: 63 (augmented) seconds
+Empowers: 2 enemies
+Empowerment: 35
+--------
+Requirements:
+Level: 44
+--------
+Item Level: 84
+--------
+Can only empower Rare or Unique enemies (implicit)
+--------
++7 to Charge
+33% increased Duration
++18 seconds to Duration
+Character Gains Power Charges for 15 seconds on deployment
+--------
+Charge: 15/15 (augmented)
+--------
+Unmodifiable
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Cobalt Apex Sentinel
+Charge | 15/15 (augmented)
+Class | Sentinel Drone
+Corrupted | False
+CrusaderItem | False
+Duration | 63 (augmented) seconds
+EaterofWorldsItem | False
+ElderItem | False
+Empowerment | 35
+Empowers | 2 enemies
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 84
+Mirrored | False
+Name | Ominous Machine
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 44
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1496,33 +1920,38 @@ Unmodifiable
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Sentinel]
-[Rarity], [Magic]
-[BaseType], [Reliable Obsidian Apex Sentinel]
-[Duration], [51 (augmented) seconds]
-[Empowers], [3 enemies]
-[Empowerment], [42]
-[Required Level], [66]
-[Item Level], [69]
-[Charge], [7/8]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [False]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | Reliable Obsidian Apex Sentinel
+Charge | 7/8
+Class | Sentinel Drone
+Corrupted | False
+CrusaderItem | False
+Duration | 51 (augmented) seconds
+EaterofWorldsItem | False
+ElderItem | False
+Empowerment | 42
+Empowers | 3 enemies
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 69
+Mirrored | False
+Quality | 0
+Rarity | Magic
+RedeemerItem | False
+RequiredLevel | 66
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================
 
@@ -1544,28 +1973,33 @@ Shaper Item
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[Item Class], [Rings]
-[Rarity], [Magic]
-[BaseType], [The Shaper's Coral Ring of the Lynx]
-[Required Level], [54]
-[Item Level], [83]
-[Unidentified], [False]
-[Redeemer Item], [False]
-[Alternate Quality], [False]
-[Shaper Item], [True]
-[Split], [False]
-[Veiled Suffix], [False]
-[Elder Item], [False]
-[Fractured Item], [False]
-[Eater of Worlds Item], [False]
-[Crusader Item], [False]
-[Synthesised Item], [False]
-[Hunter Item], [False]
-[Veiled Prefix], [False]
-[Mirrored], [False]
-[Warlord Item], [False]
-[Searing Exarch Item], [False]
-[Corrupted], [False]
-[Identified], [True]
+AlternateQuality | False
+BaseType | The Shaper's Coral Ring of the Lynx
+Class | Rings
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Shaper']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 83
+Mirrored | False
+Quality | 0
+Rarity | Magic
+RedeemerItem | False
+RequiredLevel | 54
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | True
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
 
 ================================================================================

@@ -1,5 +1,5 @@
 from test_helper import AssertEqual, AssertFailure
-from type_checker import CheckType
+from type_checker import CheckType, CheckTypesMatch
 
 def TestCorrectTypes():
     # Single string
@@ -20,9 +20,26 @@ def TestIncorrectTypes():
         AssertFailure()
     print('TestIncorrectTypes passed!')
 
+def TestTypesMatch():
+    an_integer = 5
+    another_integer = 4509745487
+    CheckTypesMatch(an_integer, 'an_integer', another_integer, 'another_integer')
+    some_string = 'The quick brown fox'
+    another_string = 'jumps over the lazy dog'
+    CheckTypesMatch(some_string, 'some_string', another_string, 'another_string')
+    # Expect mismatch between int and string
+    try:
+        CheckTypesMatch(an_integer, some_string)
+    except TypeError:  # this should happen
+        pass
+    else:  # this shouldn't happen
+        AssertFailure()
+    print('TestTypesMatch passed!')
+
 def main():
     TestCorrectTypes()
     TestIncorrectTypes()
+    TestTypesMatch()
 
 if (__name__ == '__main__'):
     main()

@@ -13,7 +13,7 @@ def CheckType(variable, variable_name: str, required_type, required_inner_type=N
                 variable_name, type(variable).__name__, required_type_name)
         logger.Log('TypeError: ' + error_message)
         raise TypeError(error_message)
-# End CheckType()
+# End CheckType
 
 # Handle compound types, for example to check if something is a list of strings, use:
 #  - required_outer_type = list
@@ -47,5 +47,13 @@ def CheckType2(variable, variable_name: str, required_outer_type, required_inner
                         variable_name, type(inner_value).__name__, required_type_name)
                 logger.Log('TypeError: ' + error_message)
                 raise TypeError(error_message)
-# End CheckType()
+# End CheckType
 
+# Only performs a shallow check, i.e. a list of strings and list of ints would return True
+def CheckTypesMatch(left, left_name: str, right, right_name: str):
+    if (type(left) != type(right)):
+        error_message: str = 'types do not match; {} is: {} ({}), {} is: {} ({})'.format(
+                left_name, left, type(left).__name__, right_name, right, type(right).__name__)
+        logger.Log('TypeError: ' + error_message)
+        raise TypeError(error_message)
+# End CheckTypesMatch

@@ -4,6 +4,8 @@ import os.path
 from typing import List, Tuple
 
 import file_helper
+from loot_filter import InputFilterSource, LootFilter
+import profile
 import simple_parser
 import test_consts
 from test_helper import AssertEqual, AssertTrue, AssertFalse
@@ -15,11 +17,6 @@ kHorizontalSeparator = \
         '================================================================================'
 kHorizontalSeparatorThin = \
         '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-
-def PrettyPrintDict(d):
-    for k, v in d.items():
-        print('{}: {}'.format(k, v))
-    print()
 
 # Parses test cases as list of pairs: item_text_string, item_properties_map
 #  - item_text_string is a single string containing the item raw text
@@ -48,15 +45,19 @@ def ParseTestCases(input_filepath: str) -> List[Tuple[str, dict]]:
         elif (not in_properties_flag):
             current_item_text_lines.append(line)
         else:  # if (in_properties_flag)
-            _, [keyword, value_string] = simple_parser.ParseFromTemplate(line, '[{}], [{}]')
-            current_item_properties_map[keyword] = simple_parser.ParseValueDynamic(value_string)
+            _, [keyword, value_string] = simple_parser.ParseFromTemplate(line, '{} | {}')
+            current_item_properties_map[keyword] = value_string
     return test_cases
 
 def TestParseItemText():
     test_cases = ParseTestCases(kTestCasesFullpath)
     for item_text, expected_item_properties_map in test_cases:
         item = Item(item_text)
-        AssertEqual(item.properties_map, expected_item_properties_map)
+        # Compare item.properties_map and expected_item_properties_map:
+        # Keys should be equal, values should be string-equal
+        AssertEqual(set(item.properties_map.keys()), set(expected_item_properties_map.keys()))
+        for keyword in item.properties_map:
+            AssertEqual(str(item.properties_map[keyword]), expected_item_properties_map[keyword])
     print('TestParseItemText passed!')
 
 def main():

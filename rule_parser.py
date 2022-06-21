@@ -178,8 +178,9 @@ def ParseItem(item_lines: List[str]) -> dict:
                         and ('GemLevel' not in item_properties)):
                     item_properties['GemLevel'] = value_string
                 # Handle Sockets separately:
-                #  - Parse sockets as item_properties['Sockets'] = {'R', 'B', 'G', 'A'}
-                #  - Parse links as item_properties['SocketGroups'] = [{'R', 'G', 'B'}, {A}]
+                #  - Example: 'R-B-B A'
+                #  - Parse sockets as item_properties['Sockets'] = {'R', 'B', 'B', 'A'}
+                #  - Parse links as item_properties['SocketGroups'] = [{'R', 'B', 'B'}, {A}]
                 #  - Each set above is a Multiset object (defined in multiset.py)
                 elif (property_name == 'Sockets'):
                     socket_groups = [multiset.Multiset(group.split('-'))

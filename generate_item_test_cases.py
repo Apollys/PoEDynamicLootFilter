@@ -36,8 +36,9 @@ def main():
             output_file.write('\n\n' + item_text)
             output_file.write('\n\n' + kHorizontalSeparatorThin + '\n\n')
             item = Item(item_text)
-            for k, v in item.properties_map.items():
-                output_file.write('[{}], [{}]\n'.format(k, v))
+            # Write properties in sorted order for visual inspection and diff checking
+            for k, v in sorted(item.properties_map.items()):
+                output_file.write('{} | {}\n'.format(k, v))
             output_file.write('\n' + kHorizontalSeparator)
 # End main
 

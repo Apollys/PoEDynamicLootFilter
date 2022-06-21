@@ -4,6 +4,7 @@ from typing import List, Tuple
 import consts
 import file_helper
 from hash_linked_list import HllNode, HashLinkedList
+from item import Item, RuleMatchesItem
 import logger
 from loot_filter_rule import RuleVisibility, LootFilterRule
 import os.path
@@ -99,20 +100,19 @@ class LootFilter:
 
     # ============================= Rule-Item Matching =============================
     
-    # TODO: This is probably broken with the refactor.
+    # TODO: write unit tests for this.
     # Returns the first non-Continue rule in the filter matching the given item,
     # None if no rule matches the item, or the last matched Continue rule otherwise.
     # If a rule has an AreaLevel requirement, it will never match any item.
-    def GetRuleMatchingItem(self, item_text_lines: List[str]) -> LootFilterRule:
-        CheckType(item_text_lines, 'item_text_lines', list, str)
-        item_properties: dict = rule_parser.ParseItem(item_text_lines)
+    def GetRuleMatchingItem(self, item: Item) -> LootFilterRule:
+        CheckType(item, 'item', Item)
         matched_continue_rule = None
-        for rule_or_comment_block in self.rule_or_comment_block_list:
-            if (isinstance(rule_or_comment_block, LootFilterRule)):
-                rule = rule_or_comment_block
-                if ((rule.visibility != RuleVisibility.kDisable)
-                        and rule.MatchesItem(item_properties)):
-                    if (rule.has_continue):
+        for tags, rule_or_text_block in self.rule_or_text_block_hll:
+            if (rule_or_text_block.is_rule):
+                rule = rule_or_text_block.rule
+                if (not RuleVisibility.IsDisabled(rule.visibility)
+                        and RuleMatchesItem(rule, item)):
+                    if ('Continue' in rule.parsed_lines_hll):
                         matched_continue_rule = rule
                     else:
                         return rule

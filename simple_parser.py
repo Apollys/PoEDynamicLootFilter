@@ -3,8 +3,7 @@
  - ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]
  - IsInt(s: str or int) -> bool
  - ParseInts(line: str or int) -> List[int]
- - ParseValueDynamic(s: str) -> Any
- 
+ - ParseValueDynamic(s: Any) -> Any
 '''
 
 from typing import List, Tuple, Any
@@ -130,11 +129,14 @@ def ParseInts(line: str or int) -> List[int]:
 # End ParseInts
 
 # Attempts to parse the string as a value of various types, and returns the parsed value:
-#  - If the string's lowercase is 'true' or 'false', returns bool
+#  - If the string's is True/False/true/false, returns bool
 #  - If the string can be parsed as an int, returns int
 #  - Otherwise, returns the input string
-def ParseValueDynamic(s: str) -> Any:
-    if (s.lower() in ('true', 'false')):
+# If the input value is not a string, returns the input value directly.
+def ParseValueDynamic(s: Any) -> Any:
+    if (not isinstance(s, str)):
+        return s
+    if (s in ('True', 'False', 'true', 'false')):
         return s.lower() == 'true'
     elif (IsInt(s)):
         return int(s)

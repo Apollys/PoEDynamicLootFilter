@@ -95,13 +95,32 @@ def TestParseInts():
     text = 'asdf45 re2 7432'
     result = simple_parser.ParseInts(text)
     AssertEqual(result, [45, 2, 7432])
+    print('TestParseInts passed!')
 # End TestParseInts
+
+def TestParseValueDynamic():
+    s = 'hello'
+    AssertEqual(simple_parser.ParseValueDynamic('hello'), 'hello')
+    AssertEqual(simple_parser.ParseValueDynamic('1234'), 1234)
+    AssertEqual(simple_parser.ParseValueDynamic('hello 1234'), 'hello 1234')
+    AssertEqual(simple_parser.ParseValueDynamic('True'), True)
+    AssertEqual(simple_parser.ParseValueDynamic('False'), False)
+    AssertEqual(simple_parser.ParseValueDynamic('True False'), 'True False')
+    # Test non-string inputs are preserved
+    AssertEqual(simple_parser.ParseValueDynamic(1234), 1234)
+    AssertEqual(simple_parser.ParseValueDynamic(12.34), 12.34)
+    AssertEqual(simple_parser.ParseValueDynamic(True), True)
+    AssertEqual(simple_parser.ParseValueDynamic(False), False)
+    AssertEqual(simple_parser.ParseValueDynamic([1, 2.0, 'three']), [1, 2.0, 'three'])
+    print('TestParseValueDynamic passed!')
+# End TestParseValueDynamic
 
 def main():
     TestParseFromTemplate()
     TestParseEnclosedBy()
     TestIsInt()
     TestParseInts()
+    TestParseValueDynamic()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

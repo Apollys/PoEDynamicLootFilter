@@ -34,6 +34,61 @@ Mirrored
 
 ================================================================================
 
+Item Class: Body Armours
+Rarity: Rare
+Morbid Carapace
+Saint's Hauberk
+--------
+Armour: 672 (augmented)
+Energy Shield: 134 (augmented)
+--------
+Requirements:
+Level: 67
+Str: 109
+Int: 94
+--------
+Sockets: B-B-B-B B-R 
+--------
+Item Level: 81
+--------
++5 to Armour
+50% increased Armour and Energy Shield
++13 to maximum Energy Shield
++15 to maximum Mana
++42% to Cold Resistance
+
+================================================================================
+
+Item Class: Two Hand Axes
+Rarity: Rare
+Wrath Beak
+Void Axe
+--------
+Two Handed Axe
+Physical Damage: 98-149 (augmented)
+Elemental Damage: 3-6 (augmented)
+Critical Strike Chance: 6.00%
+Attacks per Second: 1.25
+Weapon Range: 13
+--------
+Requirements:
+Level: 68
+Str: 149
+Dex: 76
+--------
+Sockets: G-R-R-R-R-R 
+--------
+Item Level: 81
+--------
+Adds 2 to 5 Physical Damage
+Adds 3 to 6 Cold Damage
++10% to Global Critical Strike Multiplier
++182 to Accuracy Rating
+--------
+Note: ~price 8 chaos
+
+================================================================================
+
 Item Class: Abyss Jewels
 Rarity: Rare
 Whispering Vision
@@ -362,6 +417,31 @@ Travel to this Map by using it in a personal Map Device. Maps can only be used o
 ================================================================================
 
 Item Class: Maps
+Rarity: Rare
+Terror Shadows
+Thicket Map
+--------
+Map Tier: 16
+Item Quantity: +69% (augmented)
+Item Rarity: +31% (augmented)
+Monster Pack Size: +20% (augmented)
+Quality: +17% (augmented)
+--------
+Item Level: 82
+--------
+Area is influenced by The Elder (implicit)
+Map is occupied by The Eradicator (implicit)
+--------
+23% increased number of Rare Monsters
+Monsters deal 102% extra Physical Damage as Fire
+Monsters steal Power, Frenzy and Endurance charges on Hit
+Players gain 50% reduced Flask Charges
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+================================================================================
+
+Item Class: Maps
 Rarity: Normal
 Terrace Map
 --------
@@ -636,6 +716,33 @@ Adds 6 to 13 Cold Damage to Attacks
 +47 to maximum Energy Shield
 +9% to Fire Resistance
 Veiled Suffix
+
+================================================================================
+
+Item Class: Sentinel
+Rarity: Rare
+Ominous Machine
+Cobalt Apex Sentinel
+--------
+Duration: 63 (augmented) seconds
+Empowers: 2 enemies
+Empowerment: 35
+--------
+Requirements:
+Level: 44
+--------
+Item Level: 84
+--------
+Can only empower Rare or Unique enemies (implicit)
+--------
++7 to Charge
+33% increased Duration
++18 seconds to Duration
+Character Gains Power Charges for 15 seconds on deployment
+--------
+Charge: 15/15 (augmented)
+--------
+Unmodifiable
 
 ================================================================================
 

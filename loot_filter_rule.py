@@ -12,6 +12,31 @@ from type_checker import CheckType
 kTypeIdentifier = '$type->'
 kTierIdentifier = '$tier->'
 
+kRuleConditionKeywords = {
+    'AreaLevel', 'ItemLevel', 'DropLevel', 'Quality', 'Rarity', 'Class', 'BaseType', 'Prophecy',
+    'LinkedSockets', 'SocketGroup', 'Sockets', 'Height', 'Width', 'HasExplicitMod',
+    'AnyEnchantment', 'HasEnchantment', 'EnchantmentPassiveNode' , 'EnchantmentPassiveNum',
+    'StackSize', 'GemLevel', 'GemQualityType', 'AlternateQuality', 'Replica', 'Identified',
+    'Corrupted', 'CorruptedMods', 'Mirrored', 'ElderItem', 'ShaperItem', 'HasInfluence',
+    'FracturedItem', 'SynthesisedItem', 'ElderMap', 'ShapedMap', 'BlightedMap', 'MapTier',
+    'HasSearingExarchImplicit', 'HasEaterOfWorldsImplicit', 'BaseDefencePercentile',
+    'UberBlightedMap', 'Scourged'}
+
+# Ignore any rules with these keywords, either because they require contextual information,
+# or because implementation difficulty is high and use case value is low.
+# TODO: implement 'Sockets', 'BlightedMap'
+kIgnoredRuleConditionKeywords = {
+    'AreaLevel', 'DropLevel', 'CorruptedMods', 'BlightedMap', 'UberBlightedMap',
+    'AnyEnchantment', 'HasEnchantment', 'EnchantmentPassiveNode', 'EnchantmentPassiveNum',
+    'Scourged', 'BaseDefencePercentile', 'HasSearingExarchImplicit', 'HasEaterOfWorldsImplicit'}
+
+kRuleActionKeywords = {
+    'SetBorderColor', 'SetTextColor', 'SetBackgroundColor', 'SetFontSize', 'PlayAlertSound',
+    'PlayAlertSoundPositional', 'DisableDropSound', 'EnableDropSound', 'CustomAlertSound',
+    'MinimapIcon', 'PlayEffect'}
+
+kAllRuleKeywords = kRuleConditionKeywords | kRuleActionKeywords | {'Continue'}  # set union
+
 class RuleVisibility(Enum):
     kShow = 1
     kHide = 2
@@ -92,6 +117,11 @@ class LootFilterRule:
         tags = parse_helper.ParseTypeTierTags(self.rule_text_lines)
         self.type_tag, self.tier_tag = tags if (tags != None) else (None, None)
         self.ParseRuleTextLines()
+        # Check if there are any unrecognized keywords
+        for keyword, _ in self.parsed_lines_hll:
+            if (keyword not in kAllRuleKeywords):
+                print('Warning: rule "$type->{} $tier->{}" encountered unrecognized keyword '
+                        '"{}"'.format(self.type_tag, self.tier_tag, keyword))
     # End __init__
     
     # Call in constructor or when self.rule_text_lines changes.
@@ -101,6 +131,8 @@ class LootFilterRule:
         self.parsed_lines_hll = HashLinkedList()
         # We don't save the Show/Hide line in the hll, because it would add complexity to update
         for line in self.rule_text_lines[1:]:
+            if (line == ''):
+                continue
             keyword, operator, values_list = rule_parser.ParseRuleLineGeneric(line)
             self.parsed_lines_hll.append(keyword, (operator, values_list))
         # Parse rule visibility
@@ -270,6 +302,23 @@ class LootFilterRule:
         while (len(base_type_list) > 0):
             self.RemoveBaseType(base_type_list[-1])
     # End ClearBaseTypeList
+    
+    # Generates a list containing the elements of self.parsed_lines_hll to be used for
+    # Rule-Item matching. Filters out style modifications such as text style, icons, and beams.
+    # Also checks if rule contains any "Ignore" keywords, meaning the rule should be skipped
+    # in item-rule matching.
+    # Returns ignore_rule_flag, rule_conditions_list, where rule_conditions_list contains tuples:
+    #  - (keyword, op_string, value_list).
+    def GetConditions(self) -> List[Tuple[str, str, List]]:
+        ignore_rule_flag = False
+        conditions_list = []
+        for keyword, (operator, values_list) in self.parsed_lines_hll:
+            if (keyword in kRuleConditionKeywords):
+                conditions_list.append((keyword, operator, values_list))
+            if (keyword in kIgnoredRuleConditionKeywords):
+                ignore_rule_flag = True
+        return ignore_rule_flag, conditions_list
+    # End GetConditions
     
     # Returns a bool indicating whether or not the line identified by the given keyword was found
     # Updates both parsed_item_lines and text_lines

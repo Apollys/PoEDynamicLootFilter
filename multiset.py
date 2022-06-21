@@ -7,24 +7,27 @@ class Multiset:
     Stores the given items in a dictionary mapping values to counts.
     
     Member variables:
-     - self.count_dict
-     - self.value_list - list representing the multiset, updated lazily
+     - self.count_dict: dict mapping value to count
+     - self.value_list: list containing the values in the multiset
+        - value_list is used for __repr__ and instantiated in such
+          a way that if items are never removed from the multiset,
+          __repr__ always lists the items in order of insertion.
+     - self.value_list_outdated: bool
     '''
     
     def __init__(self, iterable_container):
         self.count_dict = {}
         self.value_list = []
+        self.value_list_outdated = False
         for value in iterable_container:
-            if (value in self.count_dict):
-                self.count_dict[value] += 1
-            else:
-                self.count_dict[value] = 1
+            self.insert(value)
     
     def insert(self, value):
         if (value in self.count_dict):
             self.count_dict[value] += 1
         else:
             self.count_dict[value] = 1
+        self.value_list.append(value)
     
     # Removes one instance of given value, if it exists in the set
     def remove(self, value):
@@ -32,13 +35,14 @@ class Multiset:
             self.count_dict[value] -= 1
             if (self.count_dict[value] == 0):
                 self.count_dict.pop(value)
-                
+            self.value_list_outdated = True
+
     def count(self, value):
-        return self.count_dict[value] if value in self.count_dict else 0
+        return self.count_dict.get(value, 0)
     
-    # not_eq will automatically be defined if eq is defined in Python3
+    # Note: __not_eq__ will automatically be defined if __eq__ is defined in Python3
     def __eq__(self, other):
-        if isinstance(other, multiset):
+        if isinstance(other, Multiset):
             return self.count_dict == other.count_dict
         return False
         
@@ -63,9 +67,12 @@ class Multiset:
         return s[: -2] + '}'
         
     def _update_value_list(self):
+        if (not self.value_list_outdated):
+            return
         self.value_list = []
         for value, count in self.count_dict.items():
             self.value_list.extend([value for i in range(count)])
+        self.value_list_outdated = False
 
 def Test():
     m = Multiset(['r', 'r', 'g', 'a', 'r'])
