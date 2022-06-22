@@ -1,5 +1,6 @@
-from test_helper import AssertEqual, AssertFailure
 from type_checker import CheckType, CheckTypesMatch
+
+from test_assertions import AssertEqual, AssertFailure
 
 def TestCorrectTypes():
     # Single string

@@ -1,5 +1,6 @@
 import simple_parser
-from test_helper import AssertEqual, AssertTrue, AssertFalse
+
+from test_assertions import AssertEqual, AssertTrue, AssertFalse
 
 def TestParseFromTemplate():
     # Very simple parse: single item

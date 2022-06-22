@@ -1,7 +1,7 @@
 import parse_helper
 
 import consts
-from test_helper import AssertEqual, AssertTrue, AssertFalse
+from test_assertions import AssertEqual, AssertTrue, AssertFalse
 
 kLinesWithTableOfContentsStart = \
 '''# GITHUB:  NeverSinkDev

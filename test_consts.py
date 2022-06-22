@@ -1,15 +1,20 @@
 import os.path
 
-kTestResourcesDirectory = os.path.join('Resources', 'Test')
-
-kTestBaseFilter = os.path.join(
-        kTestResourcesDirectory, 'TestNeversinkStrict.filter')
-
 kTestWorkingDirectory = 'TestWorkingDirectory'
 
+kTestResourcesDirectory = os.path.join('Resources', 'Test')
+
+# =============================== Filter Consts ===============================
+
+kTestBaseFilterFullpath = os.path.join(
+        kTestResourcesDirectory, 'TestNeversinkStrict.filter')
+
+# ============================ Test Profile Consts ============================
+
 # Test profile parameters
-kTestProfileName = 'TestProfile_jNG19OR2BASyGiKbgKvY'
-kOtherTestProfileName = 'TestProfile_sQeHslNTP4pgfvP21P5Q'
+kTestProfileNames = ['TestProfile_jNG19OR2BASyGiKbgKvY',
+        'TestProfile_Xn5nxETrF3KOdUacyf8d', 'TestProfile_EketPW7aflDMiJ220H7M']
+kTestProfileName = kTestProfileNames[0]
 kTestProfileDownloadDirectory = os.path.join(
         kTestWorkingDirectory, 'FiltersDownload')
 kTestProfilePathOfExileDirectory = os.path.join(
@@ -23,3 +28,11 @@ kTestProfileConfigValues = {
     'PathOfExileDirectory' : kTestProfilePathOfExileDirectory,
     'DownloadedLootFilterFilename' : kTestProfileDownloadedFilterFilename}
 
+# ================================ Item Consts ================================
+
+kTestItemDirectory = os.path.join(kTestResourcesDirectory, 'Items')
+kItemTestCasesInputFullpath = os.path.join(kTestItemDirectory, 'item_test_cases_verified.txt')
+kItemTestCasesOutputFullpath = os.path.join(kTestItemDirectory, 'item_test_cases_generated.txt')
+
+kHorizontalSeparator = '=' * 80
+kHorizontalSeparatorThin = '~' * 80

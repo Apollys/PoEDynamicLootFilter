@@ -1,5 +1,5 @@
 from loot_filter_rule import RuleVisibility, LootFilterRule
-from test_helper import AssertEqual, AssertTrue, AssertFalse
+from test_assertions import AssertEqual, AssertTrue, AssertFalse
 
 kCommentBlockText = \
 '''#===============================================================================================================

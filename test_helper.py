@@ -1,41 +1,31 @@
-def DictMismatchMessage(left: dict, right: dict) -> str:
-    left_keys_set = set(left.keys())
-    right_keys_set = set(right.keys())
-    if (left_keys_set - right_keys_set):
-        return ('the following keys are present in the left dict but not the right: '
-                '{}'.format(left_keys_set - right_keys_set))
-    elif (right_keys_set - left_keys_set):
-        return ('the following keys are present in the right dict but not the left: '
-                '{}'.format(right_keys_set - left_keys_set))
-    else:
-        for key in left:
-            if (left[key] != right[key]):
-                return ('Key "{}" has value "{}" in the left dict and value "{}" '
-                        'in the right dict'.format(key, left[key], right[key]))
-    return 'Something weird happened, you shouldn\'t see this'
-# End DictMismatchMessage
+import os
 
-def AssertEqual(left, right):
-    if (left != right):
-        # Display more detailed message for dict types
-        if (isinstance(left, dict) and isinstance(right, dict)):
-            raise RuntimeError('AssertEqual failed:\n  {}'.format(
-                    DictMismatchMessage(left, right)))
-        else:
-            raise RuntimeError('AssertEqual failed:\n  Left parameter is: {}\n'
-                    '  Right parameter is: {}'.format(left, right))
-# End AssertEqual
+import file_helper
+import profile
+import test_consts
 
-def AssertTrue(value):
-    if (value != True):
-        raise RuntimeError('AssertTrue failed:\n  Value is: {}'.format(value))
-# End AssertTrue
+# Creates filter directories and downloaded filter file.
+# Optionally also creates the test profile.
+# Note: calls TearDown() first to ensure clean start.
+def SetUp(create_profile=True):
+    TearDown()
+    # Make dirs if missing
+    os.makedirs(test_consts.kTestWorkingDirectory, exist_ok=True)
+    os.makedirs(test_consts.kTestProfileDownloadDirectory, exist_ok=True)
+    os.makedirs(test_consts.kTestProfilePathOfExileDirectory, exist_ok=True)
+    # Copy test filter to download directory
+    file_helper.CopyFile(test_consts.kTestBaseFilterFullpath, 
+            test_consts.kTestProfileDownloadedFilterFullpath)
+    # Optionallty, create test profile
+    if (create_profile):
+        profile.CreateNewProfile(test_consts.kTestProfileName,
+                test_consts.kTestProfileConfigValues)
+# End SetUp
 
-def AssertFalse(value):
-    if (value != False):
-        raise RuntimeError('AssertFalse failed:\n  Value is: {}'.format(value))
-# End AssertFalse
-
-def AssertFailure():
-    raise RuntimeError('AssertFailure reached: this code should be unreachable')
-# End AssertFalse
+def TearDown():
+    # Delete test profile if it exists
+    if (profile.ProfileExists(test_consts.kTestProfileName)):
+        profile.DeleteProfile(test_consts.kTestProfileName)
+    # Delete test working directory and all its contents
+    file_helper.ClearAndRemoveDirectory(test_consts.kTestWorkingDirectory)
+# End TearDown

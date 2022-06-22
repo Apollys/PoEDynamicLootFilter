@@ -8,34 +8,12 @@ import file_helper
 import os
 import os.path
 import parse_helper
-import profile
 import test_consts
-from test_helper import AssertEqual, AssertTrue, AssertFalse
-
-def SetUp():
-    TearDown()
-    # Make dirs if missing
-    os.makedirs(test_consts.kTestWorkingDirectory, exist_ok=True)
-    os.makedirs(test_consts.kTestProfileDownloadDirectory, exist_ok=True)
-    os.makedirs(test_consts.kTestProfilePathOfExileDirectory, exist_ok=True)
-    # Copy test filter to download directory
-    file_helper.CopyFile(test_consts.kTestBaseFilter, 
-            test_consts.kTestProfileDownloadedFilterFullpath)
-    # Create test profile
-    profile.CreateNewProfile(test_consts.kTestProfileName,
-            test_consts.kTestProfileConfigValues)
-# End SetUp
-
-def TearDown():
-    # Delete test profile if it exists
-    if (profile.ProfileExists(test_consts.kTestProfileName)):
-        profile.DeleteProfile(test_consts.kTestProfileName)
-    # Delete test working directory and all its contents
-    file_helper.ClearAndRemoveDirectory(test_consts.kTestWorkingDirectory)
-# End TearDown
+from test_assertions import AssertEqual, AssertTrue, AssertFalse
+import test_helper
 
 def TestParseWriteFilter():
-    SetUp()
+    test_helper.SetUp()
     # Parse downloaded filter
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     profile_config_values = loot_filter.profile_obj.config_values
@@ -46,7 +24,8 @@ def TestParseWriteFilter():
     AssertFalse(os.path.isfile(downloaded_filter_fullpath))
     AssertTrue(os.path.isfile(input_filter_fullpath))
     # Verify that the input filter has the same contents as the source downloaded filter
-    AssertTrue(filecmp.cmp(test_consts.kTestBaseFilter, input_filter_fullpath, shallow=False))
+    AssertTrue(filecmp.cmp(
+            test_consts.kTestBaseFilterFullpath, input_filter_fullpath, shallow=False))
     # Write output filter
     loot_filter.SaveToFile()
     AssertTrue(os.path.isfile(output_filter_fullpath))
@@ -57,7 +36,7 @@ def TestParseWriteFilter():
     print('TestParseWriteFilter passed!')
 
 def TestMaps():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     # Apply change
     tier = 7
@@ -69,7 +48,7 @@ def TestMaps():
     print('TestMaps passed!')
 
 def TestGeneralBaseTypes():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     # Enable for any non-unique
     base_type = 'Sorcerer\'s Gloves'
@@ -101,7 +80,7 @@ def TestGeneralBaseTypes():
     print('TestGeneralBaseTypes passed!')
 
 def TestFlaskBaseTypes():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     # First, non high ilvl flask
     # Enable
@@ -129,7 +108,7 @@ def TestFlaskBaseTypes():
     print('TestFlaskBaseTypes passed!')
 
 def TestAddDlfHeader():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     loot_filter.SaveToFile()
     output_filter_fullpath = loot_filter.profile_obj.config_values['OutputLootFilterFullpath']
@@ -149,7 +128,7 @@ def TestAddDlfHeader():
 #  - Transmutation Shard: unstacked T9, not present in stacked
 # Note: Stacked currency rules go up to T7; T8 = stackedsupplieshigh, T9 = stackedsupplieslow
 def TestStandardizeCurrencyTiers():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     # Chromatic Orb
     currency_base_type = 'Chromatic Orb'
@@ -176,7 +155,7 @@ def TestStandardizeCurrencyTiers():
 
 # After import, stack size thresholds should match those defined in consts.kCurrencyStackSizesByTier
 def TestApplyDlfCurrencyStackSizes():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for tier, stack_sizes in consts.kCurrencyStackSizesByTier.items():
         for stack_size in stack_sizes:
@@ -190,7 +169,7 @@ kT1CurrencyBaseTypes = '''"Albino Rhoa Feather" "Awakener's Orb" "Crusader's Exa
 kT1CurrencyBaseTypeList = parse_helper.ConvertValuesStringToList(kT1CurrencyBaseTypes)
 
 def TestCurrencyTiers():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     # Test GetAllCurrencyInTier
     get_t1_currency_result = loot_filter.GetAllCurrencyInTier(1)
@@ -213,7 +192,7 @@ def TestCurrencyTiers():
     print('TestCurrencyTiers passed!')
 
 def TestCurrencyStackSizeVisibility():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     tier = 6
     min_visible_stack_size = 4
@@ -233,7 +212,7 @@ def TestCurrencyStackSizeVisibility():
     print('TestCurrencyStackSizeVisibility passed!')
 
 def TestEssences():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for max_visible_tier in [2, 0]:
         loot_filter.SetHideEssencesAboveTierTier(max_visible_tier)
@@ -250,7 +229,7 @@ def TestEssences():
 
 # Same functionality as Essences, only tags and function names are different
 def TestDivCards():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for max_visible_tier in [2, 0]:
         loot_filter.SetHideDivCardsAboveTierTier(max_visible_tier)
@@ -267,7 +246,7 @@ def TestDivCards():
 
 # Same functionality as Essences, only tags and function names are different
 def TestUniqueItems():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for max_visible_tier in [2, 0]:
         loot_filter.SetHideUniqueItemsAboveTierTier(max_visible_tier)
@@ -284,7 +263,7 @@ def TestUniqueItems():
 
 # Same functionality as Essences, only tags and function names are different
 def TestUniqueMaps():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for max_visible_tier in [2, 0]:
         loot_filter.SetHideUniqueMapsAboveTierTier(max_visible_tier)
@@ -300,7 +279,7 @@ def TestUniqueMaps():
     print('TestUniqueMaps passed!')
 
 def TestOils():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for lowest_visible_oil in ['Azure Oil', 'Clear Oil', 'Tainted Oil']:
         loot_filter.SetLowestVisibleOil(lowest_visible_oil)
@@ -324,7 +303,7 @@ def TestOils():
     print('TestOils passed!')
 
 def TestQualityGems():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for gem_min_quality in [1, 10, 15, 20]:
         loot_filter.SetGemMinQuality(gem_min_quality)
@@ -350,7 +329,7 @@ def TestQualityGems():
 
 # Similar to quality gems, but one fewer tiers
 def TestQualityFlasks():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for flask_min_quality in [1, 9, 18, 20]:
         loot_filter.SetFlaskMinQuality(flask_min_quality)
@@ -371,7 +350,7 @@ def TestQualityFlasks():
     print('TestQualityFlasks passed!')
 
 def TestRgbItems():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     for max_size_string in ['medium', 'large', 'small', 'none']:
         loot_filter.SetRgbItemMaxSize(max_size_string)
@@ -396,7 +375,7 @@ def TestRgbItems():
     print('TestRgbItems passed!')
 
 def TestChaosRecipeItems():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     type_tag = consts.kChaosRecipeTypeTag
     enable_flag = True
@@ -438,7 +417,7 @@ def main():
     TestQualityFlasks()
     TestRgbItems()
     TestChaosRecipeItems()
-    TearDown()
+    test_helper.TearDown()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

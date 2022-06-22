@@ -1,15 +1,10 @@
 from item import Item, RuleMatchesItem
-from item_test import kTestCasesFullpath, ParseTestCases
+from item_test import ParseTestCases
 from loot_filter import InputFilterSource, LootFilter
 from loot_filter_rule import LootFilterRule
-from loot_filter_test import SetUp, TearDown
 import test_consts
-from test_helper import AssertEqual, AssertTrue, AssertFalse
-
-kHorizontalSeparator = \
-        '================================================================================'
-kHorizontalSeparatorThin = \
-        '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+from test_assertions import AssertEqual, AssertTrue, AssertFalse
+import test_helper
 
 # item_text, rule_text, expected_result triplets
 kTestCases = [
@@ -522,23 +517,24 @@ def TestRuleMatchesItem():
 #  - Rules about Sockets only match the number, not the color (number of links work)
 #  - All conditions in loot_filter_rule.kIgnoredRuleConditionKeywords are ignored
 def TestGetRuleMatchingItem():
-    SetUp()
+    test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
-    test_cases = ParseTestCases(kTestCasesFullpath)
+    test_cases = ParseTestCases(test_consts.kItemTestCasesInputFullpath)
     for item_text, _ in test_cases:
         item = Item(item_text)
         matched_rule = loot_filter.GetRuleMatchingItem(item)
-        print(kHorizontalSeparator)
+        print(test_consts.kHorizontalSeparator)
         print()
         print(item)
         print('\n')
         print('\n'.join(matched_rule.rule_text_lines) if matched_rule else 'NO MATCHED RULE')
         input()
-    print(TestGetRuleMatchingItem)
+    print('TestGetRuleMatchingItem passed!')
 
 def main():
     TestRuleMatchesItem()
     TestGetRuleMatchingItem()
+    test_helper.TearDown()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

@@ -1,10 +1,9 @@
 import os
-import subprocess
 
-import file_helper
 import profile
 import test_consts
-from test_helper import AssertEqual, AssertTrue, AssertFalse
+from test_assertions import AssertEqual, AssertTrue, AssertFalse
+import test_helper
 from type_checker import CheckType
 
 # Expected input form: "set_min_gem_quality 18" (profile name omitted)
@@ -18,29 +17,6 @@ def CallBackendCli(function_call: str, profile_name: str or None = None):
     return_value = os.system(full_command)
     AssertEqual(return_value, 0)
 # End CallBackendCli
-
-# Copied from setup_test.py
-def SetUp():
-    TearDown()
-    # Make dirs if missing
-    os.makedirs(test_consts.kTestWorkingDirectory, exist_ok=True)
-    os.makedirs(test_consts.kTestProfileDownloadDirectory, exist_ok=True)
-    os.makedirs(test_consts.kTestProfilePathOfExileDirectory, exist_ok=True)
-    # Copy test filter to download directory
-    file_helper.CopyFile(test_consts.kTestBaseFilter, 
-            test_consts.kTestProfileDownloadedFilterFullpath)
-# End SetUp
-
-# Copied from setup_test.py
-def TearDown():
-    # Delete test profiles if they exists
-    if (profile.ProfileExists(test_consts.kTestProfileName)):
-        profile.DeleteProfile(test_consts.kTestProfileName)
-    if (profile.ProfileExists(test_consts.kOtherTestProfileName)):
-        profile.DeleteProfile(test_consts.kOtherTestProfileName)
-    # Delete test working directory and all its contents
-    file_helper.ClearAndRemoveDirectory(test_consts.kTestWorkingDirectory)
-# End TearDown
 
 # Not included:
 #  - is_first_launch
@@ -105,7 +81,7 @@ get_all_chaos_recipe_statuses'''
 # Just a simple test to see if the functions can run without error;
 # doesn't verify output is correct.
 def SimpleTest():
-    SetUp()
+    test_helper.SetUp(create_profile=False)
     profile_name = test_consts.kTestProfileName
     other_profile_name = test_consts.kOtherTestProfileName
     CallBackendCli('is_first_launch')
@@ -127,7 +103,7 @@ def SimpleTest():
 
 def main():
     SimpleTest()
-    TearDown()
+    test_helper.TearDown()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

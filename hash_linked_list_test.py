@@ -1,6 +1,6 @@
 from hash_linked_list import HashLinkedList
 
-from test_helper import AssertEqual, AssertFailure
+from test_assertions import AssertEqual, AssertFailure
 
 def SimpleTest():
     # Build HashLinkedList mapping int keys to their corresponding strings as values
