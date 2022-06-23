@@ -74,6 +74,15 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr $tier->t1weapons
+ItemLevel >= 68
+Rarity Rare
+BaseType "Convoking Wand" "Copper Kris" "Gemini Claw" "Golden Kris" "Imbued Wand" "Imperial Claw" "Opal Sceptre" "Opal Wand" "Platinum Kris" "Primal Arrow Quiver" "Profane Wand" "Short Bow" "Spine Bow" "Thicket Bow" "Void Sceptre"
+SetFontSize 45
+SetBackgroundColor 31 0 75 255
+
 ================================================================================
 
 Item Class: Body Armours
@@ -138,6 +147,19 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %DS3 $type->socketslinks $tier->6sockets
+Sockets >= 6
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 0 112 106 255
+PlayAlertSound 2 300
+PlayEffect Grey
+MinimapIcon 2 Grey Hexagon
 
 ================================================================================
 
@@ -213,6 +235,19 @@ VeiledSuffix | False
 WarlordItem | False
 WeaponRange | 13
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->6l $tier->wep
+LinkedSockets 6
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 200 0 0 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Diamond
+
 ================================================================================
 
 Item Class: Abyss Jewels
@@ -269,6 +304,18 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D5 $type->exotic->fractured $tier->fractclasses
+FracturedItem True
+Rarity <= Rare
+Class "Amulets" "Boots" "Bows" "Gloves" "Jewel" "Maps" "Quivers" "Rings" "Rune Daggers" "Sceptres" "Wands"
+SetFontSize 45
+SetBorderColor 0 240 190 255
+PlayAlertSound 3 300
+PlayEffect Blue
+MinimapIcon 2 Blue Diamond
+
 ================================================================================
 
 Item Class: Stackable Currency
@@ -312,6 +359,20 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->currency->stackedsix $tier->t4
+StackSize >= 4
+Class Currency
+BaseType == "Accelerating Catalyst" "Astragali" "Awakened Sextant" "Chaos Orb" "Charged Compass" "Delirious Scouting Report" "Eldritch Orb of Annulment" "Enkindling Orb" "Fertile Catalyst" "Grand Eldritch Ember" "Greater Eldritch Ember" "Greater Eldritch Ichor" "Harbinger's Orb" "Lesser Eldritch Ember" "Operative's Scouting Report" "Orb of Regret" "Orb of Unmaking" "Ritual Splinter" "Singular Scouting Report" "Stacked Deck" "Tainted Chromatic Orb" "Tempering Catalyst" "Veiled Chaos Orb"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBorderColor 0 0 0 255
+SetBackgroundColor 130 214 255 255
+PlayAlertSound 2 300
+PlayEffect White
+MinimapIcon 2 White Circle
+
 ================================================================================
 
 Item Class: Stackable Currency
@@ -352,6 +413,20 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->currency->stackedsplintershigh $tier->t1
+StackSize >= 10
+Class "Currency"
+BaseType "Splinter of Chayula" "Splinter of Uul-Netol" "Timeless Maraketh Splinter" "Timeless Templar Splinter"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBorderColor 0 0 0 255
+SetBackgroundColor 130 214 255 255
+PlayAlertSound 2 300
+PlayEffect Yellow
+MinimapIcon 1 Yellow Circle
 
 ================================================================================
 
@@ -418,6 +493,19 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr $tier->identifieditemhandling
+Identified True
+Corrupted False
+Mirrored False
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Belts" "Body Armours" "Boots" "Bows" "Claws" "Daggers" "Gloves" "Helmets" "One Hand" "Quivers" "Rings" "Rune Dagger" "Sceptres" "Shields" "Staves" "Two Hand" "Wands" "Warstaves"
+SetFontSize 40
+SetBorderColor 0 240 190 180
+PlayEffect Blue Temp
+
 ================================================================================
 
 Item Class: Two Hand Swords
@@ -482,6 +570,15 @@ VeiledSuffix | False
 WarlordItem | False
 WeaponRange | 13
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hide # $type->hidelayer $tier->final
+Class "Amulets" "Belts" "Body Armour" "Boots" "Bows" "Claws" "Daggers" "Flask" "Gloves" "Heist Brooch" "Heist Cloak" "Heist Gear" "Heist Tool" "Helmets" "Jewel" "One Hand" "Quivers" "Rings" "Rune Dagger" "Sceptre" "Sentinel Drone" "Shields" "Staves" "Two Hand" "Wand" "Warstaves"
+SetFontSize 18
+SetBorderColor 0 0 0 0
+SetBackgroundColor 0 0 0 0
+DisableDropSound True
+
 ================================================================================
 
 Item Class: Map Fragments
@@ -524,6 +621,19 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %HS4 $type->fragments->scarabs $tier->t4
+Class "Map Fragments"
+BaseType == "Polished Abyss Scarab" "Polished Bestiary Scarab" "Polished Blight Scarab" "Polished Breach Scarab" "Polished Elder Scarab" "Polished Legion Scarab" "Polished Metamorph Scarab" "Polished Reliquary Scarab" "Polished Shaper Scarab" "Polished Sulphite Scarab" "Polished Torment Scarab" "Rusted Abyss Scarab" "Rusted Bestiary Scarab" "Rusted Blight Scarab" "Rusted Breach Scarab" "Rusted Cartography Scarab" "Rusted Elder Scarab" "Rusted Legion Scarab" "Rusted Metamorph Scarab" "Rusted Reliquary Scarab" "Rusted Shaper Scarab" "Rusted Sulphite Scarab" "Rusted Torment Scarab"
+SetFontSize 45
+SetTextColor 225 111 255 255
+SetBorderColor 225 111 255 255
+SetBackgroundColor 0 0 0 255
+PlayAlertSound 2 300
+PlayEffect White
+MinimapIcon 2 White Hexagon
+
 ================================================================================
 
 Item Class: Divination Cards
@@ -562,6 +672,19 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->divination $tier->t2
+Class "Divination"
+BaseType == "Beauty Through Death" "Broken Promises" "Chaotic Disposition" "Deadly Joy" "Home" "Imperfect Memories" "Judging Voices" "Justified Ambition" "Keeper's Corruption" "Luminous Trove" "Magnum Opus" "Monochrome" "Nook's Crown" "Pride of the First Ones" "The Academic" "The Artist" "The Aspirant" "The Brawny Battle Mage" "The Damned" "The Destination" "The Gulf" "The Hoarder" "The Hook" "The Long Con" "The One That Got Away" "The Patient" "The Sacrifice" "The Saint's Treasure" "The Spoiled Prince" "The Strategist" "The Void" "Winter's Embrace"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 100 250 155 245
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Triangle
 
 ================================================================================
 
@@ -630,6 +753,19 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr $tier->identifieditemhandling
+Identified True
+Corrupted False
+Mirrored False
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Belts" "Body Armours" "Boots" "Bows" "Claws" "Daggers" "Gloves" "Helmets" "One Hand" "Quivers" "Rings" "Rune Dagger" "Sceptres" "Shields" "Staves" "Two Hand" "Wands" "Warstaves"
+SetFontSize 40
+SetBorderColor 0 240 190 180
+PlayEffect Blue Temp
+
 ================================================================================
 
 Item Class: Belts
@@ -687,6 +823,19 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %H4 $type->uniques $tier->t3
+Rarity Unique
+BaseType == "Agate Amulet" "Amber Amulet" "Ambush Mitts" "Ancient Gauntlets" "Ancient Spirit Shield" "Arcanist Slippers" "Assassin's Mitts" "Astral Plate" "Blood Raiment" "Blood Sceptre" "Blunt Arrow Quiver Piece" "Bone Circlet" "Bone Helmet" "Brass Spirit Shield" "Butcher Axe" "Callous Mask Piece" "Carnal Boots" "Carnal Mitts" "Chain Belt" "Citadel Bow" "Cloth Belt" "Cloth Belt Piece" "Coiled Staff" "Colossal Tower Shield" "Coral Ring" "Crimson Round Shield" "Crusader Plate" "Crystal Sceptre" "Deerskin Gloves" "Eternal Sword" "Ezomyte Dagger" "Ezomyte Spiked Shield" "Ezomyte Tower Shield" "Festival Mask" "Gavel" "Gemstone Sword" "Gladiator Plate" "Gladius" "Glorious Plate" "Goathide Boots" "Gold Amulet" "Granite Flask" "Hallowed Hybrid Flask" "Harlequin Mask" "Highborn Staff" "Hubris Circlet" "Hydrascale Boots" "Imperial Bow" "Imperial Maul" "Imperial Staff" "Iron Circlet" "Iron Gauntlets" "Iron Ring" "Jade Amulet" "Judgement Staff" "Lacquered Helmet" "Large Hybrid Flask" "Leather Cap" "Legion Gloves" "Legion Sword Piece" "Maelström Staff" "Mirrored Spiked Shield" "Moonstone Ring" "Murder Boots" "Necromancer Silks" "Nubuck Gloves" "Paua Amulet" "Paua Ring" "Pinnacle Tower Shield" "Praetor Crown" "Primal Arrow Quiver" "Quarterstaff" "Quartz Flask" "Rawhide Tower Shield" "Royal Skean" "Runic Crown" "Runic Helm" "Runic Sabatons" "Rustic Sash" "Sacrificial Garb" "Sage Wand" "Shackled Boots" "Sharktooth Arrow Quiver" "Silken Hood" "Silver Flask" "Sinner Tricorne" "Solaris Circlet" "Soldier Gloves" "Sovereign Spiked Shield" "Steelscale Gauntlets" "Strapped Mitts" "Stygian Vise" "Topaz Flask" "Tornado Wand" "Vaal Axe" "Vaal Mask" "Vaal Regalia" "Vaal Spirit Shield" "Variscite Blade" "Void Axe" "Widowsilk Robe" "Wyrmscale Boots" "Zodiac Leather"
+SetFontSize 45
+SetTextColor 175 96 37 255
+SetBorderColor 175 96 37 255
+SetBackgroundColor 53 13 13 255
+PlayAlertSound 3 300
+PlayEffect Brown
+MinimapIcon 2 Brown Star
 
 ================================================================================
 
@@ -762,6 +911,20 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->uniques->replicas $tier->t1
+Replica True
+Rarity Unique
+BaseType == "Chain Belt" "Cloth Belt" "Great Crown" "Leather Belt" "Ornate Quiver" "Relic Chambers Map" "Soldier Boots" "Synthesised Map" "Triumphant Lamellar"
+SetFontSize 45
+SetTextColor 175 96 37 255
+SetBorderColor 175 96 37 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
+
 ================================================================================
 
 Item Class: Shields
@@ -831,6 +994,21 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D5 $type->rare->shaper $tier->t21
+HasInfluence Shaper
+ItemLevel >= 80
+Rarity <= Rare
+BaseType "Amethyst Ring" "Dragonscale Gauntlets" "Ezomyte Tower Shield" "Imbued Wand" "Imperial Claw" "Ornate Quiver" "Pinnacle Tower Shield" "Slink Gloves" "Sorcerer Boots" "Titanium Spirit Shield"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 20 110 220
+PlayAlertSound 1 300
+PlayEffect Yellow
+MinimapIcon 1 Yellow Cross
+
 ================================================================================
 
 Item Class: Utility Flasks
@@ -887,6 +1065,16 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->leveling->flasks->utility $tier->asortedutility
+BaseType "Amethyst Flask" "Aquamarine Flask" "Basalt Flask" "Bismuth Flask" "Diamond Flask" "Granite Flask" "Iron Flask" "Jade Flask" "Quartz Flask" "Quicksilver Flask" "Ruby Flask" "Sapphire Flask" "Silver Flask" "Stibnite Flask" "Sulphur Flask" "Topaz Flask"
+SetFontSize 45
+SetBorderColor 50 200 125
+SetBackgroundColor 25 100 75
+PlayEffect Grey Temp
+MinimapIcon 2 Grey Raindrop
 
 ================================================================================
 
@@ -952,6 +1140,17 @@ VeiledSuffix | False
 WarlordItem | False
 WeaponRange | 10
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->dlf_chaos_recipe_rares $tier->weapons_any_height
+ItemLevel >= 60
+Rarity Rare
+Class "Daggers" "Rune Daggers" "Wands"
+Identified False
+SetBorderColor 200 0 0 255
+SetFontSize 40
+MinimapIcon 1 Red Moon
+
 ================================================================================
 
 Item Class: Maps
@@ -1006,6 +1205,18 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %H5 $type->maps $tier->maps_b_t11
+MapTier 11
+Class "Maps"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 200 200 200 255
+PlayAlertSound 5 300
+PlayEffect Yellow
+MinimapIcon 1 Red Square
+
 ================================================================================
 
 Item Class: Map Fragments
@@ -1044,6 +1255,19 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->fragments $tier->t2
+Class "Map Fragments"
+BaseType == "Al-Hezmin's Crest" "Baran's Crest" "Chayula's Breachstone" "Chayula's Charged Breachstone" "Drox's Crest" "Esh's Breachstone" "Esh's Charged Breachstone" "Esh's Enriched Breachstone" "Esh's Pure Breachstone" "Fragment of Constriction" "Fragment of Enslavement" "Fragment of Eradication" "Fragment of Knowledge" "Fragment of Purification" "Fragment of Shape" "Mortal Ignorance" "Sacred Blossom" "Simulacrum" "Timeless Templar Emblem" "Tul's Breachstone" "Tul's Charged Breachstone" "Tul's Enriched Breachstone" "Tul's Pure Breachstone" "Unrelenting Timeless Eternal Emblem" "Unrelenting Timeless Karui Emblem" "Unrelenting Timeless Templar Emblem" "Unrelenting Timeless Vaal Emblem" "Uul-Netol's Breachstone" "Uul-Netol's Charged Breachstone" "Uul-Netol's Enriched Breachstone" "Veritania's Crest" "Xoph's Breachstone" "Xoph's Charged Breachstone" "Xoph's Enriched Breachstone" "Xoph's Pure Breachstone"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 225 111 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Hexagon
 
 ================================================================================
 
@@ -1094,6 +1318,20 @@ Unidentified | True
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->maps->influenced $tier->infshaper
+HasInfluence Shaper
+Rarity <= Rare
+Class "Maps"
+SetFontSize 45
+SetTextColor 100 0 122 255
+SetBorderColor 100 0 122 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Square
 
 ================================================================================
 
@@ -1155,6 +1393,20 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->maps->influenced $tier->infelder
+HasInfluence Elder
+Rarity <= Rare
+Class "Maps"
+SetFontSize 45
+SetTextColor 100 0 122 255
+SetBorderColor 100 0 122 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Square
+
 ================================================================================
 
 Item Class: Maps
@@ -1199,6 +1451,18 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->maps $tier->maps_a_t16
+MapTier >= 16
+Class "Maps"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 235 235 235 255
+PlayAlertSound 5 300
+PlayEffect Yellow
+MinimapIcon 1 Red Square
 
 ================================================================================
 
@@ -1254,6 +1518,19 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-exceptional $tier->specialworlddrops
+Class "Gems"
+BaseType "Empower Support" "Enlighten Support"
+SetFontSize 45
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
 
 ================================================================================
 
@@ -1316,6 +1593,14 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hide # %H0 $type->gems-generic $tier->any
+Class "Gems"
+SetFontSize 30
+SetTextColor 40 130 130 255
+SetBorderColor 0 0 0
 
 ================================================================================
 
@@ -1389,6 +1674,20 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-exceptional $tier->divt1
+GemQualityType Divergent
+Class "Gems"
+BaseType "Added Cold Damage Support" "Advanced Traps Support" "Anger" "Animate Guardian" "Arc" "Arcane Cloak" "Arcane Surge Support" "Arcanist Brand" "Armageddon Brand" "Assassin's Mark" "Ball Lightning" "Ballista Totem Support" "Barrage Support" "Berserk" "Blade Vortex" "Bladestorm" "Blastchain Mine Support" "Blazing Salvo" "Blight" "Blood Rage" "Bone Offering" "Bonechill Support" "Boneshatter" "Burning Damage Support" "Cast when Damage Taken Support" "Chance to Poison Support" "Charged Mines Support" "Clarity" "Close Combat Support" "Cobra Lash" "Convocation" "Corrupting Fever" "Creeping Frost" "Cruelty Support" "Culling Strike Support" "Cyclone" "Dash" "Defiance Banner" "Desecrate" "Determination" "Detonate Dead" "Discharge" "Divine Ire" "Dread Banner" "Elemental Hit" "Elemental Weakness" "Energy Leech Support" "Ensnaring Arrow" "Eternal Blessing Support" "Exsanguinate" "Eye of Winter" "Faster Projectiles Support" "Fire Trap" "Fireball" "Flame Link" "Flammability" "Flesh Offering" "Flicker Strike" "Forbidden Rite" "Fortify Support" "Frost Blades" "Frost Shield" "Frostbite" "Frostblink" "Glacial Cascade" "Grace" "Haste" "Hatred" "Herald of Agony" "Herald of Ash" "Herald of Ice" "Herald of Thunder" "Hexblast" "Hypothermia Support" "Ice Spear" "Ignite Proliferation Support" "Increased Critical Damage Support" "Innervate Support" "Inspiration Support" "Kinetic Blast" "Kinetic Bolt" "Less Duration Support" "Lesser Multiple Projectiles Support" "Lifetap Support" "Lightning Arrow" "Lightning Spire Trap" "Malevolence" "Mark On Hit Support" "Meat Shield Support" "Melee Splash Support" "Minion Damage Support" "Mirage Archer Support" "Molten Shell" "Multiple Totems Support" "Multistrike Support" "Onslaught Support" "Phase Run" "Pierce Support" "Plague Bearer" "Poisonous Concoction" "Power Charge On Critical Support" "Precision" "Predator Support" "Pulverise Support" "Puncture" "Purifying Flame" "Purity of Elements" "Purity of Ice" "Pyroclast Mine" "Rage Support" "Raise Zombie" "Reckoning" "Righteous Fire" "Second Wind Support" "Seismic Trap" "Shield Crush" "Siphoning Trap" "Smite" "Sniper's Mark" "Spark" "Spectral Throw" "Spellslinger" "Spirit Offering" "Storm Burst" "Storm Call" "Stun Support" "Summon Holy Relic" "Summon Ice Golem" "Summon Phantasm Support" "Summon Skitterbots" "Sunder" "Tectonic Slam" "Tempest Shield" "Tornado Shot" "Trap and Mine Damage Support" "Urgent Orders Support" "Venom Gyre" "Vicious Projectiles Support" "Viper Strike" "Vitality" "Volatile Dead" "Vortex" "Wild Strike" "Winter Orb" "Withering Step" "Withering Touch Support" "Wrath"
+SetFontSize 45
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
+
 ================================================================================
 
 Item Class: Support Skill Gems
@@ -1448,6 +1747,19 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-exceptional $tier->awaany
+Class "Gems"
+BaseType "Awakened"
+SetFontSize 45
+SetTextColor 20 240 240 255
+SetBorderColor 240 0 0 255
+SetBackgroundColor 70 0 20 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Triangle
+
 ================================================================================
 
 Item Class: Support Skill Gems
@@ -1502,6 +1814,20 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-special $tier->exspeciale4
+GemLevel >= 4
+Class "Gems"
+BaseType "Empower" "Enhance" "Enlighten"
+SetFontSize 45
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
 
 ================================================================================
 
@@ -1566,6 +1892,19 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->uniques $tier->t3boss
+Rarity Unique
+BaseType == "Ambusher" "Assassin's Boots" "Carnal Armour" "Crusader Gloves" "Ezomyte Burgonet" "Ezomyte Staff" "Golden Plate" "Goliath Greaves" "Great Crown" "Infernal Sword" "Iron Flask" "Legion Sword" "Magistrate Crown" "Necromancer Circlet" "Opal Ring" "Prophet Crown" "Royal Burgonet" "Ruby Ring" "Sapphire Ring" "Sentinel Jacket" "Serpentine Staff" "Slink Boots" "Sorcerer Boots" "Sulphur Flask" "Titan Gauntlets" "Titan Greaves" "Topaz Ring" "Triumphant Lamellar" "Unset Ring" "Vaal Gauntlets" "Void Sceptre"
+SetFontSize 45
+SetTextColor 175 96 37 255
+SetBorderColor 175 96 37 255
+SetBackgroundColor 53 13 13 255
+PlayAlertSound 3 300
+PlayEffect Brown
+MinimapIcon 2 Brown Star
+
 ================================================================================
 
 Item Class: Rings
@@ -1623,6 +1962,17 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D4 $type->rr->amuring $tier->t1
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Rings"
+BaseType "Agate Amulet" "Amethyst Ring" "Blue Pearl Amulet" "Cerulean Ring" "Citrine Amulet" "Iolite Ring" "Marble Amulet" "Onyx Amulet" "Opal Ring" "Prismatic Ring" "Seaglass Amulet" "Steel Ring" "Turquoise Amulet" "Two-Stone Ring" "Vermillion Ring"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 121 70 225 255
+
 ================================================================================
 
 Item Class: Maps
@@ -1669,6 +2019,18 @@ Unidentified | True
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %H5 $type->maps $tier->maps_b_t13
+MapTier 13
+Class "Maps"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 200 200 200 255
+PlayAlertSound 5 300
+PlayEffect Yellow
+MinimapIcon 1 Red Square
 
 ================================================================================
 
@@ -1717,6 +2079,19 @@ Unidentified | True
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->uniques $tier->multispecial
+Rarity Unique
+BaseType == "Amethyst Ring" "Archon Kite Shield" "Carved Wand" "Fiend Dagger" "Gold Ring" "Heavy Belt" "Hydrascale Gauntlets" "Leather Belt" "Long Staff" "Medium Cluster Jewel" "Onyx Amulet" "Sadist Garb" "Saint's Hauberk" "Small Cluster Jewel" "Stealth Boots" "Stibnite Flask" "Studded Belt" "Turquoise Amulet" "Two-Point Arrow Quiver" "Two-Stone Ring"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBorderColor 0 0 0 255
+SetBackgroundColor 175 96 37 255
+PlayAlertSound 2 300
+PlayEffect Blue
+MinimapIcon 1 Blue Star
 
 ================================================================================
 
@@ -1781,6 +2156,20 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | True
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->influenced->common $tier->t1_exo
+HasInfluence Crusader Elder Hunter Redeemer Shaper Warlord
+Rarity <= Rare
+BaseType "Accumulator Wand" "Aetherwind Gloves" "Alternating Sceptre" "Anarchic Spiritblade" "Apex Cleaver" "Archdemon Crown" "Assembler Wand" "Astrolabe Amulet" "Atonement Mask" "Banishing Blade" "Basemetal Treads" "Battery Staff" "Blasting Blade" "Blizzard Crown" "Blunt Force Condenser" "Boom Mace" "Brimstone Treads" "Capacity Rod" "Capricious Spiritblade" "Cloudwhisper Boots" "Cogwork Ring" "Cold-attuned Buckler" "Congregator Wand" "Crack Mace" "Crushing Force Magnifier" "Darksteel Treads" "Debilitation Gauntlets" "Demon Crown" "Disapprobation Axe" "Dreamquest Slippers" "Duskwalk Slippers" "Endothermic Buckler" "Eventuality Rod" "Exhausting Spirit Shield" "Exothermic Tower Shield" "Fickle Spiritblade" "Flare Mace" "Flashfire Blade" "Flickerflame Blade" "Foundry Bow" "Gale Crown" "Gauche Gloves" "Geodesic Ring" "Gruelling Gauntlets" "Heat-attuned Tower Shield" "Hedron Bow" "Hollowpoint Dagger" "Honed Cleaver" "Imp Crown" "Impact Force Propagator" "Infernal Blade" "Leyline Gloves" "Magmatic Tower Shield" "Malign Fangs" "Maltreatment Axe" "Mechalarm Belt" "Micro-Distillery Belt" "Nexus Gloves" "Nightwind Slippers" "Oscillating Sceptre" "Penitent Mask" "Pneumatic Dagger" "Polar Buckler" "Potentiality Rod" "Pressurised Dagger" "Prime Cleaver" "Psychotic Axe" "Rebuking Blade" "Reciprocation Staff" "Runic Crest" "Runic Crown" "Runic Gages" "Runic Gauntlets" "Runic Gloves" "Runic Greaves" "Runic Helm" "Runic Sabatons" "Runic Sollerets" "Shadow Fangs" "Simplex Amulet" "Sinistral Gloves" "Solarine Bow" "Sorrow Mask" "Southswing Gloves" "Stabilising Sceptre" "Stormrider Boots" "Subsuming Spirit Shield" "Taxing Gauntlets" "Transfer-attuned Spirit Shield" "Transformer Staff" "Void Fangs" "Windbreak Boots" "Winter Crown"
+SetFontSize 45
+SetTextColor 50 130 165 255
+SetBorderColor 50 130 165 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Cross
+
 ================================================================================
 
 Item Class: Rings
@@ -1831,6 +2220,17 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | True
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr->amuring $tier->t2
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Rings"
+BaseType "Amber Amulet" "Coral Ring" "Diamond Ring" "Jade Amulet" "Lapis Amulet" "Ruby Ring" "Sapphire Ring" "Topaz Ring" "Unset Ring"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 103 34 163 255
 
 ================================================================================
 
@@ -1895,63 +2295,18 @@ VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
 
-================================================================================
-
-Item Class: Sentinel
-Rarity: Magic
-Reliable Obsidian Apex Sentinel
---------
-Duration: 51 (augmented) seconds
-Empowers: 3 enemies
-Empowerment: 42
---------
-Requirements:
-Level: 66
---------
-Item Level: 69
---------
-Can only empower Rare or Unique enemies (implicit)
---------
-+11 seconds to Duration
---------
-Charge: 7/8
---------
-Unmodifiable
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-AlternateQuality | False
-BaseType | Reliable Obsidian Apex Sentinel
-Charge | 7/8
-Class | Sentinel Drone
-Corrupted | False
-CrusaderItem | False
-Duration | 51 (augmented) seconds
-EaterofWorldsItem | False
-ElderItem | False
-Empowerment | 42
-Empowers | 3 enemies
-FracturedItem | False
-HasEaterOfWorldsImplicit | False
-HasInfluence | ['None']
-HasSearingExarchImplicit | False
-HunterItem | False
-Identified | True
-ItemLevel | 69
-Mirrored | False
-Quality | 0
-Rarity | Magic
-RedeemerItem | False
-RequiredLevel | 66
-SearingExarchItem | False
-ShapedMap | False
-ShaperItem | False
-Split | False
-SynthesisedItem | False
-Unidentified | False
-VeiledPrefix | False
-VeiledSuffix | False
-WarlordItem | False
+Show # %D5 $type->sentinel->drones $tier->apexr
+Rarity Rare
+Class "Sentinel Drone"
+BaseType == "Ancient Apex Sentinel" "Brimstone Apex Sentinel" "Bronze Apex Sentinel" "Cobalt Apex Sentinel" "Cosmic Apex Sentinel" "Cryptic Apex Sentinel" "Emberstone Apex Sentinel" "Obsidian Apex Sentinel" "Primeval Apex Sentinel"
+SetFontSize 45
+SetBorderColor 150 0 255 255
+SetBackgroundColor 33 0 64 255
+PlayAlertSound 2 300
+PlayEffect Cyan
+MinimapIcon 1 Cyan Pentagon
 
 ================================================================================
 
@@ -2001,5 +2356,17 @@ Unidentified | False
 VeiledPrefix | False
 VeiledSuffix | False
 WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D4 $type->rare->any $tier->anytrinket
+HasInfluence Crusader Elder Hunter Redeemer Shaper Warlord
+Rarity <= Rare
+Class "Amulet" "Belts" "Rings"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 50 130 165
+PlayEffect Blue Temp
 
 ================================================================================

@@ -746,29 +746,6 @@ Unmodifiable
 
 ================================================================================
 
-Item Class: Sentinel
-Rarity: Magic
-Reliable Obsidian Apex Sentinel
---------
-Duration: 51 (augmented) seconds
-Empowers: 3 enemies
-Empowerment: 42
---------
-Requirements:
-Level: 66
---------
-Item Level: 69
---------
-Can only empower Rare or Unique enemies (implicit)
---------
-+11 seconds to Duration
---------
-Charge: 7/8
---------
-Unmodifiable
-
-================================================================================
-
 Item Class: Rings
 Rarity: Magic
 The Shaper's Coral Ring of the Lynx

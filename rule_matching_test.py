@@ -520,15 +520,13 @@ def TestGetRuleMatchingItem():
     test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     test_cases = ParseTestCases(test_consts.kItemTestCasesInputFullpath)
-    for item_text, _ in test_cases:
+    for item_text, _, matching_rule_lines in test_cases:
         item = Item(item_text)
         matched_rule = loot_filter.GetRuleMatchingItem(item)
-        print(test_consts.kHorizontalSeparator)
-        print()
-        print(item)
-        print('\n')
-        print('\n'.join(matched_rule.rule_text_lines) if matched_rule else 'NO MATCHED RULE')
-        input()
+        expected_matched_rule = LootFilterRule(matching_rule_lines)
+        # Check that the matched rule matches expected rule by checking tags are equal
+        AssertEqual((matched_rule.type_tag, matched_rule.tier_tag),
+                (expected_matched_rule.type_tag, expected_matched_rule.tier_tag))
     print('TestGetRuleMatchingItem passed!')
 
 def main():

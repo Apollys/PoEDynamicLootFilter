@@ -31,8 +31,9 @@ kTestProfileConfigValues = {
 # ================================ Item Consts ================================
 
 kTestItemDirectory = os.path.join(kTestResourcesDirectory, 'Items')
+kTestItemsFullpath = os.path.join(kTestItemDirectory, 'test_items.txt')
 kItemTestCasesInputFullpath = os.path.join(kTestItemDirectory, 'item_test_cases_verified.txt')
-kItemTestCasesOutputFullpath = os.path.join(kTestItemDirectory, 'item_test_cases_generated.txt')
+kItemTestCasesGeneratedFullpath = os.path.join(kTestItemDirectory, 'item_test_cases_generated.txt')
 
 kHorizontalSeparator = '=' * 80
 kHorizontalSeparatorThin = '~' * 80
