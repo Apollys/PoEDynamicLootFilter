@@ -144,7 +144,7 @@ for the detailed documentation of all available function calls.
   - `set_active_profile`
   - `check_filters_exist`
   - `import_downloaded_filter`
-  - `reload_input_filter`
+  - `load_input_filter`
   - `run_batch`
   - `get_rule_matching_item`
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`

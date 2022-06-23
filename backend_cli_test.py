@@ -83,7 +83,7 @@ get_all_chaos_recipe_statuses'''
 def SimpleTest():
     test_helper.SetUp(create_profile=False)
     profile_name = test_consts.kTestProfileName
-    other_profile_name = test_consts.kOtherTestProfileName
+    other_profile_name = test_consts.kTestProfileNames[1]
     CallBackendCli('is_first_launch')
     CallBackendCli('get_all_profile_names')
     # TODO: need to write config values to backend_cli.input to use this function
@@ -96,7 +96,7 @@ def SimpleTest():
     CallBackendCli('set_active_profile {}'.format(profile_name))
     profile.DeleteProfile(other_profile_name)
     CallBackendCli('import_downloaded_filter', profile_name)
-    CallBackendCli('reload_input_filter', profile_name)
+    CallBackendCli('load_input_filter', profile_name)
     for function_call_line in kTestBatchString.split('\n'):
         CallBackendCli(function_call_line, profile_name)
     print('SimpleTest passed!')

@@ -105,7 +105,7 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
-    'reload_input_filter' : { 
+    'load_input_filter' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
@@ -478,7 +478,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         output_string += '\n'.join(str(int(flag)) for flag in
                 (downloaded_filter_exists, input_filter_exists, output_filter_exists))
     # ================================= Import / Reload Filter =================================
-    elif ((function_name in ('import_downloaded_filter', 'reload_input_filter')) and not in_batch):
+    elif ((function_name in ('import_downloaded_filter', 'load_input_filter')) and not in_batch):
         '''
         import_downloaded_filter
          - Copies or moves the downloaded filter to the input directory (depending on profile
@@ -487,11 +487,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: None
          - Example: > python3 backend_cli.py import_downloaded_filter MyProfile
          
-        reload_input_filter
+        load_input_filter
          - Parses the input filter, adds DLF-generated rules, applies profile changes,
            and writes the final result to the output filter
          - Output: None
-         - Example: > python3 backend_cli.py reload_input_filter MyProfile
+         - Example: > python3 backend_cli.py load_input_filter MyProfile
         '''
         CheckNumParams(function_params, 0)
         changes_lines: List[str] = file_helper.ReadFile(config_values['ChangesFullpath'])
@@ -1118,7 +1118,7 @@ def main_impl():
     # Set input filter source based on function name
     input_filter_source = (
             InputFilterSource.kDownload if (function_name == 'import_downloaded_filter')
-            else InputFilterSource.kInput if (function_name == 'reload_input_filter')
+            else InputFilterSource.kInput if (function_name == 'load_input_filter')
             else InputFilterSource.kOutput)
     # Delegate function call:
     # We create the loot filter first and pass in as a parameter, so that
