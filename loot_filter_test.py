@@ -9,7 +9,7 @@ import os
 import os.path
 import parse_helper
 import test_consts
-from test_assertions import AssertEqual, AssertTrue, AssertFalse
+from test_assertions import AssertEqual, AssertTrue, AssertFalse, AssertFailure
 import test_helper
 
 def TestParseWriteFilter():
@@ -395,8 +395,19 @@ def TestChaosRecipeItems():
             if (enable_flag):
                 AssertEqual(rule.visibility, RuleVisibility.kShow)
             else:
-                AssertTrue(RuleVisibility.IsDisabled(rule.visibility))            
+                AssertTrue(RuleVisibility.IsDisabled(rule.visibility))
     print('TestChaosRecipeItems passed!')
+
+def TestImportNonFilterBladeFilter():
+    test_helper.SetUp(profile_config_values=test_consts.kTestNonFilterBladeProfileConfigValues)
+    # Check that we get a helpful error message when parsing the filter
+    try:
+        loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
+    except RuntimeError as e:
+        AssertTrue('does not appear to be a FilterBlade filter' in repr(e))
+    else:
+        AssertFailure()
+    print('TestImportNonFilterBladeFilter passed!')
 
 def main():
     TestParseWriteFilter()
@@ -417,6 +428,7 @@ def main():
     TestQualityFlasks()
     TestRgbItems()
     TestChaosRecipeItems()
+    TestImportNonFilterBladeFilter()
     test_helper.TearDown()
     print('All tests passed!')
 
