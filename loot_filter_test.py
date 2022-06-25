@@ -73,9 +73,7 @@ def TestGeneralBaseTypes():
     AssertFalse(loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=False))
     AssertTrue(loot_filter.IsBaseTypeRuleEnabledFor(other_base_type, rare_flag=True))
     # Check rule directly
-    type_tag = consts.kBaseTypeTypeTag
-    tier_tag_rare = consts.kBaseTypeTierTagRare
-    rule = loot_filter.GetRule(type_tag, tier_tag_rare)
+    rule = loot_filter.GetRule(consts.kBaseTypeTypeTag, consts.kBaseTypeTierTagRare)
     AssertTrue(other_base_type in rule.GetBaseTypeList())
     print('TestGeneralBaseTypes passed!')
 
@@ -85,25 +83,24 @@ def TestFlaskBaseTypes():
     # First, non high ilvl flask
     # Enable
     flask_base_type = 'Quicksilver Flask'
-    loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag=True, high_ilvl_flag=False)
+    loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag=True, high_ilvl_only_flag=False)
     # Verify result
     AssertTrue(loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag=False))
-    AssertFalse(loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag=True))
+    AssertTrue(loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag=True))
     AssertFalse(loot_filter.IsFlaskRuleEnabledFor('Other Flask', high_ilvl_flag=False))
-    type_tag, tier_tag = 'dlf_flasks', 'dlf_flasks'
-    rule = loot_filter.GetRule(type_tag, tier_tag)
+    rule = loot_filter.GetRule(consts.kFlaskTypeTag, consts.kFlaskTierTagAnyIlvl)
     AssertTrue(flask_base_type in rule.GetBaseTypeList())
     # Disable and verify
-    loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag=False, high_ilvl_flag=False)
+    loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag=False)
     AssertFalse(loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag=False))
-    rule = loot_filter.GetRule(type_tag, tier_tag)
+    AssertFalse(loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag=True))
+    rule = loot_filter.GetRule(consts.kFlaskTypeTag, consts.kFlaskTierTagAnyIlvl)
     AssertFalse(flask_base_type in rule.GetBaseTypeList())
     # Second, high ilvl flask
     flask_base_type = 'Diamond Flask'
-    loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag=True, high_ilvl_flag=True)
+    loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag=True, high_ilvl_only_flag=True)
     AssertTrue(loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag=True))
-    tier_tag = 'dlf_flasks_high_ilvl'
-    rule = loot_filter.GetRule(type_tag, tier_tag)
+    rule = loot_filter.GetRule(consts.kFlaskTypeTag, consts.kFlaskTierTagHighIlvl)
     AssertTrue(flask_base_type in rule.GetBaseTypeList())
     print('TestFlaskBaseTypes passed!')
 

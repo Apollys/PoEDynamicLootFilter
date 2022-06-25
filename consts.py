@@ -172,24 +172,46 @@ kBaseTypeRuleTemplateAny = \
 
 # ================================== Flasks ==================================
 
-kFlaskRuleTemplate = \
-'''# Show # $type->dlf_flasks $tier->dlf_flasks
+kFlaskTypeTag = 'dlf_flasks'
+kFlaskTierTagAnyIlvl = 'any_ilvl'
+kFlaskTierTagHighIlvl = 'high_ilvl'
+
+kFlaskRuleTemplateAnyIlvl = \
+'''# Show # $type->{} $tier->{}
 # Rarity ! Unique
 # SetFontSize 44
-# SetBorderColor 50 200 125 255
-# SetBackgroundColor 21 45 37
+# SetBorderColor 50 209 31
+# SetBackgroundColor 0 40 0
 # PlayEffect Green Temp
-# MinimapIcon 0 Green Raindrop'''
+# MinimapIcon 0 Green Raindrop'''.format(kFlaskTypeTag, kFlaskTierTagAnyIlvl)
 
-kHighIlvlFlaskRuleTemplate = \
-'''# Show # $type->dlf_flasks $tier->dlf_flasks_high_ilvl
+kFlaskRuleTemplateHighIlvl = \
+'''# Show # $type->{} $tier->{}
 # ItemLevel >= 84
 # Rarity ! Unique
 # SetFontSize 44
 # SetBorderColor 50 200 125 255
-# SetBackgroundColor 21 45 37
-# PlayEffect Green Temp
-# MinimapIcon 0 Green Raindrop'''
+# SetBackgroundColor 5 50 35
+# PlayEffect Cyan Temp
+# MinimapIcon 0 Cyan Raindrop'''.format(kFlaskTypeTag, kFlaskTierTagHighIlvl)
+
+# ================================== Sockets ==================================
+
+kBaseTypeTypeTag = 'dlf_base_types'
+kBaseTypeTierTagRare = 'rare'
+kBaseTypeTierTagAny = 'any_non_unique'
+
+kBaseTypeRuleTemplateRare = \
+'''# Show # $type->{} $tier->{}
+# Rarity == Rare
+# SetFontSize 44
+# PlayEffect Yellow Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagRare)
+
+kBaseTypeRuleTemplateAny = \
+'''# Show # $type->{} $tier->{}
+# Rarity ! Unique
+# SetFontSize 44
+# PlayEffect White Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagAny)
 
 # =============================== Chaos Recipe ===============================
 
