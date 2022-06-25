@@ -1078,6 +1078,61 @@ MinimapIcon 2 Grey Raindrop
 
 ================================================================================
 
+Item Class: Amulets
+Rarity: Rare
+Lapis Amulet
+--------
+Item Level: 60
+--------
++22 to Intelligence (implicit)
+--------
+Unidentified
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Lapis Amulet
+Class | Amulets
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 60
+Mirrored | False
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->dlf_chaos_recipe_rares $tier->amulets
+ItemLevel >= 60
+ItemLevel < 75
+Rarity Rare
+Class "Amulets"
+Identified False
+SetBorderColor 0 255 255 255
+SetBackgroundColor 120 20 20 80
+SetFontSize 40
+MinimapIcon 0 Cyan Moon
+
+================================================================================
+
 Item Class: Daggers
 Rarity: Rare
 Gutting Knife
@@ -1094,7 +1149,7 @@ Int: 78
 --------
 Sockets: G-B-B
 --------
-Item Level: 82
+Item Level: 75
 --------
 30% increased Global Critical Strike Chance (implicit)
 --------
@@ -1117,7 +1172,7 @@ HasInfluence | ['None']
 HasSearingExarchImplicit | False
 HunterItem | False
 Identified | False
-ItemLevel | 82
+ItemLevel | 75
 LinkedSockets | 3
 Mirrored | False
 NumSockets | 3
@@ -1142,12 +1197,13 @@ WeaponRange | 10
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Show # $type->dlf_chaos_recipe_rares $tier->weapons_any_height
-ItemLevel >= 60
+Show # $type->dlf_regal_recipe_rares $tier->weapons_any_height
+ItemLevel >= 75
 Rarity Rare
 Class "Daggers" "Rune Daggers" "Wands"
 Identified False
 SetBorderColor 200 0 0 255
+SetBackgroundColor 22 22 111 130
 SetFontSize 40
 MinimapIcon 1 Red Moon
 

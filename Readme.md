@@ -6,6 +6,8 @@
 
 **PoE Dynamic Loot Filter** (or **DLF**) is a tool to modify your loot filter seamlessly in real-time while playing Path of Exile.
 
+**Join our [Discord](https://discord.gg/gH9MzgCzMJ)** for help, to give suggestions, or just to discuss DLF!
+
 ## Quick Setup
 
 There are only two requirements for DLF to run (see [below](https://github.com/Apollys/PoEDynamicLootFilter#what-setup-is-required) for more details):
@@ -173,10 +175,12 @@ for the detailed documentation of all available function calls.
   - `get_flask_min_quality`
   - `set_hide_maps_below_tier <tier: int>`
   - `get_hide_maps_below_tier`
-  - `set_flask_visibility <base_type: str> <visibility_flag: int>`
-  - `set_high_ilvl_flask_visibility <base_type: str> <visibility_flag: int>`
+  - `set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>`
+  - `get_basetype_visibility <base_type: str>`
+  - `get_all_visible_basetypes`
+  - `set_flask_visibility <base_type: str> <visibility_flag: int> <(optional) high_ilvl_flag: int>`
   - `get_flask_visibility <base_type: str>`
-  - `get_all_flask_visibilities`
+  - `get_all_visible_flasks`
   - `set_rgb_item_max_size <size: {none, small, medium, large}>`
   - `get_rgb_item_max_size`
   - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`

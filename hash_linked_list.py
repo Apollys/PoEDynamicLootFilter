@@ -19,6 +19,10 @@ class HashLinkedListIterator:
         raise StopIteration
 # End class HashLinkedListIterator
 
+# Note: HashLinkedList currently has a bug that's acting as a "feature"
+# for rule parsing: multiple items with the same key can be inserted.
+# This inadvertently allows rules with conditions like
+# "ItemLevel >= 60", "ItemLevel < 75" to function correctly.
 class HashLinkedList:
     # Member variables:
     #  - self.head: HllNode

@@ -5,21 +5,23 @@ import profile
 import test_consts
 
 # Creates filter directories and downloaded filter file.
-# Optionally also creates the test profile.
+# Optionally specify whether or not to create the profile.
+# Optionally pass profile config values.
 # Note: calls TearDown() first to ensure clean start.
-def SetUp(create_profile=True):
+def SetUp(*, create_profile=True, profile_config_values=test_consts.kTestProfileConfigValues):
     TearDown()
     # Make dirs if missing
     os.makedirs(test_consts.kTestWorkingDirectory, exist_ok=True)
-    os.makedirs(test_consts.kTestProfileDownloadDirectory, exist_ok=True)
-    os.makedirs(test_consts.kTestProfilePathOfExileDirectory, exist_ok=True)
+    os.makedirs(profile_config_values['DownloadDirectory'], exist_ok=True)
+    os.makedirs(profile_config_values['PathOfExileDirectory'], exist_ok=True)
     # Copy test filter to download directory
-    file_helper.CopyFile(test_consts.kTestBaseFilterFullpath, 
-            test_consts.kTestProfileDownloadedFilterFullpath)
-    # Optionallty, create test profile
+    base_filter_filename = profile_config_values['DownloadedLootFilterFilename']
+    base_filter_fullpath = os.path.join(test_consts.kTestResourcesDirectory, base_filter_filename)
+    file_helper.CopyFile(base_filter_fullpath, os.path.join(
+            profile_config_values['DownloadDirectory'], base_filter_filename))
+    # Optionally, create test profile
     if (create_profile):
-        profile.CreateNewProfile(test_consts.kTestProfileName,
-                test_consts.kTestProfileConfigValues)
+        profile.CreateNewProfile(test_consts.kTestProfileName, profile_config_values)
 # End SetUp
 
 def TearDown():

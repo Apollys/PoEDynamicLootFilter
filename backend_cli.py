@@ -246,7 +246,7 @@ kFunctionInfoMap = {
     'set_basetype_visibility' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
+        'NumParamsForMatch' : 2,
     },
     'get_basetype_visibility' : { 
         'HasProfileParam' : True,
@@ -260,18 +260,13 @@ kFunctionInfoMap = {
     'set_flask_visibility' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'set_high_ilvl_flask_visibility' : { 
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
+        'NumParamsForMatch' : 2,
     },
     'get_flask_visibility' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
-    'get_all_flask_visibilities' : { 
+    'get_all_visible_flasks' : { 
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
@@ -902,7 +897,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>
          - This function never hides BaseTypes, it only modifies its own "Show" rule.
          - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
-         - rare_only_flag is 1 for rare items, 0 for any non-unique items
+         - rare_only_flag is 1 for only rare items, 0 for any non-unique items
          - rare_only_flag should *only* be specified when visibility_flag is 1;
            when visibility_flag is 0, the base_type is removed from both rules.
          - Output: None
@@ -917,9 +912,10 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag, rare_only_flag)
     elif (function_name == 'get_basetype_visibility'):
         '''
-        get_flask_visibility <base_type: str>
-         - rare_only_flag is 1 for rare items, 0 for any non-unique items
-         - Output: "<any non-unique visibility> <rare visibility>": e.g. "0 1"
+        get_basetype_visibility <base_type: str>
+         - rare_flag is 1 for rare items, 0 for any non-unique items
+         - Output: a space-separated pair of boolean ints, e.g. "0 1"
+            - The first value corresponds to any non-unique, the second corresponds to rares only
             - 1 indicates visible, 0 indicates not present in DLF rule
          - Example: > python3 backend_cli.py get_basetype_visibility "Hubris Circlet" MyProfile
         '''
@@ -932,9 +928,10 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         get_all_visible_basetypes
          - Output: newline-separated sequence of <base_type>;<rare_only_flag: int>
-         - rare_only_flag is 1 for rare items, 0 for any non-unique items
+         - rare_only_flag is 1 for only rare items, 0 for any non-unique items
          - Example: > python3 backend_cli.py get_all_visible_basetypes MyProfile
         '''
+        CheckNumParams(function_params, 0)
         visible_base_types_any = loot_filter.GetAllVisibleBaseTypes(rare_flag=False)
         visible_base_types_rare = loot_filter.GetAllVisibleBaseTypes(rare_flag=True)
         # Compute rare BaseTypes that are not also in any
@@ -943,73 +940,61 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
             output_string += '{};0\n'.format(base_type)
         for base_type in visible_base_types_rare_only:
             output_string += '{};1\n'.format(base_type)
-        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
+        if ((len(output_string) > 0) and (output_string[-1] == '\n')):
+            output_string = output_string[:-1]  # remove final newline
     # ========================================= Flasks =========================================
     elif (function_name == 'set_flask_visibility'):
         '''
-        set_flask_visibility <base_type: str> <visibility_flag: int>
-         - Note: this does not overwrite any original filter rules, only adds a rule on top.
-           This function never hides flasks, it only modifies its own "Show" rule.
+        set_flask_visibility <base_type: str> <visibility_flag: int> <(optional) high_ilvl_flag: int>
+         - This does not overwrite any original filter rules, only adds a rule on top.
+         - This function never hides flasks, it only modifies its own "Show" rule.
          - <base_type> is any valid flask BaseType
          - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
+         - high_ilvl_flag is 1 for only high ilvl flasks, 0 for any flasks
+         - rare_only_flag should *only* be specified when visibility_flag is 1;
+           when visibility_flag is 0, the base_type is removed from both rules.
          - Output: None
-         - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1 MyProfile
+         - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1 0 MyProfile
         '''
-        CheckNumParams(function_params, 2)
+        if (len(function_params) == 2):
+            function_params.append('0')
+        CheckNumParams(function_params, 3)
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
-        high_ilvl_flag: bool = False
-        loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag, high_ilvl_flag)
-    elif (function_name == 'set_high_ilvl_flask_visibility'):
-        '''
-        set_high_ilvl_flask_visibility <base_type: str> <visibility_flag: int>
-         - Note: this does not overwrite any original filter rules, only adds a rule on top.
-           This function never hides flasks, it only modifies its own "Show" rule.
-         - "High" item level threshold is defined in consts.py, currently 85
-         - <base_type> is any valid flask BaseType
-         - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
-         - Output: None
-         - Example: > python3 backend_cli.py set_high_ilvl_flask_rule_enabled_for "Quartz Flask" 1 MyProfile
-        '''
-        CheckNumParams(function_params, 2)
-        flask_base_type: str = function_params[0]
-        enable_flag: bool = bool(int(function_params[1]))
-        high_ilvl_flag: bool = True
+        high_ilvl_flag: bool = bool(int(function_params[2]))
         loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag, high_ilvl_flag)
     elif (function_name == 'get_flask_visibility'):
         '''
         get_flask_visibility <base_type: str>
          - <base_type> is any valid flask BaseType
-         - Output: `{0 or 1} {0 or 1}`: e.g. `0 1`
-           - First value indicates generic visibility, second indicates high ilvl visibility
+         - Output: a space-separated pair of boolean ints, e.g. "0 1"
+            - The first value corresponds to any ilvl, the second corresponds to high ilvl only
+            - 1 indicates visible, 0 indicates not present in DLF rule
          - Example: > python3 backend_cli.py is_flask_rule_enabled_for "Quicksilver Flask" MyProfile
         '''
         CheckNumParams(function_params, 1)
         flask_base_type: str = function_params[0]
-        high_ilvl_flag: bool = False
-        generic_rule_visibility_flag = \
-                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag)
-        high_ilvl_flag: bool = True
-        high_ilvl_rule_visibility_flag = \
-                loot_filter.IsFlaskRuleEnabledFor(flask_base_type, high_ilvl_flag)
-        output_string = (str(int(generic_rule_visibility_flag)) + ' ' +
-                         str(int(high_ilvl_rule_visibility_flag)))
-    # TODO: Update this for new high ilvl flask rules
-    elif (function_name == 'get_all_flask_visibilities'):
+        any_visibility_flag = loot_filter.IsFlaskRuleEnabledFor(
+                flask_base_type, high_ilvl_flag=False)
+        high_ilvl_visibility_flag = loot_filter.IsFlaskRuleEnabledFor(
+                flask_base_type, high_ilvl_flag=True)
+        output_string = '{} {}'.format(int(any_visibility_flag), int(high_ilvl_visibility_flag))
+    elif (function_name == 'get_all_visible_flasks'):
         '''
-        get_all_flask_visibilities
-         - Output: newline-separated sequence of <flask_basetype>;<visibility_flag: int>
-         - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
-         - Example: > python3 backend_cli.py get_all_enabled_flask_types MyProfile
+        get_all_visible_flasks
+         - Output: newline-separated sequence of <flask_basetype>;<high_ilvl_flag: int>
+         - high_ilvl_flag is 1 for only high ilvl flasks, 0 for any flasks
+         - Example: > python3 backend_cli.py get_all_visible_flasks MyProfile
         '''
-        visible_flask_types = loot_filter.GetAllVisibleFlaskTypes(False)
-        visible_flask_types_set = set(visible_flask_types)
-        for visible_flask_base_type in visible_flask_types:
-            output_string += visible_flask_base_type + ';1' + '\n'
-        for flask_base_type in consts.kAllFlaskTypes:
-            if flask_base_type not in visible_flask_types_set:
-                output_string += flask_base_type + ';0' + '\n'
-        if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
+        CheckNumParams(function_params, 0)
+        visible_flask_types_any_ilvl = loot_filter.GetAllVisibleFlaskTypes(high_ilvl_flag=False)
+        visible_flask_types_high_ilvl = loot_filter.GetAllVisibleFlaskTypes(high_ilvl_flag=True)
+        for flask_base_type in visible_flask_types_any_ilvl:
+            output_string += '{};0\n'.format(flask_base_type)
+        for flask_base_type in visible_flask_types_high_ilvl:
+            output_string += '{};1\n'.format(flask_base_type)
+        if ((len(output_string) > 0) and (output_string[-1] == '\n')):
+            output_string = output_string[:-1]  # remove final newline
     # ======================================== Rgb Items ========================================
     elif (function_name == 'set_rgb_item_max_size'):
         '''
@@ -1019,6 +1004,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: None
          - Example: > python3 backend_cli.py set_rgb_item_max_size small MyProfile
         '''
+        CheckNumParams(function_params, 1)
         rgb_item_max_size: str = function_params[0]
         loot_filter.SetRgbItemMaxSize(rgb_item_max_size)
     elif (function_name == 'get_rgb_item_max_size'):
@@ -1027,6 +1013,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output:  max-size of shown RGB items, one of {none, small, medium, large}
          - Example: > python3 backend_cli.py get_rgb_item_max_size MyProfile
         '''
+        CheckNumParams(function_params, 0)
         output_string = loot_filter.GetRgbItemMaxSize()
     # =================================== Chaos Recipe Rares ===================================
     elif (function_name == 'set_chaos_recipe_enabled_for'):
@@ -1038,6 +1025,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: None
          - Example: > python3 backend_cli.py set_chaos_recipe_enabled_for Weapons 0 MyProfile
         '''
+        CheckNumParams(function_params, 2)
         item_slot: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
         loot_filter.SetChaosRecipeEnabledFor(item_slot, enable_flag)
@@ -1049,6 +1037,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: "1" if chaos recipe items are showing for the given item_slot, else "0"
          - Example: > python3 backend_cli.py is_chaos_recipe_enabled_for "Body Armours" MyProfile
         '''
+        CheckNumParams(function_params, 1)
         item_slot: str = function_params[0]
         output_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
     elif (function_name == 'get_all_chaos_recipe_statuses'):
@@ -1060,6 +1049,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - <enabled_flag> is "1" if chaos recipe items are showing for given item_slot, else "0"
          - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses MyProfile
         '''
+        CheckNumParams(function_params, 0)
         for item_slot in consts.kChaosRecipeItemSlots:
             enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
             output_string += item_slot + ';' + enabled_flag_string + '\n'

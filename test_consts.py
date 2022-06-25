@@ -1,13 +1,15 @@
 import os.path
 
-kTestWorkingDirectory = 'TestWorkingDirectory'
+# ============================= Directory Consts =============================
 
+kTestWorkingDirectory = 'TestWorkingDirectory'
 kTestResourcesDirectory = os.path.join('Resources', 'Test')
 
 # =============================== Filter Consts ===============================
 
-kTestBaseFilterFullpath = os.path.join(
-        kTestResourcesDirectory, 'TestNeversinkStrict.filter')
+kTestBaseFilterFilename = 'TestNeversinkStrict.filter'
+kTestBaseFilterFullpath = os.path.join(kTestResourcesDirectory, kTestBaseFilterFilename)
+kTestNonFilterBladeBaseFilterFilename = 'SFH.filter'
 
 # ============================ Test Profile Consts ============================
 
@@ -15,18 +17,21 @@ kTestBaseFilterFullpath = os.path.join(
 kTestProfileNames = ['TestProfile_jNG19OR2BASyGiKbgKvY',
         'TestProfile_Xn5nxETrF3KOdUacyf8d', 'TestProfile_EketPW7aflDMiJ220H7M']
 kTestProfileName = kTestProfileNames[0]
-kTestProfileDownloadDirectory = os.path.join(
-        kTestWorkingDirectory, 'FiltersDownload')
-kTestProfilePathOfExileDirectory = os.path.join(
-        kTestWorkingDirectory, 'FiltersPathOfExile')
-kTestProfileDownloadedFilterFilename = 'TestNeversinkStrict.filter'
+kTestProfileDownloadDirectory = os.path.join(kTestWorkingDirectory, 'FiltersDownload')
+kTestProfilePathOfExileDirectory = os.path.join(kTestWorkingDirectory, 'FiltersPathOfExile')
+kTestProfileDownloadedFilterFilename = kTestBaseFilterFilename
 kTestProfileDownloadedFilterFullpath = os.path.join(
-        kTestProfileDownloadDirectory, 'TestNeversinkStrict.filter')
+        kTestProfileDownloadDirectory, kTestBaseFilterFilename)
 # Config dict to construct profile
 kTestProfileConfigValues = {
     'DownloadDirectory' : kTestProfileDownloadDirectory,
     'PathOfExileDirectory' : kTestProfilePathOfExileDirectory,
     'DownloadedLootFilterFilename' : kTestProfileDownloadedFilterFilename}
+# Profile config dict for non-FilterBlade filter
+kTestNonFilterBladeProfileConfigValues = {
+    'DownloadDirectory' : kTestProfileDownloadDirectory,
+    'PathOfExileDirectory' : kTestProfilePathOfExileDirectory,
+    'DownloadedLootFilterFilename' : kTestNonFilterBladeBaseFilterFilename}
 
 # ================================ Item Consts ================================
 

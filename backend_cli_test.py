@@ -60,11 +60,10 @@ set_basetype_visibility "Hubris Circlet" 1 0
 set_basetype_visibility "Hubris Circlet" 1 1
 get_basetype_visibility "Hubris Circlet"
 get_all_visible_basetypes
-set_flask_visibility "Quicksilver Flask" 1
-set_flask_visibility "Quicksilver Flask" 0
-set_high_ilvl_flask_visibility "Quicksilver Flask" 1
-get_flask_visibility "Quicksilver Flask"
-get_all_flask_visibilities
+set_flask_visibility "Quicksilver Flask" 1 0
+set_flask_visibility "Diamond Flask" 1 1
+get_flask_visibility "Diamond Flask"
+get_all_visible_flasks
 set_rgb_item_max_size small
 get_rgb_item_max_size
 set_chaos_recipe_enabled_for "Weapons" 0

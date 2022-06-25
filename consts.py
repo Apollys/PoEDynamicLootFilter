@@ -1,6 +1,7 @@
 import itertools
 import os.path
 import re
+from typing import Dict, List, Tuple
 
 import file_helper
 
@@ -66,7 +67,7 @@ kCurrencyTierStringToIntMap = dict(
     twisdom = kNumCurrencyTiersExcludingScrolls + 2
 )
 
-def GenerateStackedCurrencyTags():
+def GenerateStackedCurrencyTags() -> Dict[int, List[Tuple[str, str]]]:
     stacked_currency_tags = {
         i : list(itertools.product(
             ('currency->stackedthree', 'currency->stackedsix'), ('t{}'.format(i), )))
@@ -173,7 +174,7 @@ kBaseTypeRuleTemplateAny = \
 
 kFlaskRuleTemplate = \
 '''# Show # $type->dlf_flasks $tier->dlf_flasks
-# Rarity <= Magic
+# Rarity ! Unique
 # SetFontSize 44
 # SetBorderColor 50 200 125 255
 # SetBackgroundColor 21 45 37
@@ -183,7 +184,7 @@ kFlaskRuleTemplate = \
 kHighIlvlFlaskRuleTemplate = \
 '''# Show # $type->dlf_flasks $tier->dlf_flasks_high_ilvl
 # ItemLevel >= 84
-# Rarity <= Magic
+# Rarity ! Unique
 # SetFontSize 44
 # SetBorderColor 50 200 125 255
 # SetBackgroundColor 21 45 37
@@ -192,21 +193,39 @@ kHighIlvlFlaskRuleTemplate = \
 
 # =============================== Chaos Recipe ===============================
 
-# 0: tier tag (we will use the item slot for this)
-# 1: item class
-# 2: optional height condition (e.g. 'Height <= 3')
-# 3: border color (space-separated rgba values)
-# 4: minimap icon size (0 = largest, 1 = medium, 2 = small)
-# 5: minimap icon color (color keyword)
+kChaosRecipeTypeTag = 'dlf_chaos_recipe_rares'
+kRegalRecipeTypeTag = 'dlf_regal_recipe_rares'
+
+# 0: type tag
+# 1: tier tag (we will use the item slot for this)
+# 2: item class
+# 3: optional height condition (e.g. 'Height <= 3')
+# 4: border color (space-separated rgba values)
+# 5: minimap icon size (0 = largest, 1 = medium, 2 = small)
+# 6: minimap icon color (color keyword)
 kChaosRecipeRuleTemplate = \
-'''Show # $type->dlf_chaos_recipe_rares $tier->{0}
+'''# Chaos Recipe {2}
+Show # $type->{0} $tier->{1}
 ItemLevel >= 60
+ItemLevel < 75
 Rarity Rare
-Class {1}{2}
+Class {2}{3}
 Identified False
-SetBorderColor {3}
+SetBorderColor {4}
+SetBackgroundColor 120 20 20 80
 SetFontSize 40
-MinimapIcon {4} {5}'''
+MinimapIcon {5} {6}'''
+kRegalRecipeRuleTemplate = \
+'''# Regal Recipe {2}
+Show # $type->{0} $tier->{1}
+ItemLevel >= 75
+Rarity Rare
+Class {2}{3}
+Identified False
+SetBorderColor {4}
+SetBackgroundColor 22 22 111 130
+SetFontSize 40
+MinimapIcon {5} {6}'''
 
 kChaosRecipeItemSlots = ['Weapons',
                          'Body Armours',
@@ -220,8 +239,6 @@ kChaosRecipeItemSlots = ['Weapons',
 kChaosRecipeItemSlotsMinusWeapons = kChaosRecipeItemSlots[1:]
 
 kChaosRecipeItemSlotsInternal = ['WeaponsX', 'Weapons3'] + kChaosRecipeItemSlotsMinusWeapons
-
-kChaosRecipeTypeTag = 'dlf_chaos_recipe_rares'
 
 # Need no spaces in tier tags
 kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
@@ -273,28 +290,48 @@ kChaosRecipeMinimapIconSizeColorParams = {'WeaponsX' : '1 Red',
 
 kChaosRecipeMinimapIconType = 'Moon'
 
-# All non-weapon chaos recipe rules (weapons handled in function below)
-kChaosRecipeRuleStrings = [kChaosRecipeRuleTemplate.format(
-                                   kChaosRecipeTierTags[item_slot],
-                                   kChaosRecipeClasses[item_slot],
-                                   kChaosRecipeHeightConditions[item_slot],
-                                   kChaosRecipeBorderColors[item_slot],
-                                   kChaosRecipeMinimapIconSizeColorParams[item_slot],
-                                   kChaosRecipeMinimapIconType)
-                               for item_slot in kChaosRecipeItemSlotsMinusWeapons]
+# All non-weapon chaos and regal recipe rules (weapons handled in function below)
+kChaosRegalRecipeRuleStrings = [
+        rule_string for item_slot in kChaosRecipeItemSlotsMinusWeapons for rule_string in
+                (kChaosRecipeRuleTemplate.format(
+                        kChaosRecipeTypeTag,
+                        kChaosRecipeTierTags[item_slot],
+                        kChaosRecipeClasses[item_slot],
+                        kChaosRecipeHeightConditions[item_slot],
+                        kChaosRecipeBorderColors[item_slot],
+                        kChaosRecipeMinimapIconSizeColorParams[item_slot],
+                        kChaosRecipeMinimapIconType),
+                kRegalRecipeRuleTemplate.format(
+                        kRegalRecipeTypeTag,
+                        kChaosRecipeTierTags[item_slot],
+                        kChaosRecipeClasses[item_slot],
+                        kChaosRecipeHeightConditions[item_slot],
+                        kChaosRecipeBorderColors[item_slot],
+                        kChaosRecipeMinimapIconSizeColorParams[item_slot],
+                        kChaosRecipeMinimapIconType))]
 
-# Generate chaos recipe rule for 'WeaponsX' or 'Weapons3'
-def GenerateChaosRecipeWeaponRule(item_slot: str, weapon_classes: str) -> str:
+# Generate chaos and regal recipe rules for 'WeaponsX' or 'Weapons3'
+# Note: not actually constants, weapon_classes comes from config
+def GenerateChaosRegalRecipeWeaponRules(item_slot: str, weapon_classes: str) -> Tuple[str, str]:
     if ((item_slot != 'WeaponsX') and (item_slot != 'Weapons3')):
         raise RuntimeError('item_slot must be either "WeaponsX" or "Weapons3"')
-    return kChaosRecipeRuleTemplate.format(
+    return (kChaosRecipeRuleTemplate.format(
+               kChaosRecipeTypeTag,
                kChaosRecipeTierTags[item_slot],
                weapon_classes,
                kChaosRecipeHeightConditions[item_slot],
                kChaosRecipeBorderColors[item_slot],
                kChaosRecipeMinimapIconSizeColorParams[item_slot],
-               kChaosRecipeMinimapIconType)
-# End GenerateChaosRecipeWeaponRule
+               kChaosRecipeMinimapIconType),
+            kRegalRecipeRuleTemplate.format(
+               kRegalRecipeTypeTag,
+               kChaosRecipeTierTags[item_slot],
+               weapon_classes,
+               kChaosRecipeHeightConditions[item_slot],
+               kChaosRecipeBorderColors[item_slot],
+               kChaosRecipeMinimapIconSizeColorParams[item_slot],
+               kChaosRecipeMinimapIconType))
+# End GenerateChaosRegalRecipeWeaponRules
 
 # List of all Flask BaseTypes
 kFlaskBaseTypesTxtFilepath = os.path.join('Resources', 'flask_base_types.txt')

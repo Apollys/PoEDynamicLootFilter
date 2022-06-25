@@ -17,6 +17,7 @@ Menu, Tray, Icon, DLF_icon.ico
 ; ---------------- Global Parameters ----------------
 kWindowWidth := 1144
 kWindowHeight := 894
+kWindowTitle := "PoE Dynamic Loot Filter"
 
 ; ---------------- PYTHON VERSION AND PATH CHECKING ----------------
 PythonChecks:
@@ -605,7 +606,7 @@ Gui Add, Button, x872 y785 w226 h32 gImport, Import Downloaded Filter
 Gui Add, Button, x872 y825 w224 h31 gUpdate, [&W]rite Filter
 ; ------------- End Section: [Filter Actions] -------------
 
-Gui Show, w%kWindowWidth% h%kWindowHeight%, PoE Dynamic Loot Filter
+Gui Show, w%kWindowWidth% h%kWindowHeight%, %kWindowTitle%
 Return
 
 HandleCurrencyListBoxEvent(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "") {
@@ -1014,21 +1015,73 @@ GuiEscape:
 GuiClose:
 ExitApp
 
+; ============================= Helper Functions =============================
+
+; Returns the HWND ID of the active window if it is owned by the PoE process,
+; or 0 if it does not. Thus, the return value can be used in boolean contex
+; to determine if PoE is the currently active window.
+IsPoeActive() {
+   return WinActive("ahk_exe PathOfExile.exe")
+}
+
+MakePoeActive() {
+   WinActivate, ahk_exe PathOfExile.exe
+}
+
+IsDlfActive() {
+    global kWindowTitle
+    return WinActive(kWindowTitle " ahk_exe AutoHotkey.exe") != 0
+}
+
+MakeDlfActive() {
+    global kWindowTitle
+    WinActivate, %kWindowTitle% ahk_exe AutoHotkey.exe
+}
+
+; Sends a chat message by saving it to the clipboard and sending: Enter, Ctrl-v, Enter
+; Backs up the clipboard and restores it after a short delay on a separate thread.
+; (The clipboard cannot be restored immediately, or it will happen before the paste operation occurs.)
+SendChatMessage(message_text, reply_flag := false) {
+   global backup_clipboard
+   backup_clipboard := clipboard
+   clipboard := message_text
+   BlockInput, On
+   if (reply_flag) {
+      Send, ^{Enter}^v{Enter}
+   } else {
+      Send, {Enter}^v{Enter}
+   }
+   BlockInput, Off
+   SetTimer, RestoreClipboard, -50
+}
+
+RestoreClipboard() {
+   global backup_clipboard
+   clipboard := backup_clipboard
+}
+
+; ================================== Hotkeys ==================================
+
 ; Toggle GUI
-; Note: the `toggle_gui_hotkey_line` tag below is used for setting the hotkey in python,
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-^F1::  ; $toggle_gui_hotkey_line
-WinGetActiveTitle, active
-if (active == "Path of Exile")
-    WinActivate, PoE Dynamic Loot Filter
-else if (active == "PoE Dynamic Loot Filter")
-    WinActivate, Path of Exile
+F7::  ; $toggle_gui_hotkey_line
+if (IsPoeActive()) {
+    MakeDlfActive()
+} else if (IsDlfActive()) {
+    MakePoeActive()
+}
+return
+
+; Write Filter
+; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
+F8::  ; $write_filter_hotkey_line
+Gosub Update
 return
 
 ; Reload Filter
-; Note: the `reload_filter_hotkey_line` tag below is used for setting the hotkey in python,
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-+F2::  ; $reload_filter_hotkey_line
-; TODO: check that Path of Exile is active
-Send {Enter}/filter DynamicLootFilter{Enter}
+F9::  ; $reload_filter_hotkey_line
+if (IsPoeActive()) {
+    SendChatMessage("/itemfilter DynamicLootFilter")
+}
 return

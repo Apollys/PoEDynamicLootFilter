@@ -18,12 +18,17 @@ import file_helper
 import profile
 
 kDlfAhkPath = 'dynamic_loot_filter.ahk'
-kAhkToggleGuiHotkeyTag = '$toggle_gui_hotkey_line'
-kAhkReloadFilterHotkeyTag = '$reload_filter_hotkey_line'
 kDownloadDirectoryPrefix = 'Download directory:'
 kPathOfExileDirectoryPrefix = 'Path of Exile directory:'
 kInputDirectoryPrefix = 'Input (backup) loot filter directory:'
 kDownloadedFilterPrefix = 'Downloaded loot filter filename:'
+
+kAhkToggleGuiHotkeyTag = '$toggle_gui_hotkey_line'
+kAhkWriteFilterHotkeyTag = '$write_filter_hotkey_line'
+kAhkReloadFilterHotkeyTag = '$reload_filter_hotkey_line'
+kToggleGuiDefaultHotkey = 'F7'
+kWriteFilterDefaultHotkey = 'F8'
+kReloadFilterDefaultHotkey = 'F9'
 
 kHotkeyModifierChars = '^+!'
 
@@ -118,22 +123,38 @@ def main():
         print('Example: Ctrl-Shift-a = "^+a"')
         print('Function keys may be typed as "F1" or "f1", ...')
         print()
-        hotkey_string = input('Type your toggle GUI hotkey (leave blank for default: "F7"): ')
+        hotkey_string = input('Type your toggle GUI hotkey (leave blank for default: '
+                '"{}"): '.format(kToggleGuiDefaultHotkey))
         if (hotkey_string == ''):
-            hotkey_string = "F7"
+            hotkey_string = kToggleGuiDefaultHotkey
         if (IsHotkeyStringValid(hotkey_string)):
             break
         print('Invalid hotkey entered: "{}"'.format(hotkey_string))
     SetHotkey(kAhkToggleGuiHotkeyTag, hotkey_string)
     print('\nToggle GUI hotkey set to: "{}"'.format(hotkey_string))
     
-    # 2b. Query reload filter hotkey
+    # 2b. Query write filter hotkey
+    print('\nStep 2: Set write filter hotkey')
+    hotkey_string = ''
+    while (True):
+        hotkey_string = input('Type your reload filter hotkey (leave blank for default: '
+                '"{}"): '.format(kWriteFilterDefaultHotkey))
+        if (hotkey_string == ''):
+            hotkey_string = kWriteFilterDefaultHotkey
+        if (IsHotkeyStringValid(hotkey_string)):
+            break
+        print('Invalid hotkey entered: "{}"'.format(hotkey_string))
+    SetHotkey(kAhkWriteFilterHotkeyTag, hotkey_string)
+    print('\nReload Filter hotkey set to: "{}"'.format(hotkey_string))
+    
+    # 2c. Query reload filter hotkey
     print('\nStep 2: Set reload filter hotkey')
     hotkey_string = ''
     while (True):
-        hotkey_string = input('Type your reload filter hotkey (leave blank for default: "F8"): ')
+        hotkey_string = input('Type your reload filter hotkey (leave blank for default: '
+                '"{}"): '.format(kReloadFilterDefaultHotkey))
         if (hotkey_string == ''):
-            hotkey_string = "F8"
+            hotkey_string = kReloadFilterDefaultHotkey
         if (IsHotkeyStringValid(hotkey_string)):
             break
         print('Invalid hotkey entered: "{}"'.format(hotkey_string))

@@ -621,14 +621,18 @@ class LootFilter:
             self.SetChaosRecipeEnabledFor('WeaponsX', enable_flag)
             self.SetChaosRecipeEnabledFor('Weapons3', enable_flag)
             return
-        type_tag: str = 'dlf_chaos_recipe_rares'
+        chaos_recipe_type_tag: str = consts.kChaosRecipeTypeTag
+        regal_recipe_type_tag: str = consts.kRegalRecipeTypeTag
         tier_tag: str = (item_slot if item_slot in consts.kChaosRecipeTierTags.values()
                          else consts.kChaosRecipeTierTags[item_slot])
-        rule = self.GetRule(type_tag, tier_tag)
+        chaos_recipe_rule = self.GetRule(chaos_recipe_type_tag, tier_tag)
+        regal_recipe_rule = self.GetRule(regal_recipe_type_tag, tier_tag)
         if (enable_flag):
-            rule.Show()
+            chaos_recipe_rule.Show()
+            regal_recipe_rule.Show()
         else:
-            rule.Disable()
+            chaos_recipe_rule.Disable()
+            regal_recipe_rule.Disable()
     # End IsChaosRecipeItemSlotEnabled
     
     def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
@@ -651,6 +655,8 @@ class LootFilter:
         elif (LootFilterRule.IsParsableAsRule(block)):
             rule = LootFilterRule(block)
             key = rule.type_tag, rule.tier_tag
+            #if (key[0] and key[0].startswith('dlf_')):
+            #    print(key)
             if ((not rule.type_tag) or (not rule.tier_tag)):
                 self.num_untagged_rules += 1
                 rule.SetTypeTierTags(consts.kUntaggedRuleTypeTag, str(self.num_untagged_rules))
@@ -736,20 +742,25 @@ class LootFilter:
                 current_section_id_int, 'Show specific flask BaseTypes') + '\n\n'
         text += consts.kFlaskRuleTemplate + '\n\n'
         text += consts.kHighIlvlFlaskRuleTemplate + '\n\n'
-        # Add chaos recipe rules
+        # Add chaos/regal recipe rules
         current_section_id_int += 1
         text += consts.kSectionHeaderTemplate.format(
                 current_section_id_int, 'Show chaos recipe rares by item slot') + '\n\n'
-        # Weapons handled separately, since config tells us which classes to use
-        item_slot = 'WeaponsX'
+        chaos_regal_recipe_rule_strings = []
+        # Handle weapons separately, since config tells us which classes to use
+        item_slot='WeaponsX'
         weapon_classes = self.profile_obj.config_values['ChaosRecipeWeaponClassesAnyHeight']
-        text += consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes) + '\n\n'
-        item_slot = 'Weapons3'
+        chaos_regal_recipe_rule_strings.extend(consts.GenerateChaosRegalRecipeWeaponRules(
+                item_slot, weapon_classes))
+        item_slot='Weapons3'
         weapon_classes = self.profile_obj.config_values['ChaosRecipeWeaponClassesMaxHeight3']
-        text += consts.GenerateChaosRecipeWeaponRule(item_slot, weapon_classes) + '\n\n'
-        # Handle the rest of chaos recipe rules
-        for chaos_recipe_rule_string in consts.kChaosRecipeRuleStrings:
-            text += chaos_recipe_rule_string + '\n\n'
+        chaos_regal_recipe_rule_strings.extend(consts.GenerateChaosRegalRecipeWeaponRules(
+                item_slot, weapon_classes))
+        # Add non-weapon rules
+        chaos_regal_recipe_rule_strings.extend(consts.kChaosRegalRecipeRuleStrings)
+        # Append all chaos/regal recipe rule strings to `text` variable
+        text += '\n\n'.join(chaos_regal_recipe_rule_strings)
+        # Return list of lines
         return text.split('\n')
     # End GenerateDlfRuleText
 
@@ -762,6 +773,7 @@ class LootFilter:
         dlf_rule_text = self.GenerateDlfRuleText()
         successor_key = self.FindTableOfContentsNode().next_node.key
         current_block = []
+        dlf_rule_text.append('')  # add blank line to handle last rule uniformly
         for line in dlf_rule_text:
             if (line == ''):
                 self.AddBlockToHll(current_block, successor_key)

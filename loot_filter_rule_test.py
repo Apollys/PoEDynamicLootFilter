@@ -53,6 +53,18 @@ kEmptyBaseTypeRuleText = \
 #PlayAlertSound 2 300
 #DisableDropSound True'''
 
+kRepeatedKeywordRuleText = \
+'''Show # $type->dlf_chaos_recipe_rares $tier->amulets
+ItemLevel >= 60
+ItemLevel < 75
+Rarity Rare
+Class "Amulets"
+Identified False
+SetBorderColor 0 255 255 255
+SetBackgroundColor 120 20 20 80
+SetFontSize 40
+MinimapIcon 0 Cyan Moon'''
+
 def TestIsParsableAsRule():
     AssertFalse(LootFilterRule.IsParsableAsRule(kCommentBlockText))
     AssertTrue(LootFilterRule.IsParsableAsRule(kInputRuleText))
@@ -158,6 +170,11 @@ def TestEmptyBaseTypeList():
     AssertTrue(RuleVisibility.IsDisabled(rule.visibility))
     print('TestEmptyBaseTypeList passed!')
 
+def TestRepeatedKeyword():
+    rule = LootFilterRule(kRepeatedKeywordRuleText)
+    print(rule)
+    print('TestRepeatedKeyword passed!')
+    
 def main():
     TestIsParsableAsRule()
     TestBasicRuleParse()
@@ -167,6 +184,7 @@ def main():
     TestChangeTags()
     TestModifyLine()
     TestEmptyBaseTypeList()
+    TestRepeatedKeyword()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

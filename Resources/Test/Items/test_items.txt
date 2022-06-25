@@ -345,6 +345,18 @@ Right click to drink. Can only hold charges while in belt. Refills as you kill m
 
 ================================================================================
 
+Item Class: Amulets
+Rarity: Rare
+Lapis Amulet
+--------
+Item Level: 60
+--------
++22 to Intelligence (implicit)
+--------
+Unidentified
+
+================================================================================
+
 Item Class: Daggers
 Rarity: Rare
 Gutting Knife
@@ -361,7 +373,7 @@ Int: 78
 --------
 Sockets: G-B-B 
 --------
-Item Level: 82
+Item Level: 75
 --------
 30% increased Global Critical Strike Chance (implicit)
 --------
