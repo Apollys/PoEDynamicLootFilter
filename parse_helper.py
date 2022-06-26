@@ -170,19 +170,22 @@ def ParseRuleLineGeneric(line: str) -> Tuple[str, str, List[str]]:
     CheckType(line, 'line', str)
     # Ensure line is uncommented and strip
     line = UncommentedLine(line).strip()
-    if (line == ''):
-        raise RuntimeError('Empty line encountered when parsing rule')
     # Split into keyword, (optional) op_string, values_string
-    split_result = line.split(' ', maxsplit=2)
-    if (len(split_result) == 1):
-        return split_result[0], '', ['']
-    # Check if there is no operator
-    if (split_result[1] not in consts.kOperatorMap):
-        split_result = line.split(' ', maxsplit=1)
-        split_result.insert(1, '')  # insert empty op_string
-    keyword, op_string, values_string = split_result
-    values_list = ConvertValuesStringToList(values_string)
-    return keyword, op_string, values_list
+    if (' ' not in line):
+        keyword = line
+        return keyword, '', []
+    keyword, op_and_values = line.split(' ', maxsplit=1)
+    op_string = ''
+    values_string = ''
+    # Parse and update op_string if input line contains an operator
+    split_result = op_and_values.split(' ', maxsplit=1)
+    if (split_result[0] in consts.kOperatorMap):
+        op_string = split_result[0]
+        if (len(split_result) > 1):
+            values_string = split_result[1]
+    else:  # no operator
+        values_string = op_and_values
+    return keyword, op_string, ConvertValuesStringToList(values_string)
 # End ParseRuleLineGeneric
 
 # Returns type_tag, tier_tag if rule has tags, else None, None.
@@ -203,6 +206,8 @@ def ParseTypeTierTags(rule_text_lines: List[str]) -> Tuple[str, str]:
 # Assumes either all or none of the items in values_string are enclosed in quotes.
 def ConvertValuesStringToList(values_string: str) -> List[str]:
     CheckType(values_string, 'values_string', str)
+    if (len(values_string) == 0):
+        return []
     if ('"' in values_string):  # assume all values are enclosed in quotes
         values_list = simple_parser.ParseEnclosedBy(values_string, '"')
     else:

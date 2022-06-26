@@ -45,10 +45,23 @@ def TestFindShowHideLineIndex():
         AssertEqual(show_hide_line_index, expected_index)
     print('TestFindShowHideLineIndex passed!')
 
-# TODO: Add more test cases, this is only one case
+# TODO: Add more test cases
 def TestParseRuleLineGeneric():
+    # Standard rule line
     rule_line = '# BaseType == "Hubris Circlet" "Sorcerer\'s Gloves"'
     expected_parse_result = ('BaseType', '==', ['Hubris Circlet', "Sorcerer's Gloves"])
+    AssertEqual(parse_helper.ParseRuleLineGeneric(rule_line), expected_parse_result)
+    # Rule line without operator
+    rule_line = 'BaseType "Splinter of Chayula" "Splinter of Uul-Netol"'
+    expected_parse_result = ('BaseType', '', ['Splinter of Chayula', 'Splinter of Uul-Netol'])
+    AssertEqual(parse_helper.ParseRuleLineGeneric(rule_line), expected_parse_result)
+    # Strange case for Oil rules
+    rule_line = '# BaseType =='
+    expected_parse_result =  ('BaseType', '==', [])
+    AssertEqual(parse_helper.ParseRuleLineGeneric(rule_line), expected_parse_result)
+    # Keyword only
+    rule_line = 'Hide'
+    expected_parse_result =  ('Hide', '', [])
     AssertEqual(parse_helper.ParseRuleLineGeneric(rule_line), expected_parse_result)
     print('TestParseRuleLineGeneric passed!')
 

@@ -164,6 +164,23 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
+    # Splinters
+    'set_splinter_min_visible_stack_size' : {
+        'NumParamsOptions' : [2],
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'get_splinter_min_visible_stack_size' : { 
+        'NumParamsOptions' : [1],
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    'get_all_splinter_min_visible_stack_sizes' : { 
+        'NumParamsOptions' : [0],
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
     # Essences
     'get_all_essence_tier_visibilities' : { 
         'NumParamsOptions' : [0],
@@ -725,7 +742,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         set_currency_tier_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">
          - Shows currency stacks >= stack_size and hides stacks < stack_size for the given tier
          - If stack_size is "hide_all", all currency of the given tier will be hidden
-         - Valid stack_size values: {1, 2, 4} for tiers1-7, {1, 2, 4, 6} for tiers 8-9 and scrolls
+         - Valid stack_size values: {1, 2, 4} for tiers 1-7, {1, 2, 4, 6} for tiers 8-9 and scrolls
          - tier is an integer [1-9] or "tportal"/"twisdom" for Portal/Wisdom Scrolls
          - Output: None
          - Example: > python3 backend_cli.py set_currency_min_visible_stack_size 7 6 MyProfile
@@ -746,6 +763,49 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         CheckNumParams(function_params, 1)
         tier_str: str = function_params[0]
         output_string = str(loot_filter.GetCurrencyTierMinVisibleStackSize(tier_str))
+    # ======================================== Splinters ========================================
+    elif (function_name == 'set_splinter_min_visible_stack_size'):
+        '''
+        set_splinter_min_visible_stack_size <base_type: str> <stack_size: int>
+         - Shows splinter stacks >= stack_size and hides stacks < stack_size for the given base_type
+         - Valid stack_size values are {1, 2, 4, 8} (consts.kDlfSplinterStackSizes)
+         - Output: None
+         - Example: > python3 backend_cli.py set_splinter_min_visible_stack_size "Splinter of Esh" 4 MyProfile
+        '''
+        CheckNumParams(function_params, 2)
+        splinter_base_type, stack_size_string = function_params
+        loot_filter.SetSplinterMinVisibleStackSize(splinter_base_type, int(stack_size_string))
+    elif (function_name == 'get_splinter_min_visible_stack_size'):
+        '''
+        get_splinter_min_visible_stack_size <base_type: str>
+         - Output: min visible stack size for the given base_type
+         - Example: > python3 backend_cli.py get_splinter_min_visible_stack_size "Splinter of Esh" MyProfile
+        '''
+        
+        
+        CheckNumParams(function_params, 1)
+        splinter_base_type = function_params[0]
+        output_string = str(loot_filter.GetSplinterMinVisibleStackSize(splinter_base_type))
+    elif (function_name == 'get_all_splinter_min_visible_stack_sizes'):
+        '''
+        get_all_splinter_min_visible_stack_sizes
+         - Output: newline-separated sequence of `<base_type: str>;<stack_size: int>`
+         - Example: > python3 backend_cli.py get_all_splinter_min_visible_stack_sizes MyProfile
+        '''
+        CheckNumParams(function_params, 0)
+        # Track found splinter types, not found means min visible stack size is 1
+        found_splinter_base_types = set()
+        output_list = []
+        for stack_size in consts.kDlfSplinterStackSizes:
+            splinter_base_types = loot_filter.GetSplintersHiddenBelow(stack_size)
+            found_splinter_base_types.update(splinter_base_types)
+            output_list += [(base_type, stack_size) for base_type in splinter_base_types]
+        all_splinter_base_types = file_helper.ReadFile(
+                consts.kSplinterBaseTypesListFullpath, retain_newlines=False)
+        for splinter_base_type in all_splinter_base_types:
+            if (splinter_base_type not in found_splinter_base_types):
+                output_list.append((splinter_base_type, 1))
+        output_string = '\n'.join('{};{}'.format(*pair) for pair in output_list)
     # ========================================= Essences =========================================
     elif (function_name == 'get_all_essence_tier_visibilities'):
         '''

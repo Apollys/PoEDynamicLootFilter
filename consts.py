@@ -107,6 +107,30 @@ kUnifiedCurrencyTags = { tier :
     } for tier in range(1, kNumCurrencyTiersIncludingScrolls + 1)
 }
 
+# ================================= Splinters =================================
+
+kSplinterBaseTypesListFullpath = os.path.join('Resources', 'splinter_base_types.txt')
+
+kFilterBladeSplinterTags = (
+    list(itertools.product(
+        ('currency->stackedsplintershigh', 'currency->stackedsplinterslow'),
+        ('t{}'.format(i) for i in range(1, 4)))) + 
+    [('currency->splinter', 't{}'.format(i)) for i in (1, 3)] +
+    [('currency->splinter->simulacrum', 't{}'.format(i)) for i in range(1, 6)]
+)
+
+kDlfSplintersTypeTag = 'dlf_splinters'
+kDlfSplintersTierTagTemplate = 'stack_size_below_{0}'
+
+kDlfSplinterStackSizes = [2, 4, 8]
+
+# 0: stack_size
+# 1: type_tag
+kDlfHideSplintersRuleTemplate = \
+'''# Hide specified Splinters with stack size below {0}
+# Hide # $type->{1} $tier->''' + kDlfSplintersTierTagTemplate + '''
+# StackSize < {0}'''
+
 # ================================= Map Tier =================================
 
 kHideMapsBelowTierTags = ('dlf_hide_maps_below_tier', 'dlf_hide_maps_below_tier')

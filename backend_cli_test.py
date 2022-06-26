@@ -36,6 +36,11 @@ set_currency_tier_min_visible_stack_size 2 4
 get_currency_tier_min_visible_stack_size 2
 set_currency_tier_min_visible_stack_size twisdom 1
 get_currency_tier_min_visible_stack_size twisdom
+set_splinter_min_visible_stack_size "Splinter of Uul-Netol" 8
+set_splinter_min_visible_stack_size "Timeless Maraketh Splinter" 1
+get_splinter_min_visible_stack_size "Timeless Maraketh Splinter"
+get_splinter_min_visible_stack_size "Simulacrum Splinter"
+get_all_splinter_min_visible_stack_sizes
 get_all_essence_tier_visibilities
 set_hide_essences_above_tier 1
 get_hide_essences_above_tier

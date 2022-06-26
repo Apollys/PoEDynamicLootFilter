@@ -388,6 +388,50 @@ class LootFilter:
         return consts.kCurrencyStackSizeStringToIntMap['hide_all']
     # End GetCurrencyTierMinVisibleStackSize
 
+    # ============================= Splinter Functions =============================
+    
+    def SetSplinterMinVisibleStackSize(self, splinter_base_type: str, min_stack_size: int):
+        CheckType(splinter_base_type, 'splinter_base_type', str)
+        CheckType(min_stack_size, 'min_stack_size', int)
+        # Remove splinter_base_type from all Hide rules first
+        type_tag = consts.kDlfSplintersTypeTag
+        for stack_size in consts.kDlfSplinterStackSizes:
+            tier_tag = consts.kDlfSplintersTierTagTemplate.format(stack_size)
+            self.GetRule(type_tag, tier_tag).RemoveBaseType(splinter_base_type)
+        # Now add splinter_base_type to rule corresponding to min_stack_size
+        if (min_stack_size == 1): return
+        tier_tag = consts.kDlfSplintersTierTagTemplate.format(min_stack_size)
+        rule = self.GetRule(type_tag, tier_tag)
+        rule.AddBaseType(splinter_base_type)
+        rule.Enable()
+    # End SetSplinterMinVisibleStackSize
+    
+    def GetSplinterMinVisibleStackSize(self, splinter_base_type: str) -> int:
+        CheckType(splinter_base_type, 'splinter_base_type', str)
+        # Look through all DLF splinter rules to see if splinter_base_type is present.
+        # Once found, can return immediately, because splinter_base_type should only
+        # be present in one DLF splinter rule.
+        type_tag = consts.kDlfSplintersTypeTag
+        for stack_size in consts.kDlfSplinterStackSizes:
+            tier_tag = consts.kDlfSplintersTierTagTemplate.format(stack_size)
+            if (splinter_base_type in self.GetRule(type_tag, tier_tag).GetBaseTypeList()):
+                return stack_size
+        # Splinter base_type not found, so all stack sizes are visible.
+        return 1
+    # End GetSplinterMinVisibleStackSize
+    
+    # Returns the list of all Splinter BaseTypes in the DLF added splinter rule
+    # corresponding to "Hide splinters below stack_size"
+    def GetSplintersHiddenBelow(self, stack_size: int) -> List[str]:
+        CheckType(stack_size, 'stack_size', int)
+        if (stack_size not in consts.kDlfSplinterStackSizes):
+            raise RuntimeError('Invalid Splinter StackSize value: {}'.format(stack_size))
+        type_tag = consts.kDlfSplintersTypeTag
+        tier_tag = consts.kDlfSplintersTierTagTemplate.format(stack_size)
+        rule = self.GetRule(type_tag, tier_tag)
+        return list(rule.GetBaseTypeList())  # returns a copy
+    # End GetSplintersHiddenBelow
+
     # ============================= Essence Functions =============================
     
     def SetEssenceTierVisibility(self, tier: int, visibility: RuleVisibility):
@@ -814,6 +858,13 @@ class LootFilter:
         chaos_regal_recipe_rule_strings.extend(consts.kChaosRegalRecipeRuleStrings)
         # Append all chaos/regal recipe rule strings to `text` variable
         text += '\n\n'.join(chaos_regal_recipe_rule_strings) + '\n\n'
+        # Add Hide Splinter rules
+        current_section_id_int += 1
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Hide Splinters below specific stack sizes') + '\n\n'
+        for stack_size in consts.kDlfSplinterStackSizes:
+            text += consts.kDlfHideSplintersRuleTemplate.format(
+                    stack_size, consts.kDlfSplintersTypeTag) + '\n\n'
         # Add Socket rules last so they can be dynamically added using self.dlf_rules_successor_key
         # Add BaseType rules
         current_section_id_int += 1
@@ -873,6 +924,10 @@ class LootFilter:
                 stack_size = consts.kCurrencyStackSizes[i + 1]
                 rule = self.GetRule(type_tag, tier_tag)
                 rule.ModifyLine('StackSize', '>=', stack_size)
+        # Show all FilterBlade splinter rules (DLF hides splinters separately)
+        # TODO: more advanced - parse visibilities and translate to DLF splinter rules
+        for type_tag, tier_tag in consts.kFilterBladeSplinterTags:
+            self.GetRule(type_tag, tier_tag).Show()
         # Place oils in appropriate tiers
         oil_hide_rule = self.GetRule(consts.kOilTypeTag, consts.kOilHideTierTag)
         oil_hide_rule.Hide()

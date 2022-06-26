@@ -152,9 +152,12 @@ for the detailed documentation of all available function calls.
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
   - `set_currency_to_tier <currency_name: str> <tier: int>`
   - `get_all_currency_tiers`
-  - `set_currency_tier_min_visible_stack_size <tier: int> <visible_flag: int>`
-  - `get_currency_tier_min_visible_stack_size <tier: int>`
+  - `set_currency_tier_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">`
+  - `get_currency_tier_min_visible_stack_size <tier: int or string>`
   - (For test suite use: `get_tier_of_currency <currency_name: str>`)
+  - `set_splinter_min_visible_stack_size <base_type: str> <stack_size: int>`
+  - `get_splinter_min_visible_stack_size <base_type: str>`
+  - `get_all_splinter_min_visible_stack_sizes`
   - `get_all_essence_tier_visibilities`
   - `set_hide_essences_above_tier <tier: int>`
   - `get_hide_essences_above_tier`
