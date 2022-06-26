@@ -10,7 +10,6 @@ from loot_filter_rule import RuleVisibility, LootFilterRule
 import os.path
 import parse_helper
 from profile import Profile
-import rule_parser
 import socket_helper
 from type_checker import CheckType
 
@@ -92,7 +91,7 @@ class LootFilter:
         with open(self.profile_obj.config_values['OutputLootFilterFullpath'],
                 'w', encoding='utf-8') as output_file:
             for key, rule_or_text_block in self.rule_or_text_block_hll:
-                text_lines = (rule_or_text_block.rule.rule_text_lines
+                text_lines = (rule_or_text_block.rule.GetTextLines()
                         if rule_or_text_block.is_rule else rule_or_text_block.text_lines)
                 output_file.write('\n'.join(text_lines) + '\n\n')
     # End SaveToFile
@@ -107,7 +106,6 @@ class LootFilter:
 
     # ============================= Rule-Item Matching =============================
     
-    # TODO: write unit tests for this.
     # Returns the first non-Continue rule in the filter matching the given item,
     # None if no rule matches the item, or the last matched Continue rule otherwise.
     # If a rule has an AreaLevel requirement, it will never match any item.
@@ -783,7 +781,7 @@ class LootFilter:
         # Add "Hide maps below tier" rule
         current_section_id_int += 1
         text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Hide all maps below specified tier') + '\n\n'
+                current_section_id_int, 'Hide maps below tier') + '\n\n'
         text += consts.kHideMapsBelowTierRuleTemplate.format(
                 self.profile_obj.config_values['HideMapsBelowTier']) + '\n\n'
         # Add BaseType rules

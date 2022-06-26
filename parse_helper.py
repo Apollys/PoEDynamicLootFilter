@@ -13,6 +13,7 @@ Loot filter related functions:
  - IsSectionOrGroupDeclaration(line: str) -> bool
  - ParseSectionOrGroupDeclarationLine(line) -> Tuple[bool, str, str]
  - FindShowHideLineIndex(rule_text_lines: List[str]) -> int
+ - ParseRuleLineGeneric(line: str) -> Tuple[str, str, List[str]]
  - ParseTypeTierTags(rule_text_lines: List[str]) -> Tuple(str, str)
  - ConvertValuesStringToList(values_string: str) -> List[str]
  - ConvertValuesListToString(values_list: List[str]) -> str
@@ -118,42 +119,6 @@ def IsSectionOrGroupDeclaration(line: str) -> bool:
     return bool(consts.kSectionRePattern.search(line))    
 # End IsSectionOrGroupDeclaration
 
-# TODO: IsRuleStart should be unnecessary now
-# Returns True if the line at the given index marks the start of a rule, else returns False
-# The reason this is a lot more complicated than it seems is the following possible scenario:
-'''
-# Show 3 socketed items
-# Show 4 socketed items
-# Show
-# Sockets >= 3
-# SetFontSize 45
-
-'''
-# Here, the rule doesn't start until the third line!  The other two are comments,
-# and we need to make sure we don't think they're real loot filter code
-# The only way to solve this is to parse backwards from the end of the rule if it's commented.
-def IsRuleStart(lines: List[str], index: int) -> bool:
-    CheckType2(lines, 'lines', list, str)
-    CheckType(lines[index], 'lines[index]', str)
-    CheckType(index, 'index', int)
-    if (not lines[index].startswith('#')):
-        return lines[index].startswith('Show') or lines[index].startswith('Hide')
-    # Otherwise, find the end of the rule and parse backwards to find its start line
-    i: int = index
-    while (lines[i] != ''):
-        i += 1
-    while (i >= index):
-        line: str = lines[i]
-        if (line.startswith('Show') or line.startswith('Hide') or
-                line.startswith('#Show') or line.startswith('#Hide') or
-                line.startswith('# Show') or line.startswith('# Hide')):
-            # Found the true rule start at i
-            return i == index
-        i -= 1
-    # If somehow we made it back here, there was no rule, just a random comment block
-    return False
-# End IsRuleStart()
-
 # Returns (is_section_group, section_id, section_name) triplet
 # Example: "# [[1000]] High Level Crafting Bases" -> "1000", "High Level Crafting Bases"
 # Or: "# [1234] ILVL 86" -> "1234", "ILVL 86" 
@@ -188,13 +153,37 @@ def ParseSectionOrGroupDeclarationLine(line) -> Tuple[bool, str, str]:
 # End ParseSectionOrGroupDeclarationLine
 
 # Returns the index of the Show/Hide line, or None if no such line found.
-def FindShowHideLineIndex(rule_text_lines: List[str]) -> int:
+# Robust to the rule having a header comment starting with 'Show'/'Hide'.
+def FindShowHideLineIndex(rule_text_lines: List[str] or str) -> int:
+    if (isinstance(rule_text_lines, str)):
+        rule_text_lines = rule_text_lines.split('\n')
     CheckType(rule_text_lines, 'rule_text_lines', list, str)
     for i in reversed(range(len(rule_text_lines))):
         if (re.search(kShowHideLinePattern, rule_text_lines[i])):
             return i
     return None
 # End FindShowHideLineIndex
+
+# A generic rule line is of the form: <keyword> <optional: operator> <values>
+# This will be parsed as the tuple (keyword, operator_string, values_list).
+def ParseRuleLineGeneric(line: str) -> Tuple[str, str, List[str]]:
+    CheckType(line, 'line', str)
+    # Ensure line is uncommented and strip
+    line = UncommentedLine(line).strip()
+    if (line == ''):
+        raise RuntimeError('Empty line encountered when parsing rule')
+    # Split into keyword, (optional) op_string, values_string
+    split_result = line.split(' ', maxsplit=2)
+    if (len(split_result) == 1):
+        return split_result[0], '', ['']
+    # Check if there is no operator
+    if (split_result[1] not in consts.kOperatorMap):
+        split_result = line.split(' ', maxsplit=1)
+        split_result.insert(1, '')  # insert empty op_string
+    keyword, op_string, values_string = split_result
+    values_list = ConvertValuesStringToList(values_string)
+    return keyword, op_string, values_list
+# End ParseRuleLineGeneric
 
 # Returns type_tag, tier_tag if rule has tags, else None, None.
 def ParseTypeTierTags(rule_text_lines: List[str]) -> Tuple[str, str]:

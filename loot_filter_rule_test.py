@@ -172,7 +172,6 @@ def TestEmptyBaseTypeList():
 
 def TestRepeatedKeyword():
     rule = LootFilterRule(kRepeatedKeywordRuleText)
-    print(rule)
     print('TestRepeatedKeyword passed!')
     
 def main():

@@ -1,4 +1,5 @@
 import itertools
+import operator
 import os.path
 import re
 from typing import Dict, List, Tuple
@@ -112,7 +113,8 @@ kHideMapsBelowTierTags = ('dlf_hide_maps_below_tier', 'dlf_hide_maps_below_tier'
 
 # No idea if the ShapedMap matters, but NeverSink used it in his filters
 kHideMapsBelowTierRuleTemplate = \
-'''Hide # $type->{} $tier->{}
+'''# Hide non-unique Maps below specified tier
+Hide # $type->{} $tier->{}
 Class Maps
 ShapedMap False
 Rarity ! Unique
@@ -160,13 +162,15 @@ kBaseTypeTierTagRare = 'rare'
 kBaseTypeTierTagAny = 'any_non_unique'
 
 kBaseTypeRuleTemplateRare = \
-'''# Show # $type->{} $tier->{}
+'''# Specific BaseTypes: Rare items
+# Show # $type->{} $tier->{}
 # Rarity == Rare
 # SetFontSize 44
 # PlayEffect Yellow Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagRare)
 
 kBaseTypeRuleTemplateAny = \
-'''# Show # $type->{} $tier->{}
+'''# Specific BaseTypes: Any non-unique Items
+# Show # $type->{} $tier->{}
 # Rarity ! Unique
 # SetFontSize 44
 # PlayEffect White Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagAny)
@@ -178,7 +182,8 @@ kFlaskTierTagAnyIlvl = 'any_ilvl'
 kFlaskTierTagHighIlvl = 'high_ilvl'
 
 kFlaskRuleTemplateAnyIlvl = \
-'''# Show # $type->{} $tier->{}
+'''# Flasks: Any ItemLevel
+# Show # $type->{} $tier->{}
 # Rarity ! Unique
 # SetFontSize 44
 # SetBorderColor 50 209 31
@@ -187,7 +192,8 @@ kFlaskRuleTemplateAnyIlvl = \
 # MinimapIcon 0 Green Raindrop'''.format(kFlaskTypeTag, kFlaskTierTagAnyIlvl)
 
 kFlaskRuleTemplateHighIlvl = \
-'''# Show # $type->{} $tier->{}
+'''# Flasks: High ItemLevel
+# Show # $type->{} $tier->{}
 # ItemLevel >= 84
 # Rarity ! Unique
 # SetFontSize 44
@@ -223,7 +229,7 @@ kRegalRecipeTypeTag = 'dlf_regal_recipe_rares'
 # 5: minimap icon size (0 = largest, 1 = medium, 2 = small)
 # 6: minimap icon color (color keyword)
 kChaosRecipeRuleTemplate = \
-'''# Chaos Recipe {2}
+'''# Chaos recipe {7}
 Show # $type->{0} $tier->{1}
 ItemLevel >= 60
 ItemLevel < 75
@@ -235,7 +241,7 @@ SetBackgroundColor 120 20 20 80
 SetFontSize 40
 MinimapIcon {5} {6}'''
 kRegalRecipeRuleTemplate = \
-'''# Regal Recipe {2}
+'''# Regal recipe {7}
 Show # $type->{0} $tier->{1}
 ItemLevel >= 75
 Rarity Rare
@@ -319,7 +325,8 @@ kChaosRegalRecipeRuleStrings = [
                         kChaosRecipeHeightConditions[item_slot],
                         kChaosRecipeBorderColors[item_slot],
                         kChaosRecipeMinimapIconSizeColorParams[item_slot],
-                        kChaosRecipeMinimapIconType),
+                        kChaosRecipeMinimapIconType,
+                        kChaosRecipeClasses[item_slot].strip('"')),
                 kRegalRecipeRuleTemplate.format(
                         kRegalRecipeTypeTag,
                         kChaosRecipeTierTags[item_slot],
@@ -327,7 +334,8 @@ kChaosRegalRecipeRuleStrings = [
                         kChaosRecipeHeightConditions[item_slot],
                         kChaosRecipeBorderColors[item_slot],
                         kChaosRecipeMinimapIconSizeColorParams[item_slot],
-                        kChaosRecipeMinimapIconType))]
+                        kChaosRecipeMinimapIconType,
+                        kChaosRecipeClasses[item_slot].strip('"')))]
 
 # Generate chaos and regal recipe rules for 'WeaponsX' or 'Weapons3'
 # Note: not actually constants, weapon_classes comes from config
@@ -341,7 +349,8 @@ def GenerateChaosRegalRecipeWeaponRules(item_slot: str, weapon_classes: str) -> 
                kChaosRecipeHeightConditions[item_slot],
                kChaosRecipeBorderColors[item_slot],
                kChaosRecipeMinimapIconSizeColorParams[item_slot],
-               kChaosRecipeMinimapIconType),
+               kChaosRecipeMinimapIconType,
+               weapon_classes.replace('" "', ', ').strip('"')),
             kRegalRecipeRuleTemplate.format(
                kRegalRecipeTypeTag,
                kChaosRecipeTierTags[item_slot],
@@ -349,7 +358,8 @@ def GenerateChaosRegalRecipeWeaponRules(item_slot: str, weapon_classes: str) -> 
                kChaosRecipeHeightConditions[item_slot],
                kChaosRecipeBorderColors[item_slot],
                kChaosRecipeMinimapIconSizeColorParams[item_slot],
-               kChaosRecipeMinimapIconType))
+               kChaosRecipeMinimapIconType,
+               weapon_classes.replace('" "', ', ').strip('"')))
 # End GenerateChaosRegalRecipeWeaponRules
 
 # List of all Flask BaseTypes
@@ -385,3 +395,11 @@ kOilTierList = [
         ('Azure Oil', 4), ('Teal Oil', 4), ('Verdant Oil', 4), ('Amber Oil', 4),
         ('Sepia Oil', 4), ('Clear Oil', 4)]
 
+# Rule-item matching
+
+kOperatorMap = {'==' : operator.eq,
+                '!'  : operator.ne,
+                '<'  : operator.lt,
+                '<=' : operator.le,
+                '>'  : operator.gt,
+                '>=' : operator.ge}

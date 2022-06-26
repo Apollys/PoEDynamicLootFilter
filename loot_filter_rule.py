@@ -6,7 +6,6 @@ from hash_linked_list import HashLinkedList
 import logger
 import parse_helper
 import profile
-import rule_parser
 from type_checker import CheckType
 
 kTypeIdentifier = '$type->'
@@ -133,7 +132,7 @@ class LootFilterRule:
         for line in self.rule_text_lines[1:]:
             if (line == ''):
                 continue
-            keyword, operator, values_list = rule_parser.ParseRuleLineGeneric(line)
+            keyword, operator, values_list = parse_helper.ParseRuleLineGeneric(line)
             self.parsed_lines_hll.append(keyword, (operator, values_list))
         # Parse rule visibility
         cleaned_show_hide_line = parse_helper.UncommentedLine(self.rule_text_lines[0]).strip()
@@ -184,6 +183,11 @@ class LootFilterRule:
         return 'Raw Rule Text:\n' + raw_rule_text + '\n\nHash Linked List:\n' + hll_as_text + '\n'
     # End __repr__
     
+    # Returns the full rule text lines, including header comment lines and rule text lines
+    def GetTextLines(self) -> str:
+        return self.header_comment_lines + self.rule_text_lines
+    # End GetTextLines
+    
     # Sets type and tier tags and updates the rule text lines accordingly
     def SetTypeTierTags(self, type_tag: str, tier_tag: str):
         CheckType(type_tag, 'type_tag', str)
@@ -192,11 +196,6 @@ class LootFilterRule:
         self.tier_tag = tier_tag
         self.UpdateRuleTextLines()
     # End SetTypeTierTags
-    
-    # TODO: we changed the format of self.parsed_lines, so this no longer works.
-    def MatchesItem(self, item_properties: dict) -> bool:
-        return rule_parser.CheckRuleMatchesItem(self.parsed_lines, item_properties)
-    # End MatchesItem
     
     # Uncomments the rule if it is commented.
     def Enable(self):

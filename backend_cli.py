@@ -1175,7 +1175,7 @@ kUsageSyntaxString = ('Usage synax:\n'
 def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
     # Always require at least 2 params: script_name, function_name
     if (len(sys.argv) < 2):
-        Error('No function specified\n' + kUsageErrorString)
+        Error('No function specified\n' + kUsageSyntaxString)
     _, function_name, *remaining_params= sys.argv
     function_params = []
     # Separate remaining_params into function_params and profile_name
@@ -1183,17 +1183,17 @@ def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
     profile_name = None
     if (kFunctionInfoMap[function_name]['HasProfileParam']):
         if (len(remaining_params) == 0):
-            Error('No profile specified\n' + kUsageErrorString)
+            Error('No profile specified\n' + kUsageSyntaxString)
         *function_params, profile_name = remaining_params
     else: 
         function_params = remaining_params
     # Check if number of params is valid for given function name
     if (len(function_params) not in kFunctionInfoMap[function_name]['NumParamsOptions']):
         Error('Invalid number of parameters given ({}) for function {}\n'.format(
-                len(function_params), function_name) + kUsageErrorString)
+                len(function_params), function_name) + kUsageSyntaxString)
     # Check if profile exists, if there is a profile param
     if ((profile_name != None) and not profile.ProfileExists(profile_name)):
-        Error('profile "{}" does not exist\n'.format(profile_name) + kUsageErrorString)
+        Error('profile "{}" does not exist\n'.format(profile_name) + kUsageSyntaxString)
     return function_name, function_params, profile_name
 # End ValidateAndParseArguments
     

@@ -5,9 +5,9 @@ It also defines the free function:
  - RuleMatchesItem(rule: LootFilterRule, item: Item) -> bool
 '''
 
-import operator
 from typing import List, Tuple
 
+import consts
 from loot_filter_rule import LootFilterRule
 from multiset import Multiset
 import parse_helper
@@ -232,13 +232,6 @@ def EmptyOpFunc(item_value, rule_value):
     return rule_value in item_value
 # EmptyOpFunc
 
-kOperatorMap = {'==' : operator.eq,
-                '!'  : operator.ne,
-                '<'  : operator.lt,
-                '<=' : operator.le,
-                '>'  : operator.gt,
-                '>=' : operator.ge}
-
 def OperatorFunc(op_string: str, item_value, rule_value) -> bool:
     item_value = simple_parser.ParseValueDynamic(item_value)
     rule_value = simple_parser.ParseValueDynamic(rule_value)
@@ -247,8 +240,8 @@ def OperatorFunc(op_string: str, item_value, rule_value) -> bool:
     if ((item_value in kRarityToIntMap) and (rule_value in kRarityToIntMap)):
         item_value = kRarityToIntMap[item_value]
         rule_value = kRarityToIntMap[rule_value]
-    if (op_string in kOperatorMap):
-        return kOperatorMap[op_string](item_value, rule_value)
+    if (op_string in consts.kOperatorMap):
+        return consts.kOperatorMap[op_string](item_value, rule_value)
     elif (op_string == ''):
         return EmptyOpFunc(item_value, rule_value)
     raise RuntimeError('Unrecognized operator encountered: {}'.format(op_string))

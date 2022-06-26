@@ -13,6 +13,23 @@ kLinesWithTableOfContentsStart = \
 # [[0100]] Global overriding rules
 # [[0200]] High tier influenced items'''
 
+kShowHideLineIndexTestCases = [
+('''Show
+Sockets >= 6
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 59 59 59 255
+PlayEffect Grey
+MinimapIcon 2 Grey Hexagon''', 0),
+
+('''# Show Desired T16 Maps
+# Hide
+Show
+Class Maps
+BaseType == "Tower Map"''', 2)]
+
 def TestIsSubstringInLines():
     AssertTrue(parse_helper.IsSubstringInLines(
             consts.kTableOfContentsIdentifier, kLinesWithTableOfContentsStart))
@@ -21,8 +38,24 @@ def TestIsSubstringInLines():
             consts.kTableOfContentsIdentifier, text_lines))
     print('IsSubstringInLines passed!')
 
+def TestFindShowHideLineIndex():
+    for i, (rule_string, expected_index) in enumerate(kShowHideLineIndexTestCases):
+        rule_lines = rule_string.split('\n') if (i % 2 == 1) else rule_string
+        show_hide_line_index = parse_helper.FindShowHideLineIndex(rule_lines)
+        AssertEqual(show_hide_line_index, expected_index)
+    print('TestFindShowHideLineIndex passed!')
+
+# TODO: Add more test cases, this is only one case
+def TestParseRuleLineGeneric():
+    rule_line = '# BaseType == "Hubris Circlet" "Sorcerer\'s Gloves"'
+    expected_parse_result = ('BaseType', '==', ['Hubris Circlet', "Sorcerer's Gloves"])
+    AssertEqual(parse_helper.ParseRuleLineGeneric(rule_line), expected_parse_result)
+    print('TestParseRuleLineGeneric passed!')
+
 def main():
     TestIsSubstringInLines()
+    TestFindShowHideLineIndex()
+    TestParseRuleLineGeneric()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

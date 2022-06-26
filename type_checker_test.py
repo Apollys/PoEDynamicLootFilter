@@ -30,7 +30,7 @@ def TestTypesMatch():
     CheckTypesMatch(some_string, 'some_string', another_string, 'another_string')
     # Expect mismatch between int and string
     try:
-        CheckTypesMatch(an_integer, some_string)
+        CheckTypesMatch(an_integer, 'an_integer', some_string, 'some_string')
     except TypeError:  # this should happen
         pass
     else:  # this shouldn't happen
