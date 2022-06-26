@@ -364,7 +364,7 @@ for key, val in oils {
 RTrim(oilstr, "|")
 ; ------------- End Precomputation -------------
 
-; ------------- GUI Construction Start -------------
+; ------------- GUI Construction (Build GUI) Start -------------
 ; Set color themes
 Gui Color, 0x111122, 0x111133
 ; Title
@@ -372,238 +372,288 @@ Gui Font, c0x00e8b2 s16 Bold, Segoe UI
 Gui Add, Text, x192 y8 w556 h26 +0x200 +Center, PoE Dynamic Loot Filter
 
 ; ------------- Section: Profiles ------------
+anchor_x := 845, anchor_y := 8
 Gui Font, c0x00e8b2 s12 Bold, Segoe UI
-Gui Add, Text, x845 y8 w61 h29 +0x200, Profile:
+Gui Add, Text, x%anchor_x% y%anchor_y% w61 h29 +0x200, Profile:
 ; DropDownList
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, DropDownList, x905 y8 w151 gChangeProfile vProfileDDL Choose1, %ProfString%
+x := anchor_x + 60, y := anchor_y + 0
+Gui Add, DropDownList, x%x% y%y% w151 gChangeProfile vProfileDDL Choose1, %ProfString%
 ; Create Button
 Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-Gui Add, Button, x1060 y9 w60 h26 gCreateProfile1, Create
+x := anchor_x + 215, y := anchor_y + 1
+Gui Add, Button, x%x% y%y% w60 h26 gCreateProfile1, Create
 ; ------------- End Section: Profiles -------------
 
 ; ------------- Section: [Currency] -------------
+anchor_x := 16, anchor_y := 48
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x16 y48 w483 h783, Currency
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w483 h783, Currency
 ; Dividing lines
-Gui Add, Text, x24 y160 w468 h0 +0x10  ; horizontal line above row 1
-Gui Add, Text, x24 y368 w468 h0 +0x10  ; horizontal line between rows 1 and 2
-Gui Add, Text, x24 y576 w468 h0 +0x10  ; horizontal line between rows 2 and 3
-Gui Add, Text, x178 y168 w0 h610 +0x1 +0x10  ; vertical line between columns 1 and 2
-Gui Add, Text, x24 y784 w468 h0 +0x10  ; horizontal line above portal/wisdom scrolls
-Gui Add, Text, x256 y792 w0 h34 +0x1 +0x10  ; vertical line between portal/wisdom scrolls
+x := anchor_x + 8, y := anchor_y + 112
+Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above row 1
+x := anchor_x + 8, y := anchor_y + 320
+Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line between rows 1 and 2
+x := anchor_x + 8, y := anchor_y + 528
+Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line between rows 2 and 3
+x := anchor_x + 8, y := anchor_y + 736
+Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above portal/wisdom scrolls
+x := anchor_x + 162, y := anchor_y + 120
+Gui Add, Text, x%x% y%y% w0 h610 +0x1 +0x10  ; vertical line between columns 1 and 2
+x := anchor_x + 322, y := anchor_y + 120
+Gui Add, Text, x338 y168 w0 h610 +0x1 +0x10  ; vertical line between column 2 and 3
+x := anchor_x + 240, y := anchor_y + 744
+Gui Add, Text, x%x% y%y% w0 h34 +0x1 +0x10  ; vertical line between portal/wisdom scrolls
 ; Find tier of currency
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x32 y80 w147 h30 +0x200 +Right, Find Tier of Currency:
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, Text, x%x% y%y% w147 h30 +0x200 +Right, Find Tier of Currency:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, DropDownList, x186 y80 w188 +Sort gCurrencyFindDDL vFindCurrTier_in, %all_currency%
+x := anchor_x + 170, y := anchor_y + 32
+Gui Add, DropDownList, x%x% y%y% w188 +Sort gCurrencyFindDDL vFindCurrTier_in, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x384 y80 w16 h28 +0x200, ->
+x := anchor_x + 368, y := anchor_y + 32
+Gui Add, Text, x%x% y%y% w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x408 y81 w40 h26 +0x200 vFindCurrTier_out, [Tier]
+x := anchor_x + 392, y := anchor_y + 33
+Gui Add, Text, x%x% y%y% w40 h26 +0x200 vFindCurrTier_out, [Tier]
 ; Move currency to tier
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x32 y120 w148 h28 +0x200 +Right, Move Currency to Tier:
+x := anchor_x + 16, y := anchor_y + 72
+Gui Add, Text, x%x% y%y% w148 h28 +0x200 +Right, Move Currency to Tier:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, DropDownList, x184 y120 w191 +Sort vCurrencyMoveTier_curr, %all_currency%
+x := anchor_x + 168, y := anchor_y + 72
+Gui Add, DropDownList, x%x% y%y% w191 +Sort vCurrencyMoveTier_curr, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Text, x384 y120 w16 h28 +0x200, ->
+x := anchor_x + 368, y := anchor_y + 72
+Gui Add, Text, x%x% y%y% w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, DropDownList, x408 y120 w41 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
+x := anchor_x + 392, y := anchor_y + 72
+Gui Add, DropDownList, x%x% y%y% w41 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
 ; Go Button
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Button, x456 y121 w32 h26 gCurrencyMoveTier, Go
-; T1 block
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x32 y168 w115 h28 +0x200, T1 Stack Size:
-Gui Add, DropDownList, % "+AltSubmit vValueCurrencyDdlT1 x124 y168 w44 Choose"cstack_values[1],  %cstacktext_less%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y197 w135 h164 +Sort vCurrTexts1, % currtexts[1]
-; T2 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x192 y168 w115 h28 +0x200, T2 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT2 x284 y168 w44 Choose"cstack_values[2], %cstacktext_less%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x192 y197 w135 h164 +Sort vCurrTexts2, % currtexts[2]
-; T3 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x338 y168 w0 h610 +0x1 +0x10  ; vertical line between column 2 and 3
-Gui Add, Text, x352 y168 w115 h28 +0x200, T3 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT3 x444 y168 w44 Choose"cstack_values[3], %cstacktext_less%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y197 w135 h164 +Sort vCurrTexts3, % currtexts[3]
-; T4 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x32 y376 w115 h28 +0x200, T4 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT4 x124 y376 w44 Choose"cstack_values[4], %cstacktext_less%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y405 w135 h164 +Sort vCurrTexts4, % currtexts[4]
-; T5 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x192 y376 w115 h28 +0x200, T5 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT5 x284 y376 w44 Choose"cstack_values[5], %cstacktext_less%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x192 y405 w135 h164 +Sort vCurrTexts5, % currtexts[5]
-; T6 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x352 y376 w115 h28 +0x200, T6 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT6 x444 y376 w44 Choose"cstack_values[6], %cstacktext_less%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y405 w135 h164 +Sort vCurrTexts6, % currtexts[6]
-; T7 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x32 y584 w115 h28 +0x200, T7 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT7 x124 y584 w44 Choose"cstack_values[7], %cstacktext_less%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x32 y613 w135 h164 +Sort vCurrTexts7, % currtexts[7]
-; T8 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x192 y584 w115 h28 +0x200, T8 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT8 x284 y584 w44 Choose"cstack_values[8], %cstacktext%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x192 y613 w135 h164 +Sort vCurrTexts8, % currtexts[8]
-; T9 block
-Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x352 y584 w115 h28 +0x200, T9 Stack Size:
-Gui Add, DropDownList,% "+AltSubmit vValueCurrencyDdlT9 x444 y584 w44 Choose"cstack_values[9], %cstacktext%
-Gui Font, c0x00e8b2 s10
-Gui Add, ListBox, x352 y613 w135 h164 +Sort vCurrTexts9, % currtexts[9]
+x := anchor_x + 440, y := anchor_y + 73
+Gui Add, Button, x%x% y%y% w32 h26 gCurrencyMoveTier, Go
+; Tier blocks
+tier_anchor_x := anchor_x + 16
+tier_anchor_y := anchor_y + 120
+tier_horizontal_spacing := 160
+tier_vertical_spacing := 208
+Loop 9 {
+    tier := A_Index  ; A_Index starts at 1
+    ; Positioning computations
+    row_i := (tier - 1) // 3
+    col_i := Mod(tier - 1, 3)
+    loop_anchor_x := tier_anchor_x + row_i * tier_horizontal_spacing
+    loop_anchor_y := tier_anchor_y + col_i * tier_vertical_spacing
+    ; GUI elements
+    Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+    x := loop_anchor_x + 0, y := loop_anchor_y + 0
+    Gui Add, Text, x%x% y%y% w115 h28 +0x200, T1 Stack Size:
+    x := loop_anchor_x + 92, y := loop_anchor_y + 0
+    Gui Add, DropDownList, % "+AltSubmit vValueCurrencyDdlT" tier " x" x " y" y " w44 Choose"cstack_values[tier],  %cstacktext_less%
+    Gui Font, c0x00e8b2 s10
+    x := loop_anchor_x + 0, y := loop_anchor_y + 29
+    Gui Add, ListBox, x%x% y%y% w135 h164 +Sort vCurrTexts%tier%, % currtexts[tier]
+}
 ; Portal scrolls
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x56 y792 w115 h28 +0x200, Portal Stack Size:
-Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTportal Choose%portal_stack% x176 y792 w48, % cstacktext
+x := anchor_x + 40, y := anchor_y + 744
+Gui Add, Text, x%x% y%y% w115 h28 +0x200, Portal Stack Size:
+x := anchor_x + 160, y := anchor_y + 744
+Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTportal Choose%portal_stack% x%x% y%y% w48, % cstacktext
 ; Wisdom scrolls
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Text, x288 y792 w133 h28 +0x200, Wisdom Stack Size:
-Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTwisdom Choose%wisdom_stack% x424 y792 w48, % cstacktext
+x := anchor_x + 272, y := anchor_y + 744
+Gui Add, Text, x%x% y%y% w133 h28 +0x200, Wisdom Stack Size:
+x := anchor_x + 408, y := anchor_y + 744
+Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTwisdom Choose%wisdom_stack% x%x% y%y% w48, % cstacktext
 ; ------------- End Section: [Currency] -------------
 
 ; ------------- Section: [Chaos Recipe Rares] -------------
+anchor_x := 528, anchor_y := 48
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y48 w285 h169, Chaos Recipe Rares
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w285 h169, Chaos Recipe Rares
 ; CheckBoxes
 Gui Font, c0x00e8b2 s14 Norm, Segoe UI
-Gui Add, CheckBox, % "x544 y80 w123 h26 v" rare_GUI_ids["Weapons"] " " (rare_dict["Weapons"]? " Checked" : ""), Weapons
-Gui Add, CheckBox, % "x544 y112 w123 h26 v" rare_GUI_ids["Body Armours"] " "  (rare_dict["Body Armours"]? " Checked" : ""), Armours
-Gui Add, CheckBox, % "x544 y176 w123 h26 v" rare_GUI_ids["Gloves"] " "  (rare_dict["Gloves"]? " Checked" : ""), Gloves
-Gui Add, CheckBox, % "x544 y144 w123 h26 v" rare_GUI_ids["Helmets"] " "  (rare_dict["Helmets"]? " Checked" : ""), Helmets
-Gui Add, CheckBox, % "x680 y80 w123 h26 v" rare_GUI_ids["Boots"] " "  (rare_dict["Boots"]? " Checked" : ""), Boots
-Gui Add, CheckBox, % "x680 y112 w123 h26 v" rare_GUI_ids["Belts"] " "  (rare_dict["Belts"]? " Checked" : ""), Belts
-Gui Add, CheckBox, % "x680 y144 w123 h26 v" rare_GUI_ids["Rings"] " "  (rare_dict["Rings"]? " Checked" : ""), Rings
-Gui Add, CheckBox, % "x680 y176 w123 h26 v" rare_GUI_ids["Amulets"] " "  (rare_dict["Amulets"]? " Checked" : ""), Amulets
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Weapons"] " " (rare_dict["Weapons"]? " Checked" : ""), Weapons
+x := anchor_x + 16, y := anchor_y + 64
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Body Armours"] " "  (rare_dict["Body Armours"]? " Checked" : ""), Armours
+x := anchor_x + 16, y := anchor_y + 96
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Helmets"] " "  (rare_dict["Helmets"]? " Checked" : ""), Helmets
+x := anchor_x + 16, y := anchor_y + 128
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Gloves"] " "  (rare_dict["Gloves"]? " Checked" : ""), Gloves
+x := anchor_x + 152, y := anchor_y + 32
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Boots"] " "  (rare_dict["Boots"]? " Checked" : ""), Boots
+x := anchor_x + 152, y := anchor_y + 64
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Belts"] " "  (rare_dict["Belts"]? " Checked" : ""), Belts
+x := anchor_x + 152, y := anchor_y + 96
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Rings"] " "  (rare_dict["Rings"]? " Checked" : ""), Rings
+x := anchor_x + 152, y := anchor_y + 128
+Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Amulets"] " "  (rare_dict["Amulets"]? " Checked" : ""), Amulets
 ; ------------- End Section: [Chaos Recipe Rares] -------------
 
 ; ------------- Section: [General BaseTypes] ------------
+anchor_x := 528, anchor_y := 228
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y228 w286 h250, General BaseTypes
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w286 h250, General BaseTypes
 ; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Edit, x546 y264 w250 hwndhGeneralBaseTypesEditBox vGeneralBaseTypesEditBox
+x := anchor_x + 18, y := anchor_y + 36
+Gui Add, Edit, x%x% y%y% w250 hwndhGeneralBaseTypesEditBox vGeneralBaseTypesEditBox
 Placeholder(hGeneralBaseTypesEditBox, "Enter BaseType...")
 ; High ilvl checkbox and Add button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, CheckBox, x548 y296 h26 vGeneralBaseTypesRareCheckBox, Rare items only
+x := anchor_x + 20, y := anchor_y + 68
+Gui Add, CheckBox, x%x% y%y% h26 vGeneralBaseTypesRareCheckBox, Rare items only
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Button, x730 y296 w66 h26, Add
+x := anchor_x + 202, y := anchor_y + 68
+Gui Add, Button, x%x% y%y% w66 h26, Add
 ; Text box and Remove button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, ListBox, x542 y330 w257 h110 vGeneralBaseTypeListBox +Sort
-Gui Add, Button, x596 y440 w144 h31, Remove Selected
+x := anchor_x + 14, y := anchor_y + 102
+Gui Add, ListBox, x%x% y%y% w257 h110 vGeneralBaseTypeListBox +Sort
+x := anchor_x + 68, y := anchor_y + 212
+Gui Add, Button, x%x% y%y% w144 h31, Remove Selected
 ; ------------- End Section: [General BaseTypes] ------------
 
 ; ------------- Section: [Flask BaseTypes] ------------
+anchor_x := 528, anchor_y := 490
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y490 w286 h230, Flask BaseTypes
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w286 h230, Flask BaseTypes
 ; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, DropDownList, x546 y526 w250 vFlaskAvailDDL1 +Sort, Select BaseType...||%flask_avail1%
+x := anchor_x + 18, y := anchor_y + 36
+Gui Add, DropDownList, x%x% y%y% w250 vFlaskAvailDDL1 +Sort, Select BaseType...||%flask_avail1%
 ; High ilvl checkbox and Add button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, CheckBox, x548 y558 h26 vFlaskHighIlvlCheckBox, High ilvl (84+) only
+x := anchor_x + 20, y := anchor_y + 68
+Gui Add, CheckBox, x%x% y%y% h26 vFlaskHighIlvlCheckBox, High ilvl (84+) only
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-Gui Add, Button, x730 y558 w66 h26, Add
+x := anchor_x + 202, y := anchor_y + 68
+Gui Add, Button, x%x% y%y% w66 h26, Add
 ; Text box and Remove button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, ListBox, x542 y592 w257 h90 vFlaskListAny +Sort, %flask_low%
-Gui Add, Button, x596 y682 w144 h31 gRemoveFlaskAny, Remove Selected
+x := anchor_x + 14, y := anchor_y + 102
+Gui Add, ListBox, x%x% y%y% w257 h90 vFlaskListAny +Sort, %flask_low%
+x := anchor_x + 68, y := anchor_y + 192
+Gui Add, Button, x%x% y%y% w144 h31 gRemoveFlaskAny, Remove Selected
 ; ------------- End Section: [Flask BaseTypes] ------------
 
 ; ------------- Section: [Quality and RGB Items] ------------
+anchor_x := 528, anchor_y := 732
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x528 y732 w286 h152, Quality and RGB Items
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w286 h152, Quality and RGB Items
 ; Quality gems
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x544 y764 w120 h28 +0x200, Gem Min Quality:
-Gui Add, Edit, x664 y764 w50 h28 vgemminUD,
-Gui Add, UpDown, x706 y764 w20 h28 Range0-21, % gemmin
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, Text, x%x% y%y% w120 h28 +0x200, Gem Min Quality:
+x := anchor_x + 136, y := anchor_y + 32
+Gui Add, Edit, x%x% y%y% w50 h28 vgemminUD,
+x := anchor_x + 178, y := anchor_y + 32
+Gui Add, UpDown, x%x% y%y% w20 h28 Range0-21, % gemmin
 ; Quality flasks
-Gui Add, Text, x544 y804 w120 h28 +0x200, Flask Min Quality:
-Gui Add, Edit, x664 y804 w50 h28 vflaskminUD,
-Gui Add, UpDown, x706 y804 w20 h28 Range0-21, % flaskmin
+x := anchor_x + 16, y := anchor_y + 72
+Gui Add, Text, x%x% y%y% w120 h28 +0x200, Flask Min Quality:
+x := anchor_x + 136, y := anchor_y + 72
+Gui Add, Edit, x%x% y%y% w50 h28 vflaskminUD,
+x := anchor_x + 178, y := anchor_y + 72
+Gui Add, UpDown, x%x% y%y% w20 h28 Range0-21, % flaskmin
 ; RGB items
-Gui Add, Text, x544 y844 w136 h28 +0x200, RGB Max Item Size:
-Gui Add, DropDownList,% "+AltSubmit x680 y844 w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
+x := anchor_x + 16, y := anchor_y + 112
+Gui Add, Text, x%x% y%y% w136 h28 +0x200, RGB Max Item Size:
+x := anchor_x + 152, y := anchor_y + 112
+Gui Add, DropDownList,% "+AltSubmit x" x " y" y " w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
 ; ------------- End Section: [Quality and RGB Items] ------------
 
 ; ------------- Section: [Regular Maps] -------------
+anchor_x := 840, anchor_y := 56
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x840 y56 w288 h74, Regular Maps
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h74, Regular Maps
 ; Text
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x856 y88 w152 h28 +0x200, Hide Maps Below Tier:
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, Text, x%x% y%y% w152 h28 +0x200, Hide Maps Below Tier:
 ; Edit & UpDown
-Gui Add, Edit, x1012 y88 w50 h28 vmaphideUD,
-Gui Add, UpDown, x1054 y88 w20 h28 Range0-17, % maphide
+x := anchor_x + 172, y := anchor_y + 32
+Gui Add, Edit, x%x% y%y% w50 h28 vmaphideUD,
+x := anchor_x + 214, y := anchor_y + 32
+Gui Add, UpDown, x%x% y%y% w20 h28 Range0-17, % maphide
 ; ------------- End Section: [Regular Maps] -------------
 
 ; ------------- Section: [Tier Visibility] -------------
-Gui Add, GroupBox, x840 y144 w288 h234, Tier Visibility
+anchor_x := 840, anchor_y := 144
+; GroupBox
+Gui Font, c0x00e8b2 s10 Bold
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h234, Tier Visibility
 ; Essences
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Text, x856 y176 w179 h28 +0x200, Hide Essences Below:
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, Text, x%x% y%y% w179 h28 +0x200, Hide Essences Below:
 Gui Font, s10
-Gui Add, DropDownList, +AltSubmit x1002 y178 w111 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
+x := anchor_x + 162, y := anchor_y + 34
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w111 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
 ; Divination cards (variable name: divmin)
 Gui Font, s11
-Gui Add, Text, x856 y216 w185 h28 +0x200, Hide Div Cards Above Tier:
+x := anchor_x + 16, y := anchor_y + 72
+Gui Add, Text, x%x% y%y% w185 h28 +0x200, Hide Div Cards Above Tier:
+x := anchor_x + 200, y := anchor_y + 72
 Gui Add, DropDownList, +AltSubmit x1040 y216 w33 vdivminDDL Choose%divmin%, 1|2|3|4|5|6|7|8
 ; Unique items (variable name: uniqhide)
-Gui Add, Text, x856 y256 w203 h28 +0x200, Hide Unique Items Above Tier:
+x := anchor_x + 16, y := anchor_y + 112
+Gui Add, Text, x%x% y%y% w203 h28 +0x200, Hide Unique Items Above Tier:
+x := anchor_x + 224, y := anchor_y + 112
 Gui Add, DropDownList, +AltSubmit x1064 y256 w33 vuniqhideDDL Choose%uniqhide%, 1|2|3|4|5
 ; Unique maps (variable name: unique_maphide)
-Gui Add, Text, x856 y296 w206 h28 +0x200, Hide Unique Maps Above Tier:
-Gui Add, DropDownList, +AltSubmit x1064 y296 w33 vunique_mapminDDL Choose%unique_mapmin%, 1|2|3|4
+x := anchor_x + 16, y := anchor_y + 152
+Gui Add, Text, x%x% y%y% w206 h28 +0x200, Hide Unique Maps Above Tier:
+x := anchor_x + 224, y := anchor_y + 152
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w33 vunique_mapminDDL Choose%unique_mapmin%, 1|2|3|4
 ; Oils (variable name: min_oil)
-Gui Add, Text, x856 y336 w113 h28 +0x200, Hide Oils Below:
-Gui Add, DropDownList, +AltSubmit x968 y336 w130 vmin_oilDDL Choose%min_oil%, %oilstr%
+x := anchor_x + 16, y := anchor_y + 192
+Gui Add, Text, x%x% y%y% w113 h28 +0x200, Hide Oils Below:
+x := anchor_x + 128, y := anchor_y + 192
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w130 vmin_oilDDL Choose%min_oil%, %oilstr%
 ; ------------- End Section: [Tier Visibility] -------------
 
 ; ------------- Section: [Rule Matching] -------------
+anchor_x := 840, anchor_y := 394
+; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x840 y394 w288 h240, Rule Matching
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h240, Rule Matching
+; Buttons & Edit
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-Gui Add, Button, x856 y430 w254 h28 gClip_ , Find Rule Matching Clipboard
-Gui Add, Edit, x856 y475 w254 h100 vMatchedRule +ReadOnly, N/A
-Gui Add, Button, x906 y590 w154 h28 vChangeMatchedRuleButton gMatchedShowHide +Disabled, Change to "Hide"
+x := anchor_x + 16, y := anchor_y + 36
+Gui Add, Button, x%x% y%y% w254 h28 gClip_ , Find Rule Matching Clipboard
+x := anchor_x + 16, y := anchor_y + 81
+Gui Add, Edit, x%x% y%y% w254 h100 vMatchedRule +ReadOnly, N/A
+x := anchor_x + 66, y := anchor_y + 196
+Gui Add, Button, x%x% y%y% w154 h28 vChangeMatchedRuleButton gMatchedShowHide +Disabled, Change to "Hide"
 ; ------------- End Section: [Rule Matching] -------------
 
 ; ------------- Section: [Filter Actions] -------------
+anchor_x := 840, anchor_y := 692
+; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x840 y692 w288 h182, Filter Actions
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h182, Filter Actions
 ; Status message box
 Gui Font
 Gui Font, c0x00e8b2 s11, Segoe UI
-Gui Add, Edit, x856 y725 w254 h50 vGUIStatusMsg +ReadOnly -VScroll, %status_msg%
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, Edit, x%x% y%y% w254 h50 vGUIStatusMsg +ReadOnly -VScroll, %status_msg%
 ; Action buttons
 Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-Gui Add, Button, x872 y785 w226 h32 gImport, Import Downloaded Filter
-Gui Add, Button, x872 y825 w224 h31 gUpdate, [&W]rite Filter
+x := anchor_x + 32, y := anchor_y + 93
+Gui Add, Button, x%x% y%y% w226 h32 gImport, Import Downloaded Filter
+x := anchor_x + 32, y := anchor_y + 133
+Gui Add, Button, x%x% y%y% w224 h31 gUpdate, [&W]rite Filter
 ; ------------- End Section: [Filter Actions] -------------
 
 Gui Show, w%kWindowWidth% h%kWindowHeight%, %kWindowTitle%
