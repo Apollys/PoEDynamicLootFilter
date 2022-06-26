@@ -76,12 +76,30 @@ def TestBracketAccess():
     else:
         AssertFailure()
     print('TestBracketAccess passed!')
+    
+def TestRemove():
+    hll = HashLinkedList()
+    for key in range(10):
+        hll.append(key, str(key))
+    hll.remove(5)
+    hll.remove(0)
+    hll.remove(9)
+    reference_key_list = list(range(1, 5)) + list(range(6, 9))
+    # Verify the HashLinkedList matches the reference list
+    for i, (key, value) in enumerate(hll):
+        expected_key = reference_key_list[i]
+        expected_value = str(expected_key)
+        AssertEqual(expected_key, key)
+        AssertEqual(expected_value, value)
+    AssertEqual(hll.size, len(reference_key_list))
+    print('TestRemove passed!')
 
 def main():
     SimpleTest()
     LargerTest()
     TestInsertAtIndex()
     TestBracketAccess()
+    TestRemove()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

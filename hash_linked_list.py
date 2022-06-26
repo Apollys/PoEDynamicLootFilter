@@ -64,6 +64,15 @@ class HashLinkedList:
     def append(self, key, value):
         self.insert_before(key, value, successor_key=None)
     
+    def remove(self, key):
+        if (key not in self.key_to_node_map):
+            raise KeyError(key)
+        node = self.key_to_node_map[key]
+        node.previous_node.next_node = node.next_node
+        node.next_node.previous_node = node.previous_node
+        self.key_to_node_map.pop(key)
+        self.size -= 1
+    
     def get_node(self, key):
         return self.key_to_node_map[key]
     

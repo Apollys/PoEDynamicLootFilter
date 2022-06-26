@@ -173,6 +173,8 @@ for the detailed documentation of all available function calls.
   - `get_gem_min_quality`
   - `set_flask_min_quality <quality: int in [1, 20]>`
   - `get_flask_min_quality`
+  - `add_remove_socket_rule <socket_string: str> <(optional) item_slot: str> <add_flag: bool>`
+  - `get_all_added_socket_rules`
   - `set_hide_maps_below_tier <tier: int>`
   - `get_hide_maps_below_tier`
   - `set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>`

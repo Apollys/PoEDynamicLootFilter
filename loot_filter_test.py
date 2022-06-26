@@ -376,7 +376,7 @@ def TestChaosRecipeItems():
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     type_tag = consts.kChaosRecipeTypeTag
     enable_flag = True
-    for item_slot in consts.kChaosRecipeItemSlots:
+    for item_slot in consts.kItemSlots:
         enable_flag = not enable_flag  # alternate enable/disable
         loot_filter.SetChaosRecipeEnabledFor(item_slot, enable_flag)
         AssertEqual(loot_filter.IsChaosRecipeEnabledFor(item_slot), enable_flag)

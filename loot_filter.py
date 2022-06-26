@@ -11,6 +11,7 @@ import os.path
 import parse_helper
 from profile import Profile
 import rule_parser
+import socket_helper
 from type_checker import CheckType
 
 kTextBlockKey = 'text_block'
@@ -51,10 +52,14 @@ class LootFilter:
      - self.rule_or_text_block_hll: HashLinkedList mapping a key to RuleOrTextBlock
         - in the case of a LootFilterRule, the key is (type_tag, tier_tag)
         - in the case of text block, the key is (kTextBlockKey, id) where id is a unique integer
+     - self.dlf_rules_successor_key: (type_tag, tier_tag) of item in rule_or_text_block_hll
+       before which DLF rules should be added.
      - self.num_raw_text_blocks: int
         - used to create unique keys for raw text blocks
      - self.num_untagged_rules: int
         - used to create unique tags for untagged rules
+     - self.socket_rule_tier_tags: List[str] - technically not the optimal data structure, but
+       size is small and preserving ordering will yield a better user experience than using a set
     '''
 
     # ================================= Public API =================================
@@ -76,8 +81,10 @@ class LootFilter:
                 file_helper.RemoveFileIfExists(config_values['DownloadedLootFilterFullpath'])
         # Initialize remaining member variables and parse input filter
         self.rule_or_text_block_hll = HashLinkedList()
+        self.dlf_rules_successor_key = None
         self.num_raw_text_blocks = 0
         self.num_untagged_rules = 0
+        self.socket_rule_tier_tags = []
         self.ParseInputFilterFile()
     # End __init__
 
@@ -143,7 +150,8 @@ class LootFilter:
     
     # The rare_only_flag should only be specified when enable_flag is True.
     # When enable_flag is False, base_type is removed from both rules.
-    def SetBaseTypeRuleEnabledFor(self, base_type: str, enable_flag: bool, rare_only_flag: bool = False):
+    def SetBaseTypeRuleEnabledFor(
+            self, base_type: str, enable_flag: bool, rare_only_flag: bool = False):
         CheckType(base_type, 'base_type', str)
         CheckType(enable_flag, 'enable_flag', bool)
         CheckType(rare_only_flag, 'rare_only_flag', bool)
@@ -229,6 +237,47 @@ class LootFilter:
             return []
         return rule.GetBaseTypeList()
     # End GetAllVisibleFlaskTypes
+    
+    # =========================== Socketed Item Functions ==========================
+    
+    def AddSocketRule(self, socket_string: str, item_slot: str):
+        CheckType(socket_string, 'socket_string', str)
+        CheckType(item_slot, 'item_slot', str)
+        tier_tag = socket_helper.GenerateTierTag(socket_string, item_slot)
+        # If rule already exists, return immediately
+        if ((consts.kSocketsTypeTag, tier_tag) in self.rule_or_text_block_hll):
+            return
+        rule_template_lines = consts.kSocketsRuleTemplate.format(
+                consts.kSocketsTypeTag, tier_tag).split('\n')
+        condition_lines = socket_helper.GenerateSocketConditions(socket_string, item_slot)
+        # Insert comment as first line, and conditions after Show line
+        normalized_socket_string = socket_helper.NormalizedSocketString(socket_string)
+        comment_line = '# Socketed {}: {}'.format(
+                'items' if item_slot.lower() == 'any' else item_slot.strip('"'),
+                normalized_socket_string)
+        rule_lines = [comment_line] + [rule_template_lines[0]] + condition_lines + rule_template_lines[1:]
+        self.AddBlockToHll(rule_lines, self.dlf_rules_successor_key)
+    # End AddSocketRule
+    
+    # Does nothig if the socket rule does not exist.
+    # (Need to be robust to removing nonexistent rule, because profile changes
+    # will collapse add then remove rule into remove rule.)
+    def RemoveSocketRule(self, socket_string: str, item_slot: str):
+        CheckType(socket_string, 'socket_string', str)
+        CheckType(item_slot, 'item_slot', str)
+        tier_tag = socket_helper.GenerateTierTag(socket_string, item_slot)
+        if ((consts.kSocketsTypeTag, tier_tag) in self.rule_or_text_block_hll):
+            self.rule_or_text_block_hll.remove((consts.kSocketsTypeTag, tier_tag))
+            self.socket_rule_tier_tags.remove(tier_tag)
+    # End RemoveSocketRule
+    
+    # Returns a list of pairs of (socket_string, item_slot)
+    def GetAllAddedSocketRules(self) -> List[Tuple[str, str]]:
+        socket_rule_pairs = []
+        for tier_tag in self.socket_rule_tier_tags:
+            socket_rule_pairs.append(socket_helper.DecodeTierTag(tier_tag))
+        return socket_rule_pairs
+    # End GetAllAddedSocketRules
     
     # ========================= Currency-Related Functions =========================
     
@@ -660,11 +709,11 @@ class LootFilter:
         elif (LootFilterRule.IsParsableAsRule(block)):
             rule = LootFilterRule(block)
             key = rule.type_tag, rule.tier_tag
-            #if (key[0] and key[0].startswith('dlf_')):
-            #    print(key)
             if ((not rule.type_tag) or (not rule.tier_tag)):
                 self.num_untagged_rules += 1
                 rule.SetTypeTierTags(consts.kUntaggedRuleTypeTag, str(self.num_untagged_rules))
+            elif (rule.type_tag == consts.kSocketsTypeTag):
+                self.socket_rule_tier_tags.append(rule.tier_tag)
             self.rule_or_text_block_hll.insert_before(
                     key, RuleOrTextBlock(rule, is_rule=True), successor_key)
         else:  # not parsable as rule
@@ -697,21 +746,23 @@ class LootFilter:
                 current_block = []
             else:
                 current_block.append(input_line)
+        # Find DLF rules successor key before applying import changes
+        self.dlf_rules_successor_key = self.GetFilterBladeRulesStartKey()
         # Apply import changes if needed
         if (self.input_filter_source != InputFilterSource.kOutput):
             self.ApplyImportChanges()
     # End ParseLootFilterFile()
     
-    # Returns the HllNode containing the Table of Contents block.
-    # Raises an error if Table of Contents cannot be found.
-    def FindTableOfContentsNode(self) -> HllNode:
+    # Returns the key pair for the comment block indicating the start of FilterBlade rules.
+    # Raises a runtime error if not found.
+    def GetFilterBladeRulesStartKey(self) -> Tuple[str, str]:
         for key, rule_or_text_block in self.rule_or_text_block_hll:
             if (not rule_or_text_block.is_rule):
                 text_lines = rule_or_text_block.text_lines
-                toc_identifier = consts.kTableOfContentsIdentifier
-                if (parse_helper.IsSubstringInLines(toc_identifier, text_lines)):
-                    return self.rule_or_text_block_hll.get_node(key)
-        raise RuntimeError('Table of Contents not found')
+                rules_start_identifier = consts.kFilterBladeRulesStartIdentifier
+                if (parse_helper.IsSubstringInLines(rules_start_identifier, text_lines)):
+                    return key
+        raise RuntimeError('FilterBlade rules start identifier {} not found'.format(rules_start_identifier))
     # End FindTableOfContentsBlock
 
     def GenerateDlfRuleText(self) -> List[str]:
@@ -764,9 +815,14 @@ class LootFilter:
         # Add non-weapon rules
         chaos_regal_recipe_rule_strings.extend(consts.kChaosRegalRecipeRuleStrings)
         # Append all chaos/regal recipe rule strings to `text` variable
-        text += '\n\n'.join(chaos_regal_recipe_rule_strings)
-        # Return list of lines
-        return text.split('\n')
+        text += '\n\n'.join(chaos_regal_recipe_rule_strings) + '\n\n'
+        # Add Socket rules last so they can be dynamically added using self.dlf_rules_successor_key
+        # Add BaseType rules
+        current_section_id_int += 1
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show items with specific sockets and links') + '\n\n'
+        # Return list of lines. Important: returned lines cannot end with blank lines.
+        return text.rstrip().split('\n')
     # End GenerateDlfRuleText
 
     # Insert the DLF rules immediately after the Table of Contents text block.
@@ -776,12 +832,11 @@ class LootFilter:
             return
         # Add DLF rules - very similar to ParseInputFilterFile code
         dlf_rule_text = self.GenerateDlfRuleText()
-        successor_key = self.FindTableOfContentsNode().next_node.key
         current_block = []
         dlf_rule_text.append('')  # add blank line to handle last rule uniformly
         for line in dlf_rule_text:
             if (line == ''):
-                self.AddBlockToHll(current_block, successor_key)
+                self.AddBlockToHll(current_block, self.dlf_rules_successor_key)
                 current_block = []
             else:
                 current_block.append(line)

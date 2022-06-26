@@ -30,6 +30,7 @@ kDlfHeaderKey = ('dlf_header', 'dlf_header')
 kTableOfContentsIdentifier = '[WELCOME] TABLE OF CONTENTS'
 kDlfAddedRulesSectionGroupId = '9900'
 kDlfAddedRulesSectionGroupName = 'Dynamic Loot Filter Added Rules'
+kFilterBladeRulesStartIdentifier = '[[0100]] Global overriding rules'
 
 kSectionGroupHeaderTemplate = \
 '''#===============================================================================================================
@@ -197,21 +198,17 @@ kFlaskRuleTemplateHighIlvl = \
 
 # ================================== Sockets ==================================
 
-kBaseTypeTypeTag = 'dlf_base_types'
-kBaseTypeTierTagRare = 'rare'
-kBaseTypeTierTagAny = 'any_non_unique'
+kSocketsTypeTag = 'dlf_sockets'
+# Note: tier tag will be generated based on socket string
 
-kBaseTypeRuleTemplateRare = \
-'''# Show # $type->{} $tier->{}
-# Rarity == Rare
-# SetFontSize 44
-# PlayEffect Yellow Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagRare)
-
-kBaseTypeRuleTemplateAny = \
-'''# Show # $type->{} $tier->{}
-# Rarity ! Unique
-# SetFontSize 44
-# PlayEffect White Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagAny)
+# This template is only a base, additional conditions will be added based on socket string:
+# NumSockets, (optional) LinkedSockets, and (optional) SocketGroup
+kSocketsRuleTemplate = \
+'''Show # $type->{} $tier->{}
+SetFontSize 45
+SetBorderColor 106 0 255
+MinimapIcon 2 Purple Square
+PlayEffect Purple Temp'''
 
 # =============================== Chaos Recipe ===============================
 
@@ -249,18 +246,18 @@ SetBackgroundColor 22 22 111 130
 SetFontSize 40
 MinimapIcon {5} {6}'''
 
-kChaosRecipeItemSlots = ['Weapons',
-                         'Body Armours',
-                         'Helmets',
-                         'Gloves',
-                         'Boots',
-                         'Amulets',
-                         'Rings',
-                         'Belts']
+kItemSlots = ['Weapons',
+              'Body Armours',
+              'Helmets',
+              'Gloves',
+              'Boots',
+              'Amulets',
+              'Rings',
+              'Belts']
 
-kChaosRecipeItemSlotsMinusWeapons = kChaosRecipeItemSlots[1:]
+kItemSlotsMinusWeapons = kItemSlots[1:]
 
-kChaosRecipeItemSlotsInternal = ['WeaponsX', 'Weapons3'] + kChaosRecipeItemSlotsMinusWeapons
+kChaosRecipeItemSlotsInternal = ['WeaponsX', 'Weapons3'] + kItemSlotsMinusWeapons
 
 # Need no spaces in tier tags
 kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
@@ -314,7 +311,7 @@ kChaosRecipeMinimapIconType = 'Moon'
 
 # All non-weapon chaos and regal recipe rules (weapons handled in function below)
 kChaosRegalRecipeRuleStrings = [
-        rule_string for item_slot in kChaosRecipeItemSlotsMinusWeapons for rule_string in
+        rule_string for item_slot in kItemSlotsMinusWeapons for rule_string in
                 (kChaosRecipeRuleTemplate.format(
                         kChaosRecipeTypeTag,
                         kChaosRecipeTierTags[item_slot],

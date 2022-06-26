@@ -57,9 +57,10 @@ kOutputFilename = 'backend_cli.output'
 kExitCodeFilename = 'backend_cli.exit_code'
 
 # Map of function name -> dictionary of properties indexed by the following string keywords:
+# - NumParamsOptions: List[int] (excludes function name and profile param)
 # - HasProfileParam: bool
 # - ModifiesFilter: bool
-# - NumParamsForMatch: int, only present for functions that modify the filter,
+# - NumParamsForMatch: int, only used for functions that modify the filter. It
 #   Tells how many parameters need to be the same for two functions of this name to be
 #   reducible to a single function in the profile changes file.  For example:
 #     > adjust_currency_tier "Chromatic Orb" +1
@@ -70,31 +71,38 @@ kExitCodeFilename = 'backend_cli.exit_code'
 kFunctionInfoMap = {
     # Profiles
     'is_first_launch' : {
+        'NumParamsOptions' : [0],
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
     'get_all_profile_names' : {
+        'NumParamsOptions' : [0],
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
-    'create_new_profile' : { 
+    'create_new_profile' : {
+        'NumParamsOptions' : [1],
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
-    'rename_profile' : { 
+    'rename_profile' : {
+        'NumParamsOptions' : [2],
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
     'delete_profile' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
     'set_active_profile' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
     # Check Filters Exist
     'check_filters_exist' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
@@ -102,195 +110,248 @@ kFunctionInfoMap = {
     # These are *not* considered as mutator functions,
     # because they do not contribute to Profile.changes.
     'import_downloaded_filter' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'load_input_filter' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Miscellaneous
     'run_batch' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'get_rule_matching_item' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'set_rule_visibility' : { 
+        'NumParamsOptions' : [3],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 2,
     },
     # Currency
     'set_currency_to_tier' : { 
+        'NumParamsOptions' : [2],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
     'get_tier_of_currency' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'get_all_currency_tiers' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'set_currency_tier_min_visible_stack_size' : {
+        'NumParamsOptions' : [2],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
     'get_currency_tier_min_visible_stack_size' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Essences
     'get_all_essence_tier_visibilities' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'set_hide_essences_above_tier' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_hide_essences_above_tier' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Divination Cards
     'get_all_div_card_tier_visibilities' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'set_hide_div_cards_above_tier' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_hide_div_cards_above_tier' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Unique Items
     'get_all_unique_item_tier_visibilities' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'set_hide_unique_items_above_tier' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_hide_unique_items_above_tier' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Unique Maps
     'get_all_unique_map_tier_visibilities' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'set_hide_unique_maps_above_tier' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_hide_unique_maps_above_tier' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Oils
     'set_lowest_visible_oil' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_lowest_visible_oil' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Quality Gems
     'set_gem_min_quality' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_gem_min_quality' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Quality Flasks
     'set_flask_min_quality' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_flask_min_quality' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Hide Maps Below Tier
     'set_hide_maps_below_tier' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_hide_maps_below_tier' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Generic BaseTypes
     'set_basetype_visibility' : { 
+        'NumParamsOptions' : [2, 3],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 2,
     },
     'get_basetype_visibility' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'get_all_visible_basetypes' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Flasks Types
     'set_flask_visibility' : { 
+        'NumParamsOptions' : [2, 3],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 2,
     },
     'get_flask_visibility' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'get_all_visible_flasks' : { 
+        'NumParamsOptions' : [0],
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
+    # Socket Rules
+    'add_remove_socket_rule' : { 
+        'NumParamsOptions' : [2, 3],
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 2,
+    },
+    'get_all_added_socket_rules' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # RGB Items
     'set_rgb_item_max_size' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 0,
     },
     'get_rgb_item_max_size' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     # Chaos Recipe
     'set_chaos_recipe_enabled_for' : { 
+        'NumParamsOptions' : [2],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
     'is_chaos_recipe_enabled_for' : { 
+        'NumParamsOptions' : [1],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
     'get_all_chaos_recipe_statuses' : { 
+        'NumParamsOptions' : [0],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
@@ -344,12 +405,14 @@ def AppendFunctionOutput(function_output_string: str):
         output_file.write(function_output_string + '\n@\n')
 # End AppendFunctionOutput
 
+# Note: changes_dict is a chain of ordered dicts
 def AddFunctionToChangesDict(function_tokens: List[str], changes_dict: OrderedDict):
     CheckType(function_tokens, 'function_tokens', list, str)
     CheckType(changes_dict, 'changes_dict', OrderedDict)
     function_name = function_tokens[0]
     num_params_for_match = kFunctionInfoMap[function_name]['NumParamsForMatch']
     current_dict = changes_dict
+    # "+ 1" here because the first token is the function name, not a param
     for i in range(num_params_for_match + 1):
         current_token = function_tokens[i]
         if (i == num_params_for_match):
@@ -358,7 +421,7 @@ def AddFunctionToChangesDict(function_tokens: List[str], changes_dict: OrderedDi
             if (current_token not in current_dict):
                 current_dict[current_token] = OrderedDict()
             current_dict = current_dict[current_token]
-# End AddLineToChangesDict
+# End AddFunctionToChangesDict
 
 # Returns list of lists of function tokens, for example:
 # [['adjust_currency_tier', 'Chromatic Orb', '1'],
@@ -450,11 +513,6 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     config_values = loot_filter.profile_obj.config_values if loot_filter else None
     # 
     output_string = ''
-    # Save function call to Profile.changes if it is a mutator function
-    # Note: suppress_output also functioning as an indicator to not save profile data here
-    if (kFunctionInfoMap[function_name]['ModifiesFilter'] and not suppress_output):
-        # We use the syntax some_list[:] to create a copy of some_list
-        UpdateProfileChangesFile(config_values['ChangesFullpath'], function_name, function_params[:])
     # ================================== Check Filters Exist ==================================
     if (function_name == 'check_filters_exist'):
         '''
@@ -995,6 +1053,36 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
             output_string += '{};1\n'.format(flask_base_type)
         if ((len(output_string) > 0) and (output_string[-1] == '\n')):
             output_string = output_string[:-1]  # remove final newline
+    # ========================================= Socket Rules =========================================
+    elif (function_name == 'add_remove_socket_rule'):
+        '''
+        add_remove_socket_rule <socket_string: str> <(optional) item_slot: str> <add_flag: bool>
+         - TODO: add socket_string explanation
+         - <item_slot> is one of the following (case insensitive): "Weapons", "Body Armours",
+           "Helmets", "Gloves", "Boots", "Amulets", "Rings", "Belts", or "Any"
+         - add_flag is 1 to add a corresponding rule, 0 to remove the corresponding rule
+         - Output: None
+         - Example: > python3 backend_cli.py add_remove_socket_rule "B-B-G-X" 1 MyProfile
+         - Example: > python3 backend_cli.py add_remove_socket_rule "b-b xx" 1 MyProfile
+        '''
+        if (len(function_params) == 2):
+            function_params.insert(1, 'any')
+        CheckNumParams(function_params, 3)
+        socket_string, item_slot, add_flag_string = function_params
+        add_flag: bool = bool(int(add_flag_string))
+        if (add_flag):
+            loot_filter.AddSocketRule(socket_string, item_slot)
+        else:
+            loot_filter.RemoveSocketRule(socket_string, item_slot)
+    elif (function_name == 'get_all_added_socket_rules'):
+        '''
+        get_all_added_socket_rules
+         - Output: newline-separated sequence of <socket_string>;<item_slot>
+         - Example: > python3 backend_cli.py get_all_added_socket_rules MyProfile
+        '''
+        CheckNumParams(function_params, 0)
+        lines = [';'.join(string_pair) for string_pair in loot_filter.GetAllAddedSocketRules()]
+        output_string = '\n'.join(lines)
     # ======================================== Rgb Items ========================================
     elif (function_name == 'set_rgb_item_max_size'):
         '''
@@ -1050,7 +1138,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py get_all_chaos_recipe_statuses MyProfile
         '''
         CheckNumParams(function_params, 0)
-        for item_slot in consts.kChaosRecipeItemSlots:
+        for item_slot in consts.kItemSlots:
             enabled_flag_string = str(int(loot_filter.IsChaosRecipeEnabledFor(item_slot)))
             output_string += item_slot + ';' + enabled_flag_string + '\n'
         if (output_string[-1] == '\n'): output_string = output_string[:-1]  # remove final newline
@@ -1071,31 +1159,41 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         # Save loot filter if we called a mutator function
         if (kFunctionInfoMap[function_name]['ModifiesFilter']):
             loot_filter.SaveToFile()
+    # Save function call to Profile.changes if it is a mutator function.
+    # This happens after function call processing, because that code may add default arguments.
+    # Note: suppress_output also functioning as an indicator to not save profile data here.
+    if (kFunctionInfoMap[function_name]['ModifiesFilter'] and not suppress_output):
+        # We use the syntax some_list[:] to create a copy of some_list
+        UpdateProfileChangesFile(config_values['ChangesFullpath'], function_name, function_params[:])
 # End DelegateFunctionCall
 
-kUsageErrorString = ('ill-formed command-line call\n' +
-  '  Check that the function name is spelled correctly and that the syntax is as follows:\n' +
-  '  > python3 backend_cli.py <function_name> <function_arguments...> <profile_name (if required)>')
+kUsageSyntaxString = ('Usage synax:\n'
+    '> python backend_cli.py <function_name> <function_arguments...> <profile_name (if required)>')
 
 # Returns function_name, function_params, profile_name.
 # If there is no profile param, returned profile_name is None.
 def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
     # Always require at least 2 params: script_name, function_name
     if (len(sys.argv) < 2):
-        Error(kUsageErrorString)
-    _, function_name, *remaining_args = sys.argv
+        Error('No function specified\n' + kUsageErrorString)
+    _, function_name, *remaining_params= sys.argv
     function_params = []
-    # Check if there should be a profile param, and separate
-    # remaining params into profile_name and function_params
+    # Separate remaining_params into function_params and profile_name
+    # If no profile param, profile_name will be None
     profile_name = None
     if (kFunctionInfoMap[function_name]['HasProfileParam']):
-        if (len(remaining_args) == 0):
-            Error(kUsageErrorString)
-        *function_params, profile_name = remaining_args
-        if (not profile.ProfileExists(profile_name)):
-            Error('profile "{}" does not exist'.format(profile_name))
-    else:  # function does not have Profile param
-        function_params = remaining_args
+        if (len(remaining_params) == 0):
+            Error('No profile specified\n' + kUsageErrorString)
+        *function_params, profile_name = remaining_params
+    else: 
+        function_params = remaining_params
+    # Check if number of params is valid for given function name
+    if (len(function_params) not in kFunctionInfoMap[function_name]['NumParamsOptions']):
+        Error('Invalid number of parameters given ({}) for function {}\n'.format(
+                len(function_params), function_name) + kUsageErrorString)
+    # Check if profile exists, if there is a profile param
+    if ((profile_name != None) and not profile.ProfileExists(profile_name)):
+        Error('profile "{}" does not exist\n'.format(profile_name) + kUsageErrorString)
     return function_name, function_params, profile_name
 # End ValidateAndParseArguments
     

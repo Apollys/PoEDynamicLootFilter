@@ -54,6 +54,11 @@ set_gem_min_quality 18
 get_gem_min_quality
 set_flask_min_quality 11
 get_flask_min_quality
+add_remove_socket_rule "r-g-b X" 1
+add_remove_socket_rule "R-g-b X" 0
+add_remove_socket_rule "B-G-X-X" "Body Armours" 0
+add_remove_socket_rule "B-G-X-X" "Body Armours" 1
+get_all_added_socket_rules
 set_hide_maps_below_tier 13
 get_hide_maps_below_tier
 set_basetype_visibility "Hubris Circlet" 1 0
