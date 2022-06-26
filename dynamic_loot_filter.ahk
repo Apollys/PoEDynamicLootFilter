@@ -15,8 +15,8 @@ SetBatchLines -1
 Menu, Tray, Icon, DLF_icon.ico
 
 ; ---------------- Global Parameters ----------------
-kWindowWidth := 1144
-kWindowHeight := 894
+kWindowWidth := 1470
+kWindowHeight := 850
 kWindowTitle := "PoE Dynamic Loot Filter"
 
 ; ---------------- PYTHON VERSION AND PATH CHECKING ----------------
@@ -372,24 +372,24 @@ Gui Font, c0x00e8b2 s16 Bold, Segoe UI
 Gui Add, Text, x192 y8 w556 h26 +0x200 +Center, PoE Dynamic Loot Filter
 
 ; ------------- Section: Profiles ------------
-anchor_x := 845, anchor_y := 8
-Gui Font, c0x00e8b2 s12 Bold, Segoe UI
-Gui Add, Text, x%anchor_x% y%anchor_y% w61 h29 +0x200, Profile:
+anchor_x := 1140, anchor_y := 12
+Gui Font, c0x00e8b2 s14 Bold, Segoe UI
+Gui Add, Text, x%anchor_x% y%anchor_y% w66 h36 +0x200, Profile:
 ; DropDownList
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 60, y := anchor_y + 0
-Gui Add, DropDownList, x%x% y%y% w151 gChangeProfile vProfileDDL Choose1, %ProfString%
+Gui Font, c0x00e8b2 s14 Norm, Segoe UI
+x := anchor_x + 72, y := anchor_y + 0
+Gui Add, DropDownList, x%x% y%y% w151 h36 gChangeProfile vProfileDDL Choose1, %ProfString%
 ; Create Button
-Gui Font, c0x00e8b2 s11 Bold, Segoe UI
-x := anchor_x + 215, y := anchor_y + 1
-Gui Add, Button, x%x% y%y% w60 h26 gCreateProfile1, Create
+Gui Font, c0x00e8b2 s14 Bold, Segoe UI
+x := anchor_x + 232, y := anchor_y + 0
+Gui Add, Button, x%x% y%y% w80 h34 gCreateProfile1, Create
 ; ------------- End Section: Profiles -------------
 
 ; ------------- Section: [Currency] -------------
 anchor_x := 16, anchor_y := 48
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w483 h783, Currency
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w484 h783, Currency
 ; Dividing lines
 x := anchor_x + 8, y := anchor_y + 112
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above row 1
@@ -450,7 +450,7 @@ Loop 9 {
     ; GUI elements
     Gui Font, c0x00e8b2 s11 Norm, Segoe UI
     x := loop_anchor_x + 0, y := loop_anchor_y + 0
-    Gui Add, Text, x%x% y%y% w115 h28 +0x200, T1 Stack Size:
+    Gui Add, Text, x%x% y%y% w115 h28 +0x200, T%tier% Stack Size:
     x := loop_anchor_x + 92, y := loop_anchor_y + 0
     Gui Add, DropDownList, % "+AltSubmit vValueCurrencyDdlT" tier " x" x " y" y " w44 Choose"cstack_values[tier],  %cstacktext_less%
     Gui Font, c0x00e8b2 s10
@@ -475,7 +475,7 @@ Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTwisdom Choose%wisdom_stack% 
 anchor_x := 528, anchor_y := 48
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w285 h169, Chaos Recipe Rares
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h169, Chaos Recipe Rares
 ; CheckBoxes
 Gui Font, c0x00e8b2 s14 Norm, Segoe UI
 x := anchor_x + 16, y := anchor_y + 32
@@ -496,11 +496,27 @@ x := anchor_x + 152, y := anchor_y + 128
 Gui Add, CheckBox, % "x" x " y" y " w123 h26 v" rare_GUI_ids["Amulets"] " "  (rare_dict["Amulets"]? " Checked" : ""), Amulets
 ; ------------- End Section: [Chaos Recipe Rares] -------------
 
-; ------------- Section: [General BaseTypes] ------------
-anchor_x := 528, anchor_y := 228
+; ------------- Section: [Hide Maps Below Tier] -------------
+anchor_x := 528, anchor_y := 233
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w286 h250, General BaseTypes
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h74, Regular Maps
+; Text
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, Text, x%x% y%y% w152 h28 +0x200, Hide Maps Below Tier:
+; Edit & UpDown
+x := anchor_x + 172, y := anchor_y + 32
+Gui Add, Edit, x%x% y%y% w50 h28 vmaphideUD,
+x := anchor_x + 214, y := anchor_y + 32
+Gui Add, UpDown, x%x% y%y% w20 h28 Range0-17, % maphide
+; ------------- End Section: [Hide Maps Below Tier] -------------
+
+; ------------- Section: [General BaseTypes] ------------
+anchor_x := 528, anchor_y := 323
+; GroupBox
+Gui Font, c0x00e8b2 s10 Bold
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h256, General BaseTypes
 ; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 18, y := anchor_y + 36
@@ -517,19 +533,20 @@ Gui Add, Button, x%x% y%y% w66 h26, Add
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 14, y := anchor_y + 102
 Gui Add, ListBox, x%x% y%y% w257 h110 vGeneralBaseTypeListBox +Sort
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 68, y := anchor_y + 212
 Gui Add, Button, x%x% y%y% w144 h31, Remove Selected
 ; ------------- End Section: [General BaseTypes] ------------
 
 ; ------------- Section: [Flask BaseTypes] ------------
-anchor_x := 528, anchor_y := 490
+anchor_x := 528, anchor_y := 595
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w286 h230, Flask BaseTypes
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h236, Flask BaseTypes
 ; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 18, y := anchor_y + 36
-Gui Add, DropDownList, x%x% y%y% w250 vFlaskAvailDDL1 +Sort, Select BaseType...||%flask_avail1%
+Gui Add, DropDownList, x%x% y%y% w250 vFlaskAvailDDL1 +Sort, Select Flask Type...||%flask_avail1%
 ; High ilvl checkbox and Add button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 20, y := anchor_y + 68
@@ -541,15 +558,51 @@ Gui Add, Button, x%x% y%y% w66 h26, Add
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 14, y := anchor_y + 102
 Gui Add, ListBox, x%x% y%y% w257 h90 vFlaskListAny +Sort, %flask_low%
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 68, y := anchor_y + 192
 Gui Add, Button, x%x% y%y% w144 h31 gRemoveFlaskAny, Remove Selected
 ; ------------- End Section: [Flask BaseTypes] ------------
 
-; ------------- Section: [Quality and RGB Items] ------------
-anchor_x := 528, anchor_y := 732
+; ------------- Section: [Tier Visibility] -------------
+anchor_x := 844, anchor_y := 48
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w286 h152, Quality and RGB Items
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h234, Tier Visibility
+; Essences
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+x := anchor_x + 16, y := anchor_y + 32
+Gui Add, Text, x%x% y%y% w179 h28 +0x200, Hide Essences Below:
+Gui Font, s10
+x := anchor_x + 162, y := anchor_y + 34
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w111 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
+; Divination cards (variable name: divmin)
+Gui Font, s11
+x := anchor_x + 16, y := anchor_y + 72
+Gui Add, Text, x%x% y%y% w185 h28 +0x200, Hide Div Cards Above Tier:
+x := anchor_x + 200, y := anchor_y + 72
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w33 vdivminDDL Choose%divmin%, 1|2|3|4|5|6|7|8
+; Unique items (variable name: uniqhide)
+x := anchor_x + 16, y := anchor_y + 112
+Gui Add, Text, x%x% y%y% w203 h28 +0x200, Hide Unique Items Above Tier:
+x := anchor_x + 224, y := anchor_y + 112
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w33 vuniqhideDDL Choose%uniqhide%, 1|2|3|4|5
+; Unique maps (variable name: unique_maphide)
+x := anchor_x + 16, y := anchor_y + 152
+Gui Add, Text, x%x% y%y% w206 h28 +0x200, Hide Unique Maps Above Tier:
+x := anchor_x + 224, y := anchor_y + 152
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w33 vunique_mapminDDL Choose%unique_mapmin%, 1|2|3|4
+; Oils (variable name: min_oil)
+x := anchor_x + 16, y := anchor_y + 192
+Gui Add, Text, x%x% y%y% w113 h28 +0x200, Hide Oils Below:
+x := anchor_x + 130, y := anchor_y + 192
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w130 vmin_oilDDL Choose%min_oil%, %oilstr%
+; ------------- End Section: [Tier Visibility] -------------
+
+; ------------- Section: [Quality and RGB Items] ------------
+anchor_x := 844, anchor_y := 298
+; GroupBox
+Gui Font, c0x00e8b2 s10 Bold
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h152, Quality and RGB Items
 ; Quality gems
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 16, y := anchor_y + 32
@@ -572,74 +625,70 @@ x := anchor_x + 152, y := anchor_y + 112
 Gui Add, DropDownList,% "+AltSubmit x" x " y" y " w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
 ; ------------- End Section: [Quality and RGB Items] ------------
 
-; ------------- Section: [Regular Maps] -------------
-anchor_x := 840, anchor_y := 56
+; ------------- Section: [Splinter Stack Sizes] ------------
+anchor_x := 844, anchor_y := 466
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h74, Regular Maps
-; Text
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h116, Splinter Stack Sizes
+; Splinter BaseType DDL (items roughly in order from least to most valuable, but grouped by legion/breach)
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 16, y := anchor_y + 32
-Gui Add, Text, x%x% y%y% w152 h28 +0x200, Hide Maps Below Tier:
-; Edit & UpDown
-x := anchor_x + 172, y := anchor_y + 32
-Gui Add, Edit, x%x% y%y% w50 h28 vmaphideUD,
-x := anchor_x + 214, y := anchor_y + 32
-Gui Add, UpDown, x%x% y%y% w20 h28 Range0-17, % maphide
-; ------------- End Section: [Regular Maps] -------------
+x := anchor_x + 18, y := anchor_y + 36
+Gui Add, DropDownList, x%x% y%y% w190 vSpliterBaseTypeDdl, Select Splinter Type...||Tuul Splinter|Esh Splinter|Xoph Splinter|Uul-Netol Splinter|Chayula Splinter|Karui Splinter|Eternal Empire Splinter|Vaal Splinter|Templar Splinter|Maraketh Splinter|Simulacrum Splinter
+; Stack Size DDL
+x := anchor_x + 212, y := anchor_y + 36
+Gui Add, DropDownList, +AltSubmit x%x% y%y% w54, 1+||2+|4+|8+
+; Apply Button
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+x := anchor_x + 84, y := anchor_y + 72
+Gui Add, Button, x%x% y%y% w120 h26, Apply
+; ------------- End Section: [Splinter Stack Sizes] ------------
 
-; ------------- Section: [Tier Visibility] -------------
-anchor_x := 840, anchor_y := 144
+; ------------- Section: [Socket Patterns] ------------
+anchor_x := 1160, anchor_y := 64
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h234, Tier Visibility
-; Essences
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h256, Socket Patterns
+; Edit
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 16, y := anchor_y + 32
-Gui Add, Text, x%x% y%y% w179 h28 +0x200, Hide Essences Below:
-Gui Font, s10
-x := anchor_x + 162, y := anchor_y + 34
-Gui Add, DropDownList, +AltSubmit x%x% y%y% w111 vesshideDDL Choose%esshide%, T7 (Deafening)|T6 (Shrieking)|T5 (Screaming)|T4 (Wailing)|T3 (Weeping)|None
-; Divination cards (variable name: divmin)
-Gui Font, s11
-x := anchor_x + 16, y := anchor_y + 72
-Gui Add, Text, x%x% y%y% w185 h28 +0x200, Hide Div Cards Above Tier:
-x := anchor_x + 200, y := anchor_y + 72
-Gui Add, DropDownList, +AltSubmit x1040 y216 w33 vdivminDDL Choose%divmin%, 1|2|3|4|5|6|7|8
-; Unique items (variable name: uniqhide)
-x := anchor_x + 16, y := anchor_y + 112
-Gui Add, Text, x%x% y%y% w203 h28 +0x200, Hide Unique Items Above Tier:
-x := anchor_x + 224, y := anchor_y + 112
-Gui Add, DropDownList, +AltSubmit x1064 y256 w33 vuniqhideDDL Choose%uniqhide%, 1|2|3|4|5
-; Unique maps (variable name: unique_maphide)
-x := anchor_x + 16, y := anchor_y + 152
-Gui Add, Text, x%x% y%y% w206 h28 +0x200, Hide Unique Maps Above Tier:
-x := anchor_x + 224, y := anchor_y + 152
-Gui Add, DropDownList, +AltSubmit x%x% y%y% w33 vunique_mapminDDL Choose%unique_mapmin%, 1|2|3|4
-; Oils (variable name: min_oil)
-x := anchor_x + 16, y := anchor_y + 192
-Gui Add, Text, x%x% y%y% w113 h28 +0x200, Hide Oils Below:
-x := anchor_x + 128, y := anchor_y + 192
-Gui Add, DropDownList, +AltSubmit x%x% y%y% w130 vmin_oilDDL Choose%min_oil%, %oilstr%
-; ------------- End Section: [Tier Visibility] -------------
+x := anchor_x + 18, y := anchor_y + 36
+Gui Add, Edit, x%x% y%y% w250 hwndhSocketPatternsEditBox vSocketPatternsEditBox
+Placeholder(hSocketPatternsEditBox, "Example: B-B-G-X")
+; Item slot DDL and Add button
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+x := anchor_x + 20, y := anchor_y + 68
+Gui Add, DropDownList, x%x% y%y%, Any Item Slot||Weapons|Armours|Helmets|Gloves|Boots|Belts|Rings|Amulets
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+x := anchor_x + 202, y := anchor_y + 68
+Gui Add, Button, x%x% y%y% w66 h26, Add
+; Text box and Remove button
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+x := anchor_x + 14, y := anchor_y + 102
+Gui Add, ListBox, x%x% y%y% w257 h110 vSocketPatternsListBox
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+x := anchor_x + 68, y := anchor_y + 212
+Gui Add, Button, x%x% y%y% w144 h31, Remove Selected
+; ------------- End Section: [Socket Patterns] ------------
+
 
 ; ------------- Section: [Rule Matching] -------------
-anchor_x := 840, anchor_y := 394
+anchor_x := 1160, anchor_y := 350
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h240, Rule Matching
 ; Buttons & Edit
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 16, y := anchor_y + 36
 Gui Add, Button, x%x% y%y% w254 h28 gClip_ , Find Rule Matching Clipboard
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 16, y := anchor_y + 81
-Gui Add, Edit, x%x% y%y% w254 h100 vMatchedRule +ReadOnly, N/A
+Gui Add, Edit, x%x% y%y% w254 h100 vMatchedRule +ReadOnly
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 66, y := anchor_y + 196
 Gui Add, Button, x%x% y%y% w154 h28 vChangeMatchedRuleButton gMatchedShowHide +Disabled, Change to "Hide"
 ; ------------- End Section: [Rule Matching] -------------
 
 ; ------------- Section: [Filter Actions] -------------
-anchor_x := 840, anchor_y := 692
+anchor_x := 1160, anchor_y := 650
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h182, Filter Actions
