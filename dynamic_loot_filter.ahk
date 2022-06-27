@@ -30,8 +30,11 @@ kBackendCliExitCodePath := "backend_cli.exit_code"
 kBackendCliInputPath := "backend_cli.input"
 
 ; Flask BaseTypes
-kFlaskBaseTypesTxtPath := "Resources/flask_base_types.txt"
-kFlaskBaseTypesList := ReadFileLines(kFlaskBaseTypesTxtPath)
+kFlaskBaseTypesPath := "Resources/flask_base_types.txt"
+kFlaskBaseTypesList := ReadFileLines(kFlaskBaseTypesPath)
+; Splinter BaseTypes
+kSplinterBaseTypesPath := "Resources/splinter_base_types.txt"
+kSplinterBaseTypesList := ReadFileLines(kSplinterBaseTypesPath)
 
 ; ---------------- Global Variables ----------------
 
@@ -39,6 +42,8 @@ kFlaskBaseTypesList := ReadFileLines(kFlaskBaseTypesTxtPath)
 ; occurred since last filter load or write.
 g_general_basetypes_changes := []
 g_flask_basetypes_changes := []
+g_socket_patterns_changes := []
+g_splinter_changes := []
 
 ; ---------------- General Helper Functions ----------------
 DebugMessage(message) {
@@ -64,7 +69,7 @@ StringJoin(list, delimeter) {
 ; Returns an array of strings containing the lines in the file (newlines removed)
 ReadFileLines(filepath) {
     FileRead, file_contents, %filepath%
-    return StrSplit(file_contents, "`n")
+    return StrSplit(file_contents, "`r`n")
 }
 
 ; Runs the given command in a hidden window, waits for it to complete,
@@ -662,14 +667,14 @@ Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h116, Splinter Stack Sizes
 ; Splinter BaseType DDL (items roughly in order from least to most valuable, but grouped by legion/breach)
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 18, y := anchor_y + 36
-Gui Add, DropDownList, x%x% y%y% w190 vSpliterBaseTypeDdl, Select Splinter Type...||Tuul Splinter|Esh Splinter|Xoph Splinter|Uul-Netol Splinter|Chayula Splinter|Karui Splinter|Eternal Empire Splinter|Vaal Splinter|Templar Splinter|Maraketh Splinter|Simulacrum Splinter
+Gui Add, DropDownList, x%x% y%y% w190 HWNDhSplinterTypeDdl, % "Select Splinter Type...||"StringJoin(kSplinterBaseTypesList, "|")
 ; Stack Size DDL
 x := anchor_x + 212, y := anchor_y + 36
-Gui Add, DropDownList, +AltSubmit x%x% y%y% w54, 1+||2+|4+|8+
+Gui Add, DropDownList, x%x% y%y% w54 HWNDhSplinterStackSizeDdl, 1+||2+|4+|8+
 ; Apply Button
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 84, y := anchor_y + 72
-Gui Add, Button, x%x% y%y% w120 h26, Apply
+Gui Add, Button, x%x% y%y% w120 h26 gSplinterStackSizesApply, Apply
 ; ------------- End Section: [Splinter Stack Sizes] ------------
 
 ; ------------- Section: [Socket Patterns] ------------
@@ -680,22 +685,22 @@ Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h256, Socket Patterns
 ; Edit
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 18, y := anchor_y + 36
-Gui Add, Edit, x%x% y%y% w250 hwndhSocketPatternsEditBox vSocketPatternsEditBox
+Gui Add, Edit, x%x% y%y% w250 HWNDhSocketPatternsEditBox
 Placeholder(hSocketPatternsEditBox, "Example: B-B-G-X")
 ; Item slot DDL and Add button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 20, y := anchor_y + 68
-Gui Add, DropDownList, x%x% y%y%, Any Item Slot||Weapons|Armours|Helmets|Gloves|Boots|Belts|Rings|Amulets
+Gui Add, DropDownList, x%x% y%y% HWNDhSocketPatternsItemSlotDdl, Any Item Slot||Weapons|Body Armours|Helmets|Gloves|Boots|Belts|Rings|Amulets
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 202, y := anchor_y + 68
-Gui Add, Button, x%x% y%y% w66 h26, Add
+Gui Add, Button, x%x% y%y% w66 h26 gSocketPatternsAdd, Add
 ; Text box and Remove button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 14, y := anchor_y + 102
-Gui Add, ListBox, x%x% y%y% w257 h110 vSocketPatternsListBox
+Gui Add, ListBox, x%x% y%y% w257 h110 HWNDhSocketPatternsListBox
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 68, y := anchor_y + 212
-Gui Add, Button, x%x% y%y% w144 h31, Remove Selected
+Gui Add, Button, x%x% y%y% w144 h31 gSocketPatternsRemove, Remove Selected
 ; ------------- End Section: [Socket Patterns] ------------
 
 
@@ -745,10 +750,12 @@ HandleCurrencyListBoxEvent(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "") {
 
 ; ------------- Section: [General BaseTypes] ------------
 
+; set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>
+
 GeneralBaseTypesAdd:
     GuiControlGet base_type, , %hGeneralBaseTypesEditBox%
     GuiControlGet rare_only_flag, , %hGeneralBaseTypesRareCheckBox%
-    base_type := Trim(base_type, " `t`n")
+    base_type := Trim(base_type)
     if ((base_type == "") or (base_type == "Enter BaseType...")) {
         return
     }
@@ -787,10 +794,13 @@ GeneralBaseTypesRemove:
 
 ; ------------- Section: [Flask BaseTypes] ------------
 
+; set_flask_visibility <base_type: str> <visibility_flag: int> <(optional) high_ilvl_flag: int>
+
 FlaskAdd:
     GuiControlGet base_type, , %hFlaskDdl%
     GuiControlGet high_ilvl_only_flag, , %hFlaskHighIlvlCheckBox%
-    base_type := Trim(base_type, " `t`n`r")
+    base_type := Trim(base_type)
+    DebugMessage(base_type)
     if (base_type == "Select Flask Type...") {
         return
     }
@@ -814,7 +824,7 @@ FlaskRemove:
     GuiControl +AltSubmit, %hFlaskListBox%
     GuiControlGet, selected_item_index, , %hFlaskListBox%
     ; Parse text into base_type, high_ilvl_only_flag
-    ; "[Rare] Hubris Circlet" -> ["", "Rare", " Hubris Circlet"]
+    ; "[84+] Quicksilver Flask" -> ["", "84+", " Quicksilver Flask"]
     split_result := StrSplit(selected_item_text, ["[","]"])
     ; high_ilvl_only_flag := (split_result[2] != "Any")  ; AHK arrays are 1-indexed
     base_type := SubStr(split_result[3], 2)  ; substring starting at second character
@@ -825,6 +835,70 @@ FlaskRemove:
     g_flask_basetypes_changes.push(backend_function_call)
     Control, Delete, %selected_item_index%, , ahk_id %hFlaskListBox%
     return
+
+; ------------- Section: [Socket Patterns] ------------
+
+; add_remove_socket_rule <socket_string: str> <(optional) item_slot: str> <add_flag: bool>
+
+SocketPatternsAdd:
+    GuiControlGet socket_pattern, , %hSocketPatternsEditBox%
+    GuiControlGet item_slot, , %hSocketPatternsItemSlotDdl%
+    StringUpper socket_pattern, socket_pattern
+    socket_pattern := Trim(socket_pattern)
+    item_slot := Trim(item_slot)
+    if (SubStr(item_slot, 1, 3) == "Any") {
+        item_slot := "Any"
+    }
+    ; Convert to corresponding backend function call and store it
+    add_flag := 1
+    backend_function_call := "add_remove_socket_rule " Quoted(socket_pattern) " " Quoted(item_slot) " " add_flag
+    g_general_basetypes_changes.push(backend_function_call)
+    ; Convert to UI list box line and add
+    list_box_line := "[" item_slot "] " socket_pattern
+    GuiControl, , %hSocketPatternsListBox%, %list_box_line%  ; add new base type line
+    GuiControl, , %hSocketPatternsEditBox%  ; clear edit box
+    return
+
+SocketPatternsRemove:
+    ; Get raw text of selected item
+    GuiControl -AltSubmit, %hSocketPatternsListBox%
+    GuiControlGet selected_item_text, , %hSocketPatternsListBox%
+    if (selected_item_text == "") {
+        return
+    }
+    ; Get index of selected item
+    GuiControl +AltSubmit, %hSocketPatternsListBox%
+    GuiControlGet, selected_item_index, , %hSocketPatternsListBox%
+    ; Parse text into socket_pattern, item_slot
+    ; "[Body Armours] B-G-X-X" -> ["", "Body Armours", " B-G-X-X"]
+    split_result := StrSplit(selected_item_text, ["[","]"])
+    item_slot := split_result[2]  ; AHK arrays are 1-indexed
+    socket_pattern := SubStr(split_result[3], 2)  ; substring starting at second character
+    ; Convert to corresponding backend function call and store it
+    add_flag := 0
+    backend_function_call := "add_remove_socket_rule " Quoted(socket_pattern) " " Quoted(item_slot) " " add_flag
+    g_socket_patterns_changes.push(backend_function_call)
+    Control, Delete, %selected_item_index%, , ahk_id %hSocketPatternsListBox%
+    return
+
+; ------------- Section: [Splinter StackSizes] ------------
+
+; set_splinter_min_visible_stack_size <base_type: str> <stack_size: int>
+
+SplinterStackSizesApply:
+    GuiControlGet base_type, , %hSplinterTypeDdl%
+    GuiControlGet stack_size, , %hSplinterStackSizeDdl%
+    if (base_type == "Select Splinter Type...") {
+        return
+    }
+    stack_size := RTrim(stack_size, "+")
+    ; Convert to corresponding backend function call and store it
+    backend_function_call := "set_splinter_min_visible_stack_size " Quoted(base_type) " " stack_size
+    g_splinter_changes.push(backend_function_call)
+    GuiControl, Choose, %hSplinterTypeDdl%, 1
+    return
+
+; ------------- Section: [Currency Find and Move] ------------
 
 ; Display tier of currency in FindCurrTier_in ddl to FindCurrTier_out text
 CurrencyFindDDL:
@@ -1090,6 +1164,16 @@ for i, function_call_string in g_flask_basetypes_changes {
     AddFunctionCallToBatch(function_call_string)
 }
 g_flask_basetypes_changes := []
+; Socket Patterns
+for i, function_call_string in g_socket_patterns_changes {
+    AddFunctionCallToBatch(function_call_string)
+}
+g_socket_patterns_changes := []
+; Splinter StackSizes
+for i, function_call_string in g_splinter_changes {
+    AddFunctionCallToBatch(function_call_string)
+}
+g_splinter_changes := []
 ; Essences -- compare esshide vs esshideDDL
 if (esshide != esshideDDL){
     FileAppend, % "set_hide_essences_above_tier " esshideDDL "`n", %kBackendCliInputPath%

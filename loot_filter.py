@@ -161,7 +161,7 @@ class LootFilter:
         if (enable_flag):
             rare_rule.AddBaseType(base_type)
             rare_rule.Enable()
-            if (not high_ilvl_only_flag):
+            if (not rare_only_flag):
                 any_rarity_rule.AddBaseType(base_type)
                 any_rarity_rule.Enable()
     # End SetBaseTypeRuleEnabledFor
