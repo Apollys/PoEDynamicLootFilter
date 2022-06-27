@@ -425,50 +425,50 @@ anchor_x := 16, anchor_y := 48
 Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x%anchor_x% y%anchor_y% w484 h783, Currency
 ; Dividing lines
-x := anchor_x + 8, y := anchor_y + 112
+x := anchor_x + 8, y := anchor_y + 109
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above row 1
-x := anchor_x + 8, y := anchor_y + 320
+x := anchor_x + 8, y := anchor_y + 317
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line between rows 1 and 2
-x := anchor_x + 8, y := anchor_y + 528
+x := anchor_x + 8, y := anchor_y + 525
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line between rows 2 and 3
 x := anchor_x + 8, y := anchor_y + 736
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above portal/wisdom scrolls
-x := anchor_x + 162, y := anchor_y + 120
-Gui Add, Text, x%x% y%y% w0 h610 +0x1 +0x10  ; vertical line between columns 1 and 2
-x := anchor_x + 322, y := anchor_y + 120
-Gui Add, Text, x338 y168 w0 h610 +0x1 +0x10  ; vertical line between column 2 and 3
+x := anchor_x + 162, y := anchor_y + 117
+Gui Add, Text, x%x% y%y% w0 h613 +0x1 +0x10  ; vertical line between columns 1 and 2
+x := anchor_x + 322, y := anchor_y + 117
+Gui Add, Text, x%x% y%y% w0 h613 +0x1 +0x10  ; vertical line between column 2 and 3
 x := anchor_x + 240, y := anchor_y + 744
 Gui Add, Text, x%x% y%y% w0 h34 +0x1 +0x10  ; vertical line between portal/wisdom scrolls
 ; Find tier of currency
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 16, y := anchor_y + 32
+x := anchor_x + 12, y := anchor_y + 32
 Gui Add, Text, x%x% y%y% w147 h30 +0x200 +Right, Find Tier of Currency:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 170, y := anchor_y + 32
+x := anchor_x + 166, y := anchor_y + 32
 Gui Add, DropDownList, x%x% y%y% w188 +Sort gCurrencyFindDDL vFindCurrTier_in, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 368, y := anchor_y + 32
+x := anchor_x + 364, y := anchor_y + 32
 Gui Add, Text, x%x% y%y% w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 392, y := anchor_y + 33
+x := anchor_x + 388, y := anchor_y + 33
 Gui Add, Text, x%x% y%y% w40 h26 +0x200 vFindCurrTier_out, [Tier]
 ; Move currency to tier
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 16, y := anchor_y + 72
+x := anchor_x + 12, y := anchor_y + 72
 Gui Add, Text, x%x% y%y% w148 h28 +0x200 +Right, Move Currency to Tier:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 168, y := anchor_y + 72
+x := anchor_x + 164, y := anchor_y + 72
 Gui Add, DropDownList, x%x% y%y% w191 +Sort vCurrencyMoveTier_curr, %all_currency%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 368, y := anchor_y + 72
+x := anchor_x + 364, y := anchor_y + 72
 Gui Add, Text, x%x% y%y% w16 h28 +0x200, ->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 392, y := anchor_y + 72
-Gui Add, DropDownList, x%x% y%y% w41 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
+x := anchor_x + 386, y := anchor_y + 72
+Gui Add, DropDownList, x%x% y%y% w43 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
 ; Go Button
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 440, y := anchor_y + 73
-Gui Add, Button, x%x% y%y% w32 h26 gCurrencyMoveTier, Go
+x := anchor_x + 436, y := anchor_y + 73
+Gui Add, Button, x%x% y%y% w36 h26 gCurrencyMoveTier, Go
 ; Tier blocks
 tier_anchor_x := anchor_x + 16
 tier_anchor_y := anchor_y + 120
@@ -477,8 +477,8 @@ tier_vertical_spacing := 208
 Loop 9 {
     tier := A_Index  ; A_Index starts at 1
     ; Positioning computations
-    row_i := (tier - 1) // 3
-    col_i := Mod(tier - 1, 3)
+    row_i := Mod(tier - 1, 3)
+    col_i := (tier - 1) // 3
     loop_anchor_x := tier_anchor_x + row_i * tier_horizontal_spacing
     loop_anchor_y := tier_anchor_y + col_i * tier_vertical_spacing
     ; GUI elements
