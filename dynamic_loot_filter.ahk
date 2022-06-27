@@ -704,11 +704,11 @@ Gui Add, Button, x%x% y%y% w144 h31 gSocketPatternsRemove, Remove Selected
 ; ------------- End Section: [Socket Patterns] ------------
 
 
-; ------------- Section: [Rule Matching] -------------
+; ------------- Section: [Item-Rule Matching] -------------
 anchor_x := 1160, anchor_y := 350
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h240, Rule Matching
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h240, Item-Rule Matching
 ; Buttons & Edit
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 16, y := anchor_y + 36
@@ -719,7 +719,7 @@ Gui Add, Edit, x%x% y%y% w254 h100 vMatchedRule +ReadOnly
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 66, y := anchor_y + 196
 Gui Add, Button, x%x% y%y% w154 h28 vChangeMatchedRuleButton gMatchedShowHide +Disabled, Change to "Hide"
-; ------------- End Section: [Rule Matching] -------------
+; ------------- End Section: [Item-Rule Matching] -------------
 
 ; ------------- Section: [Filter Actions] -------------
 anchor_x := 1160, anchor_y := 650
