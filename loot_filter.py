@@ -153,18 +153,17 @@ class LootFilter:
         CheckType(base_type, 'base_type', str)
         CheckType(enable_flag, 'enable_flag', bool)
         CheckType(rare_only_flag, 'rare_only_flag', bool)
-        # If enabling, start by disabling from all rules for a clean slate
+        any_rarity_rule = self.GetRule(consts.kBaseTypeTypeTag, consts.kBaseTypeTierTagAny)
+        rare_rule = self.GetRule(consts.kBaseTypeTypeTag, consts.kBaseTypeTierTagRare)
+        # Start by disabling from all rules for a clean slate
+        any_rarity_rule.RemoveBaseType(base_type)
+        rare_rule.RemoveBaseType(base_type)
         if (enable_flag):
-            self.SetBaseTypeRuleEnabledFor(base_type, enable_flag=False)
-        rules = [self.GetRule(consts.kBaseTypeTypeTag, consts.kBaseTypeTierTagRare)]
-        if (not rare_only_flag):
-            rules.append(self.GetRule(consts.kBaseTypeTypeTag, consts.kBaseTypeTierTagAny))
-        for rule in rules:
-            if (enable_flag):
-                rule.AddBaseType(base_type)
-                rule.Enable()
-            else:
-                rule.RemoveBaseType(base_type)
+            rare_rule.AddBaseType(base_type)
+            rare_rule.Enable()
+            if (not high_ilvl_only_flag):
+                any_rarity_rule.AddBaseType(base_type)
+                any_rarity_rule.Enable()
     # End SetBaseTypeRuleEnabledFor
     
     # If rare_flag is True, checks the rare rule.
@@ -201,18 +200,17 @@ class LootFilter:
         CheckType(flask_base_type, 'flask_base_type', str)
         CheckType(enable_flag, 'enable_flag', bool)
         CheckType(high_ilvl_only_flag, 'high_ilvl_only_flag', bool)
-        # If enabling, start by disabling from all rules for a clean slate
+        any_ilvl_rule = self.GetRule(consts.kFlaskTypeTag, consts.kFlaskTierTagAnyIlvl)
+        high_ilvl_rule = self.GetRule(consts.kFlaskTypeTag, consts.kFlaskTierTagHighIlvl)
+        # Start by disabling from all rules for a clean slate
+        any_ilvl_rule.RemoveBaseType(flask_base_type)
+        high_ilvl_rule.RemoveBaseType(flask_base_type)
         if (enable_flag):
-            self.SetFlaskRuleEnabledFor(flask_base_type, enable_flag=False)
-        rules = [self.GetRule(consts.kFlaskTypeTag, consts.kFlaskTierTagHighIlvl)]
-        if (not high_ilvl_only_flag):
-            rules.append(self.GetRule(consts.kFlaskTypeTag, consts.kFlaskTierTagAnyIlvl))
-        for rule in rules:
-            if (enable_flag):
-                rule.AddBaseType(flask_base_type)
-                rule.Enable()
-            else:
-                rule.RemoveBaseType(flask_base_type)
+            high_ilvl_rule.AddBaseType(flask_base_type)
+            high_ilvl_rule.Enable()
+            if (not high_ilvl_only_flag):
+                any_ilvl_rule.AddBaseType(flask_base_type)
+                any_ilvl_rule.Enable()
     # End SetFlaskRuleEnabledFor
     
     def IsFlaskRuleEnabledFor(self, flask_base_type: str, high_ilvl_flag: bool) -> bool:

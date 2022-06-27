@@ -14,18 +14,93 @@ SetBatchLines -1
 
 Menu, Tray, Icon, DLF_icon.ico
 
-; ---------------- Global Parameters ----------------
+; ---------------- Global Constants ----------------
+
+; GUI window parameters
 kWindowWidth := 1470
 kWindowHeight := 850
 kWindowTitle := "PoE Dynamic Loot Filter"
 
+; Paths for backend cli target, input, and output
+kBackendCliPath := "backend_cli.py"
+kBackedCliOutputPath := "backend_cli.output"
+kBackendCliLogPath := "backend_cli.log"
+; TODO: This shouldn't be necessary, just get return code directly
+kBackendCliExitCodePath := "backend_cli.exit_code"
+kBackendCliInputPath := "backend_cli.input"
+
+; Flask BaseTypes
+kFlaskBaseTypesTxtPath := "Resources/flask_base_types.txt"
+kFlaskBaseTypesList := ReadFileLines(kFlaskBaseTypesTxtPath)
+
+; ---------------- Global Variables ----------------
+
+; List of backend function calls corresponding to changes that have
+; occurred since last filter load or write.
+g_general_basetypes_changes := []
+g_flask_basetypes_changes := []
+
+; ---------------- General Helper Functions ----------------
+DebugMessage(message) {
+    MsgBox, , Debug Message, %message%
+}
+
+Quoted(s) {
+    quote := """"
+    return quote s quote
+}
+
+StringJoin(list, delimeter) {
+    result_string := ""
+    for i, s in list {
+        if (i > 1) {
+            result_string := result_string delimeter
+        }
+        result_string := result_string s
+    }
+    return result_string
+}
+
+; Returns an array of strings containing the lines in the file (newlines removed)
+ReadFileLines(filepath) {
+    FileRead, file_contents, %filepath%
+    return StrSplit(file_contents, "`n")
+}
+
+; Runs the given command in a hidden window, waits for it to complete,
+; and then returns the received exit code: 0 = success, nonzero = failure.
+RunCommand(command_string) {
+    ; ComSpec contains the path to the command-line exe
+    ; The "/c" parameter tells cmd to run the command, then exit (otherwise it would never exit)
+    RunWait, % ComSpec " /c " command_string,  , Hide UseErrorLevel
+    return ErrorLevel
+}
+
+; TODO: use GetPythonCommand() once below code is refactored
+; For now, assumes the variable python_command contains the command
+; to run the backend cli.
+RunBackendCliFunction(function_call_string) {
+    global python_command, kBackendCliLogPath
+    exit_code := RunCommand(python_command " function_call_string")
+    ; Handle nonzero exit code
+    if (exit_code != "0") {
+        FileRead, error_log, %kBackendCliLogPath%
+        MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+    }
+    return exit_code
+}
+
 ; ---------------- PYTHON VERSION AND PATH CHECKING ----------------
-PythonChecks:
-python_command_txt := "cache/python_command.txt"
-FileRead, python_command, %python_command_txt%
+; TODO: refactor as function GetPythonCommand
+DeterminePythonCommand:
+kPythonCommandTxtPath := "cache/python_command.txt"
+FileRead, python_command, %kPythonCommandTxtPath%
 If (python_command == ""){
-    RunWait, %ComSpec% /c "python --version >python_version_output.txt" ,  , Hide
-    FileRead, python_version_output, python_version_output.txt
+    python_version_output_path := "python_version_output.txt"
+    ; ComSpec contains the path to the command-line exe
+    ; The "/c" parameter tells cmd to run the command, then exit (otherwise it would never exit)
+    RunCommand("python --version > " python_version_output_path)
+    FileRead, python_version_output, %python_version_output_path%
     if(SubStr(python_version_output, 1, 7) == "Python " and SubStr(python_version_output, 1, 8) >= 3){
         python_command := "python"
     }
@@ -51,50 +126,25 @@ If (python_command == ""){
         }
     }
     FileDelete, python_version_output.txt
-    FileAppend, %python_command%, %python_command_txt%
+    FileAppend, %python_command%, %kPythonCommandTxtPath%
 }
 else{
     RunWait, %ComSpec% /c "%python_command% --version >python_version_output.txt" ,  , Hide
     FileRead, python_version_output, python_version_output.txt
     if(SubStr(python_version_output, 1, 7) != "Python " or SubStr(python_version_output, 8, 1) < 3){
-        FileDelete, %python_command_txt%
+        FileDelete, %kPythonCommandTxtPath%
         FileDelete, python_version_output.txt
-        goto, PythonChecks
+        goto, DeterminePythonCommand
     }
     FileDelete, python_version_output.txt
 }
 
 ; ---------------- DATA STORAGE INITIALIZATION ----------------
 
-; File Paths for Python program/input/output
-py_prog_path := "backend_cli.py"
-py_out_path := "backend_cli.output"
-py_log_path := "backend_cli.log"
-py_exit_code_path := "backend_cli.exit_code"
-ahk_out_path := "backend_cli.input"
-
-
-; Coloring for rares by slot (copied from consts.py)
-rare_colors := {"Weapons" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200"
+; Coloring for rares by slot (item slots copied from consts.py)
+kChaosRecipeItemSlotToColorMap := {"Weapons" : "c80000", "Body Armours" : "ff00ff", "Helmets" : "ff7200"
     , "Gloves" : "ffe400", "Boots" : "00ff00", "Amulets" : "00ffff", "Rings" : "4100bd"
     , "Belts" : "0000c8"}
-
-; Flask BaseTypes and show flags
-flasks := {"Divine Life Flask" : [0, 0], "Eternal Mana Flask" : [0, 0]
-    , "Quicksilver Flask" : [0, 0], "Bismuth Flask" : [0, 0], "Amethyst Flask" : [0, 0]
-    , "Ruby Flask" : [0, 0], "Sapphire Flask" : [0, 0], "Topaz Flask" : [0, 0]
-    , "Aquamarine Flask" : [0, 0], "Diamond Flask" : [0, 0], "Jade Flask" : [0, 0]
-    , "Quartz Flask" : [0, 0], "Granite Flask" : [0, 0], "Sulphur Flask" : [0, 0]
-    , "Basalt Flask" : [0, 0], "Silver Flask" : [0, 0], "Stibnite Flask" : [0, 0]
-    , "Corundum Flask" : [0, 0], "Gold Flask" : [0, 0]}
-base_flasks := {"Divine Life Flask" : [0, 0], "Eternal Mana Flask" : [0, 0]
-    , "Quicksilver Flask" : [0, 0], "Bismuth Flask" : [0, 0], "Amethyst Flask" : [0, 0]
-    , "Ruby Flask" : [0, 0], "Sapphire Flask" : [0, 0], "Topaz Flask" : [0, 0]
-    , "Aquamarine Flask" : [0, 0], "Diamond Flask" : [0, 0], "Jade Flask" : [0, 0]
-    , "Quartz Flask" : [0, 0], "Granite Flask" : [0, 0], "Sulphur Flask" : [0, 0]
-    , "Basalt Flask" : [0, 0], "Silver Flask" : [0, 0], "Stibnite Flask" : [0, 0]
-    , "Corundum Flask" : [0, 0], "Gold Flask" : [0, 0]}
-_high := 0
 
 ; RGB size tooltips
 rgbtooltip := {"none" : "Hide everything", "small" : "2x2, 4x1, and 3x1"
@@ -103,7 +153,7 @@ rgbmap := {"none" : 1, "small" : 2, "medium" : 3, "large" : 4}
 rgbmap_reversed := {1 : "none", 2: "small", 3: "medium", 4: "large"}
 
 ; Oil names, ordered from highest to lowest value
-oils := ["Tainted", "Golden", "Silver", "Opalescent", "Black", "Crimson", "Violet", "Indigo"
+kOilBaseTypes := ["Tainted", "Golden", "Silver", "Opalescent", "Black", "Crimson", "Violet", "Indigo"
     , "Azure", "Teal", "Verdant", "Amber", "Sepia", "Clear"]
 
 ; Currency stack size options
@@ -116,16 +166,16 @@ cstack_values := [5, 5, 5, 5, 5, 5, 5, 5, 5]
 
 ; Load profiles from python client
 profiles := []
-FileDelete, %ahk_out_path%
-RunWait, %python_command% %py_prog_path% get_all_profile_names, , Hide
-FileRead, exit_code, %py_exit_code_path%
+FileDelete, %kBackendCliInputPath%
+RunWait, %python_command% %kBackendCliPath% get_all_profile_names, , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
-FileRead, py_out_text, %py_out_path%
+FileRead, py_out_text, %kBackedCliOutputPath%
 Loop, parse, py_out_text, `n, `r
 {
     if(A_LoopField = "")
@@ -152,30 +202,30 @@ rare_GUI_ids := {"Weapons" : "Rare1", "Body Armours" : "Rare2", "Helmets" : "Rar
 fake_queue := []
 
 ; Build batch file to get all info
-FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_min_visible_stack_size tportal`nget_currency_tier_min_visible_stack_size twisdom`nget_hide_essences_above_tier`nget_hide_unique_items_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %ahk_out_path%
+FileAppend, get_all_currency_tiers`nget_all_chaos_recipe_statuses`nget_hide_maps_below_tier`nget_currency_tier_min_visible_stack_size tportal`nget_currency_tier_min_visible_stack_size twisdom`nget_hide_essences_above_tier`nget_hide_unique_items_above_tier`nget_gem_min_quality`nget_rgb_item_max_size`nget_flask_min_quality`nget_lowest_visible_oil`n, %kBackendCliInputPath%
 Loop, 9
 {
-    FileAppend, get_currency_tier_min_visible_stack_size %A_Index%`n, %ahk_out_path%
+    FileAppend, get_currency_tier_min_visible_stack_size %A_Index%`n, %kBackendCliInputPath%
 }
-FileAppend, get_hide_div_cards_above_tier`nget_hide_unique_maps_above_tier`n, %ahk_out_path%
-for key in flasks
+FileAppend, get_hide_div_cards_above_tier`nget_hide_unique_maps_above_tier`n, %kBackendCliInputPath%
+for key in kFlaskBaseTypeToVisibilitiesMap
 {
-    FileAppend, get_flask_visibility "%key%"`r`n, %ahk_out_path%
+    FileAppend, get_flask_visibility "%key%"`r`n, %kBackendCliInputPath%
     fake_queue.Push(key)
 }
 
 ; Load all filter data from backend client
 status_msg := "Filter Loaded Succesfully"
-RunWait, %python_command% %py_prog_path% run_batch %active_profile%, , Hide
-FileRead, exit_code, %py_exit_code_path%
+RunWait, %python_command% %kBackendCliPath% run_batch %active_profile%, , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
     status_msg := "Filter Load Failed"
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
-FileRead, py_out_text, %py_out_path%
+FileRead, py_out_text, %kBackedCliOutputPath%
 
 ; Parse batch output
 prog := 0
@@ -219,7 +269,7 @@ Loop, parse, py_out_text, `n, `r
     Case 10:
         oil_text := StrSplit(A_LoopField, " ")
         min_oil := -1
-        for idx, val in oils
+        for idx, val in kOilBaseTypes
         {
             if (val = oil_text[1])
                 min_oil := idx
@@ -234,17 +284,17 @@ Loop, parse, py_out_text, `n, `r
         unique_mapmin := A_LoopField
     Default:
         splits := StrSplit(A_LoopField, " ")
-        flasks[fake_queue[prog - 21]] := [0,0]
-        base_flasks[fake_queue[prog - 21]] := [0,0]
+        kFlaskBaseTypeToVisibilitiesMap[fake_queue[prog - 21]] := [0,0]
+        kBaseFlaskBaseTypeToVisibilitiesMap[fake_queue[prog - 21]] := [0,0]
         if (splits[1] = 1)
         {
-            flasks[fake_queue[prog - 21]][1] := 1
-            base_flasks[fake_queue[prog - 21]][1] := 1
+            kFlaskBaseTypeToVisibilitiesMap[fake_queue[prog - 21]][1] := 1
+            kBaseFlaskBaseTypeToVisibilitiesMap[fake_queue[prog - 21]][1] := 1
         }
         if (splits[2] = 1)
         {
-            flasks[fake_queue[prog - 21]][2] := 1
-            base_flasks[fake_queue[prog - 21]][2] := 1
+            kFlaskBaseTypeToVisibilitiesMap[fake_queue[prog - 21]][2] := 1
+            kBaseFlaskBaseTypeToVisibilitiesMap[fake_queue[prog - 21]][2] := 1
         }
     }
 }
@@ -292,7 +342,7 @@ Placeholder(wParam, lParam = "`r", msg = "") {
     }
     else if (wParam >> 16 == 0x100) && list.HasKey(lParam) && list[lParam].shown ;EN_SETFOCUS := 0x100
     {
-        Gui, Font, cBlack
+        Gui Font, c0xe3fff9 s11 Norm, Segoe UI  ; Modified from original source to match UI
         GuiControl, Font, %lParam%
         GuiControl,     , %lParam%
         list[lParam].shown := false
@@ -335,30 +385,9 @@ for key, val in profiles
     ProfString .= val "|"
 RTrim(ProfString, "|")
 
-; Flask data
-flask_avail1 := ""
-flask_avail2 := ""
-flask_high := ""
-flask_low := ""
-for flask, arr in flasks
-{
-    if (arr[2] == 1)
-        flask_high .= flask "|"
-    else
-        flask_avail2 .= flask "|"
-    if (arr[1] == 1)
-        flask_low .= flask "|"
-    else
-        flask_avail1 .= flask "|"
-}
-RTrim(flask_avail1, "|")
-RTrim(flask_avail2, "|")
-RTrim(flask_high, "|")
-RTrim(flask_low, "|")
-
 ; Oil data
 oilstr := ""
-for key, val in oils {
+for key, val in kOilBaseTypes {
     oilstr .= val "|"
 }
 RTrim(oilstr, "|")
@@ -520,22 +549,22 @@ Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h256, General BaseTypes
 ; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 18, y := anchor_y + 36
-Gui Add, Edit, x%x% y%y% w250 hwndhGeneralBaseTypesEditBox vGeneralBaseTypesEditBox
+Gui Add, Edit, x%x% y%y% w250 HWNDhGeneralBaseTypesEditBox
 Placeholder(hGeneralBaseTypesEditBox, "Enter BaseType...")
 ; High ilvl checkbox and Add button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 20, y := anchor_y + 68
-Gui Add, CheckBox, x%x% y%y% h26 vGeneralBaseTypesRareCheckBox, Rare items only
+Gui Add, CheckBox, x%x% y%y% h26 HWNDhGeneralBaseTypesRareCheckBox, Rare items only
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 202, y := anchor_y + 68
-Gui Add, Button, x%x% y%y% w66 h26, Add
+Gui Add, Button, x%x% y%y% w66 h26 gGeneralBaseTypesAdd, Add
 ; Text box and Remove button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 14, y := anchor_y + 102
-Gui Add, ListBox, x%x% y%y% w257 h110 vGeneralBaseTypeListBox +Sort
+Gui Add, ListBox, x%x% y%y% w257 h110 HWNDhGeneralBaseTypesListBox +Sort AltSubmit
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 68, y := anchor_y + 212
-Gui Add, Button, x%x% y%y% w144 h31, Remove Selected
+Gui Add, Button, x%x% y%y% w144 h31 gGeneralBaseTypesRemove, Remove Selected
 ; ------------- End Section: [General BaseTypes] ------------
 
 ; ------------- Section: [Flask BaseTypes] ------------
@@ -546,21 +575,21 @@ Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h236, Flask BaseTypes
 ; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 18, y := anchor_y + 36
-Gui Add, DropDownList, x%x% y%y% w250 vFlaskAvailDDL1 +Sort, Select Flask Type...||%flask_avail1%
+Gui Add, DropDownList, x%x% y%y% w250 HWNDhFlaskDdl +Sort, % "Select Flask Type...||"StringJoin(kFlaskBaseTypesList, "|")
 ; High ilvl checkbox and Add button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 20, y := anchor_y + 68
-Gui Add, CheckBox, x%x% y%y% h26 vFlaskHighIlvlCheckBox, High ilvl (84+) only
+Gui Add, CheckBox, x%x% y%y% h26 HWNDhFlaskHighIlvlCheckBox, High ilvl (84+) only
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 202, y := anchor_y + 68
-Gui Add, Button, x%x% y%y% w66 h26, Add
+Gui Add, Button, x%x% y%y% w66 h26 gFlaskAdd, Add
 ; Text box and Remove button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 14, y := anchor_y + 102
-Gui Add, ListBox, x%x% y%y% w257 h90 vFlaskListAny +Sort, %flask_low%
+Gui Add, ListBox, x%x% y%y% w257 h90 HWNDhFlaskListBox +Sort, %flask_low%
 Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 x := anchor_x + 68, y := anchor_y + 192
-Gui Add, Button, x%x% y%y% w144 h31 gRemoveFlaskAny, Remove Selected
+Gui Add, Button, x%x% y%y% w144 h31 gFlaskRemove, Remove Selected
 ; ------------- End Section: [Flask BaseTypes] ------------
 
 ; ------------- Section: [Tier Visibility] -------------
@@ -708,73 +737,94 @@ Gui Add, Button, x%x% y%y% w224 h31 gUpdate, [&W]rite Filter
 Gui Show, w%kWindowWidth% h%kWindowHeight%, %kWindowTitle%
 Return
 
+; ============================= GUI Response Code =============================
+
 HandleCurrencyListBoxEvent(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "") {
     MsgBox, % "CtrlHwnd: " CtrlHwnd "`nGuiEvent " GuiEvent "`nEventInfo " EventInfo
 }
 
-; _add = 0 for remove, 1 for add
-; _level = 1 for high, 0 for any
-ModifyFlaskState(_add, _level, _flask){
-    global flasks, FlaskAvailDDL1, FlaskAvailDDL2, FlaskListAny, FlaskListHigh
-    flasks[_flask][_level+1] := _add
-    flask_avail1 := ""
-    flask_avail2 := ""
-    flask_high := ""
-    flask_low := ""
-    for flask, arr in flasks
-    {
-        if (arr[2] == 1)
-            flask_high .= flask "|"
-        else
-            flask_avail2 .= flask "|"
-        if (arr[1] == 1)
-            flask_low .= flask "|"
-        else
-            flask_avail1 .= flask "|"
+; ------------- Section: [General BaseTypes] ------------
+
+GeneralBaseTypesAdd:
+    GuiControlGet base_type, , %hGeneralBaseTypesEditBox%
+    GuiControlGet rare_only_flag, , %hGeneralBaseTypesRareCheckBox%
+    base_type := Trim(base_type, " `t`n")
+    if ((base_type == "") or (base_type == "Enter BaseType...")) {
+        return
     }
-    RTrim(flask_avail1, "|")
-    RTrim(flask_avail2, "|")
-    RTrim(flask_high, "|")
-    RTrim(flask_low, "|")
-    GuiControl, , FlaskAvailDDL1,  |Add...||%flask_avail1%
-    GuiControl, , FlaskAvailDDL2,  |Add...||%flask_avail2%
-    GuiControl, , FlaskListAny, |%flask_low%
-    GuiControl, , FlaskListHigh, |%flask_high%
-}
-
-; Add/remove flask to either list
-RemoveFlaskHigh:
-_high := 1
-RemoveFlaskAny:
-Gui, Submit, NoHide
-if (_high == 1){
-    flask_move := FlaskListHigh
-}
-else{
-    flask_move := FlaskListAny
-}
-if (flask_move == "")
+    ; Convert to corresponding backend function call and store it
+    show_flag := 1
+    backend_function_call := "set_basetype_visibility " Quoted(base_type) " " show_flag " " rare_only_flag
+    g_general_basetypes_changes.push(backend_function_call)
+    ; Convert to UI list box line and add
+    list_box_line := "[" (rare_only_flag ? "Rare" : "Any") "] " base_type
+    GuiControl, , %hGeneralBaseTypesListBox%, %list_box_line%  ; add new base type line
+    GuiControl, , %hGeneralBaseTypesEditBox%  ; clear edit box
     return
-ModifyFlaskState(0, _high, flask_move)
-_high := 0
-return
 
-AddFlaskHigh:
-_high := 1
-AddFlaskAny:
-Gui, Submit, NoHide
-if (_high == 1){
-    flask_move := FlaskAvailDDL2
-}
-else{
-    flask_move := FlaskAvailDDL1
-}
-if (flask_move == "Add...")
+GeneralBaseTypesRemove:
+    ; Get raw text of selected item
+    GuiControl -AltSubmit, %hGeneralBaseTypesListBox%
+    GuiControlGet selected_item_text, , %hGeneralBaseTypesListBox%
+    if (selected_item_text == "") {
+        return
+    }
+    ; Get index of selected item
+    GuiControl +AltSubmit, %hGeneralBaseTypesListBox%
+    GuiControlGet, selected_item_index, , %hGeneralBaseTypesListBox%
+    ; Parse text into base_type, rare_only_flag
+    ; "[Rare] Hubris Circlet" -> ["", "Rare", " Hubris Circlet"]
+    split_result := StrSplit(selected_item_text, ["[","]"])
+    ; rare_only_flag := (split_result[2] != "Any")  ; AHK arrays are 1-indexed
+    base_type := SubStr(split_result[3], 2)  ; substring starting at second character
+    ; Convert to corresponding backend function call and store it
+    ; Note: rare_only_flag is omitted when disabling a BaseType
+    show_flag := 0
+    backend_function_call := "set_basetype_visibility " Quoted(base_type) " " show_flag
+    g_general_basetypes_changes.push(backend_function_call)
+    Control, Delete, %selected_item_index%, , ahk_id %hGeneralBaseTypesListBox%
     return
-ModifyFlaskState(1, _high, flask_move)
-_high := 0
-return
 
+; ------------- Section: [Flask BaseTypes] ------------
+
+FlaskAdd:
+    GuiControlGet base_type, , %hFlaskDdl%
+    GuiControlGet high_ilvl_only_flag, , %hFlaskHighIlvlCheckBox%
+    base_type := Trim(base_type, " `t`n`r")
+    if (base_type == "Select Flask Type...") {
+        return
+    }
+    ; Convert to corresponding backend function call and store it
+    show_flag := 1
+    backend_function_call := "set_flask_visibility " Quoted(base_type) " " show_flag " " high_ilvl_only_flag
+    g_flask_basetypes_changes.push(backend_function_call)
+    ; Convert to UI list box line and add
+    list_box_line := "[" (high_ilvl_only_flag ? "84+" : "Any") "] " base_type
+    GuiControl, , %hFlaskListBox%, %list_box_line%  ; add new base type line
+    return
+
+FlaskRemove:
+    ; Get raw text of selected item
+    GuiControl -AltSubmit, %hFlaskListBox%
+    GuiControlGet selected_item_text, , %hFlaskListBox%
+    if (selected_item_text == "") {
+        return
+    }
+    ; Get index of selected item
+    GuiControl +AltSubmit, %hFlaskListBox%
+    GuiControlGet, selected_item_index, , %hFlaskListBox%
+    ; Parse text into base_type, high_ilvl_only_flag
+    ; "[Rare] Hubris Circlet" -> ["", "Rare", " Hubris Circlet"]
+    split_result := StrSplit(selected_item_text, ["[","]"])
+    ; high_ilvl_only_flag := (split_result[2] != "Any")  ; AHK arrays are 1-indexed
+    base_type := SubStr(split_result[3], 2)  ; substring starting at second character
+    ; Convert to corresponding backend function call and store it
+    ; Note: high_ilvl_only_flag is omitted when disabling a BaseType
+    show_flag := 0
+    backend_function_call := "set_flask_visibility " Quoted(base_type) " " show_flag
+    g_flask_basetypes_changes.push(backend_function_call)
+    Control, Delete, %selected_item_index%, , ahk_id %hFlaskListBox%
+    return
 
 ; Display tier of currency in FindCurrTier_in ddl to FindCurrTier_out text
 CurrencyFindDDL:
@@ -823,18 +873,18 @@ Clip_:
 type_tag := ""
 tier_tag := ""
 rule := ""
-FileDelete, %ahk_out_path%
-FileDelete, %py_out_path%
-FileAppend, % Clipboard, %ahk_out_path%
-RunWait, %python_command% %py_prog_path% get_rule_matching_item %active_profile%, , Hide
-FileRead, exit_code, %py_exit_code_path%
+FileDelete, %kBackendCliInputPath%
+FileDelete, %kBackedCliOutputPath%
+FileAppend, % Clipboard, %kBackendCliInputPath%
+RunWait, %python_command% %kBackendCliPath% get_rule_matching_item %active_profile%, , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Clipboard Match Failed"
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
     return
 }
-FileRead, py_out_text, %py_out_path%
+FileRead, py_out_text, %kBackedCliOutputPath%
 if (py_out_text = "")
 {
     GuiControl, , MatchedRule, Unable to Find Matching Rule
@@ -874,11 +924,11 @@ if (InStr(ButtonText, "Show")){
 else{
     visi := "hide"
 }
-RunWait, %python_command% %py_prog_path% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile% , , Hide
-FileRead, exit_code, %py_exit_code_path%
+RunWait, %python_command% %kBackendCliPath% set_rule_visibility "%type_tag%" %tier_tag% %visi% %active_profile% , , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Rule Visibility Change Failed"
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
     return
 }
@@ -890,10 +940,10 @@ ChangeProfile:
 Gui, Submit, NoHide
 if (ProfileDDL == active_profile)
     return
-RunWait, %python_command% %py_prog_path% set_active_profile %ProfileDDL%, , Hide
-FileRead, exit_code, %py_exit_code_path%
+RunWait, %python_command% %kBackendCliPath% set_active_profile %ProfileDDL%, , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
@@ -929,8 +979,8 @@ Return
 CreateProfile2:
 Gui, 2: Submit, NoHide
 ; Erase backend_cli.input before writing
-FileAppend, abc, %ahk_out_path%
-FileDelete, %ahk_out_path%
+FileAppend, abc, %kBackendCliInputPath%
+FileDelete, %kBackendCliInputPath%
 if (NewProfileName == ""){
     MsgBox, Profile Name Required!
     return
@@ -947,31 +997,31 @@ if (NewProfilePoEDir == ""){
     MsgBox, Path of Exile Filter Directory Required!
     return
 }
-FileAppend, % "DownloadDirectory:" NewProfileDDir "`n" , %ahk_out_path%
-FileAppend, % "PathOfExileDirectory:" NewProfilePoEDir "`n" , %ahk_out_path%
-FileAppend, % "DownloadedLootFilterFilename:" NewProfileDName "`n", %ahk_out_path%
+FileAppend, % "DownloadDirectory:" NewProfileDDir "`n" , %kBackendCliInputPath%
+FileAppend, % "PathOfExileDirectory:" NewProfilePoEDir "`n" , %kBackendCliInputPath%
+FileAppend, % "DownloadedLootFilterFilename:" NewProfileDName "`n", %kBackendCliInputPath%
 if (NewProfilePoEName != "(Optional)" and NewProfilePoEName != ""){
-    FileAppend, % "OutputLootFilterFilename:" NewProfilePoEName "`n", %ahk_out_path%
+    FileAppend, % "OutputLootFilterFilename:" NewProfilePoEName "`n", %kBackendCliInputPath%
 }
 if (!RDF){
-    FileAppend, % "RemoveDownloadedFilter:False`n", %ahk_out_path%
+    FileAppend, % "RemoveDownloadedFilter:False`n", %kBackendCliInputPath%
 
 }
 Gui, 2: Destroy
-RunWait, %python_command% %py_prog_path% create_new_profile %NewProfileName%,  , Hide
-FileRead, exit_code, %py_exit_code_path%
+RunWait, %python_command% %kBackendCliPath% create_new_profile %NewProfileName%,  , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Profile Creation Failed"
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
-RunWait, %python_command% %py_prog_path% import_downloaded_filter %NewProfileName%,  , Hide
-FileRead, exit_code, %py_exit_code_path%
+RunWait, %python_command% %kBackendCliPath% import_downloaded_filter %NewProfileName%,  , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Filter Import Failed"
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
@@ -984,34 +1034,41 @@ Gui, 2: Destroy
 return
 
 
+; ==================== Update / Run Batch Code ====================
+
+AddFunctionCallToBatch(function_call_string) {
+    global kBackendCliInputPath
+    FileAppend, %function_call_string%`n, %kBackendCliInputPath%
+}
+
 Update:
 Gui, Submit, NoHide
 ; Erase backend_cli.input before writing
-FileAppend, abc, %ahk_out_path%
-FileDelete, %ahk_out_path%
+FileAppend, , %kBackendCliInputPath%
+FileDelete, %kBackendCliInputPath%
 ; Currency Stack Sizes -- vValueCurrencyDDLT1-9 (+Tportal Twisdom) vs cstackvalues[1-9] and portal_stack , wisdom_stack
 ; cstack_output_dict(_low) provides output values
 Loop, 9
 {
     if (valueCurrencyDDLT%A_Index% != cstack_values[A_Index]){
         _low := A_Index > 7 ? "_low" : ""
-        FileAppend, % "set_currency_tier_min_visible_stack_size " A_Index " " cstack_output_dict%_low%[valueCurrencyDDLT%A_Index%] "`n", %ahk_out_path%
+        FileAppend, % "set_currency_tier_min_visible_stack_size " A_Index " " cstack_output_dict%_low%[valueCurrencyDDLT%A_Index%] "`n", %kBackendCliInputPath%
         cstack_values[A_Index] := valueCurrencyDDLT%A_Index%
     }
 }
 if (valueCurrencyDDLTwisdom != wisdom_stack){
-    FileAppend, % "set_currency_tier_min_visible_stack_size twisdom " cstack_output_dict_low[valueCurrencyDDLTwisdom] "`n", %ahk_out_path%
+    FileAppend, % "set_currency_tier_min_visible_stack_size twisdom " cstack_output_dict_low[valueCurrencyDDLTwisdom] "`n", %kBackendCliInputPath%
     wisdom_stack := valueCurrencyDDLTwisdom
 }
 if (valueCurrencyDDLTportal != portal_stack){
-    FileAppend, % "set_currency_tier_min_visible_stack_size tportal " cstack_output_dict_low[valueCurrencyDDLTportal] "`n", %ahk_out_path%
+    FileAppend, % "set_currency_tier_min_visible_stack_size tportal " cstack_output_dict_low[valueCurrencyDDLTportal] "`n", %kBackendCliInputPath%
     portal_stack := valueCurrencyDDLTportal
 }
 ; Currency Tiers -- Accurate already to curr_val and curr_val_start
 For idx, name in curr_txt
 {
     if (curr_val[idx] != curr_val_start[idx]){
-        FileAppend, % "set_currency_to_tier """ curr_txt[idx] """ " curr_val[idx] "`n" , %ahk_out_path%
+        FileAppend, % "set_currency_to_tier """ curr_txt[idx] """ " curr_val[idx] "`n" , %kBackendCliInputPath%
         curr_val_start[idx] := curr_val[idx]
     }
 }
@@ -1019,90 +1076,88 @@ For idx, name in curr_txt
 For rare, value_name in rare_GUI_ids
 {
     if (%value_name% != rare_dict[rare]){
-        FileAppend, % "set_chaos_recipe_enabled_for """ rare """ " %value_name% "`n", %ahk_out_path%
+        FileAppend, % "set_chaos_recipe_enabled_for """ rare """ " %value_name% "`n", %kBackendCliInputPath%
         rare_dict[rare] := %value_name%
     }
 }
-; Flasks -- accurate already to flasks vs base_flasks
-for flask in flasks
-{
-    if (flasks[flask][2] != base_flasks[flask][2]){
-        FileAppend, % "set_high_ilvl_flask_visibility """ flask """ " flasks[flask][2] "`n", %ahk_out_path%
-        base_flasks[flask][2] := flasks[flask][2]
-    }
-    if (flasks[flask][1] != base_flasks[flask][1]){
-        FileAppend, % "set_flask_visibility """ flask """ " flasks[flask][1] "`n", %ahk_out_path%
-        base_flasks[flask][1] := flasks[flask][1]
-    }
+; General BaseTypes
+for i, function_call_string in g_general_basetypes_changes {
+    AddFunctionCallToBatch(function_call_string)
 }
+g_general_basetypes_changes := []
+; Flask BaseTypes
+for i, function_call_string in g_flask_basetypes_changes {
+    AddFunctionCallToBatch(function_call_string)
+}
+g_flask_basetypes_changes := []
 ; Essences -- compare esshide vs esshideDDL
 if (esshide != esshideDDL){
-    FileAppend, % "set_hide_essences_above_tier " esshideDDL "`n", %ahk_out_path%
+    FileAppend, % "set_hide_essences_above_tier " esshideDDL "`n", %kBackendCliInputPath%
     esshide := esshideDDL
 }
 ; unique -- compare uniqhide vs uniqhideDDL
 if (uniqhide != uniqhideDDL){
-    FileAppend, % "set_hide_unique_items_above_tier " uniqhideDDL "`n", %ahk_out_path%
+    FileAppend, % "set_hide_unique_items_above_tier " uniqhideDDL "`n", %kBackendCliInputPath%
     uniqhide := uniqhideDDL
 }
 ; uniq map -- compare unique_mapmin vs unique_mapminDDL
 if (unique_mapmin != unique_mapminDDL){
-    FileAppend, % "set_hide_unique_maps_above_tier " unique_mapminDDL "`n", %ahk_out_path%
+    FileAppend, % "set_hide_unique_maps_above_tier " unique_mapminDDL "`n", %kBackendCliInputPath%
     unique_mapmin := unique_mapminDDL
 }
 ; div -- compare divmin vs divminDDL
 if (divmin != divminDDL){
-    FileAppend, % "set_hide_div_cards_above_tier " divminDDL "`n", %ahk_out_path%
+    FileAppend, % "set_hide_div_cards_above_tier " divminDDL "`n", %kBackendCliInputPath%
     divmin := divminDDL
 }
 ; RGB -- compare rgbsize vs rgbsizeDDL
 rgbnow := rgbmap_reversed[rgbsizeDDL]
 if (rgbsize != rgbnow){
-    FileAppend, % "set_rgb_item_max_size " rgbnow "`n", %ahk_out_path%
+    FileAppend, % "set_rgb_item_max_size " rgbnow "`n", %kBackendCliInputPath%
     rgbsize := rgbnow
 }
 ; OIL -- compare min_oil vs min_oilDDL
 if (min_oil != min_oilDDL){
-    FileAppend, % "set_lowest_visible_oil """ oils[min_oilDDL] " Oil""`n", %ahk_out_path%
+    FileAppend, % "set_lowest_visible_oil """ kOilBaseTypes[min_oilDDL] " Oil""`n", %kBackendCliInputPath%
     min_oil := min_oilDDL
 
 }
 ; gem/flask quality -- compare gemmin vs gemminUD flaskmin vs flaskminUD
 if (gemmin != gemminUD){
     gemout := gemminUD == 21? -1 : gemminUD
-    FileAppend, % "set_gem_min_quality " gemout "`n", %ahk_out_path%
+    FileAppend, % "set_gem_min_quality " gemout "`n", %kBackendCliInputPath%
     gemmin := gemminUD
 }
 if (flaskmin != flaskminUD){
     flaskout := flaskminUD == 21? -1 : flaskminUD
-    FileAppend, % "set_flask_min_quality " flaskout "`n", %ahk_out_path%
+    FileAppend, % "set_flask_min_quality " flaskout "`n", %kBackendCliInputPath%
     flaskmin := flaskminUD
 }
 ; map hide -- compare maphide vs maphideUD
 if(maphide != maphideUD){
-    FileAppend, % "set_hide_maps_below_tier " maphideUD "`n", %ahk_out_path%
+    FileAppend, % "set_hide_maps_below_tier " maphideUD "`n", %kBackendCliInputPath%
     maphide := maphideUD
 }
 GuiControl, , GUIStatusMsg , % "Filter Updating..."
-RunWait, %python_command% %py_prog_path% run_batch %active_profile%, , Hide
-FileRead, exit_code, %py_exit_code_path%
+RunWait, %python_command% %kBackendCliPath% run_batch %active_profile%, , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Filter Update Failed"
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
     MsgBox, How did you get here?
 GuiControl, , GUIStatusMsg , % "Filter Updated Successfully"
-WinActivate, Path of Exile
+MakePoeActive()
 return
 
 Import:
-RunWait, %python_command% %py_prog_path% import_downloaded_filter %active_profile%,  , Hide
-FileRead, exit_code, %py_exit_code_path%
+RunWait, %python_command% %kBackendCliPath% import_downloaded_filter %active_profile%,  , Hide
+FileRead, exit_code, %kBackendCliExitCodePath%
 if (exit_code == "1"){
     GuiControl, , GUIStatusMsg , % "Filter Import Failed"
-    FileRead, error_log, %py_log_path%
+    FileRead, error_log, %kBackendCliLogPath%
     MsgBox, % "Python backend_cli.py encountered error:`n" error_log
 }
 else if (exit_code == "-1")
@@ -1174,7 +1229,7 @@ return
 ; Write Filter
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
 F8::  ; $write_filter_hotkey_line
-Gosub Update
+GoSub Update
 return
 
 ; Reload Filter

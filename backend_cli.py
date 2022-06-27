@@ -302,7 +302,7 @@ kFunctionInfoMap = {
         'NumParamsOptions' : [2, 3],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
-        'NumParamsForMatch' : 2,
+        'NumParamsForMatch' : 1,
     },
     'get_basetype_visibility' : { 
         'NumParamsOptions' : [1],
@@ -319,7 +319,7 @@ kFunctionInfoMap = {
         'NumParamsOptions' : [2, 3],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
-        'NumParamsForMatch' : 2,
+        'NumParamsForMatch' : 1,
     },
     'get_flask_visibility' : { 
         'NumParamsOptions' : [1],
