@@ -18,7 +18,7 @@ Menu, Tray, Icon, DLF_icon.ico
 
 ; GUI window parameters
 kWindowWidth := 1470
-kWindowHeight := 850
+kWindowHeight := 866
 kWindowTitle := "PoE Dynamic Loot Filter"
 
 ; Paths for backend cli target, input, and output
@@ -55,6 +55,10 @@ Quoted(s) {
     return quote s quote
 }
 
+StartsWith(s, prefix) {
+    return (SubStr(s, 1, StrLen(prefix)) == prefix)
+}
+
 StringJoin(list, delimeter) {
     result_string := ""
     for i, s in list {
@@ -64,6 +68,33 @@ StringJoin(list, delimeter) {
         result_string := result_string s
     }
     return result_string
+}
+
+; Takes either a GUI element variable ("vMyGuiElement") or
+; an HWND id ("HWNDhMyGuiElement"), and calls GuiGetControl
+; with the appropriate syntax.
+GuiControlGetHelper(id, warn_empty_output:=False) {
+    StringLower, id, id
+    output_value := ""
+    ; For Gui variables, GuiControlGet does not require percent signs
+    if (StartsWith(id, "v")) {
+        variable_name := SubStr(id, 2)  ; trim starting "v"
+        GuiControlGet output_value, , %variable_name%
+    }
+    ; For HWND ids, GuiControlGet does require percent signs
+    else if (StartsWith(id, "hwnd")) {
+        hwnd_id_name := SubStr(id, 5)  ; trim starting "hwnd"
+        GuiControlGet output_value, , % %hwnd_id_name%
+    }
+    ; If no specific prefix, assume it's just a pre-trimmed variable name
+    else {
+        GuiControlGet output_value, , %variable_name%
+    }
+    ; Check if output is empty for debugging purposes
+    if (warn_empty_output and (output_value == "")) {
+        DebugMessage("Warning: output of GuiControlGetHelper(" id ") is empty")
+    }
+    return output_value
 }
 
 ; Returns an array of strings containing the lines in the file (newlines removed)
@@ -423,55 +454,41 @@ Gui Add, Button, x%x% y%y% w80 h34 gCreateProfile1, Create
 anchor_x := 16, anchor_y := 48
 ; GroupBox
 Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w484 h783, Currency
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w484 h806, Currency
 ; Dividing lines
-x := anchor_x + 8, y := anchor_y + 109
+x := anchor_x + 8, y := anchor_y + 76
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above row 1
-x := anchor_x + 8, y := anchor_y + 317
+x := anchor_x + 8, y := anchor_y + 284
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line between rows 1 and 2
-x := anchor_x + 8, y := anchor_y + 525
+x := anchor_x + 8, y := anchor_y + 492
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line between rows 2 and 3
-x := anchor_x + 8, y := anchor_y + 736
+x := anchor_x + 8, y := anchor_y + 703
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above portal/wisdom scrolls
-x := anchor_x + 162, y := anchor_y + 117
+x := anchor_x + 162, y := anchor_y + 84
 Gui Add, Text, x%x% y%y% w0 h613 +0x1 +0x10  ; vertical line between columns 1 and 2
-x := anchor_x + 322, y := anchor_y + 117
+x := anchor_x + 322, y := anchor_y + 84
 Gui Add, Text, x%x% y%y% w0 h613 +0x1 +0x10  ; vertical line between column 2 and 3
-x := anchor_x + 240, y := anchor_y + 744
+x := anchor_x + 240, y := anchor_y + 711
 Gui Add, Text, x%x% y%y% w0 h34 +0x1 +0x10  ; vertical line between portal/wisdom scrolls
-; Find tier of currency
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 12, y := anchor_y + 32
-Gui Add, Text, x%x% y%y% w147 h30 +0x200 +Right, Find Tier of Currency:
+; Find and move currency
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 166, y := anchor_y + 32
-Gui Add, DropDownList, x%x% y%y% w188 +Sort gCurrencyFindDDL vFindCurrTier_in, %all_currency%
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 364, y := anchor_y + 32
-Gui Add, Text, x%x% y%y% w16 h28 +0x200, ->
+x := anchor_x + 60, y := anchor_y + 32
+Gui Add, DropDownList, x%x% y%y% w270 +Sort gCurrencyFindDDL vFindCurrTier_in HWNDhFindCurrencyDdl, Select Currency Type...||%all_currency%
+;Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+;x := anchor_x + 285, y := anchor_y + 33
+;Gui Add, Edit, x%x% y%y% w36 h26 +0x200 vFindCurrTier_out +ReadOnly, T#
+;Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+;x := anchor_x + 335, y := anchor_y + 33
+;Gui Add, Text, x%x% y%y% w60 h26 +0x200, Move to:
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 388, y := anchor_y + 33
-Gui Add, Text, x%x% y%y% w40 h26 +0x200 vFindCurrTier_out, [Tier]
-; Move currency to tier
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 12, y := anchor_y + 72
-Gui Add, Text, x%x% y%y% w148 h28 +0x200 +Right, Move Currency to Tier:
+x := anchor_x + 344, y := anchor_y + 33
+Gui Add, Text, x%x% y%y% w36 h26 +0x200, -->
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 164, y := anchor_y + 72
-Gui Add, DropDownList, x%x% y%y% w191 +Sort vCurrencyMoveTier_curr, %all_currency%
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 364, y := anchor_y + 72
-Gui Add, Text, x%x% y%y% w16 h28 +0x200, ->
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 386, y := anchor_y + 72
-Gui Add, DropDownList, x%x% y%y% w43 vCurrencyMoveTier_tier, T1|T2|T3|T4|T5|T6|T7|T8|T9
-; Go Button
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 436, y := anchor_y + 73
-Gui Add, Button, x%x% y%y% w36 h26 gCurrencyMoveTier, Go
+x := anchor_x + 375, y := anchor_y + 32
+Gui Add, DropDownList, x%x% y%y% w43 gCurrencyMoveTier vCurrencyMoveTier_tier, T#||T1|T2|T3|T4|T5|T6|T7|T8|T9
 ; Tier blocks
 tier_anchor_x := anchor_x + 16
-tier_anchor_y := anchor_y + 120
+tier_anchor_y := anchor_y + 87
 tier_horizontal_spacing := 160
 tier_vertical_spacing := 208
 Loop 9 {
@@ -489,21 +506,39 @@ Loop 9 {
     Gui Add, DropDownList, % "+AltSubmit vValueCurrencyDdlT" tier " x" x " y" y " w44 Choose"cstack_values[tier],  %cstacktext_less%
     Gui Font, c0x00e8b2 s10
     x := loop_anchor_x + 0, y := loop_anchor_y + 29
-    Gui Add, ListBox, x%x% y%y% w135 h164 +Sort vCurrTexts%tier%, % currtexts[tier]
+    Gui Add, ListBox, x%x% y%y% w135 h164 +Sort gCurrencyListBoxItemSelectedT%tier% vCurrTexts%tier% HWNDhCurrencyTierBoxT%tier%, % currtexts[tier]
 }
 ; Portal scrolls
 Gui Font, c0x00e8b2 s11, Segoe UI
-x := anchor_x + 40, y := anchor_y + 744
+x := anchor_x + 40, y := anchor_y + 711
 Gui Add, Text, x%x% y%y% w115 h28 +0x200, Portal Stack Size:
-x := anchor_x + 160, y := anchor_y + 744
+x := anchor_x + 160, y := anchor_y + 711
 Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTportal Choose%portal_stack% x%x% y%y% w48, % cstacktext
 ; Wisdom scrolls
 Gui Font, c0x00e8b2 s11, Segoe UI
-x := anchor_x + 272, y := anchor_y + 744
+x := anchor_x + 272, y := anchor_y + 711
 Gui Add, Text, x%x% y%y% w133 h28 +0x200, Wisdom Stack Size:
-x := anchor_x + 408, y := anchor_y + 744
+x := anchor_x + 408, y := anchor_y + 711
 Gui Add, DropDownList, +AltSubmit vValueCurrencyDdlTwisdom Choose%wisdom_stack% x%x% y%y% w48, % cstacktext
 ; ------------- End Section: [Currency] -------------
+
+; ------------- Section: [Splinter Stack Sizes] ------------
+anchor_x := 20, anchor_y := 790
+; GroupBox
+Gui Font, c0x00e8b2 s10 Bold
+Gui Add, GroupBox, x%anchor_x% y%anchor_y% w476 h60, Splinter Stack Sizes
+; Splinter BaseType DDL (items roughly in order from least to most valuable, but grouped by legion/breach)
+Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+x := anchor_x + 28, y := anchor_y + 24
+Gui Add, DropDownList, x%x% y%y% w240 HWNDhSplinterTypeDdl, % "Select Splinter Type...||"StringJoin(kSplinterBaseTypesList, "|")
+; Stack Size DDL
+x := anchor_x + 272, y := anchor_y + 24
+Gui Add, DropDownList, x%x% y%y% w48 HWNDhSplinterStackSizeDdl, 1+||2+|4+|8+
+; Apply Button
+Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+x := anchor_x + 350, y := anchor_y + 25
+Gui Add, Button, x%x% y%y% w100 h26 gSplinterStackSizesApply, Apply
+; ------------- End Section: [Splinter Stack Sizes] ------------
 
 ; ------------- Section: [Chaos Recipe Rares] -------------
 anchor_x := 528, anchor_y := 48
@@ -658,24 +693,6 @@ Gui Add, Text, x%x% y%y% w136 h28 +0x200, RGB Max Item Size:
 x := anchor_x + 152, y := anchor_y + 112
 Gui Add, DropDownList,% "+AltSubmit x" x " y" y " w113 vrgbsizeDDL Choose" rgbmap[rgbsize], Hide All|Small|Medium|Large
 ; ------------- End Section: [Quality and RGB Items] ------------
-
-; ------------- Section: [Splinter Stack Sizes] ------------
-anchor_x := 844, anchor_y := 466
-; GroupBox
-Gui Font, c0x00e8b2 s10 Bold
-Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h116, Splinter Stack Sizes
-; Splinter BaseType DDL (items roughly in order from least to most valuable, but grouped by legion/breach)
-Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 18, y := anchor_y + 36
-Gui Add, DropDownList, x%x% y%y% w190 HWNDhSplinterTypeDdl, % "Select Splinter Type...||"StringJoin(kSplinterBaseTypesList, "|")
-; Stack Size DDL
-x := anchor_x + 212, y := anchor_y + 36
-Gui Add, DropDownList, x%x% y%y% w54 HWNDhSplinterStackSizeDdl, 1+||2+|4+|8+
-; Apply Button
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 84, y := anchor_y + 72
-Gui Add, Button, x%x% y%y% w120 h26 gSplinterStackSizesApply, Apply
-; ------------- End Section: [Splinter Stack Sizes] ------------
 
 ; ------------- Section: [Socket Patterns] ------------
 anchor_x := 1160, anchor_y := 64
@@ -900,29 +917,93 @@ SplinterStackSizesApply:
 
 ; ------------- Section: [Currency Find and Move] ------------
 
+DeselectCurrencyNotInTier(tier) {
+    Loop, 9 {
+        if (A_Index != tier) {
+            ; GuiControl, Choose/ChooseString does *not* trigger associated gLabels
+            GuiControl, Choose, CurrTexts%A_Index%, 0
+        }
+    }
+}
+
 ; Display tier of currency in FindCurrTier_in ddl to FindCurrTier_out text
 CurrencyFindDDL:
-Gui, Submit, NoHide
-For key, val in curr_txt
+selected_currency_type := GuiControlGetHelper("vFindCurrTier_in")
+For index, currency_type in curr_txt
 {
-    if (val == FindCurrTier_in){
-        GuiControl, , FindCurrTier_out, % "T" curr_val[key]
+    if (currency_type == selected_currency_type){
+        tier := curr_val[index]
+        GuiControl, , FindCurrTier_out, T%tier%
+        ; GuiControl, Choose/ChooseString does *not* trigger associated gLabels
+        ; Choose the Tier in the Tier DDL and the Currency in the corresponding tier's ListBox
+        GuiControl, ChooseString, CurrencyMoveTier_tier, T%tier%
+        GuiControl, ChooseString, CurrTexts%tier%, %selected_currency_type%
+        DeselectCurrencyNotInTier(tier)
         return
     }
 }
-GuiControl, , FindCurrTier_out, Not Found
+GuiControl, , FindCurrTier_out, T?
+GuiControl, Choose, CurrencyMoveTier_tier, 1
 return
 
-; move currency CurrencyMoveTier_curr to tier CurrencyMoveTier_tier
+; There should be a better way to do this, like hooking the GUI element up
+; to a function and passing in the tier parameter. But this is just for PoC.
+CurrencyListBoxItemSelectedT1:
+tier := 1
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT2:
+tier := 2
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT3:
+tier := 3
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT4:
+tier := 4
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT5:
+tier := 5
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT6:
+tier := 6
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT7:
+tier := 7
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT8:
+tier := 8
+Goto CurrencyListBoxItemSelected
+CurrencyListBoxItemSelectedT9:
+tier := 9
+Goto CurrencyListBoxItemSelected
+
+CurrencyListBoxItemSelected:
+; We want to select the corresponding item in the find currency DDL,
+; and trigger the associated "Find" action.
+; We also want to deselect any currency items selected in other tier boxes.
+Loop, 9 {
+    ; Select corresponding item in Find currency DDL
+    if (A_Index == tier) {
+        selected_item := GuiControlGetHelper("vCurrTexts" tier)
+        ; Control, Choose/ChoseString string *does* trigger associated gLabels
+        Control, ChooseString, %selected_item%, , ahk_id %hFindCurrencyDdl%
+        DeselectCurrencyNotInTier(tier)
+        break
+    }
+}
+return
+
+; Move currency selected in vFindCurrTier_in to tier selected in vCurrencyMoveTier_tier
 CurrencyMoveTier:
-Gui, Submit, NoHide
-if (CurrencyMoveTier_curr == "" or CurrencyMoveTier_tier == "")
+currency_type := GuiControlGetHelper("vFindCurrTier_in")
+target_tier := GuiControlGetHelper("vCurrencyMoveTier_tier")
+; DebugMessage("Moving " currency_type " to tier " target_tier)
+if (currency_type == "Select Currency Type..." or target_tier == "T#")
     return
-dst_tier := LTrim(CurrencyMoveTier_tier, "T")
+dst_tier := LTrim(target_tier, "T")
 src_tier := 0
 for key, val in curr_txt
 {
-    if (val == CurrencyMoveTier_curr){
+    if (val == currency_type){
         src_tier := curr_val[key]
         curr_val[key] := dst_tier
     }
@@ -932,10 +1013,14 @@ For idx in curr_txt {
     currtexts[curr_val[idx]] .= curr_txt[idx] "|"
 }
 Loop, 9 {
+    ; Isn't this just RTrim?
     currtexts[A_Index] := RegExReplace( currtexts[A_Index], "\|$" )
 }
 GuiControl, , % "CurrTexts" src_tier, % "|" currtexts[src_tier]
 GuiControl, , % "CurrTexts" dst_tier, % "|" currtexts[dst_tier]
+; Control, Choose/ChoseString string *does* trigger associated gLabels
+hwnd_name = % hCurrencyTierBoxT%dst_tier%  ; some wizardry here but it works
+Control, ChooseString, %currency_type%, , ahk_id %hwnd_name%,
 return
 
 ; Clipboard Rule Matching
