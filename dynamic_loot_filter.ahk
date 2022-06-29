@@ -464,12 +464,12 @@ x := anchor_x + 8, y := anchor_y + 492
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line between rows 2 and 3
 x := anchor_x + 8, y := anchor_y + 703
 Gui Add, Text, x%x% y%y% w468 h0 +0x10  ; horizontal line above portal/wisdom scrolls
-x := anchor_x + 162, y := anchor_y + 84
-Gui Add, Text, x%x% y%y% w0 h613 +0x1 +0x10  ; vertical line between columns 1 and 2
-x := anchor_x + 322, y := anchor_y + 84
-Gui Add, Text, x%x% y%y% w0 h613 +0x1 +0x10  ; vertical line between column 2 and 3
-x := anchor_x + 240, y := anchor_y + 711
-Gui Add, Text, x%x% y%y% w0 h34 +0x1 +0x10  ; vertical line between portal/wisdom scrolls
+x := anchor_x + 162, y := anchor_y + 78
+Gui Add, Text, x%x% y%y% w0 h628 +0x1 +0x10  ; vertical line between columns 1 and 2
+x := anchor_x + 322, y := anchor_y + 78
+Gui Add, Text, x%x% y%y% w0 h628 +0x1 +0x10  ; vertical line between column 2 and 3
+x := anchor_x + 240, y := anchor_y + 705
+Gui Add, Text, x%x% y%y% w0 h47 +0x1 +0x10  ; vertical line between portal/wisdom scrolls
 ; Find and move currency
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 60, y := anchor_y + 32
@@ -488,7 +488,7 @@ x := anchor_x + 375, y := anchor_y + 32
 Gui Add, DropDownList, x%x% y%y% w43 gCurrencyMoveTier vCurrencyMoveTier_tier, T#||T1|T2|T3|T4|T5|T6|T7|T8|T9
 ; Tier blocks
 tier_anchor_x := anchor_x + 16
-tier_anchor_y := anchor_y + 87
+tier_anchor_y := anchor_y + 84
 tier_horizontal_spacing := 160
 tier_vertical_spacing := 208
 Loop 9 {
@@ -505,7 +505,7 @@ Loop 9 {
     x := loop_anchor_x + 92, y := loop_anchor_y + 0
     Gui Add, DropDownList, % "+AltSubmit vValueCurrencyDdlT" tier " x" x " y" y " w44 Choose"cstack_values[tier],  %cstacktext_less%
     Gui Font, c0x00e8b2 s10
-    x := loop_anchor_x + 0, y := loop_anchor_y + 29
+    x := loop_anchor_x + 0, y := loop_anchor_y + 32
     Gui Add, ListBox, x%x% y%y% w135 h164 +Sort gCurrencyListBoxItemSelectedT%tier% vCurrTexts%tier% HWNDhCurrencyTierBoxT%tier%, % currtexts[tier]
 }
 ; Portal scrolls
