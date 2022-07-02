@@ -71,6 +71,8 @@ def TestParseItemText():
             AssertEqual(str(item.properties_map[keyword]), expected_item_properties_map[keyword])
     print('TestParseItemText passed!')
 
+# Note: item.RuleMatchesItem is tested in rule_matching_test.py.
+
 def main():
     TestParseItemText()
     print('All tests passed!')

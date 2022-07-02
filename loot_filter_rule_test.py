@@ -174,6 +174,10 @@ def TestRepeatedKeyword():
     rule = LootFilterRule(kRepeatedKeywordRuleText)
     print('TestRepeatedKeyword passed!')
 
+# TODO:
+#  - Test header_comment_lines and rule_text_lines are parsed correctly
+#  - Test GetConditions
+
 def main():
     TestIsParsableAsRule()
     TestBasicRuleParse()

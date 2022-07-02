@@ -30,6 +30,8 @@ Show
 Class Maps
 BaseType == "Tower Map"''', 2)]
 
+# TODO: Add tests for remaining functions - most missing!
+
 def TestIsSubstringInLines():
     AssertTrue(parse_helper.IsSubstringInLines(
             consts.kTableOfContentsIdentifier, kLinesWithTableOfContentsStart))
