@@ -38,7 +38,6 @@ from collections import OrderedDict
 import os
 from pathlib import Path
 import shlex
-import shutil
 import sys
 import traceback
 from typing import List, Tuple
@@ -57,6 +56,20 @@ kLogFilename = 'backend_cli.log'
 kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
 kExitCodeFilename = 'backend_cli.exit_code'
+
+def UsageMessage(function_name: str or None):
+    usage_message = 'Usage synax:\n> python backend_cli.py'
+    if (function_name == None):
+        usage_message += ' <function_name> <function_arguments...> <profile_name (if required)>'
+    else:
+        usage_message += function_name
+        for i in range(kFunctionInfoMap[function_name]['NumParamsOptions'][-1]):
+            usage_message += ' <arg{}>'.format(i + 1)
+        if (kFunctionInfoMap[function_name]['HasProfileParam']):
+            usage_message += ' <profile_name>'
+    return usage_message
+# End UsageMessage
+
 
 def Error(e):
     logger.Log('Error ' + str(e))
@@ -796,33 +809,31 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
                 function_name, function_params, loot_filter.profile_obj.name)
 # End DelegateFunctionCall
 
-kUsageSyntaxString = ('Usage synax:\n'
-    '> python backend_cli.py <function_name> <function_arguments...> <profile_name (if required)>')
-
 # Returns function_name, function_params, profile_name.
 # If there is no profile param, returned profile_name is None.
 def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
     # Always require at least 2 params: script_name, function_name
     if (len(sys.argv) < 2):
-        Error('No function specified\n' + kUsageSyntaxString)
-    _, function_name, *remaining_params= sys.argv
+        Error('No function specified\n' + UsageMessage(None))
+    _, function_name, *remaining_params = sys.argv
     function_params = []
+    requires_profile_param = kFunctionInfoMap[function_name]['HasProfileParam']
     # Separate remaining_params into function_params and profile_name
     # If no profile param, profile_name will be None
     profile_name = None
-    if (kFunctionInfoMap[function_name]['HasProfileParam']):
+    if (requires_profile_param):
         if (len(remaining_params) == 0):
-            Error('No profile specified\n' + kUsageSyntaxString)
+            Error('No profile specified\n' + UsageMessage(function_name))
         *function_params, profile_name = remaining_params
     else:
         function_params = remaining_params
     # Check if number of params is valid for given function name
     if (len(function_params) not in kFunctionInfoMap[function_name]['NumParamsOptions']):
-        Error('Invalid number of parameters given ({}) for function {}\n'.format(
-                len(function_params), function_name) + kUsageSyntaxString)
-    # Check if profile exists, if there is a profile param
-    if ((profile_name != None) and not profile.ProfileExists(profile_name)):
-        Error('profile "{}" does not exist\n'.format(profile_name) + kUsageSyntaxString)
+        Error('Invalid number of parameters given\n' + UsageMessage(function_name))
+    # Verify that the profile of the given name exists, if the function requires a profile param
+    # (user may have forgotten the profile param, and it's been parsed as a value, e.g. "1")
+    if (requires_profile_param and not profile.ProfileExists(profile_name)):
+        Error('Invalid number of parameters given\n' + UsageMessage(function_name))
     return function_name, function_params, profile_name
 # End ValidateAndParseArguments
 
