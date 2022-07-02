@@ -45,6 +45,9 @@ g_flask_basetypes_changes := []
 g_socket_patterns_changes := []
 g_splinter_changes := []
 
+; Local GUI state variables (may contain changes not yet applied to filter)
+g_splinter_basetype_to_stacksize_index_map := {}  ; can use ControlGetText to convert to StackSize
+
 ; ---------------- General Helper Functions ----------------
 DebugMessage(message) {
     MsgBox, , Debug Message, %message%
@@ -473,7 +476,7 @@ Gui Add, Text, x%x% y%y% w0 h47 +0x1 +0x10  ; vertical line between portal/wisdo
 ; Find and move currency
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 60, y := anchor_y + 32
-Gui Add, DropDownList, x%x% y%y% w270 +Sort gCurrencyFindDDL vFindCurrTier_in HWNDhFindCurrencyDdl, Select Currency Type...||%all_currency%
+Gui Add, DropDownList, x%x% y%y% w270 +Sort gCurrencyFindDDL vFindCurrTier_in HWNDhFindCurrencyDdl, % "             Select Currency Type...||"all_currency
 ;Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 ;x := anchor_x + 285, y := anchor_y + 33
 ;Gui Add, Edit, x%x% y%y% w36 h26 +0x200 vFindCurrTier_out +ReadOnly, T#
@@ -529,15 +532,11 @@ Gui Font, c0x00e8b2 s10 Bold
 Gui Add, GroupBox, x%anchor_x% y%anchor_y% w476 h60, Splinter Stack Sizes
 ; Splinter BaseType DDL (items roughly in order from least to most valuable, but grouped by legion/breach)
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-x := anchor_x + 28, y := anchor_y + 24
-Gui Add, DropDownList, x%x% y%y% w240 HWNDhSplinterTypeDdl, % "Select Splinter Type...||"StringJoin(kSplinterBaseTypesList, "|")
+x := anchor_x + 82, y := anchor_y + 24
+Gui Add, DropDownList, x%x% y%y% w240 HWNDhSplinterTypeDdl gSplinterTypeSelected, % "           Select Splinter Type...||"StringJoin(kSplinterBaseTypesList, "|")
 ; Stack Size DDL
-x := anchor_x + 272, y := anchor_y + 24
-Gui Add, DropDownList, x%x% y%y% w48 HWNDhSplinterStackSizeDdl, 1+||2+|4+|8+
-; Apply Button
-Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-x := anchor_x + 350, y := anchor_y + 25
-Gui Add, Button, x%x% y%y% w100 h26 gSplinterStackSizesApply, Apply
+x := anchor_x + 332, y := anchor_y + 24
+Gui Add, DropDownList, x%x% y%y% w48 HWNDhSplinterStackSizeDdl gSplinterStackSizesApply, 1+||2+|4+|8+
 ; ------------- End Section: [Splinter Stack Sizes] ------------
 
 ; ------------- Section: [Chaos Recipe Rares] -------------
@@ -615,7 +614,7 @@ Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h236, Flask BaseTypes
 ; DDL
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 18, y := anchor_y + 36
-Gui Add, DropDownList, x%x% y%y% w250 HWNDhFlaskDdl +Sort, % "Select Flask Type...||"StringJoin(kFlaskBaseTypesList, "|")
+Gui Add, DropDownList, x%x% y%y% w250 HWNDhFlaskDdl +Sort, % "              Select Flask Type...||"StringJoin(kFlaskBaseTypesList, "|")
 ; High ilvl checkbox and Add button
 Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 x := anchor_x + 20, y := anchor_y + 68
@@ -817,7 +816,6 @@ FlaskAdd:
     GuiControlGet base_type, , %hFlaskDdl%
     GuiControlGet high_ilvl_only_flag, , %hFlaskHighIlvlCheckBox%
     base_type := Trim(base_type)
-    DebugMessage(base_type)
     if (base_type == "Select Flask Type...") {
         return
     }
@@ -902,17 +900,31 @@ SocketPatternsRemove:
 
 ; set_splinter_min_visible_stack_size <base_type: str> <stack_size: int>
 
+; Triggered on Splinter Type selection (hSplinterTypeDdl)
+; Updates the StackSize DDL with the corresponding value
+SplinterTypeSelected:
+    GuiControlGet base_type, , %hSplinterTypeDdl%
+    select_index := g_splinter_basetype_to_stacksize_index_map.haskey(base_type) ? g_splinter_basetype_to_stacksize_index_map[base_type] : 1
+    GuiControl, Choose, %hSplinterStackSizeDdl%, %select_index%
+    return
+
+; Triggered on Splinter StackSize selection (hSplinterStackSizeDdl)
 SplinterStackSizesApply:
     GuiControlGet base_type, , %hSplinterTypeDdl%
+    GuiControl, +AltSubmit, %hSplinterStackSizeDdl%
+    GuiControlGet stack_size_index, , %hSplinterStackSizeDdl%
+    GuiControl, -AltSubmit, %hSplinterStackSizeDdl%
     GuiControlGet stack_size, , %hSplinterStackSizeDdl%
+    base_type := Trim(base_type)
     if (base_type == "Select Splinter Type...") {
         return
     }
     stack_size := RTrim(stack_size, "+")
+    ; Update GUI internal state
+    g_splinter_basetype_to_stacksize_index_map[base_type] := stack_size_index
     ; Convert to corresponding backend function call and store it
     backend_function_call := "set_splinter_min_visible_stack_size " Quoted(base_type) " " stack_size
     g_splinter_changes.push(backend_function_call)
-    GuiControl, Choose, %hSplinterTypeDdl%, 1
     return
 
 ; ------------- Section: [Currency Find and Move] ------------
