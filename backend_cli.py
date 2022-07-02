@@ -43,12 +43,14 @@ import sys
 import traceback
 from typing import List, Tuple
 
+from backend_cli_function_info import kFunctionInfoMap
 import consts
 import file_helper
 import logger
 from loot_filter import InputFilterSource, LootFilter
 from loot_filter_rule import RuleVisibility
 import profile
+import profile_changes
 from type_checker import CheckType
 
 kLogFilename = 'backend_cli.log'
@@ -56,332 +58,10 @@ kInputFilename = 'backend_cli.input'
 kOutputFilename = 'backend_cli.output'
 kExitCodeFilename = 'backend_cli.exit_code'
 
-# Map of function name -> dictionary of properties indexed by the following string keywords:
-# - NumParamsOptions: List[int] (excludes function name and profile param)
-# - HasProfileParam: bool
-# - ModifiesFilter: bool
-# - NumParamsForMatch: int, only used for functions that modify the filter. It
-#   Tells how many parameters need to be the same for two functions of this name to be
-#   reducible to a single function in the profile changes file.  For example:
-#     > adjust_currency_tier "Chromatic Orb" +1
-#     > adjust_currency_tier "Chromatic Orb" +1
-#   is reducible to
-#     > adjust_currency_tier "Chromatic Orb" +2
-#   so this value would be 1 for 'adjust_currency_tier'.
-kFunctionInfoMap = {
-    # Profiles
-    'is_first_launch' : {
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : False,
-        'ModifiesFilter' : False,
-    },
-    'get_all_profile_names' : {
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : False,
-        'ModifiesFilter' : False,
-    },
-    'create_new_profile' : {
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : False,
-        'ModifiesFilter' : False,
-    },
-    'rename_profile' : {
-        'NumParamsOptions' : [2],
-        'HasProfileParam' : False,
-        'ModifiesFilter' : False,
-    },
-    'delete_profile' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : False,
-        'ModifiesFilter' : False,
-    },
-    'set_active_profile' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : False,
-        'ModifiesFilter' : False,
-    },
-    # Check Filters Exist
-    'check_filters_exist' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Import and Reload
-    # These are *not* considered as mutator functions,
-    # because they do not contribute to Profile.changes.
-    'import_downloaded_filter' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'load_input_filter' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Miscellaneous
-    'run_batch' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'get_rule_matching_item' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_rule_visibility' : { 
-        'NumParamsOptions' : [3],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 2,
-    },
-    # Currency
-    'set_currency_to_tier' : { 
-        'NumParamsOptions' : [2],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_tier_of_currency' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'get_all_currency_tiers' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_currency_tier_min_visible_stack_size' : {
-        'NumParamsOptions' : [2],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_currency_tier_min_visible_stack_size' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Splinters
-    'set_splinter_min_visible_stack_size' : {
-        'NumParamsOptions' : [2],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_splinter_min_visible_stack_size' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'get_all_splinter_min_visible_stack_sizes' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Essences
-    'get_all_essence_tier_visibilities' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_hide_essences_above_tier' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_hide_essences_above_tier' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Divination Cards
-    'get_all_div_card_tier_visibilities' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_hide_div_cards_above_tier' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_hide_div_cards_above_tier' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Unique Items
-    'get_all_unique_item_tier_visibilities' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_hide_unique_items_above_tier' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_hide_unique_items_above_tier' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Unique Maps
-    'get_all_unique_map_tier_visibilities' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'set_hide_unique_maps_above_tier' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_hide_unique_maps_above_tier' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Oils
-    'set_lowest_visible_oil' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_lowest_visible_oil' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Quality Gems
-    'set_gem_min_quality' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_gem_min_quality' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Quality Flasks
-    'set_flask_min_quality' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_flask_min_quality' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Hide Maps Below Tier
-    'set_hide_maps_below_tier' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_hide_maps_below_tier' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Generic BaseTypes
-    'set_basetype_visibility' : { 
-        'NumParamsOptions' : [2, 3],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_basetype_visibility' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'get_all_visible_basetypes' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Flasks Types
-    'set_flask_visibility' : { 
-        'NumParamsOptions' : [2, 3],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'get_flask_visibility' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'get_all_visible_flasks' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Socket Rules
-    'add_remove_socket_rule' : { 
-        'NumParamsOptions' : [2, 3],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 2,
-    },
-    'get_all_added_socket_rules' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # RGB Items
-    'set_rgb_item_max_size' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 0,
-    },
-    'get_rgb_item_max_size' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    # Chaos Recipe
-    'set_chaos_recipe_enabled_for' : { 
-        'NumParamsOptions' : [2],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : True,
-        'NumParamsForMatch' : 1,
-    },
-    'is_chaos_recipe_enabled_for' : { 
-        'NumParamsOptions' : [1],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-    'get_all_chaos_recipe_statuses' : { 
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
-        'ModifiesFilter' : False,
-    },
-}
-
 def Error(e):
     logger.Log('Error ' + str(e))
     raise RuntimeError(e)
 # End Error
-
-def FileExists(path: str) -> bool:
-    return Path(path).is_file()
-# End FileExists
 
 def CheckNumParams(params_list: List[str], required_num_params: int):
     CheckType(params_list, 'params_list', list)
@@ -393,126 +73,12 @@ def CheckNumParams(params_list: List[str], required_num_params: int):
         Error(error_message)
 # End CheckNumParams
 
-# Encloses the string in double quotes if it contains a space or single quote,
-# otherwise just returns the given string.  Note: does not check for double quotes in string.
-def QuoteStringIfRequired(input_string: str) -> str:
-    CheckType(input_string, 'input_string', str)
-    if ((" " in input_string) or ("'" in input_string)):
-        return '"' + input_string + '"'
-    return input_string
-# End QuoteStringIfRequired
-
-# Given a list of strings, joins the strings with a space,
-# and additionally encloses any string that contains a single quote or space in ""
-def JoinParams(params_list: List[str]) -> str:
-    CheckType(params_list, 'params_list', list, str)
-    return ' '.join(QuoteStringIfRequired(param) for param in params_list)
-# End JoinParams
-
-def WriteOutput(output_string: str):
-    CheckType(output_string, 'output_string', str)
-    with open(kOutputFilename, 'w') as output_file:
-        output_file.write(output_string)
-# End WriteOutput
-
 # function_output_string should be the whole string containing the given function call's output
 def AppendFunctionOutput(function_output_string: str):
     CheckType(function_output_string, 'function_output_string', str)
     with open(kOutputFilename, 'a') as output_file:
         output_file.write(function_output_string + '\n@\n')
 # End AppendFunctionOutput
-
-# Note: changes_dict is a chain of ordered dicts
-def AddFunctionToChangesDict(function_tokens: List[str], changes_dict: OrderedDict):
-    CheckType(function_tokens, 'function_tokens', list, str)
-    CheckType(changes_dict, 'changes_dict', OrderedDict)
-    function_name = function_tokens[0]
-    num_params_for_match = kFunctionInfoMap[function_name]['NumParamsForMatch']
-    current_dict = changes_dict
-    # "+ 1" here because the first token is the function name, not a param
-    for i in range(num_params_for_match + 1):
-        current_token = function_tokens[i]
-        if (i == num_params_for_match):
-            current_dict[current_token] = function_tokens[i + 1]
-        else:
-            if (current_token not in current_dict):
-                current_dict[current_token] = OrderedDict()
-            current_dict = current_dict[current_token]
-# End AddFunctionToChangesDict
-
-# Returns list of lists of function tokens, for example:
-# [['adjust_currency_tier', 'Chromatic Orb', '1'],
-#  ['hide_uniques_above_tier', '3']]
-def ConvertChangesDictToFunctionListRec(changes_dict: OrderedDict or str,
-                                        current_prefix_list: List[str] = []) -> List[List[str]]:
-    CheckType(changes_dict, 'changes_dict', (OrderedDict, str))
-    CheckType(current_prefix_list, 'current_prefix_list', list, str)
-    # changes_dict may just be final parameter, in which case it's a string
-    if (isinstance(changes_dict, str)):
-        last_param: str = changes_dict
-        return [current_prefix_list + [last_param]]
-    # Otherwise, recursively handle all keys in changes_dict
-    result_list = []
-    for param, subdict in changes_dict.items():
-        result_list.extend(
-                ConvertChangesDictToFunctionListRec(subdict, current_prefix_list + [param]))
-    return result_list
-# End ConvertChangesDictToFunctionListRec
-
-def ConvertChangesDictToFunctionList(changes_dict: OrderedDict) -> List[str]:
-    CheckType(changes_dict, 'changes_dict', OrderedDict)
-    # Get list of lists of function tokens from recursive function above
-    token_lists = ConvertChangesDictToFunctionListRec(changes_dict)
-    function_list = []
-    for token_list in token_lists:
-        function_list.append(JoinParams(token_list))
-    return function_list
-# End ConvertChangesDictToFunctionList
-
-def UpdateProfileChangesFile(changes_fullpath: str,
-                             new_function_name: str,
-                             new_function_params: List[str]):
-    CheckType(changes_fullpath, 'changes_fullpath', str)
-    CheckType(new_function_name, 'new_function_name', str)
-    CheckType(new_function_params, 'new_function_params', list, str)
-    # Parse changes file as chain of OrderedDicts:
-    # function_name -> param1 -> param2 -> ... -> last_param
-    #  > set_currency_tier "Chaos Orb" 3
-    # 'set_currency_tier' -> 'Chaos Orb' -> '3':
-    # {'set_currency_tier' : {'Chaos Orb' : '3'}}
-    parsed_changes_dict = OrderedDict()
-    changes_lines_list = file_helper.ReadFile(changes_fullpath)
-    for line in changes_lines_list:
-        tokens_list = shlex.split(line.strip())
-        AddFunctionToChangesDict(tokens_list, parsed_changes_dict)
-    # Now check if new function matches with any functions in parsed_changes_dict
-    num_params_for_match = kFunctionInfoMap[new_function_name]['NumParamsForMatch']
-    match_flag: bool = new_function_name in parsed_changes_dict
-    matched_rule_tokens_list = [new_function_name]
-    if (match_flag):
-        current_dict = parsed_changes_dict[new_function_name]
-        for i in range(num_params_for_match):
-            current_param = new_function_params[i]
-            if (current_param not in current_dict):
-                match_flag = False
-                break
-            else:
-                matched_rule_tokens_list.append(current_param)
-                current_dict = current_dict[current_param]
-        # Append last parameter if we found a match
-        # A bit wacky, but current_dict is just last parameter here due to the last line above
-        if (match_flag):
-            matched_rule_tokens_list.append(current_dict)
-    # If we found a match, we update the matched function in the changes_dict,
-    # combining matching functions by simply overwriting the last parameter
-    # If we didn't find a match, we instead just add the new function to our changes_dict
-    # Either way, the following line of code does exactly what we want:
-    AddFunctionToChangesDict([new_function_name] + new_function_params, parsed_changes_dict)
-    # Convert our parsed_changes_dict into a list of functions
-    changes_list = ConvertChangesDictToFunctionList(parsed_changes_dict)
-    # Write updated profile changes
-    file_helper.WriteToFile(changes_list, changes_fullpath)
-# End UpdateProfileChangesFile
 
 # Note: loot_filter is None iff the command does not have a profile name parameter.
 def DelegateFunctionCall(loot_filter: LootFilter or None,
@@ -523,7 +89,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
                          suppress_output: bool = False):
     CheckType(loot_filter, 'loot_filter', (LootFilter, type(None)))
     CheckType(function_name, 'function_name', str)
-    CheckType(function_params, 'function_params_list', list)
+    CheckType(function_params, 'function_params_list', list, str)
     CheckType(in_batch, 'in_batch', bool)
     CheckType(suppress_output, 'suppress_output', bool)
     # Alias config_values for convenience
@@ -561,7 +127,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Parses the input filter, adds DLF-generated rules, applies profile changes,
            and writes the final result to the output filter
          - Output: None
-         - Example: > python3 backend_cli.py load_input_filter MyProfile
+         - Example: > python3 baccontains_mutatorkend_cli.py load_input_filter MyProfile
         '''
         CheckNumParams(function_params, 0)
         changes_lines: List[str] = file_helper.ReadFile(config_values['ChangesFullpath'])
@@ -583,7 +149,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 run_batch MyProfile
         '''
         CheckNumParams(function_params, 0)
-        WriteOutput('')  # clear the output file, since we will be appending output in batch
+        # Clear the output file, since we will be appending output in batch
+        file_helper.WriteToFile('', kOutputFilename)
         contains_mutator = False
         function_call_list: List[str] = file_helper.ReadFile(kInputFilename)
         for function_call_string in function_call_list:
@@ -1205,7 +772,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     # ================================= Unmatched Function Name =================================
     else:
         error_message: str = 'command not supported: {} {}'.format(
-                function_name, JoinParams(function_params))
+                function_name, shlex.join(function_params))
         logger.Log('Error: ' + error_message)
         raise RuntimeError(error_message)
     # ============================= End Function Call Delegation ================================
@@ -1215,7 +782,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     else:
         # If function was not run_batch, write output
         if (function_name != 'run_batch'):
-            WriteOutput(output_string)
+            file_helper.WriteToFile(output_string, kOutputFilename)
         # Save loot filter if we called a mutator function
         if (kFunctionInfoMap[function_name]['ModifiesFilter']):
             loot_filter.SaveToFile()
@@ -1223,8 +790,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     # This happens after function call processing, because that code may add default arguments.
     # Note: suppress_output also functioning as an indicator to not save profile data here.
     if (kFunctionInfoMap[function_name]['ModifiesFilter'] and not suppress_output):
-        # We use the syntax some_list[:] to create a copy of some_list
-        UpdateProfileChangesFile(config_values['ChangesFullpath'], function_name, function_params[:])
+        profile_changes.AddChangeToProfile(
+                function_name, function_params, loot_filter.profile_obj.name)
 # End DelegateFunctionCall
 
 kUsageSyntaxString = ('Usage synax:\n'
