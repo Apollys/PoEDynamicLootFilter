@@ -145,7 +145,7 @@ def TestChangeVisibility():
     AssertEqual(rule.visibility, RuleVisibility.kHide)
     AssertTrue(rule.rule_text_lines[0].strip().startswith('Hide'))
     print('TestChangeVisibility passed!')
-    
+
 def TestChangeTags():
     rule = LootFilterRule(kInputRuleText)
     rule.SetTypeTierTags('hello', 'universe')
@@ -173,7 +173,7 @@ def TestEmptyBaseTypeList():
 def TestRepeatedKeyword():
     rule = LootFilterRule(kRepeatedKeywordRuleText)
     print('TestRepeatedKeyword passed!')
-    
+
 def main():
     TestIsParsableAsRule()
     TestBasicRuleParse()

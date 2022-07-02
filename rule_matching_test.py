@@ -22,7 +22,7 @@ Level: 67
 Str: 109
 Int: 94
 --------
-Sockets: B-B-B-B B-R 
+Sockets: B-B-B-B B-R
 --------
 Item Level: 81
 --------
@@ -65,7 +65,7 @@ Level: 68
 Str: 149
 Dex: 76
 --------
-Sockets: G-R-R-R-R-R 
+Sockets: G-R-R-R-R-R
 --------
 Item Level: 81
 --------
@@ -230,7 +230,7 @@ Requirements:
 Level: 67
 Int: 123
 --------
-Sockets: B-B B 
+Sockets: B-B B
 --------
 Item Level: 65
 --------
@@ -266,7 +266,7 @@ Requirements:
 Level: 67
 Int: 123
 --------
-Sockets: B-B B 
+Sockets: B-B B
 --------
 Item Level: 64
 --------
@@ -304,7 +304,7 @@ Level: 69
 Str: 95
 Dex: 116
 --------
-Sockets: R-R-G-R G 
+Sockets: R-R-G-R G
 --------
 Item Level: 75
 --------
@@ -349,7 +349,7 @@ Level: 70
 Dex: 155
 Int: 159
 --------
-Sockets: G-G-B 
+Sockets: G-G-B
 --------
 Item Level: 84
 --------
@@ -370,7 +370,7 @@ Redeemer Item''',
 	SetBorderColor 255 255 255 255
 	SetBackgroundColor 50 130 165
 	PlayEffect Blue Temp''',
-    
+
 True),
 
 # Mismatch influence test
@@ -388,7 +388,7 @@ Level: 70
 Dex: 155
 Int: 159
 --------
-Sockets: G-G-B 
+Sockets: G-G-B
 --------
 Item Level: 84
 --------
@@ -409,7 +409,7 @@ Redeemer Item''',
 	SetBorderColor 255 255 255 255
 	SetBackgroundColor 50 130 165
 	PlayEffect Blue Temp''',
-    
+
 False),
 
 # None influence test - mismatch
@@ -427,7 +427,7 @@ Level: 70
 Dex: 155
 Int: 159
 --------
-Sockets: G-G-B 
+Sockets: G-G-B
 --------
 Item Level: 84
 --------
@@ -448,7 +448,7 @@ Redeemer Item''',
 	SetBorderColor 255 255 255 255
 	SetBackgroundColor 50 130 165
 	PlayEffect Blue Temp''',
-    
+
 False),
 
 # None influence test - match
@@ -469,7 +469,7 @@ Level: 72
 Str: 73
 Int: 188 (unmet)
 --------
-Sockets: B-B-R 
+Sockets: B-B-R
 --------
 Item Level: 85
 --------
@@ -492,7 +492,7 @@ Mirrored''',
 	SetBorderColor 255 255 255 255
 	SetBackgroundColor 50 130 165
 	PlayEffect Blue Temp''',
-    
+
 True),
 ]
 

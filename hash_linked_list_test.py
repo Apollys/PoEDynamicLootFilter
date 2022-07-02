@@ -76,7 +76,7 @@ def TestBracketAccess():
     else:
         AssertFailure()
     print('TestBracketAccess passed!')
-    
+
 def TestRemove():
     hll = HashLinkedList()
     for key in range(10):

@@ -30,7 +30,7 @@ def TestDeterministicOrder():
         m2.insert(3 * i)
     AssertEqual(list(m1), list(m2))
     print('TestDeterministicOrder passed!')
-    
+
 
 def main():
     TestConstructInsertRemoveLen()

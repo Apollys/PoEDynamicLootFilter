@@ -64,7 +64,7 @@ def TestParseFromTemplate():
     AssertEqual(result, [type_tag, tier_tag])
     print('TestParseFromTemplate passed!')
 # End TestParseFromTemplate
-    
+
 def TestParseEnclosedBy():
     # Basic case
     text = 'BaseType "Leather Belt" "Two-Stone Ring" "Agate Amulet"'

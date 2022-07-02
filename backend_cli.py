@@ -14,7 +14,7 @@ do not interact with the filter in any way (for now, this is simply the setters 
 for profile names).
 
 Scroll down to DelegateFunctionCall() to see documentation of all supported functions.
-   
+
 The input and output filter filepaths are specified in config.py.
 (Eventually these will be the same, but for testing they're distinct.)
 
@@ -94,7 +94,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     CheckType(suppress_output, 'suppress_output', bool)
     # Alias config_values for convenience
     config_values = loot_filter.profile_obj.config_values if loot_filter else None
-    # 
+    #
     output_string = ''
     # ================================== Check Filters Exist ==================================
     if (function_name == 'check_filters_exist'):
@@ -122,7 +122,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
            and writes the final result to the output filter
          - Output: None
          - Example: > python3 backend_cli.py import_downloaded_filter MyProfile
-         
+
         load_input_filter
          - Parses the input filter, adds DLF-generated rules, applies profile changes,
            and writes the final result to the output filter
@@ -252,7 +252,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         output_string = 'type_tag:{}\ntier_tag:{}\n'.format(str(type_tag), str(tier_tag))
         if ((type_tag != None) and (tier_tag != None)):
             matched_rule = loot_filter.GetRule(type_tag, tier_tag)
-            output_string += '\n'.join(matched_rule.text_lines)        
+            output_string += '\n'.join(matched_rule.text_lines)
     elif (function_name == 'set_rule_visibility'):
         '''
         set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>
@@ -348,8 +348,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: min visible stack size for the given base_type
          - Example: > python3 backend_cli.py get_splinter_min_visible_stack_size "Splinter of Esh" MyProfile
         '''
-        
-        
+
+
         CheckNumParams(function_params, 1)
         splinter_base_type = function_params[0]
         output_string = str(loot_filter.GetSplinterMinVisibleStackSize(splinter_base_type))
@@ -812,7 +812,7 @@ def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
         if (len(remaining_params) == 0):
             Error('No profile specified\n' + kUsageSyntaxString)
         *function_params, profile_name = remaining_params
-    else: 
+    else:
         function_params = remaining_params
     # Check if number of params is valid for given function name
     if (len(function_params) not in kFunctionInfoMap[function_name]['NumParamsOptions']):
@@ -823,7 +823,7 @@ def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
         Error('profile "{}" does not exist\n'.format(profile_name) + kUsageSyntaxString)
     return function_name, function_params, profile_name
 # End ValidateAndParseArguments
-    
+
 def main_impl():
     # Initialize log
     logger.InitializeLog(kLogFilename)

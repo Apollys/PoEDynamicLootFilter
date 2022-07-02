@@ -148,7 +148,7 @@ def TestParseProfile():
     # Cleanup: delete test profile
     profile.DeleteProfile(profile_name)
     print('TestParseProfile passed!')
-    
+
 def TestWriteProfile():
     SetUp()
     profile_name = test_consts.kTestProfileName

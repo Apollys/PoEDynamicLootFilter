@@ -59,7 +59,7 @@ def DecodeTierTag(tier_tag: str) -> Tuple[str, str]:
 #  - color is one of: 'R', 'G', 'B','W', 'D', 'A', 'X' (any socket)
 #  - link is one of: '', ' ' (equivalent to ''), '-'
 #  - sockets are order-insensitive, in so far as changing order maintains socket groups
-# item_slot is case insensitive, and is either 'any' or the name a specific item slot. 
+# item_slot is case insensitive, and is either 'any' or the name a specific item slot.
 # Returns a list of rules condition strings, which combine to match the given socket_string.
 # Note: 'RGB-X' is equivalent to 'RG B-X' is equivalent to 'R G B-X'
 def GenerateSocketConditions(socket_string: str, item_slot: str) -> List[str]:
@@ -86,7 +86,7 @@ def GenerateSocketConditions(socket_string: str, item_slot: str) -> List[str]:
     # Separate conditions are always evaluated independently.
     # This should be a seldom-encountered, trivial-impact issue, since by the time players
     # regularly encounter multi-socket-group items, they have the fusings to fix them.
-    
+
     condition_lines = []
     # First, create the item class condition from the item slot
     item_slot_title_case = string_helper.ToTitleCase(item_slot.lower())
@@ -111,4 +111,3 @@ def GenerateSocketConditions(socket_string: str, item_slot: str) -> List[str]:
         condition_lines.append('SocketGroup >= ' + socket_group_condition_socket_string)
     return condition_lines
 # End ParseSocketString
-    

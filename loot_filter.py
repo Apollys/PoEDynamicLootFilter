@@ -30,7 +30,7 @@ class RuleOrTextBlock:
      - self.rule: LootFilterRule
      - self.text_lines: List[str]
     '''
-    
+
     def __init__(self, rule_or_text_block, is_rule: bool):
         CheckType(is_rule, 'is_rule', bool)
         self.is_rule = is_rule
@@ -62,7 +62,7 @@ class LootFilter:
     '''
 
     # ================================= Public API =================================
-    
+
     # Construct the LootFilter, parsing the file indicated by the config values of
     # the given profile and the value of input_filter_source.
     def __init__(self, profile_param: Profile or str, input_filter_source: InputFilterSource):
@@ -105,7 +105,7 @@ class LootFilter:
     # End GetRule
 
     # ============================= Rule-Item Matching =============================
-    
+
     # Returns the first non-Continue rule in the filter matching the given item,
     # None if no rule matches the item, or the last matched Continue rule otherwise.
     # If a rule has an AreaLevel requirement, it will never match any item.
@@ -125,9 +125,9 @@ class LootFilter:
             return matched_continue_rule
         return None
     # End GetRuleMatchingItem
-    
+
     # =========================== Map-Related Functions ===========================
-    
+
     def SetHideMapsBelowTierTier(self, tier: int) -> int:
         CheckType(tier, 'tier', int)
         type_name = 'dlf_hide_maps_below_tier'
@@ -135,7 +135,7 @@ class LootFilter:
         rule = self.GetRule(type_name, tier_name)
         rule.ModifyLine('MapTier', '<', tier)
     # End SetHideMapsBelowTierTier
-    
+
     def GetHideMapsBelowTierTier(self) -> int:
         type_name = 'dlf_hide_maps_below_tier'
         tier_name = type_name
@@ -143,9 +143,9 @@ class LootFilter:
         op, [tier_str] = rule.parsed_lines_hll['MapTier']
         return int(tier_str)
     # End GetHideMapsBelowTierTier
-    
+
     # =========================== Generic BaseType Functions ==========================
-    
+
     # The rare_only_flag should only be specified when enable_flag is True.
     # When enable_flag is False, base_type is removed from both rules.
     def SetBaseTypeRuleEnabledFor(
@@ -165,7 +165,7 @@ class LootFilter:
                 any_rarity_rule.AddBaseType(base_type)
                 any_rarity_rule.Enable()
     # End SetBaseTypeRuleEnabledFor
-    
+
     # If rare_flag is True, checks the rare rule.
     # If rare_flag is False, checks the any non-unique rule.
     def IsBaseTypeRuleEnabledFor(self, base_type: str, rare_flag: bool) -> bool:
@@ -178,7 +178,7 @@ class LootFilter:
             return False
         return base_type in rule.GetBaseTypeList()
     # End IsBaseTypeRuleEnabledFor
-    
+
     # If rare_flag is True, checks the rare rule.
     # If rare_flag is False, checks the any non-unique rule.
     def GetAllVisibleBaseTypes(self, rare_flag: bool) -> List[str]:
@@ -190,9 +190,9 @@ class LootFilter:
             return []
         return rule.GetBaseTypeList()
     # End GetAllVisibleBaseTypes
-    
+
     # =========================== Flask BaseType Functions ==========================
-    
+
     # The high_ilvl_only_flag should only be specified when enable_flag is True.
     # When enable_flag is False, flask_base_type is removed from both rules.
     def SetFlaskRuleEnabledFor(
@@ -212,7 +212,7 @@ class LootFilter:
                 any_ilvl_rule.AddBaseType(flask_base_type)
                 any_ilvl_rule.Enable()
     # End SetFlaskRuleEnabledFor
-    
+
     def IsFlaskRuleEnabledFor(self, flask_base_type: str, high_ilvl_flag: bool) -> bool:
         CheckType(flask_base_type, 'flask_base_type', str)
         CheckType(high_ilvl_flag, 'high_ilvl_flag', bool)
@@ -223,7 +223,7 @@ class LootFilter:
             return False
         return flask_base_type in rule.GetBaseTypeList()
     # End IsFlaskRuleEnabledFor
-    
+
     def GetAllVisibleFlaskTypes(self, high_ilvl_flag: bool) -> List[str]:
         CheckType(high_ilvl_flag, 'high_ilvl_flag', bool)
         type_tag = consts.kFlaskTypeTag
@@ -233,9 +233,9 @@ class LootFilter:
             return []
         return rule.GetBaseTypeList()
     # End GetAllVisibleFlaskTypes
-    
+
     # =========================== Socketed Item Functions ==========================
-    
+
     def AddSocketRule(self, socket_string: str, item_slot: str):
         CheckType(socket_string, 'socket_string', str)
         CheckType(item_slot, 'item_slot', str)
@@ -254,7 +254,7 @@ class LootFilter:
         rule_lines = [comment_line] + [rule_template_lines[0]] + condition_lines + rule_template_lines[1:]
         self.AddBlockToHll(rule_lines, self.dlf_rules_successor_key)
     # End AddSocketRule
-    
+
     # Does nothig if the socket rule does not exist.
     # (Need to be robust to removing nonexistent rule, because profile changes
     # will collapse add then remove rule into remove rule.)
@@ -266,7 +266,7 @@ class LootFilter:
             self.rule_or_text_block_hll.remove((consts.kSocketsTypeTag, tier_tag))
             self.socket_rule_tier_tags.remove(tier_tag)
     # End RemoveSocketRule
-    
+
     # Returns a list of pairs of (socket_string, item_slot)
     def GetAllAddedSocketRules(self) -> List[Tuple[str, str]]:
         socket_rule_pairs = []
@@ -274,13 +274,13 @@ class LootFilter:
             socket_rule_pairs.append(socket_helper.DecodeTierTag(tier_tag))
         return socket_rule_pairs
     # End GetAllAddedSocketRules
-    
+
     # ========================= Currency-Related Functions =========================
-    
+
     # Note: currency-related functions assume that stacked and unstacked currency tiers
     # are consistent.  This condition is enforced upon import and maintained within
     # all currency tier modification functions.
-    
+
     # Sets the specified currency to the given tier, in unstacked and all stacked rules.
     def SetCurrencyToTier(self, currency_name: str, target_tier: int):
         CheckType(currency_name, 'currency_name', str)
@@ -288,7 +288,7 @@ class LootFilter:
         original_tier: int = self.GetTierOfCurrency(currency_name)
         self.MoveCurrencyFromTierToTier(currency_name, original_tier, target_tier)
     # End MoveCurrencyToTier
-    
+
     # Returns the integer tier to which the given currency belongs.
     # (Result is based on the unstacked currency rules, but since tier
     # consistency is enforced, this is only an implementation detail.)
@@ -304,7 +304,7 @@ class LootFilter:
                            currency_name))
         return -1
     # End GetTierOfCurrency
-    
+
     def GetAllCurrencyInTier(self, tier: int) -> List[str]:
         CheckType(tier, 'tier', int)
         if (not (1 <= tier <= consts.kNumCurrencyTiersExcludingScrolls)):
@@ -316,7 +316,7 @@ class LootFilter:
         rule = self.GetRule(type_tag, tier_tag)
         return list(rule.GetBaseTypeList())  # returns a copy
     # End GetAllCurrencyInTier
-    
+
     # Implementation function for SetCurrencyToTier - not part of public API.
     # Handles both stacked and unstacked currency.
     # Assumes consistency between stacked and unstacked currency tiers.
@@ -344,7 +344,7 @@ class LootFilter:
             rule.AddBaseType(currency_name)
             rule.Enable()
     # End MoveCurrencyFromTierToTier
-    
+
     def SetCurrencyTierMinVisibleStackSize(self, tier_param: str or int, min_stack_size_param: str or int):
         if (isinstance(tier_param, int)):
             tier_param = str(tier_param)
@@ -369,7 +369,7 @@ class LootFilter:
             else:
                 rule.Show()
     # End SetCurrencyMinVisibleStackSize
-    
+
     # Returns the min visible stack size for the given tier,
     # or the sentinel value (100, defined in consts.py) to indicate hide_all-
     def GetCurrencyTierMinVisibleStackSize(self, tier_param: str or int) -> int:
@@ -387,7 +387,7 @@ class LootFilter:
     # End GetCurrencyTierMinVisibleStackSize
 
     # ============================= Splinter Functions =============================
-    
+
     def SetSplinterMinVisibleStackSize(self, splinter_base_type: str, min_stack_size: int):
         CheckType(splinter_base_type, 'splinter_base_type', str)
         CheckType(min_stack_size, 'min_stack_size', int)
@@ -403,7 +403,7 @@ class LootFilter:
         rule.AddBaseType(splinter_base_type)
         rule.Enable()
     # End SetSplinterMinVisibleStackSize
-    
+
     def GetSplinterMinVisibleStackSize(self, splinter_base_type: str) -> int:
         CheckType(splinter_base_type, 'splinter_base_type', str)
         # Look through all DLF splinter rules to see if splinter_base_type is present.
@@ -417,7 +417,7 @@ class LootFilter:
         # Splinter base_type not found, so all stack sizes are visible.
         return 1
     # End GetSplinterMinVisibleStackSize
-    
+
     # Returns the list of all Splinter BaseTypes in the DLF added splinter rule
     # corresponding to "Hide splinters below stack_size"
     def GetSplintersHiddenBelow(self, stack_size: int) -> List[str]:
@@ -431,7 +431,7 @@ class LootFilter:
     # End GetSplintersHiddenBelow
 
     # ============================= Essence Functions =============================
-    
+
     def SetEssenceTierVisibility(self, tier: int, visibility: RuleVisibility):
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
@@ -439,14 +439,14 @@ class LootFilter:
         rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetEssenceTierVisibility
-    
+
     def GetEssenceTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kEssenceTags[tier]
         rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetUniqueTierVisibility
-    
+
     def SetHideEssencesAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumEssenceTiers + 1):
@@ -454,7 +454,7 @@ class LootFilter:
                     else RuleVisibility.kShow)
             self.SetEssenceTierVisibility(tier, visibility)
     # SetHideEssencesAboveTierTier
-    
+
     def GetHideEssencesAboveTierTier(self) -> int:
         # Iterate from highest to lowest tier
         for tier in range(consts.kNumEssenceTiers, 0, -1):
@@ -463,9 +463,9 @@ class LootFilter:
         # No tiers are visible
         return 0
     # GetHideEssencesAboveTierTier
-    
+
     # ============================= Div Card Functions =============================
-    
+
     def SetDivCardTierVisibility(self, tier: int, visibility: RuleVisibility):
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
@@ -473,14 +473,14 @@ class LootFilter:
         rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetDivCardTierVisibility
-    
+
     def GetDivCardTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kDivCardTags[tier]
         rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetDivCardTierVisibility
-    
+
     def SetHideDivCardsAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumDivCardTiers + 1):
@@ -488,7 +488,7 @@ class LootFilter:
                     else RuleVisibility.kShow)
             self.SetDivCardTierVisibility(tier, visibility)
     # SetHideDivCardsAboveTierTier
-    
+
     def GetHideDivCardsAboveTierTier(self) -> int:
         # Iterate from highest to lowest tier
         for tier in range(consts.kNumDivCardTiers, 0, -1):
@@ -497,9 +497,9 @@ class LootFilter:
         # No tiers are visible
         return 0
     # GetHideDivCardsAboveTierTier
-    
+
     # =========================== Unique Item Functions ===========================
-    
+
     def SetUniqueItemTierVisibility(self, tier: int, visibility: RuleVisibility):
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
@@ -507,14 +507,14 @@ class LootFilter:
         rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetUniqueItemTierVisibility
-    
+
     def GetUniqueItemTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kUniqueItemTags[tier]
         rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetUniqueItemTierVisibility
-    
+
     def SetHideUniqueItemsAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumUniqueItemTiers + 1):
@@ -522,7 +522,7 @@ class LootFilter:
                     else RuleVisibility.kShow)
             self.SetUniqueItemTierVisibility(tier, visibility)
     # SetHideUniqueItemsAboveTierTier
-    
+
     def GetHideUniqueItemsAboveTierTier(self) -> int:
         # Iterate from highest to lowest tier
         for tier in range(consts.kNumUniqueItemTiers, 0, -1):
@@ -531,9 +531,9 @@ class LootFilter:
         # No tiers are visible
         return 0
     # GetHideUniqueItemsAboveTierTier
-    
+
     # ============================ Unique Map Functions ============================
-    
+
     def SetUniqueMapTierVisibility(self, tier: int, visibility: RuleVisibility):
         CheckType(tier, 'tier', int)
         CheckType(visibility, 'visibility', RuleVisibility)
@@ -541,14 +541,14 @@ class LootFilter:
         rule = self.GetRule(type_tag, tier_tag)
         rule.SetVisibility(visibility)
     # SetUniqueMapTierVisibility
-    
+
     def GetUniqueMapTierVisibility(self, tier: int) -> RuleVisibility:
         CheckType(tier, 'tier', int)
         type_tag, tier_tag = consts.kUniqueMapTags[tier]
         rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility
     # GetUniqueMapTierVisibility
-    
+
     def SetHideUniqueMapsAboveTierTier(self, max_visible_tier: int):
         CheckType(max_visible_tier, 'max_visible_tier', int)
         for tier in range(1, consts.kNumUniqueMapTiers + 1):
@@ -556,7 +556,7 @@ class LootFilter:
                     else RuleVisibility.kShow)
             self.SetUniqueMapTierVisibility(tier, visibility)
     # SetHideUniqueMapsAboveTierTier
-    
+
     def GetHideUniqueMapsAboveTierTier(self) -> int:
         # Iterate from highest to lowest tier
         for tier in range(consts.kNumUniqueMapTiers, 0, -1):
@@ -565,9 +565,9 @@ class LootFilter:
         # No tiers are visible
         return 0
     # GetHideUniqueMapsAboveTierTier
-    
+
     # =========================== Oil-Related Functions ===========================
-    
+
     def SetLowestVisibleOil(self, lowest_visible_oil_name: str):
         type_tag = consts.kOilTypeTag
         visible_flag = True
@@ -586,7 +586,7 @@ class LootFilter:
             if (oil_name == lowest_visible_oil_name):
                 visible_flag = False  # hide rest below this oil
     # End SetLowestVisibleOil
-    
+
     def GetLowestVisibleOil(self) -> str:
         type_tag = consts.kOilTypeTag
         # Iterate upwards from bottom oil to find first visible
@@ -596,9 +596,9 @@ class LootFilter:
             if (oil_name in rule.GetBaseTypeList()):
                 return oil_name
     # End GetLowestVisibleOil
-    
+
     # ============================ Gem Quality Functions ============================
-    
+
     # The rules we modify for gem quality functionality are:
     #  - Show # %D5 $type->gems-generic $tier->qt2   (19-20)
     #  - Show # %D3 $type->gems-generic $tier->qt3   (14-18)
@@ -629,7 +629,7 @@ class LootFilter:
             quality_t4_rule.Show()
             quality_t4_rule.ModifyLine('Quality', '>=', min_quality)
     # End SetGemMinQuality
-    
+
     def GetGemMinQuality(self):
         type_tag = consts.kQualityGemsTypeTag
         tier_tag_base = 'qt'
@@ -639,9 +639,9 @@ class LootFilter:
                 op, [quality_string] = rule.parsed_lines_hll['Quality']
                 return int(quality_string)
         return -1  # indicates all gem quality rules are disabled/hidden
-    
+
     # ============================ Flask Quality Functions ============================
-    
+
     # The rules we modify for flask quality functionality are:
     #  - Show # %D5 $type->endgameflasks $tier->qualityhigh  (14-20)
     #  - Show # %D3 $type->endgameflasks $tier->qualitylow   (1-13)
@@ -659,12 +659,12 @@ class LootFilter:
             quality_high_rule.Show()
             quality_high_rule.ModifyLine('Quality', '>=', 14)
             quality_low_rule.Show()
-            quality_low_rule.ModifyLine('Quality', '>=', min_quality)        
+            quality_low_rule.ModifyLine('Quality', '>=', min_quality)
         else:  # out of range [1, 20] --> disable all flask quality rules
             quality_high_rule.Disable()
             quality_low_rule.Disable()
     # End SetFlaskMinQuality
-    
+
     def GetFlaskMinQuality(self):
         type_tag = consts.kQualityFlasksTypeTag
         tier_tag_list = ['qualitylow', 'qualityhigh']
@@ -674,7 +674,7 @@ class LootFilter:
                 op, [quality_string] = rule.parsed_lines_hll['Quality']
                 return int(quality_string)
         return -1  # indicates all flask quality rules are disabled/hidden
-    
+
     # ============================== RGB Item Functions ==============================
     def SetRgbItemMaxSize(self, max_size_string: str):
         CheckType(max_size_string, 'max_size_string', str)
@@ -691,7 +691,7 @@ class LootFilter:
                 else:
                     rule.Show()
     # End SetRgbItemMaxSize
-    
+
     def GetRgbItemMaxSize(self) -> str:
         type_tag = consts.kRgbTypeTag
         max_size_string = 'none'
@@ -705,9 +705,9 @@ class LootFilter:
                     max_size_int = size_int
         return max_size_string
     # End GetRgbItemMaxSize
-    
+
     # ======================== Chaos Recipe-Related Functions ========================
-    
+
     def SetChaosRecipeEnabledFor(self, item_slot: str, enable_flag: bool):
         CheckType(item_slot, 'item_slot', str)
         CheckType(enable_flag, 'enable_flag', bool)
@@ -728,7 +728,7 @@ class LootFilter:
             chaos_recipe_rule.Disable()
             regal_recipe_rule.Disable()
     # End IsChaosRecipeItemSlotEnabled
-    
+
     def IsChaosRecipeEnabledFor(self, item_slot: str) -> bool:
         CheckType(item_slot, 'item_slot', str)
         if ((item_slot == 'Weapons') or (item_slot == 'weapons')):
@@ -739,9 +739,9 @@ class LootFilter:
         rule = self.GetRule(type_tag, tier_tag)
         return rule.visibility == RuleVisibility.kShow
     # End IsChaosRecipeItemSlotEnabled
-    
+
     # ======================== Private Parser Methods ========================
-    
+
     def AddBlockToHll(self, block: List[str], successor_key=None):
         CheckType(block, 'block', list, str)
         if (len(block) == 0):
@@ -762,7 +762,7 @@ class LootFilter:
             self.rule_or_text_block_hll.insert_before(
                     key, RuleOrTextBlock(block, is_rule=False), successor_key)
     # End AddBlockToHll
-    
+
     def ParseInputFilterFile(self) -> None:
         input_filter_fullpath = self.profile_obj.config_values[
                 'OutputLootFilterFullpath'
@@ -792,7 +792,7 @@ class LootFilter:
         if (self.input_filter_source != InputFilterSource.kOutput):
             self.ApplyImportChanges()
     # End ParseLootFilterFile()
-    
+
     # Returns the key pair for the comment block indicating the start of FilterBlade rules.
     # Raises a runtime error if not found.
     def GetFilterBladeRulesStartKey(self) -> Tuple[str, str]:
@@ -888,7 +888,7 @@ class LootFilter:
             else:
                 current_block.append(line)
     # End AddDlfRules
-    
+
     # Standardizes all stacked currency tiers to their unstacked counterparts.
     # Called automatically on filter import.
     def StandardizeCurrencyTiers(self):
@@ -903,7 +903,7 @@ class LootFilter:
                 stacked_rule.AddBaseTypes(unstacked_rule.GetBaseTypeList())
                 stacked_rule.Enable()
     # End StandarizeCurrencyTiers
-    
+
     # Apply changes that need to be made to the filter on import only
     def ApplyImportChanges(self):
         # Add DLF header

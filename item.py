@@ -31,7 +31,7 @@ Str: 64
 Dex: 98
 Int: 68
 --------
-Sockets: G-G-G-B 
+Sockets: G-G-G-B
 --------
 Item Level: 80
 --------
@@ -71,14 +71,14 @@ class Item:
         self.properties_map = {}
         self.ParseItemText()
     # End __init__
-    
+
     # Helper function for ParseItemText
     def PrependTextLine(self, index: int, prefix: str):
         CheckType(index, 'index', int)
         CheckType(prefix, 'prefix', str)
         self.text_lines[index] = prefix + self.text_lines[index]
     # End PrependTextLine
-    
+
     # Overwrite self.text_lines so they can be parsed as {keyword}: {value}
     # into the properties_map, then apply certain adjustments for convenience.
     # TODO: A list of BaseTypes is required to parse the BaseType from Magic items.
@@ -139,7 +139,7 @@ class Item:
         # 7. Finally, convert properties to the format used by loot filter rules
         self.ConvertPropertiesToRuleFormat()
     # End ParseItemText
-    
+
     def ConvertPropertiesToRuleFormat(self):
         # Convert 'Unidentified' to 'Identified'
         self.properties_map['Identified'] = not self.properties_map['Unidentified']
@@ -198,13 +198,13 @@ class Item:
         if (self.properties_map['Class'] == 'Sentinel'):
             self.properties_map['Class'] = 'Sentinel Drone'
     # End ConvertPropertiesToRuleFormat
-    
+
     def __repr__(self):
         raw_text = '\n'.join(self.text_lines)
         properties_map_text = '\n'.join(str((k, v)) for k, v in self.properties_map.items())
         return 'Raw Item Text:\n' + raw_text + '\n\nProperties Map:\n' + properties_map_text + '\n'
     # End __repr__
-    
+
 # End class Item
 
 # ==================================== Rule-Item Matching ====================================

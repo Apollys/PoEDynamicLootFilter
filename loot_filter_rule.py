@@ -44,25 +44,25 @@ class RuleVisibility(Enum):
     kDisabledAny = 5  # used as input parameter to set visibility only
     # kDisabledAny will never be the visibility state of a rule
     kUnknown = 6
-    
+
     # Note: both IsEnabled and IsDisabled could be false if the value is kUnknown.
-    
+
     @staticmethod
     def IsEnabled(visibility) -> bool:
         return visibility in (RuleVisibility.kShow, RuleVisibility.kHide)
     # End IsEnabled
-    
+
     @staticmethod
     def IsDisabled(visibility) -> bool:
         return visibility in (RuleVisibility.kDisabledShow,
                 RuleVisibility.kDisabledHide, RuleVisibility.kDisabledAny)
     # End IsDisabled
-    
+
     @staticmethod
     def IsShow(visibility) -> bool:
         return visibility in (RuleVisibility.kShow, RuleVisibility.kDisabledShow)
     # End IsShow
-    
+
     @staticmethod
     def IsHide(visibility) -> bool:
         return visibility in (RuleVisibility.kHide, RuleVisibility.kDisabledHide)
@@ -122,7 +122,7 @@ class LootFilterRule:
                 print('Warning: rule "$type->{} $tier->{}" encountered unrecognized keyword '
                         '"{}"'.format(self.type_tag, self.tier_tag, keyword))
     # End __init__
-    
+
     # Call in constructor or when self.rule_text_lines changes.
     # Updates the rest of the member variables to be consistent with rule_text_lines.
     def ParseRuleTextLines(self):
@@ -150,7 +150,7 @@ class LootFilterRule:
         elif (not is_show and not is_enabled):
             self.visibility = RuleVisibility.kDisabledHide
     # End ParseTextLines
-    
+
     # Call when a change is made to the object's state (other than rule_text_lines).
     # Updates self.rule_text_lines to be consistent with the rest of the member variables.
     def UpdateRuleTextLines(self):
@@ -176,18 +176,18 @@ class LootFilterRule:
                 line += ' ' + values_string
             self.rule_text_lines.append(line)
     # End GenerateRuleTextLines
-    
+
     def __repr__(self):
         raw_rule_text = '\n'.join(self.header_comment_lines + self.rule_text_lines)
         hll_as_text = '\n'.join(str((k, o, v)) for k, (o, v) in self.parsed_lines_hll)
         return 'Raw Rule Text:\n' + raw_rule_text + '\n\nHash Linked List:\n' + hll_as_text + '\n'
     # End __repr__
-    
+
     # Returns the full rule text lines, including header comment lines and rule text lines
     def GetTextLines(self) -> str:
         return self.header_comment_lines + self.rule_text_lines
     # End GetTextLines
-    
+
     # Sets type and tier tags and updates the rule text lines accordingly
     def SetTypeTierTags(self, type_tag: str, tier_tag: str):
         CheckType(type_tag, 'type_tag', str)
@@ -196,7 +196,7 @@ class LootFilterRule:
         self.tier_tag = tier_tag
         self.UpdateRuleTextLines()
     # End SetTypeTierTags
-    
+
     # Uncomments the rule if it is commented.
     def Enable(self):
         if (RuleVisibility.IsDisabled(self.visibility)):
@@ -204,7 +204,7 @@ class LootFilterRule:
             self.visibility = RuleVisibility.kShow if is_show else RuleVisibility.kHide
             self.UpdateRuleTextLines()
     # End Enable
-    
+
     # Comments the rule if it is not commented already.
     def Disable(self):
         if (RuleVisibility.IsEnabled(self.visibility)):
@@ -212,7 +212,7 @@ class LootFilterRule:
             self.visibility = RuleVisibility.kDisabledShow if is_show else RuleVisibility.kDisabledHide
             self.UpdateRuleTextLines()
     # End Disable
-    
+
     def Show(self):
         self.Enable()
         if (self.visibility == RuleVisibility.kShow):
@@ -221,7 +221,7 @@ class LootFilterRule:
             self.visibility = RuleVisibility.kShow
             self.UpdateRuleTextLines()
     # End Show
-    
+
     def Hide(self):
         self.Enable()
         if (self.visibility == RuleVisibility.kHide):
@@ -230,7 +230,7 @@ class LootFilterRule:
             self.visibility = RuleVisibility.kHide
             self.UpdateRuleTextLines()
     # End Hide
-    
+
     # Assumes visibility argument is either kShow, kHide, or kDisabledAny.
     def SetVisibility(self, visibility):
         if (RuleVisibility.IsDisabled(visibility)):
@@ -243,14 +243,14 @@ class LootFilterRule:
             raise RuntimeError('Unsupported argument passed to SetVisibility: '
                     '{}'.format(visibility))
     # End SetVisibility
-    
+
     def GetBaseTypeList(self) -> List[str]:
         if ('BaseType' not in self.parsed_lines_hll):
             return []
         op, base_type_list = self.parsed_lines_hll['BaseType']
         return base_type_list
     # End GetBaseTypeList
-    
+
     # Adds base_type_name to this rule's BaseType line, if it's not there already.
     # Does not enable the rule if it is disabled. Callers should call Enable() after
     # if they expect the rule to be enabled.
@@ -265,13 +265,13 @@ class LootFilterRule:
         base_type_list.append(base_type_name)
         self.UpdateRuleTextLines()
     # End AddBaseType
-    
+
     def AddBaseTypes(self, base_type_list: list):
         CheckType(base_type_list, 'base_type_list', list, str)
         for base_type_name in base_type_list:
             self.AddBaseType(base_type_name)
     # End AddBaseTypes
-    
+
     # Removes base_type_name from this rule's BaseType line, if it's there.
     # Does nothing if given base_type_name is not present, or rule does not have a BaseType line.
     # If this results in an empty base type list, disables the rule (otherwise PoE generates error).
@@ -294,14 +294,14 @@ class LootFilterRule:
             self.Disable()
         self.UpdateRuleTextLines()
     # End RemoveBaseType
-    
+
     # Note: This disables the rule, since an empty BaseType line generates an error in PoE.
     def ClearBaseTypeList(self):
         base_type_list = self.GetBaseTypeList()
         while (len(base_type_list) > 0):
             self.RemoveBaseType(base_type_list[-1])
     # End ClearBaseTypeList
-    
+
     # Generates a list containing the elements of self.parsed_lines_hll to be used for
     # Rule-Item matching. Filters out style modifications such as text style, icons, and beams.
     # Also checks if rule contains any "Ignore" keywords, meaning the rule should be skipped
@@ -318,7 +318,7 @@ class LootFilterRule:
                 ignore_rule_flag = True
         return ignore_rule_flag, conditions_list
     # End GetConditions
-    
+
     # Returns a bool indicating whether or not the line identified by the given keyword was found
     # Updates both parsed_item_lines and text_lines
     def ModifyLine(self, keyword: str, new_operator: str,
@@ -334,5 +334,5 @@ class LootFilterRule:
         self.UpdateRuleTextLines()
         return True
     # End ModifyLine
-    
+
 # End class LootFilterRule

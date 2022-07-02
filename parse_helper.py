@@ -39,7 +39,7 @@ def FindElement(element, collection) -> int:
             return i
     return None
 # End FindElement
- 
+
 # Returns true if s is a substring of any of the strings in lines.
 def IsSubstringInLines(s: str, lines: List[str] or str) -> bool:
     CheckType(s, 's', str)
@@ -116,12 +116,12 @@ def IsCommented(line: str) -> bool:
 # declaration, and False otherwise.
 def IsSectionOrGroupDeclaration(line: str) -> bool:
     CheckType(line, 'line', str)
-    return bool(consts.kSectionRePattern.search(line))    
+    return bool(consts.kSectionRePattern.search(line))
 # End IsSectionOrGroupDeclaration
 
 # Returns (is_section_group, section_id, section_name) triplet
 # Example: "# [[1000]] High Level Crafting Bases" -> "1000", "High Level Crafting Bases"
-# Or: "# [1234] ILVL 86" -> "1234", "ILVL 86" 
+# Or: "# [1234] ILVL 86" -> "1234", "ILVL 86"
 def ParseSectionOrGroupDeclarationLine(line) -> Tuple[bool, str, str]:
     CheckType(line, 'line', str)
     first_opening_bracket_index = -1

@@ -114,7 +114,7 @@ kSplinterBaseTypesListFullpath = os.path.join('Resources', 'splinter_base_types.
 kFilterBladeSplinterTags = (
     list(itertools.product(
         ('currency->stackedsplintershigh', 'currency->stackedsplinterslow'),
-        ('t{}'.format(i) for i in range(1, 4)))) + 
+        ('t{}'.format(i) for i in range(1, 4)))) +
     [('currency->splinter', 't{}'.format(i)) for i in (1, 3)] +
     [('currency->splinter->simulacrum', 't{}'.format(i)) for i in range(1, 6)]
 )
@@ -154,7 +154,7 @@ kEssenceTags = {
 
 # ================================ Div Cards =================================
 
-kDivCardTierTags = ['t1', 't2', 't3', 't4c', 't4', 't5c', 't5', 'restex'] 
+kDivCardTierTags = ['t1', 't2', 't3', 't4c', 't4', 't5c', 't5', 'restex']
 kDivCardTags = {
         i + 1 : ('divination', kDivCardTierTags[i])
         for i in range(len(kDivCardTierTags))
@@ -172,7 +172,7 @@ kNumUniqueItemTiers = len(kUniqueItemTierTags)
 
 # =============================== Unique Maps ================================
 
-kUniqueMapTierTags = ['t1', 't2', 't3', 't4'] 
+kUniqueMapTierTags = ['t1', 't2', 't3', 't4']
 kUniqueMapTags = {
         i + 1 : ('uniques->maps', kUniqueMapTierTags[i])
         for i in range(len(kUniqueMapTierTags))
@@ -300,7 +300,7 @@ kChaosRecipeTierTags = {'WeaponsX' : 'weapons_any_height',
                         'Amulets': 'amulets',
                         'Rings' : 'rings',
                         'Belts' : 'belts'}
-                        
+
 kChaosRecipeTierToItemSlotMap = InvertedDict(kChaosRecipeTierTags)
 
 kChaosRecipeClasses = {'WeaponsX' : 'XXX_Unused',

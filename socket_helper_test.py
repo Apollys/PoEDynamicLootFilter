@@ -45,7 +45,7 @@ def TestGenerateSocketConditions():
         condition_lines = socket_helper.GenerateSocketConditions(socket_string, item_slot)
         AssertEqual(condition_lines, expected_condition_lines)
     print('TestGenerateSocketConditions passed!')
-    
+
 def TestGenerateSocketConditionsInvalidInput():
     for socket_string in kInvalidSocketStrings:
         try:

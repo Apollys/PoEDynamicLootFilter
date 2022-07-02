@@ -105,7 +105,7 @@ def SetHotkey(tag: str, hotkey_string: str):
 
 def main():
     print('Welcome to the first-time setup script for PoE DLF!')
-    
+
     # 1. Check python major version
     print('\nStep 1: Checking python version...')
     python_major_version = sys.version_info[0]
@@ -114,7 +114,7 @@ def main():
                 python_major_version))
         sys.exit()
     print('Python version {} detected, success!'.format(python_major_version))
-    
+
     # 2a. Query toggle GUI hotkey
     print('\nStep 2: Set your hotkeys')
     hotkey_string = ''
@@ -132,7 +132,7 @@ def main():
         print('Invalid hotkey entered: "{}"'.format(hotkey_string))
     SetHotkey(kAhkToggleGuiHotkeyTag, hotkey_string)
     print('\nToggle GUI hotkey set to: "{}"'.format(hotkey_string))
-    
+
     # 2b. Query write filter hotkey
     print('\nStep 2: Set write filter hotkey')
     hotkey_string = ''
@@ -146,7 +146,7 @@ def main():
         print('Invalid hotkey entered: "{}"'.format(hotkey_string))
     SetHotkey(kAhkWriteFilterHotkeyTag, hotkey_string)
     print('\nReload Filter hotkey set to: "{}"'.format(hotkey_string))
-    
+
     # 2c. Query reload filter hotkey
     print('\nStep 2: Set reload filter hotkey')
     hotkey_string = ''
@@ -162,7 +162,7 @@ def main():
     print('\nReload Filter hotkey set to: "{}"'.format(hotkey_string))
     print('To change your hotkeys later, either edit them directly at the bottom of {}'.format(kDlfAhkPath))
     print('or re-run this script, and use Ctrl-C to exit after this step.')
-    
+
     # 3. Create new profile
     print('\nStep 3: Create your profile')
     while (True):
@@ -174,7 +174,7 @@ def main():
         else:
             print('Profile name validated! [{}]\n'.format(new_profile_name))
             break
-    
+
     # 4. Query required config values
     config_values = {}
     # Required keywords: 'DownloadDirectory', 'PathOfExileDirectory', 'DownloadedLootFilterFilename'
@@ -211,14 +211,14 @@ def main():
         else:
             print('\nThe given directory "{}" does not exist, please paste the full path exactly'.format(
                     config_values['PathOfExileDirectory']))
-    
+
     # 5. Query additional profile options
     # [NYI]
-    
+
     # 6. Generate new profile from config values
     created_profile = profile.CreateNewProfile(new_profile_name, config_values)
     print('\nProfile "{}" created!'.format(new_profile_name))
-    
+
     # Temporary fix - Import filter here
     # Just in case, we'll also delete the Path of Exile filter, if it exists
     file_helper.RemoveFileIfExists(created_profile.config_values['OutputLootFilterFullpath'])
@@ -227,7 +227,7 @@ def main():
     # Setup complete
     print('Config data saved to "{}".'.format(created_profile.config_path))
     print('You can edit this file at any time later to update these settings.')
-    
+
     print('\nSetup complete! Enjoy PoE Dynamic Loot Filter!')
     input('Press Enter to close setup.py')
 # End main
