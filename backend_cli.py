@@ -588,13 +588,14 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: None
          - Example: > python3 backend_cli.py set_basetype_visibility "Hubris Circlet" 1 0 MyProfile
         '''
-        if (len(function_params) == 2):
-            function_params.append('0')
-        CheckNumParams(function_params, 3)
         base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
-        rare_only_flag: bool = bool(int(function_params[2]))
-        loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag, rare_only_flag)
+        if (not enable_flag):
+            loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag)
+        else:
+            CheckNumParams(function_params, 3)
+            rare_only_flag: bool = bool(int(function_params[2]))
+            loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag, rare_only_flag)
     elif (function_name == 'get_basetype_visibility'):
         '''
         get_basetype_visibility <base_type: str>
@@ -641,13 +642,14 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Output: None
          - Example: > python3 backend_cli.py set_flask_rule_enabled_for "Quartz Flask" 1 0 MyProfile
         '''
-        if (len(function_params) == 2):
-            function_params.append('0')
-        CheckNumParams(function_params, 3)
         flask_base_type: str = function_params[0]
         enable_flag: bool = bool(int(function_params[1]))
-        high_ilvl_flag: bool = bool(int(function_params[2]))
-        loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag, high_ilvl_flag)
+        if (not enable_flag):
+            loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag)
+        else:
+            CheckNumParams(function_params, 3)
+            high_ilvl_flag: bool = bool(int(function_params[2]))
+            loot_filter.SetFlaskRuleEnabledFor(flask_base_type, enable_flag, high_ilvl_flag)
     elif (function_name == 'get_flask_visibility'):
         '''
         get_flask_visibility <base_type: str>
