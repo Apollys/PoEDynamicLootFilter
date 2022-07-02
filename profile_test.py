@@ -130,21 +130,27 @@ def TestParseProfile():
     AssertEqual(created_profile.config_values['DownloadedLootFilterFilename'],
             test_consts.kTestProfileConfigValues['DownloadedLootFilterFilename'])
     # Check input directory config value exists
-    AssertTrue(bool(created_profile.config_values['InputLootFilterDirectory']))
+    AssertTrue('InputLootFilterDirectory' in created_profile.config_values)
     AssertEqual(created_profile.config_values['OutputLootFilterFilename'], 'DynamicLootFilter.filter')
     AssertTrue(created_profile.config_values['RemoveDownloadedFilter'] in (True, False))
     # Check Chaos params exist
-    AssertTrue(bool(created_profile.config_values['ChaosRecipeWeaponClassesAnyHeight']))
-    AssertTrue(bool(created_profile.config_values['ChaosRecipeWeaponClassesMaxHeight3']))
+    AssertTrue('ChaosRecipeWeaponClassesAnyHeight' in created_profile.config_values)
+    AssertTrue('ChaosRecipeWeaponClassesMaxHeight3' in created_profile.config_values)
     # Check derived paths are correct
     expected_downloaded_filter_fullpath = os.path.join(
             test_consts.kTestProfileConfigValues['DownloadDirectory'],
             test_consts.kTestProfileConfigValues['DownloadedLootFilterFilename'])
+    AssertEqual(created_profile.config_values['DownloadedLootFilterFullpath'],
+                expected_downloaded_filter_fullpath)
     expected_input_filter_fullpath = os.path.join(
             created_profile.config_values['InputLootFilterDirectory'],
             test_consts.kTestProfileConfigValues['DownloadedLootFilterFilename'])
+    AssertEqual(created_profile.config_values['InputLootFilterFullpath'],
+                expected_input_filter_fullpath)
     expected_output_filter_fullpath = os.path.join(
             created_profile.config_values['PathOfExileDirectory'], 'DynamicLootFilter.filter')
+    AssertEqual(created_profile.config_values['OutputLootFilterFullpath'],
+                expected_output_filter_fullpath)
     # Cleanup: delete test profile
     profile.DeleteProfile(profile_name)
     print('TestParseProfile passed!')
