@@ -27,13 +27,11 @@ import os.path
 from typing import Any, List, Tuple
 
 import file_helper
-import parse_helper
+from general_config import GeneralConfig, GeneralConfigKeywords, kGeneralConfigPath
 import simple_parser
 from type_checker import CheckType
 
 kProfileDirectory = 'Profiles'
-kGeneralConfigFilename = 'general.config'
-kGeneralConfigFullpath = os.path.join(kProfileDirectory, kGeneralConfigFilename)
 
 def GetProfileConfigFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.config')
@@ -70,29 +68,19 @@ def ProfileExists(profile_name: str) -> bool:
 
 # Returns the active profile name as a string, or None.
 def GetActiveProfileName() -> str:
-    if (not os.path.isdir(kProfileDirectory)):
-        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
-    if (not os.path.isfile(kGeneralConfigFullpath)):
+    if (not os.path.isfile(kGeneralConfigPath)):
         return None
-    general_config_lines = [line.strip() for line in file_helper.ReadFile(kGeneralConfigFullpath)]
-    nonempty_lines = [line for line in general_config_lines if line != '']
-    if (len(nonempty_lines) == 0):
-        return None
-    parse_success, parse_results = simple_parser.ParseFromTemplate(
-            nonempty_lines[0], kActiveProfileTemplate)
-    return  parse_results[0] if parse_success else None
+    general_config_obj = GeneralConfig()
+    return general_config_obj[GeneralConfigKeywords.kActiveProfile]
 # End GetActiveProfileName
 
 # Sets the currently active profile to the profile of the given name.
 # Raises an error if the given profile does not exist.
 def SetActiveProfile(profile_name: str):
-    if (not os.path.isdir(kProfileDirectory)):
-        raise RuntimeError('Profile directory: "{}" does not exist'.format(kProfileDirectory))
-    profile_config_path = os.path.join(kProfileDirectory, profile_name + '.config')
-    if (not ProfileExists(profile_name)):
-        raise RuntimeError('Profile "{}" does not exist'.format(profile_name))
-    with open(kGeneralConfigFullpath, 'w', encoding='utf-8') as general_config_file:
-        general_config_file.write(kActiveProfileTemplate.format(profile_name))
+
+    general_config_obj = GeneralConfig()
+    general_config_obj[GeneralConfigKeywords.kActiveProfile] = profile_name
+    general_config_obj.SaveToFile()
 # End SetActiveProfile
 
 # Returns a list of strings containing all the profile names.

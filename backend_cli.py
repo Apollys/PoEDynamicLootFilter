@@ -45,6 +45,7 @@ from typing import List, Tuple
 from backend_cli_function_info import kFunctionInfoMap
 import consts
 import file_helper
+from general_config import GeneralConfig, GeneralConfigKeywords
 import logger
 from loot_filter import InputFilterSource, LootFilter
 from loot_filter_rule import RuleVisibility
@@ -58,9 +59,9 @@ kOutputFilename = 'backend_cli.output'
 kExitCodeFilename = 'backend_cli.exit_code'
 
 def UsageMessage(function_name: str or None):
-    usage_message = 'Usage synax:\n> python backend_cli.py'
+    usage_message = 'Usage synax:\n> python backend_cli.py '
     if (function_name == None):
-        usage_message += ' <function_name> <function_arguments...> <profile_name (if required)>'
+        usage_message += '<function_name> <function_arguments...> <profile_name (if required)>'
     else:
         usage_message += function_name
         for i in range(kFunctionInfoMap[function_name]['NumParamsOptions'][-1]):
@@ -109,8 +110,51 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
     config_values = loot_filter.profile_obj.config_values if loot_filter else None
     #
     output_string = ''
+    if (function_name == 'is_first_launch'):
+        '''
+        is_first_launch
+         - Output: "1" if this is the first launch of the program (i.e. requires setup),
+           "0" otherwise
+         - It is considered first launch iff there are no profiles
+         - Example: > python3 backend_cli.py is_first_launch
+        '''
+        CheckNumParams(function_params, 0)
+        profile_names_list = profile.GetAllProfileNames()
+        is_first_launch_flag: bool = (len(profile_names_list) == 0)
+        output_string = str(int(is_first_launch_flag))
+    # ===================================== General Config =====================================
+    elif (function_name == 'set_hotkey'):
+        '''
+        set_hotkey <hotkey_identifier: str> <hotkey_string: str>
+         - hotkey_identifier is the label found in general.config before the ':' character,
+           for example "Toggle GUI Hotkey"
+         - hotkey_string is the AHK-syntax desired hotkey string
+         - Example: > python3 set_hotkey "Write Filter Hotkey" "^+S"
+        '''
+        CheckNumParams(function_params, 2)
+        hotkey_identifier, hotkey_string = function_params
+        general_config_obj = GeneralConfig()
+        if (hotkey_identifier not in GeneralConfigKeywords.kKeywordsList):
+            raise RuntimeError('invalid hotkey identifier: "{}"'.format(hotkey_identifier))
+        general_config_obj.keyword_value_dict[hotkey_identifier] = hotkey_string
+        general_config_obj.SaveToFile()
+    elif (function_name == 'get_all_hotkeys'):
+        '''
+        get_all_hotkeys
+         - Outputs a sequence of lines, each formatted as <hotkey_identifier>;<hotkey_string>
+         - Example: > python3 backend_cli.py get_all_hotkeys
+        '''
+        CheckNumParams(function_params, 0)
+        hotkey_identifiers = [
+                GeneralConfigKeywords.kToggleGuiHotkey,
+                GeneralConfigKeywords.kWriteFilterHotkey,
+                GeneralConfigKeywords.kReloadFilterHotkey]
+        general_config_obj = GeneralConfig()
+        config_dict = general_config_obj.keyword_value_dict
+        output_string += '\n'.join('{};{}'.format(identifier, config_dict[identifier])
+                for identifier in hotkey_identifiers)
     # ================================== Check Filters Exist ==================================
-    if (function_name == 'check_filters_exist'):
+    elif (function_name == 'check_filters_exist'):
         '''
         check_filters_exist
          - Outputs a sequence of integer flags (1 or 0), one per line, indicating whether
@@ -179,18 +223,6 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         if (contains_mutator):
             loot_filter.SaveToFile()
     # ========================================== Profile ==========================================
-    elif (function_name == 'is_first_launch'):
-        '''
-        is_first_launch
-         - Output: "1" if this is the first launch of the program (i.e. requires setup),
-           "0" otherwise
-         - It is considered first launch iff there are no profiles
-         - Example: > python3 backend_cli.py is_first_launch
-        '''
-        CheckNumParams(function_params, 0)
-        profile_names_list = profile.GetAllProfileNames()
-        is_first_launch_flag: bool = (len(profile_names_list) == 0)
-        output_string = str(int(is_first_launch_flag))
     elif (function_name == 'get_all_profile_names'):
         '''
         get_all_profile_names

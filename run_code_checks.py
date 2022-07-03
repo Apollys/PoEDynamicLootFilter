@@ -19,6 +19,7 @@ kPylintCommand= 'cd .. && pylint -E {}'.format(kStartingDirectoryName)
 def main():
     print('Running: "{}"'.format(kPylintCommand))
     os.system(kPylintCommand)
+    print('\nCode checks completetd.')
 
 if (__name__ == '__main__'):
     main()

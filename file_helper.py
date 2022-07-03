@@ -54,15 +54,18 @@ def ReadFile(filepath: str, *, retain_newlines=True, strip=False) -> List[str]:
         return []
 # End ReadFile
 
-# Parses each line of the input file as <key>:<value>.
-# Strips key and value before inserting into dict, and ignores empty lines.
-def ReadFileToDict(filepath: str) -> dict:
+# Parses each line of the input file as <key>:<value>, or as <key><separator><value>.
+# Ignores empty lines, and lines whose first non-whitespace character is '#'.
+# Strips key and value before inserting into dict.  Ignores lines missing separator.
+def ReadFileToDict(filepath: str, separator=':') -> dict:
     CheckType(filepath, 'filepath', str)
     try:
         result_dict = {}
         with open(filepath, encoding='utf-8') as input_file:
             for line in input_file:
-                if (line.strip() != ''):
+                stripped_line = line.strip()
+                if ((stripped_line != '') and not stripped_line.startswith('#')
+                        and (separator in stripped_line)):
                     key, value = line.split(':', 1)  # maxsplit = 1
                     result_dict[key.strip()] = value.strip()
         return result_dict

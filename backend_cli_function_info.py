@@ -11,12 +11,23 @@
 #     > adjust_currency_tier "Chromatic Orb" +2
 #   so this value would be 1 for 'adjust_currency_tier'.
 kFunctionInfoMap = {
-    # Profiles
     'is_first_launch' : {
         'NumParamsOptions' : [0],
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
+    # General config
+    'set_hotkey' : {
+        'NumParamsOptions' : [2],
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
+    'get_all_hotkeys' : {
+        'NumParamsOptions' : [0],
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
+    # Profiles
     'get_all_profile_names' : {
         'NumParamsOptions' : [0],
         'HasProfileParam' : False,

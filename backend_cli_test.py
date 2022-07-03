@@ -18,13 +18,18 @@ def CallBackendCli(function_call: str, profile_name: str or None = None):
     AssertEqual(return_value, 0)
 # End CallBackendCli
 
-# Not included:
-#  - is_first_launch
-#  - get_all_profile_names
-#  - create/rename/delete/set_active_profile
-#  - import/reload filter
-#  - run_batch
-#  - get_rule_matching_item
+kTestNonBatchFunctionCalls = [
+    'is_first_launch',
+    'set_hotkey "Toggle GUI Hotkey" F7',
+    'get_all_hotkeys',
+    'get_all_profile_names',
+]
+
+# Functions not included in either set of backend calls:
+#  - create_new/rename/delete_profile, set_active_profile - tested "manually" below,
+#    with the exception of create_new_profile, which requires config data in input file
+#  - import_downloaded_filter and load_input_filter - not runnable as part of batch
+#  - get_rule_matching_item - requires writing item text to input file
 kTestBatchString = \
 '''check_filters_exist
 set_rule_visibility "jewels->abyss" highrare disable
@@ -91,12 +96,12 @@ get_all_chaos_recipe_statuses'''
 # doesn't verify output is correct.
 def SimpleTest():
     test_helper.SetUp(create_profile=False)
+    # Run non-profile-dependent functions
+    for function_call_line in kTestNonBatchFunctionCalls:
+        CallBackendCli(function_call_line)
+    # Create test profile directly, and test profile-related functions
     profile_name = test_consts.kTestProfileName
     other_profile_name = test_consts.kTestProfileNames[1]
-    CallBackendCli('is_first_launch')
-    CallBackendCli('get_all_profile_names')
-    # TODO: need to write config values to backend_cli.input to use this function
-    # CallBackendCli('create_new_profile {}'.format(profile_name))
     profile.CreateNewProfile(profile_name, test_consts.kTestProfileConfigValues)
     CallBackendCli('rename_profile {} {}'.format(profile_name, other_profile_name))
     CallBackendCli('delete_profile {}'.format(other_profile_name))
@@ -106,6 +111,7 @@ def SimpleTest():
     profile.DeleteProfile(other_profile_name)
     CallBackendCli('import_downloaded_filter', profile_name)
     CallBackendCli('load_input_filter', profile_name)
+    # Use the test profile to run batch
     for function_call_line in kTestBatchString.split('\n'):
         CallBackendCli(function_call_line, profile_name)
     print('SimpleTest passed!')

@@ -52,9 +52,9 @@ Common highly valuable uses include:
 2. I'm farming chaos recipes, and have way too many body armors, but not enough hats.  With PoE DLF,
    I can easily show/hide chaos recipe rare items by item slot.
 3. My loot filter is getting spammed by something random.  DLF may have a specific option to fix it
-   (for example, if it's a cheap div card, I could raise the minimum shown div card tier threshold), or 
+   (for example, if it's a cheap div card, I could raise the minimum shown div card tier threshold), or
    I can use DLF's built-in rule-matcher to automatically detect and hide the rule that matches a given item.
-   
+
 ## DLF Requirements
 
 PoE DLF has minimal requirements and setup to make it as widely accessible as possible.  You need the following:
@@ -141,8 +141,12 @@ for the detailed documentation of all available function calls.
 
 **Currently Supported Functions:**
   - `is_first_launch`
+  - `set_hotkey <hotkey_identifier: str> <hotkey_string: str>`
+  - `get_all_hotkeys`
   - `get_all_profile_names`
   - `create_new_profile <new_profile_name>`
+  - `rename_profile <original_profile_name> <new_profile_name>`
+  - `delete_profile <profile_name>`
   - `set_active_profile`
   - `check_filters_exist`
   - `import_downloaded_filter`
