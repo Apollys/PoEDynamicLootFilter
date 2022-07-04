@@ -737,9 +737,12 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         CheckNumParams(function_params, 0)
         visible_flask_types_any_ilvl = loot_filter.GetAllVisibleFlaskTypes(high_ilvl_flag=False)
         visible_flask_types_high_ilvl = loot_filter.GetAllVisibleFlaskTypes(high_ilvl_flag=True)
+        # Compute high ilvl BaseTypes that are not also in any
+        visible_flask_types_high_ilvl_only = list(
+                set(visible_flask_types_high_ilvl) - set(visible_flask_types_any_ilvl))
         for flask_base_type in visible_flask_types_any_ilvl:
             output_string += '{};0\n'.format(flask_base_type)
-        for flask_base_type in visible_flask_types_high_ilvl:
+        for flask_base_type in visible_flask_types_high_ilvl_only:
             output_string += '{};1\n'.format(flask_base_type)
         if ((len(output_string) > 0) and (output_string[-1] == '\n')):
             output_string = output_string[:-1]  # remove final newline

@@ -1,5 +1,6 @@
 #Include consts.ahk
 #Include general_helper.ahk
+#Include gui_interaction.ahk
 #Include two_way_dict.ahk
 
 ; ========================== GUI Build Consts ==========================
@@ -223,6 +224,10 @@ BuildGui(ui_data_dict) {
 	Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 	x := anchor_x + 68, y := anchor_y + 212
 	Gui Add, Button, x%x% y%y% w144 h31 gGeneralBaseTypesRemove, Remove Selected
+	; Populate ListBox from filter_data["visible_basetypes"] -> dict: {base_type -> rare_only_flag}
+	for base_type, rare_only_flag in ui_data_dict["visible_basetypes"] {
+		AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag)
+	}
 	; ------------- End Section: [General BaseTypes] ------------
 
 	; ------------- Section: [Flask BaseTypes] ------------
@@ -248,6 +253,10 @@ BuildGui(ui_data_dict) {
 	Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 	x := anchor_x + 68, y := anchor_y + 192
 	Gui Add, Button, x%x% y%y% w144 h31 gFlaskRemove, Remove Selected
+	; Populate ListBox from filter_data["visible_flasks"] -> dict: {base_type -> high_ilvl_only_flag}
+	for base_type, high_ilvl_only_flag in ui_data_dict["visible_flasks"] {
+		AddLineToFlaskBaseTypesListBox(base_type, high_ilvl_only_flag)
+	}
 	; ------------- End Section: [Flask BaseTypes] ------------
 
 	; ------------- Section: [Tier Visibility] -------------
@@ -348,6 +357,11 @@ BuildGui(ui_data_dict) {
 	Gui Font, c0x00e8b2 s10 Bold, Segoe UI
 	x := anchor_x + 68, y := anchor_y + 212
 	Gui Add, Button, x%x% y%y% w144 h31 gSocketPatternsRemove, Remove Selected
+	; Populate ListBox from filter_data["socket_rules"] -> dict: {socket_string + ";" + item_slot -> True}
+	for socket_string_item_slot, _ in ui_data_dict["socket_rules"] {
+		split_result := StrSplit(socket_string_item_slot, ";")
+		AddLineToSocketPatternsListBox(split_result[1], split_result[2])
+	}
 	; ------------- End Section: [Socket Patterns] ------------
 
 	; ------------- Section: Hotkeys -------------

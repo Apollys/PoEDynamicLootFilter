@@ -18,6 +18,7 @@ ProfileDdlAction() {
 
 ; ========================== Currency ==========================
 
+; Helper function
 ; Uses "GuiControl, Choose/ChooseString", so it does *not* trigger associated gLabels
 SelectCurrency(base_type) {
 	global kNumCurrencyTiers
@@ -112,8 +113,13 @@ SplinterStackSizeDdlAction() {
 
 ; ========================== General BaseTypes ==========================
 
-; set_basetype_visibility <base_type> <visibility_flag: int> <(optional) rare_only_flag: int>
+; Helper function
+AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag) {
+    list_box_line := "[" (rare_only_flag ? "Rare" : "Any") "] " base_type
+	GuiControlAddItem("HWNDhGeneralBaseTypesListBox", list_box_line)
+}
 
+; Command: set_basetype_visibility <base_type> <visibility_flag: int> <(optional) rare_only_flag: int>
 GeneralBaseTypesAdd() {
 	global g_ui_changes
 	base_type := Trim(GuiControlGetHelper("HWNDhGeneralBaseTypesEditBox"))
@@ -125,11 +131,7 @@ GeneralBaseTypesAdd() {
     show_flag := 1
     backend_function_call := "set_basetype_visibility " Quoted(base_type) " " show_flag " " rare_only_flag
     g_ui_changes.push(backend_function_call)
-    ; Convert to UI list box line and add
-    list_box_line := "[" (rare_only_flag ? "Rare" : "Any") "] " base_type
-	GuiControlAddItem("HWNDhGeneralBaseTypesListBox", list_box_line)
-	GuiControlClear("HWNDhGeneralBaseTypesEditBox")
-    return
+	AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag)
 }
 
 GeneralBaseTypesRemove() {
@@ -149,13 +151,17 @@ GeneralBaseTypesRemove() {
     backend_function_call := "set_basetype_visibility " Quoted(base_type) " " show_flag
     g_ui_changes.push(backend_function_call)
 	GuiControlRemoveSelectedItem("HWNDhGeneralBaseTypesListBox")
-    return
 }
 
 ; ========================== Flask BaseTypes ==========================
 
-; set_flask_visibility <base_type: str> <visibility_flag: int> <(optional) high_ilvl_flag: int>
+; Helper function
+AddLineToFlaskBaseTypesListBox(base_type, high_ilvl_only_flag) {
+    list_box_line := "[" (high_ilvl_only_flag ? "84+" : "Any") "] " base_type
+	GuiControlAdditem("HWNDhFlaskListBox", list_box_line)
+}
 
+; Command: set_flask_visibility <base_type: str> <visibility_flag: int> <(optional) high_ilvl_flag: int>
 FlaskAdd() {
 	global g_ui_changes
 	base_type := Trim(GuiControlGetHelper("HWNDhFlaskDdl"))
@@ -169,9 +175,7 @@ FlaskAdd() {
     g_ui_changes.push(backend_function_call)
     ; Convert to UI list box line and add
     list_box_line := "[" (high_ilvl_only_flag ? "84+" : "Any") "] " base_type
-    GuiControl, , %hFlaskListBox%, %list_box_line%  ; add new base type line
-	GuiControlAdditem("HWNDhFlaskListBox", list_box_line)
-    return
+    AddLineToFlaskBaseTypesListBox(base_type, high_ilvl_only_flag)
 }
 
 FlaskRemove() {
@@ -191,7 +195,6 @@ FlaskRemove() {
     backend_function_call := "set_flask_visibility " Quoted(base_type) " " show_flag
     g_ui_changes.push(backend_function_call)
 	GuiControlRemoveSelectedItem("HWNDhFlaskListBox")
-    return
 }
 
 ; ========================== Tier Visibilities ==========================
@@ -204,8 +207,14 @@ FlaskRemove() {
 
 ; ========================== Socket Patterns ==========================
 
-; add_remove_socket_rule <socket_string: str> v<(optional) item_slot: str> <add_flag: bool>
+; Helper function
+AddLineToSocketPatternsListBox(socket_pattern, item_slot) {
+    list_box_line := "[" item_slot "] " socket_pattern
+	GuiControlAdditem("HWNDhSocketPatternsListBox", list_box_line)
+	GuiControlClear("HWNDhSocketPatternsListBox")
+}
 
+; Command: add_remove_socket_rule <socket_string: str> v<(optional) item_slot: str> <add_flag: bool>
 SocketPatternsAdd() {
 	global g_ui_changes
 	socket_pattern := Trim(GuiControlGetHelper("HWNDhSocketPatternsEditBox"))
@@ -218,11 +227,7 @@ SocketPatternsAdd() {
     add_flag := 1
     backend_function_call := "add_remove_socket_rule " Quoted(socket_pattern) " " Quoted(item_slot) " " add_flag
     g_ui_changes.push(backend_function_call)
-    ; Convert to UI list box line and add
-    list_box_line := "[" item_slot "] " socket_pattern
-	GuiControlAdditem("HWNDhSocketPatternsListBox", list_box_line)
-	GuiControlClear("HWNDhSocketPatternsListBox")
-    return
+    AddLineToSocketPatternsListBox(socket_pattern, item_slot)
 }
 
 SocketPatternsRemove() {
@@ -241,7 +246,6 @@ SocketPatternsRemove() {
     backend_function_call := "add_remove_socket_rule " Quoted(socket_pattern) " " Quoted(item_slot) " " add_flag
     g_ui_changes.push(backend_function_call)
 	GuiControlRemoveSelectedItem("HWNDhSocketPatternsListBox")
-    return
 }
 
 ; ========================== Item-Rule Matching ==========================
