@@ -88,7 +88,8 @@ def GenerateStackedCurrencyTags() -> Dict[int, List[Tuple[str, str]]]:
 
 kStackedCurrencyTags = GenerateStackedCurrencyTags()
 
-kCurrencyStackSizes = [1, 2, 4, 6, 100]  # 100 as a sentinel for hide_all
+kHideAllSentinel = 100
+kCurrencyStackSizes = [1, 2, 4, 6, kHideAllSentinel]
 
 kCurrencyStackSizesByTier = {
     tier : kCurrencyStackSizes[ : len(kStackedCurrencyTags[tier]) + 1]
@@ -96,7 +97,9 @@ kCurrencyStackSizesByTier = {
 }
 
 kCurrencyStackSizeStringToIntMap = {
-    **{ s : int(s) for s in (str(i) for i in kCurrencyStackSizes) }, **{ 'hide_all' : 100}}
+    **{ s : int(s) for s in (str(i) for i in kCurrencyStackSizes) },
+    **{ 'hide_all' : kHideAllSentinel}}
+kCurrencyStackSizeIntToStringMap = InvertedDict(kCurrencyStackSizeStringToIntMap)
 
 # kUnifiedCurrencyTags[tier][stack_size] -> (type_tag, tier_tag)
 kUnifiedCurrencyTags = { tier :

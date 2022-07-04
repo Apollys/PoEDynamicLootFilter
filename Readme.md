@@ -152,16 +152,27 @@ for the detailed documentation of all available function calls.
   - `import_downloaded_filter`
   - `load_input_filter`
   - `run_batch`
+
   - `get_rule_matching_item`
   - `set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>`
+
   - `set_currency_to_tier <currency_name: str> <tier: int>`
   - `get_all_currency_tiers`
   - `set_currency_tier_min_visible_stack_size <tier: int or string> <stack_size: int or "hide_all">`
   - `get_currency_tier_min_visible_stack_size <tier: int or string>`
+  - `get_all_currency_tier_min_visible_stack_sizes`
   - (For test suite use: `get_tier_of_currency <currency_name: str>`)
   - `set_splinter_min_visible_stack_size <base_type: str> <stack_size: int>`
   - `get_splinter_min_visible_stack_size <base_type: str>`
   - `get_all_splinter_min_visible_stack_sizes`
+
+  - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
+  - `is_chaos_recipe_enabled_for <item_slot: str>`
+  - `get_all_chaos_recipe_statuses`
+
+  - `set_hide_maps_below_tier <tier: int>`
+  - `get_hide_maps_below_tier`
+
   - `get_all_essence_tier_visibilities`
   - `set_hide_essences_above_tier <tier: int>`
   - `get_hide_essences_above_tier`
@@ -176,22 +187,19 @@ for the detailed documentation of all available function calls.
   - `get_hide_unique_maps_above_tier`
   - `set_lowest_visible_oil <oil_name: str>`
   - `get_lowest_visible_oil`
-  - `set_gem_min_quality <quality: int in [1, 20]>`
-  - `get_gem_min_quality`
-  - `set_flask_min_quality <quality: int in [1, 20]>`
-  - `get_flask_min_quality`
-  - `add_remove_socket_rule <socket_string: str> <(optional) item_slot: str> <add_flag: bool>`
-  - `get_all_added_socket_rules`
-  - `set_hide_maps_below_tier <tier: int>`
-  - `get_hide_maps_below_tier`
+
   - `set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>`
   - `get_basetype_visibility <base_type: str>`
   - `get_all_visible_basetypes`
   - `set_flask_visibility <base_type: str> <visibility_flag: int> <(optional) high_ilvl_flag: int>`
   - `get_flask_visibility <base_type: str>`
   - `get_all_visible_flasks`
+  - `add_remove_socket_rule <socket_string: str> <(optional) item_slot: str> <add_flag: bool>`
+  - `get_all_added_socket_rules`
+
+  - `set_gem_min_quality <quality: int in [1, 21]>`
+  - `get_gem_min_quality`
+  - `set_flask_min_quality <quality: int in [1, 21]>`
+  - `get_flask_min_quality`
   - `set_rgb_item_max_size <size: {none, small, medium, large}>`
   - `get_rgb_item_max_size`
-  - `set_chaos_recipe_enabled_for <item_slot: str> <enable_flag: int>`
-  - `is_chaos_recipe_enabled_for <item_slot: str>`
-  - `get_all_chaos_recipe_statuses`

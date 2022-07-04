@@ -117,6 +117,11 @@ kFunctionInfoMap = {
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },
+    'get_all_currency_tier_min_visible_stack_sizes' : {
+        'NumParamsOptions' : [0],
+        'HasProfileParam' : True,
+        'ModifiesFilter' : False,
+    },
     # Splinters
     'set_splinter_min_visible_stack_size' : {
         'NumParamsOptions' : [2],

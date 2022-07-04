@@ -1,5 +1,8 @@
+from backend_cli import kInputFilename as kBackendCliInputFilename
+
 import os
 
+import file_helper
 import profile
 import test_consts
 from test_assertions import AssertEqual, AssertTrue, AssertFalse
@@ -41,6 +44,7 @@ set_currency_tier_min_visible_stack_size 2 4
 get_currency_tier_min_visible_stack_size 2
 set_currency_tier_min_visible_stack_size twisdom 1
 get_currency_tier_min_visible_stack_size twisdom
+get_all_currency_tier_min_visible_stack_sizes
 set_splinter_min_visible_stack_size "Splinter of Uul-Netol" 8
 set_splinter_min_visible_stack_size "Timeless Maraketh Splinter" 1
 get_splinter_min_visible_stack_size "Timeless Maraketh Splinter"
@@ -111,9 +115,12 @@ def SimpleTest():
     profile.DeleteProfile(other_profile_name)
     CallBackendCli('import_downloaded_filter', profile_name)
     CallBackendCli('load_input_filter', profile_name)
-    # Use the test profile to run batch
+    # Run batch commands one-by-one (to more easily see which one fails)
     for function_call_line in kTestBatchString.split('\n'):
         CallBackendCli(function_call_line, profile_name)
+    # Run the batch via run_batch
+    file_helper.WriteToFile(kTestBatchString, kBackendCliInputFilename)
+    CallBackendCli('run_batch', profile_name)
     print('SimpleTest passed!')
 
 def main():

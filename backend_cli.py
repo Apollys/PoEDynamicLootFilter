@@ -46,6 +46,7 @@ from backend_cli_function_info import kFunctionInfoMap
 import consts
 import file_helper
 from general_config import GeneralConfig, GeneralConfigKeywords
+from item import Item
 import logger
 from loot_filter import InputFilterSource, LootFilter
 from loot_filter_rule import RuleVisibility
@@ -293,11 +294,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 0)
         item_text_lines: List[str] = file_helper.ReadFile(kInputFilename)
-        type_tag, tier_tag = loot_filter.GetRuleMatchingItem(item_text_lines)
-        output_string = 'type_tag:{}\ntier_tag:{}\n'.format(str(type_tag), str(tier_tag))
-        if ((type_tag != None) and (tier_tag != None)):
-            matched_rule = loot_filter.GetRule(type_tag, tier_tag)
-            output_string += '\n'.join(matched_rule.text_lines)
+        matched_rule = loot_filter.GetRuleMatchingItem(Item(item_text_lines))
+        if (matched_rule != None):
+            output_string = 'type_tag:{}\ntier_tag:{}\n'.format(
+                    matched_rule.type_tag, matched_rule.tier_tag)
+            output_string += '\n'.join(matched_rule.rule_text_lines)
     elif (function_name == 'set_rule_visibility'):
         '''
         set_rule_visibility <type_tag: str> <tier_tag: str> <visibility: {show, hide, disable}>
@@ -374,7 +375,23 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         '''
         CheckNumParams(function_params, 1)
         tier_str: str = function_params[0]
-        output_string = str(loot_filter.GetCurrencyTierMinVisibleStackSize(tier_str))
+        stack_size_int = loot_filter.GetCurrencyTierMinVisibleStackSize(tier_str)
+        output_string = consts.kCurrencyStackSizeIntToStringMap[stack_size_int]
+    elif (function_name == 'get_all_currency_tier_min_visible_stack_sizes'):
+        '''
+        get_all_currency_tier_min_visible_stack_sizes
+         - Output: newline-separated sequence of `<tier: int>;<min_visible_stack_size: int>`
+         - Example: > python3 backend_cli.py get_all_currency_tier_min_visible_stack_sizes MyProfile
+        '''
+        CheckNumParams(function_params, 0)
+        tier_strings = ([str(i) for i in range(1, consts.kNumCurrencyTiersExcludingScrolls + 1)] +
+                ['tportal', 'twisdom'])
+        stack_size_ints = [loot_filter.GetCurrencyTierMinVisibleStackSize(tier_string)
+                for tier_string in tier_strings]
+        stack_size_strings = [consts.kCurrencyStackSizeIntToStringMap[stack_size_int]
+                for stack_size_int in stack_size_ints]
+        output_string += '\n'.join('{};{}'.format(*pair)
+                for pair in zip(tier_strings, stack_size_strings))
     # ======================================== Splinters ========================================
     elif (function_name == 'set_splinter_min_visible_stack_size'):
         '''

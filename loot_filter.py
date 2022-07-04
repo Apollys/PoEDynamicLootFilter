@@ -236,9 +236,13 @@ class LootFilter:
 
     # =========================== Socketed Item Functions ==========================
 
+    # Does nothing if socket string is invalid.
     def AddSocketRule(self, socket_string: str, item_slot: str):
         CheckType(socket_string, 'socket_string', str)
         CheckType(item_slot, 'item_slot', str)
+        if (socket_helper.NormalizedSocketString(socket_string) == None):
+            logger.Log('Warning: socket string is invalid: "{}"'.format(socket_string))
+            return
         tier_tag = socket_helper.GenerateTierTag(socket_string, item_slot)
         # If rule already exists, return immediately
         if ((consts.kSocketsTypeTag, tier_tag) in self.rule_or_text_block_hll):
@@ -255,12 +259,15 @@ class LootFilter:
         self.AddBlockToHll(rule_lines, self.dlf_rules_successor_key)
     # End AddSocketRule
 
-    # Does nothig if the socket rule does not exist.
+    # Does nothig if the socket string is invalid or the socket rule does not exist.
     # (Need to be robust to removing nonexistent rule, because profile changes
     # will collapse add then remove rule into remove rule.)
     def RemoveSocketRule(self, socket_string: str, item_slot: str):
         CheckType(socket_string, 'socket_string', str)
         CheckType(item_slot, 'item_slot', str)
+        if (socket_helper.NormalizedSocketString(socket_string) == None):
+            logger.Log('Warning: socket string is invalid: "{}"'.format(socket_string))
+            return
         tier_tag = socket_helper.GenerateTierTag(socket_string, item_slot)
         if ((consts.kSocketsTypeTag, tier_tag) in self.rule_or_text_block_hll):
             self.rule_or_text_block_hll.remove((consts.kSocketsTypeTag, tier_tag))
@@ -371,7 +378,7 @@ class LootFilter:
     # End SetCurrencyMinVisibleStackSize
 
     # Returns the min visible stack size for the given tier,
-    # or the sentinel value (100, defined in consts.py) to indicate hide_all-
+    # or the sentinel value (defined in consts.py) to indicate hide_all
     def GetCurrencyTierMinVisibleStackSize(self, tier_param: str or int) -> int:
         if (isinstance(tier_param, int)):
             tier_param = str(tier_param)
@@ -802,7 +809,8 @@ class LootFilter:
                 rules_start_identifier = consts.kFilterBladeRulesStartIdentifier
                 if (parse_helper.IsSubstringInLines(rules_start_identifier, text_lines)):
                     return key
-        raise RuntimeError('FilterBlade rules start identifier {} not found'.format(rules_start_identifier))
+        raise RuntimeError('FilterBlade rules start identifier {} not found'.format(
+                rules_start_identifier))
     # End FindTableOfContentsBlock
 
     def GenerateDlfRuleText(self) -> List[str]:
@@ -820,6 +828,13 @@ class LootFilter:
         custom_rules_lines = file_helper.ReadFile(
                 self.profile_obj.config_values['RulesFullpath'], strip=True)
         text += '\n'.join(custom_rules_lines) + '\n\n'
+        # Add Hide Splinter rules
+        current_section_id_int += 1
+        text += consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Hide Splinters below specific stack sizes') + '\n\n'
+        for stack_size in consts.kDlfSplinterStackSizes:
+            text += consts.kDlfHideSplintersRuleTemplate.format(
+                    stack_size, consts.kDlfSplintersTypeTag) + '\n\n'
         # Add "Hide maps below tier" rule
         current_section_id_int += 1
         text += consts.kSectionHeaderTemplate.format(
@@ -856,13 +871,6 @@ class LootFilter:
         chaos_regal_recipe_rule_strings.extend(consts.kChaosRegalRecipeRuleStrings)
         # Append all chaos/regal recipe rule strings to `text` variable
         text += '\n\n'.join(chaos_regal_recipe_rule_strings) + '\n\n'
-        # Add Hide Splinter rules
-        current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Hide Splinters below specific stack sizes') + '\n\n'
-        for stack_size in consts.kDlfSplinterStackSizes:
-            text += consts.kDlfHideSplintersRuleTemplate.format(
-                    stack_size, consts.kDlfSplintersTypeTag) + '\n\n'
         # Add Socket rules last so they can be dynamically added using self.dlf_rules_successor_key
         # Add BaseType rules
         current_section_id_int += 1
