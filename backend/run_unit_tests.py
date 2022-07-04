@@ -1,30 +1,34 @@
 '''
-Usage: python run_unit_tests <(optional) skip_slow_tests: int = 1>
+By default, skips slow tests (tests that take more than a few seconds).
+
+Usage: python run_unit_tests <(optional) run_all_tests: int = 0>
 '''
 
 import os
 import sys
 
+import consts
 import file_helper
 
 kSlowTestFilenames = ['backend_cli_test.py']
 
-kHorizontalSeparator = '================================================================================'
+kHorizontalSeparator = '=' * 80
 
 def main():
     print(sys.argv)
-    skip_slow_tests = True
-    if ((len(sys.argv) >= 2) and not bool(int(sys.argv[1]))):
-        skip_slow_tests = False
-    filenames = file_helper.ListFilesInDirectory('.')
-    unit_test_filenames = [f for f in filenames if f.endswith('_test.py')]
+    run_all_tests = False
+    if ((len(sys.argv) >= 2) and bool(int(sys.argv[1]))):
+        run_all_tests = True
+    fullpaths = file_helper.ListFilesInDirectory(consts.kBackendDirectory, fullpath=True)
+    unit_test_fullpaths = [f for f in fullpaths if f.endswith('_test.py')]
     failed_unit_tests = []
     print(kHorizontalSeparator)
     # Run tests
-    for unit_test_filename in unit_test_filenames:
-        if (skip_slow_tests and unit_test_filename in kSlowTestFilenames):
+    for unit_test_fullpath in unit_test_fullpaths:
+        unit_test_filename = os.path.basename(unit_test_fullpath)
+        if (not run_all_tests and unit_test_filename in kSlowTestFilenames):
             continue
-        command = 'python {}'.format(unit_test_filename)
+        command = 'python {}'.format(unit_test_fullpath)
         print('Running: {} ...\n'.format(unit_test_filename))
         return_code = os.system(command)
         passed_flag = (return_code == 0)
@@ -39,7 +43,7 @@ def main():
             print(' • {}'.format(failed_unit_test))
     else:
         print('Congratulations! All unit tests passed:')
-        for passed_unit_test in unit_test_filenames:
+        for passed_unit_test in unit_test_fullpaths:
             print(' • {}'.format(passed_unit_test))
     print(kHorizontalSeparator)
 

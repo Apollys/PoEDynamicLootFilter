@@ -26,12 +26,11 @@ import os
 import os.path
 from typing import Any, List, Tuple
 
+from consts import kProfileDirectory
 import file_helper
 from general_config import GeneralConfig, GeneralConfigKeywords, kGeneralConfigPath
 import simple_parser
 from type_checker import CheckType
-
-kProfileDirectory = 'Profiles'
 
 def GetProfileConfigFullpath(profile_name: str) -> str:
     return os.path.join(kProfileDirectory, profile_name + '.config')
@@ -52,6 +51,8 @@ def ListProfilesRaw() -> List[str]:
     profile_files_list: list[str] = file_helper.ListFilesInDirectory(kProfileDirectory)
     profile_names = []
     for filename in profile_files_list:
+        # This is not needed any more, but for backwards compatibility for previous version,
+        # we will retain it for a little while.
         if (filename == 'general.config'):
             continue
         profile_name, extension = os.path.splitext(filename)

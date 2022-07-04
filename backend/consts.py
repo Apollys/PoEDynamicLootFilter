@@ -4,12 +4,19 @@ import os.path
 import re
 from typing import Dict, List, Tuple
 
-import file_helper
-
 def InvertedDict(input_dict):
     return {value : key for key, value in input_dict.items()}
 
 kDlfVersion = '1.1.0'
+
+#=================================== Directories ===================================
+
+kRepositoryRootDirectory = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+kCacheDirectory = os.path.join(kRepositoryRootDirectory, 'cache')
+kBackendDirectory = os.path.join(kRepositoryRootDirectory, 'backend')
+kConfigDirectory = os.path.join(kRepositoryRootDirectory, 'config')
+kProfileDirectory = os.path.join(kRepositoryRootDirectory, 'Profiles')
+kResourcesDirectory = os.path.join(kRepositoryRootDirectory, 'resources')
 
 #=================================== Items ===================================
 
@@ -112,7 +119,7 @@ kUnifiedCurrencyTags = { tier :
 
 # ================================= Splinters =================================
 
-kSplinterBaseTypesListFullpath = os.path.join('Resources', 'splinter_base_types.txt')
+kSplinterBaseTypesListFullpath = os.path.join(kResourcesDirectory, 'splinter_base_types.txt')
 
 kFilterBladeSplinterTags = (
     list(itertools.product(
@@ -388,10 +395,6 @@ def GenerateChaosRegalRecipeWeaponRules(item_slot: str, weapon_classes: str) -> 
                kChaosRecipeMinimapIconType,
                weapon_classes.replace('" "', ', ').strip('"')))
 # End GenerateChaosRegalRecipeWeaponRules
-
-# List of all Flask BaseTypes
-kFlaskBaseTypesTxtFilepath = os.path.join('Resources', 'flask_base_types.txt')
-kAllFlaskTypes = file_helper.ReadFile(kFlaskBaseTypesTxtFilepath, strip=True)
 
 # Quality Gems and Flasks tags
 

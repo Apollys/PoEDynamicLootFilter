@@ -1,9 +1,11 @@
 import os.path
 
+from consts import kRepositoryRootDirectory, kResourcesDirectory
+
 # ============================= Directory Consts =============================
 
-kTestWorkingDirectory = 'TestWorkingDirectory'
-kTestResourcesDirectory = os.path.join('Resources', 'Test')
+kTestWorkingDirectory = os.path.join(kRepositoryRootDirectory, 'TestWorkingDirectory')
+kTestResourcesDirectory = os.path.join(kResourcesDirectory, 'Test')
 
 # =============================== Filter Consts ===============================
 

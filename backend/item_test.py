@@ -1,7 +1,6 @@
 from item import Item
 
 from enum import Enum
-import os.path
 from typing import List, Tuple
 
 import file_helper

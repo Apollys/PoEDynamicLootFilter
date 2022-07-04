@@ -14,10 +14,11 @@ import os.path
 import sys
 import unicodedata
 
+from consts import kRepositoryRootDirectory, kBackendDirectory
 import file_helper
 import profile
 
-kDlfAhkPath = 'dynamic_loot_filter.ahk'
+kDlfAhkPath = os.path.join(kRepositoryRootDirectory, 'dynamic_loot_filter.ahk')
 kDownloadDirectoryPrefix = 'Download directory:'
 kPathOfExileDirectoryPrefix = 'Path of Exile directory:'
 kInputDirectoryPrefix = 'Input (backup) loot filter directory:'
@@ -222,7 +223,8 @@ def main():
     # Temporary fix - Import filter here
     # Just in case, we'll also delete the Path of Exile filter, if it exists
     file_helper.RemoveFileIfExists(created_profile.config_values['OutputLootFilterFullpath'])
-    os.system('python backend_cli.py import_downloaded_filter {}'.format(new_profile_name))
+    backend_cli_py = os.path.join(kBackendDirectory, 'backend_cli.py')
+    os.system('python {} import_downloaded_filter {}'.format(backend_cli_py, new_profile_name))
 
     # Setup complete
     print('Config data saved to "{}".'.format(created_profile.config_path))

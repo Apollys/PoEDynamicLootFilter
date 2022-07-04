@@ -1,14 +1,6 @@
 # Ignore local cache
 cache/*
 
-# Ignore log files
-*.log
-
-# Ignore backend_cli input/output files
-backend_cli.input
-backend_cli.output
-backend_cli.exit_code
-
 # Ignore test-generated files
 TestWorkingDirectory/*
 

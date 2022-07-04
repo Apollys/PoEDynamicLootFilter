@@ -1,8 +1,9 @@
 import os.path
 
+import consts
 import file_helper
 
-kGeneralConfigPath = os.path.join('config', 'general.config')
+kGeneralConfigPath = os.path.join(consts.kConfigDirectory, 'general.config')
 
 class GeneralConfigKeywords:
     kActiveProfile = 'Active Profile'

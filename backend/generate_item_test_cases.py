@@ -1,4 +1,3 @@
-import os.path
 from typing import List
 
 import file_helper

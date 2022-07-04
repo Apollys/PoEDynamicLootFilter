@@ -1,4 +1,8 @@
-kDefaultLogFilename = 'log.log'
+import os.path
+
+from consts import kCacheDirectory
+
+kDefaultLogFilename = os.path.join(kCacheDirectory, 'log.log')
 
 g_log_filename = ''
 

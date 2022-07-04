@@ -12,7 +12,7 @@ def DictMismatchMessage(left: dict, right: dict) -> str:
             if (left[key] != right[key]):
                 return ('Key "{}" has value "{}" in the left dict and value "{}" '
                         'in the right dict'.format(key, left[key], right[key]))
-    return 'Something weird happened, you shouldn\'t see this'
+    return "Something weird happened, you shouldn't see this"
 # End DictMismatchMessage
 
 def AssertEqual(left, right):

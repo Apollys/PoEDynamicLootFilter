@@ -54,10 +54,9 @@ import profile
 import profile_changes
 from type_checker import CheckType
 
-kLogFilename = 'backend_cli.log'
-kInputFilename = 'backend_cli.input'
-kOutputFilename = 'backend_cli.output'
-kExitCodeFilename = 'backend_cli.exit_code'
+kLogFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.log')
+kInputFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.input')
+kOutputFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.output')
 
 def UsageMessage(function_name: str or None):
     usage_message = 'Usage synax:\n> python backend_cli.py '
@@ -904,18 +903,13 @@ def main_impl():
     DelegateFunctionCall(loot_filter, function_name, function_params)
 # End main_impl
 
-# Wrap the main_impl in a try-except block, so we can detect any error
-# and notify the frontend via backend_cli.exit_code
+# Wrap the main_impl in a try-except block, so we can detect and report error messages
 def main():
-    file_helper.WriteToFile('-1', kExitCodeFilename)  # -1 = In-progress exit code
     try:
         main_impl()
     except Exception as e:
-        traceback_message = traceback.format_exc()
-        logger.Log(traceback_message)
-        file_helper.WriteToFile('1', kExitCodeFilename)  # 1 = Generic error exit code
+        logger.Log(traceback.format_exc())
         raise e
-    file_helper.WriteToFile('0', kExitCodeFilename)  # 0 = Success exit code
 
 if (__name__ == '__main__'):
     main()

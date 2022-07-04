@@ -1,8 +1,8 @@
-import os
+import os.path
 import subprocess
 from typing import Tuple
 
-import profile
+from consts import kBackendDirectory
 import test_consts
 from test_assertions import AssertEqual, AssertTrue, AssertFalse
 import test_helper
@@ -28,7 +28,8 @@ def GenerateSetupInputString(hotkeys: Tuple[str]) -> str:
 def RunSetupPy(hotkeys: Tuple[str]):
     test_helper.SetUp(create_profile=False)
     # Communicate with subprocess: https://stackoverflow.com/a/165662
-    p = subprocess.run(['python', '-u', 'setup.py'], stdout=subprocess.PIPE,
+    setup_py = os.path.join(kBackendDirectory, 'setup.py')
+    p = subprocess.run(['python', '-u', setup_py], stdout=subprocess.PIPE,
             input=GenerateSetupInputString(hotkeys),
             encoding='utf-8')
     AssertEqual(p.returncode, 0)
