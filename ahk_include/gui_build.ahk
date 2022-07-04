@@ -44,7 +44,7 @@ BuildGui(ui_data_dict) {
 	Gui Color, 0x111122, 0x111133
 	; Title
 	Gui Font, c0x00e8b2 s16 Bold, Segoe UI
-	Gui Add, Text, x192 y8 w556 h26 +0x200 +Center, %kWindowTitle%
+	Gui Add, Text, x386 y8 w556 h26 +0x200 +Center, %kWindowTitle%
 
 	; ------------- Section: Profiles ------------
 	anchor_x := 1140, anchor_y := 12
@@ -364,12 +364,21 @@ BuildGui(ui_data_dict) {
 	}
 	; ------------- End Section: [Socket Patterns] ------------
 
-	; ------------- Section: Hotkeys -------------
+	; ------------- Section: Reload UI -------------
 	anchor_x := 1160, anchor_y := 64
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
-	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h146, Hotkeys
-	x := anchor_x + 28, y:= anchor_y + 36
+	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h64, % "Reload UI"
+	x := anchor_x + 70, y:= anchor_y + 22
+	Gui Add, Button, x%x% y%y% w140 h28 gReloadUi, % "Reload UI"
+	; ------------- Section: Reload UI -------------
+
+	; ------------- Section: Hotkeys -------------
+	anchor_x := 1160, anchor_y := 144
+	; GroupBox
+	Gui Font, c0x00e8b2 s10 Bold
+	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h128, Hotkeys
+	x := anchor_x + 28, y:= anchor_y + 28
 	spacing_y := 30
 	for _, hotkey_line in ui_data_dict["hotkeys"] {
 		Gui Font, c0x00e8b2 s13 Norm, Segoe UI
@@ -378,7 +387,6 @@ BuildGui(ui_data_dict) {
 		y += spacing_y
 	}
 	; ------------- End Section: Hotkeys -------------
-
 
 	; ------------- Section: [Item-Rule Matching] -------------
 	anchor_x := 1160, anchor_y := 290
@@ -417,6 +425,7 @@ BuildGui(ui_data_dict) {
 	Gui Add, Button, x%x% y%y% w224 h31 gUpdateFilter, [&W]rite Filter
 	; ------------- End Section: [Filter Actions] -------------
 
+	; Gui -Border  ; disables drag-moving the window!
 	Gui Show, w%kWindowWidth% h%kWindowHeight%, %kWindowTitle%
 	Return
 }

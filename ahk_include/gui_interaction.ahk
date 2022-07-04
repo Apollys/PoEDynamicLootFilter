@@ -418,3 +418,7 @@ ImportFilter() {
     UpdateStatusMessage((exit_code == 0) ? "Imported downloaded filter!" : "Error importing downloaded filter")
     Reload  ; TODO: this will lose the status messages we just created here, ideally we shouldn't reload
 }
+
+ReloadUi() {
+	Reload
+}
