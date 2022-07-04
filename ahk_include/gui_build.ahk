@@ -26,7 +26,7 @@ kBackendToFrontendRgbSizesTwd := new TwoWayDict({"none": "Hide All", "small": "S
 kRgbSizesText := Join(kFrontendRgbSizes, "|")
 
 BuildGui(ui_data_dict) {
-	; Use global mode for initial implementation (TODO: remove this)
+	; Use global mode so vVariables and HWNDhIdentifiers created here end up global
 	global
 	; global g_profiles, kNumCurrencyTiers, kCurrencyStackSizesText, kChaosRecipeItemSlots, kSplinterStackSizes, kCurrencyStackSizeToTextTwd
 

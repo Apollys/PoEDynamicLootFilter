@@ -68,6 +68,8 @@ InitializeProfiles() {
 ; ============================= To Refactor - Profile Creation =============================
 
 CreateProfile1() {
+	; Use global mode so vVariables and HWNDhIdentifiers created here end up global
+	global
     Gui, 2: Color, 0x111122
     Gui, 2: Font, c0x00e8b2 s16 Bold, Segoe UI
     Gui, 2: Add, Text, x8 y8 h26 +0x200, Profile Name
