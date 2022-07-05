@@ -9,6 +9,7 @@
 kWindowWidth := 1470
 kWindowHeight := 866
 kWindowTitle := "PoE Dynamic Loot Filter"
+kBorderlessMode := False  ; disables drag-moving the window!
 
 ; Note: TWD = TwoWayDict (see two_way_dict.ahk)
 ; StackSize note: Tiers 1-7 do not have the 6+ StackSize option
@@ -28,7 +29,7 @@ kRgbSizesText := Join(kFrontendRgbSizes, "|")
 BuildGui(ui_data_dict) {
 	; Use global mode so vVariables and HWNDhIdentifiers created here end up global
 	global
-	; global g_profiles, kNumCurrencyTiers, kCurrencyStackSizesText, kChaosRecipeItemSlots, kSplinterStackSizes, kCurrencyStackSizeToTextTwd
+	; global g_profiles, kBorderlessMode, kNumCurrencyTiers, kCurrencyStackSizesText, kChaosRecipeItemSlots, kSplinterStackSizes, kCurrencyStackSizeToTextTwd
 
 	; Precomputation
 	profile_ddl_text := Join(g_profiles, "|")
@@ -425,7 +426,9 @@ BuildGui(ui_data_dict) {
 	Gui Add, Button, x%x% y%y% w224 h31 gUpdateFilter, [&W]rite Filter
 	; ------------- End Section: [Filter Actions] -------------
 
-	; Gui -Border  ; disables drag-moving the window!
+	if (kBorderlessMode) {
+		Gui -Border  ; disables drag-moving the window!
+	}
 	Gui Show, w%kWindowWidth% h%kWindowHeight%, %kWindowTitle%
 	Return
 }
