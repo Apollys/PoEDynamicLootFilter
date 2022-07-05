@@ -71,106 +71,104 @@ CreateProfile1() {
 	; Use global mode so vVariables and HWNDhIdentifiers created here end up global
 	global
     Gui, 2: Color, 0x111122
-    Gui, 2: Font, c0x00e8b2 s16 Bold, Segoe UI
-    Gui, 2: Add, Text, x8 y8 h26 +0x200, Profile Name
-    Gui, 2: Add, Text, x8 y68 h26 +0x200, Downloaded Filter Directory
-    Gui, 2: Add, Text, x8 y128 h26 +0x200, Downloaded Filter Name
-    Gui, 2: Add, Text, x8 y188 h26 +0x200, Path of Exile Filter Directory
-    Gui, 2: Add, Text, x8 y248 h26 +0x200, Output Filter Name
-    
+    anchor_x := 8, anchor_y := 8
+    h := 28, w := 434, button_w := 70, edit_w := w - button_w - 10
+    spacing_y := h + 12
+    x := anchor_x, y := anchor_y
+    ; Title
+    Gui, 2: Font, c0x00e8b2 s15 Bold, Segoe UI
+    Gui, 2: Add, Text, x0 y%y% h%h% w%w% +Center, Create New Profile
+    ; Profile Name
+    y += spacing_y + 8
+    Gui, 2: Font, c0x00e8b2 s14 Norm, Segoe UI
+    Gui, 2: Add, Text, x%x% y%y% h%h% w%w%, Profile Name
+    y += h
+    Gui, 2: Font, cBlack s14 Norm, Segoe UI
+    Gui, 2: Add, Edit, x%x% y%y% h32 w250 vNewProfileName
+    ; Downloaded Filter Path
+    y += spacing_y + 4
+    Gui, 2: Font, c0x00e8b2 s14 Norm, Segoe UI
+    Gui, 2: Add, Text, x%x% y%y% h%h% w%w%, Downloaded Filter Path
+    y += h
+    Gui, 2: Font, cBlack s12 Norm, Segoe UI
+    placeholder_text := "C:\Users\...\Downloads\NeversinkStrict.Filter"
+    Gui, 2: Add, Edit, x%x% y%y% h%h% w%edit_w% vNewProfileDownloadedFilterPath HWNDhNewProfileDownloadedFilterEdit, %placeholder_text%
+    button_x := x + w - button_w
     Gui, 2: Font, c0x00e8b2 s10 Bold, Segoe UI
-    Gui, 2: Add, Button, x382 y128 h26 gBrowseDownload, Browse
-    Gui, 2: Add, Button, x382 y188 h26 gBrowsePoE, Browse
-    
-    Gui, 2: Font, s14, Segoe UI
-    Gui, 2: Add, Checkbox, vRDF checked x8 y309 h26 w20,
-    Gui, 2: Add, Text, x28 y308 h26 w400, Remove Downloaded Filter on Import
-
-    Gui, 2: Font, s12 norm cblack, Segoe UI
-    Gui, 2: Add, Edit, x8 y38 h26 w434 vNewProfileName,
-    Gui, 2: Add, Edit, x8 y98 h26 w434 vNewProfileDDir, C:\Users\...\Downloads
-    Gui, 2: Add, Edit, x8 y158 h26 w434 vNewProfileDName,
-    Gui, 2: Add, Edit, x8 y218 h26 w434 vNewProfilePoEDir, C:\Users\...\Documents\My Games\Path of Exile
-    Gui, 2: Add, Edit, x8 y278 h26 w434 vNewProfilePoEName, (Optional)
-
-
+    Gui, 2: Add, Button, x%button_x% y%y% h%h% w%button_w% gBrowseDownloadDirectory, Browse
+    ; Path of Exile Filters Directory
+    y += spacing_y
+    Gui, 2: Font, c0x00e8b2 s14 Norm, Segoe UI
+    Gui, 2: Add, Text, x%x% y%y% h%h%, Path of Exile Filters Directory
+    y += h
+    Gui, 2: Font, cBlack s12 Norm, Segoe UI
+    placeholder_text := "C:\Users\...\Documents\My Games\Path of Exile"
+    Gui, 2: Add, Edit, x%x% y%y% h%h% w%edit_w% vNewProfilePoeFiltersDirectory HWNDhNewProfilePoeFiltersDirectoryEdit, %placeholder_text%
+    button_x := x + w - button_w
+    Gui, 2: Font, c0x00e8b2 s10 Bold, Segoe UI
+    Gui, 2: Add, Button, x%button_x% y%y% h%h% w%button_w% gBrowsePoeDirectory, Browse
+    ; Remove Downloaded Filter on Import
+    y += spacing_y + 6
+    Gui, 2: Font, c0x00e8b2 s14 Norm, Segoe UI
+    Gui, 2: Add, Checkbox, vRemoveDownloadedFilter checked x%x% y%y% h26 w%w%, Remove downloaded filter on import
+    ; Create Button
+    y += spacing_y + 10
     Gui, 2: Font, s14 Bold, Segoe UI
-    Gui, 2: Add, Button, x163 y338 w124 h31 gCreateProfile2, Create
-    Gui, 2: Show, w450 h378, PoE Dynamic Loot Filter
+    Gui, 2: Add, Button, x145 y%y% w150 h36 gCreateProfile2, Create
+    ; Show UI
+    Gui, 2: -Border
+    Gui, 2: Show, w450 h378
     Return
 }
 
-BrowseDownload() {
-    FileSelectFile, DPath, , , Select Downloaded Filter, Filter Files (*.filter)
-    SplitPath, DPath, DName, DDir 
-    GuiControl, 2:, NewProfileDName, %DName%
-    GuiControl, 2:, NewProfileDDir, %DDir%
+BrowseDownloadDirectory() {
+    FileSelectFile, selected_path, , , Select Downloaded Filter, Filter Files (*.filter)
+    GuiControl, 2:, NewProfileDownloadedFilterPath, %selected_path%
     return
 }
 
-BrowsePoE() {
-    FileSelectFolder, PoEDir
-    GuiControl, 2:, NewProfilePoEDir, %PoEDir%
+BrowsePoeDirectory() {
+    FileSelectFolder, selected_directory, , , Select Path of Exile Filters Directory
+    GuiControl, 2:, NewProfilePoeFiltersDirectory, %selected_directory%
     return
 }
-
 
 CreateProfile2() {
+    global kBackendCliInputPath
+    global NewProfileName, NewProfileDownloadedFilterPath, NewProfilePoeFiltersDirectory, RemoveDownloadedFilter
     Gui, 2: Submit, NoHide
-    ; Erase backend_cli.input before writing
-    FileAppend, abc, %kBackendCliInputPath%
-    FileDelete, %kBackendCliInputPath%
     if (NewProfileName == ""){
-        MsgBox, Profile Name Required!
+        MsgBox, Missing profile name!
         return
     }
-    if (NewProfileDDir == ""){
-        MsgBox, Downloads Directory Required!
+    if ((NewProfileDownloadedFilterPath == "") or InStr(NewProfileDownloadedFilterPath, "...")) {
+        MsgBox, Missing downloaded filter path!
         return
     }
-    if (NewProfileDName == ""){
-        MsgBox, Downloaded Filter Filename Required!
+    if ((NewProfilePoeFiltersDirectory == "") or InStr(NewProfilePoeFiltersDirectory, "...")) {
+        MsgBox, Missing Path of Exile filters directory!
         return
     }
-    if (NewProfilePoEDir == ""){
-        MsgBox, Path of Exile Filter Directory Required!
-        return
-    }
-    FileAppend, % "DownloadDirectory:" NewProfileDDir "`n" , %kBackendCliInputPath%
-    FileAppend, % "PathOfExileDirectory:" NewProfilePoEDir "`n" , %kBackendCliInputPath%
-    FileAppend, % "DownloadedLootFilterFilename:" NewProfileDName "`n", %kBackendCliInputPath%
-    if (NewProfilePoEName != "(Optional)" and NewProfilePoEName != ""){
-        FileAppend, % "OutputLootFilterFilename:" NewProfilePoEName "`n", %kBackendCliInputPath%
-    }
-    if (!RDF){
+    SplitPath, NewProfileDownloadedFilterPath, downloaded_filter_filename, download_directory
+    FileDelete, %kBackendCliInputPath%
+    FileAppend, % "DownloadDirectory:" download_directory "`n", %kBackendCliInputPath%
+    FileAppend, % "DownloadedLootFilterFilename:" downloaded_filter_filename "`n", %kBackendCliInputPath%
+    FileAppend, % "PathOfExileDirectory:" NewProfilePoeFiltersDirectory "`n", %kBackendCliInputPath%
+    if (!RemoveDownloadedFilter){
         FileAppend, % "RemoveDownloadedFilter:False`n", %kBackendCliInputPath%
 
     }
     Gui, 2: Destroy
-    RunWait, %python_command% %kBackendCliPath% create_new_profile %NewProfileName%,  , Hide
-    FileRead, exit_code, %kBackendCliExitCodePath%
-    if (exit_code == "1"){
-        GuiControl, , GUIStatusMsg , % "Profile Creation Failed"
-        FileRead, error_log, %kBackendCliLogPath%
-        MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+    backend_cli_command := "create_new_profile " NewProfileName
+    exit_code := RunBackendCliFunction("create_new_profile " NewProfileName)
+    if (exit_code != 0){
+        UpdateStatusMessage("Profile Creation Failed")
     }
-    else if (exit_code == "-1")
-        MsgBox, How did you get here?
-    else {
-        RunWait, %python_command% %kBackendCliPath% import_downloaded_filter %NewProfileName%,  , Hide
-        FileRead, exit_code, %kBackendCliExitCodePath%
-        if (exit_code == "1"){
-            GuiControl, , GUIStatusMsg , % "Filter Import Failed"
-            FileRead, error_log, %kBackendCliLogPath%
-            MsgBox, % "Python backend_cli.py encountered error:`n" error_log
-        }
-        else if (exit_code == "-1")
-            MsgBox, How did you get here?
-        else {
-            Reload
-            ExitApp
-        }
-    }
+    Reload
+}
+
+2GuiEscape() {
+    2GuiClose()
 }
 
 2GuiClose() {

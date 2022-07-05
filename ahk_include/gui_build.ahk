@@ -9,7 +9,7 @@
 kWindowWidth := 1470
 kWindowHeight := 866
 kWindowTitle := "PoE Dynamic Loot Filter"
-kBorderlessMode := False  ; disables drag-moving the window!
+kBorderlessMode := True  ; disables drag-moving the window!
 
 ; Note: TWD = TwoWayDict (see two_way_dict.ahk)
 ; StackSize note: Tiers 1-7 do not have the 6+ StackSize option
@@ -54,7 +54,7 @@ BuildGui(ui_data_dict) {
 	; DropDownList
 	Gui Font, c0x00e8b2 s14 Norm, Segoe UI
 	x := anchor_x + 72, y := anchor_y + 0
-	Gui Add, DropDownList, x%x% y%y% w151 h36 gProfileDdlAction vProfileDdl Choose1, %profile_ddl_text%
+	Gui Add, DropDownList, x%x% y%y% w151 gProfileDdlAction vProfileDdl Choose1, %profile_ddl_text%
 	; Create Button
 	Gui Font, c0x00e8b2 s14 Bold, Segoe UI
 	x := anchor_x + 232, y := anchor_y + 0
