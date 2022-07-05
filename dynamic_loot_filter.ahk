@@ -78,9 +78,9 @@ CreateProfile1() {
     Gui, 2: Add, Text, x8 y188 h26 +0x200, Path of Exile Filter Directory
     Gui, 2: Add, Text, x8 y248 h26 +0x200, Output Filter Name
     
-    Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-    Gui, 2: Add, Button, x358 y128 h26 gBrowseDownload, Browse
-    Gui, 2: Add, Button, x358 y188 h26 gBrowsePoE, Browse
+    Gui, 2: Font, c0x00e8b2 s10 Bold, Segoe UI
+    Gui, 2: Add, Button, x382 y128 h26 gBrowseDownload, Browse
+    Gui, 2: Add, Button, x382 y188 h26 gBrowsePoE, Browse
     
     Gui, 2: Font, s14, Segoe UI
     Gui, 2: Add, Checkbox, vRDF checked x8 y309 h26 w20,
@@ -179,7 +179,7 @@ CreateProfile2() {
 }
 
 GuiEscape() {
-    GuiClose()
+    ExitApp
 }
 
 GuiClose() {
