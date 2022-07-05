@@ -379,12 +379,16 @@ BuildGui(ui_data_dict) {
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
 	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h128, Hotkeys
-	x := anchor_x + 28, y:= anchor_y + 28
+	x := anchor_x + 8, y:= anchor_y + 28, x2 := anchor_x + 168
 	spacing_y := 30
-	for _, hotkey_line in ui_data_dict["hotkeys"] {
+	for idx, hotkey_line in ui_data_dict["hotkeys"] {
 		Gui Font, c0x00e8b2 s13 Norm, Segoe UI
-		text_string := StrReplace(hotkey_line, ";", ": ")
-		Gui Add, Text, x%x% y%y% w200 h32, %text_string%
+		split_hotkey_line := StrSplit(hotkey_line, ";")
+		Gui Add, Text, vHotkeyText%idx% x%x% y%y% w160 h32, % split_hotkey_line[1] ":"
+		Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+		Gui Add, Hotkey, vHotkey%idx% x%x2% y%y% w110 gUpdateHotkey, % split_hotkey_line[2]
+		function_name := RemovedSpaces(split_hotkey_line[1])
+		Hotkey, % split_hotkey_line[2], % function_name
 		y += spacing_y
 	}
 	; ------------- End Section: Hotkeys -------------
