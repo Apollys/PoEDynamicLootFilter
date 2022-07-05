@@ -1,6 +1,3 @@
-# Ignore local cache
-cache/*
-
 # Ignore test-generated files
 TestWorkingDirectory/*
 

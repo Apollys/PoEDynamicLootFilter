@@ -18,7 +18,7 @@ GetPythonCommand() {
 	if (python_command != "") {
 		return python_command
 	}
-	python_version_output_path := A_WorkingDir "\cache\python_version_output.txt"
+	python_version_output_path := A_WorkingDir "\" kCacheDirectory "\python_version_output.txt"
 	for _, possible_python_command in kPossiblePythonCommands {
 		command_string := possible_python_command " --version > " python_version_output_path
 		exit_code := RunCommand(command_string)
