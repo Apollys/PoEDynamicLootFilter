@@ -53,16 +53,18 @@ Return
 
 ; ============================= Profile Helper Functions =============================
 
+; Returns a flag indicating if there are any valid profiles
 InitializeProfiles() {
     global kBackendCliOutputPath
     global g_profiles, g_active_profile
     RunBackendCliFunction("get_all_profile_names")
     g_profiles := ReadFileLines(kBackendCliOutputPath)
     if (g_profiles.Length() == 0) {
-        MsgBox, % "No existing profiles found. Create a profile here, or run setup.py to get started"
         CreateProfile1()
+        return False
     }
     g_active_profile := g_profiles[1]
+    return True
 }
 
 ; ============================= To Refactor - Profile Creation =============================
@@ -188,7 +190,11 @@ GuiClose() {
 
 Main() {
     global g_ui_data_dict, g_active_profile
-    InitializeProfiles()
+    profiles_exist_flag := InitializeProfiles()
+    ; If no profiles exist, return from this thread and wait for profile creation GUI
+    if (!profiles_exist_flag) {
+        return
+    }
     g_ui_data_dict := QueryAllFilterData(g_active_profile)
     QueryHotkeys(g_ui_data_dict)
     BuildGui(g_ui_data_dict)

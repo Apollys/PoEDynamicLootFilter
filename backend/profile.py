@@ -93,11 +93,12 @@ def SetActiveProfile(profile_name: str):
 # If there is an inconsistency, this is fixed by setting general.config
 # to have some valid profile as the active profile.
 def GetAllProfileNames() -> List[str]:
-    active_profile_name = GetActiveProfileName()
     raw_profile_list = ListProfilesRaw()
-    if ((active_profile_name == None) and (len(raw_profile_list) == 0)):
+    if (len(raw_profile_list) == 0):
+        file_helper.RemoveFileIfExists(kGeneralConfigPath)
         return []
-    elif (active_profile_name not in raw_profile_list):
+    active_profile_name = GetActiveProfileName()
+    if (active_profile_name not in raw_profile_list):
         SetActiveProfile(raw_profile_list[0])
         return raw_profile_list
     # Otherwise, active profile name is valid and in raw_profile_list
