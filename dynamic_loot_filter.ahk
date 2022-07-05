@@ -77,8 +77,13 @@ CreateProfile1() {
     Gui, 2: Add, Text, x8 y128 h26 +0x200, Downloaded Filter Name
     Gui, 2: Add, Text, x8 y188 h26 +0x200, Path of Exile Filter Directory
     Gui, 2: Add, Text, x8 y248 h26 +0x200, Output Filter Name
+    
+    Gui Font, c0x00e8b2 s10 Bold, Segoe UI
+    Gui, 2: Add, Button, x358 y128 h26 gBrowseDownload, Browse
+    Gui, 2: Add, Button, x358 y188 h26 gBrowsePoE, Browse
+    
     Gui, 2: Font, s14, Segoe UI
-    Gui, 2: Add, Checkbox, vRDF checked x8 y309 h26,
+    Gui, 2: Add, Checkbox, vRDF checked x8 y309 h26 w20,
     Gui, 2: Add, Text, x28 y308 h26 w400, Remove Downloaded Filter on Import
 
     Gui, 2: Font, s12 norm cblack, Segoe UI
@@ -94,6 +99,21 @@ CreateProfile1() {
     Gui, 2: Show, w450 h378, PoE Dynamic Loot Filter
     Return
 }
+
+BrowseDownload() {
+    FileSelectFile, DPath, , , Select Downloaded Filter, Filter Files (*.filter)
+    SplitPath, DPath, DName, DDir 
+    GuiControl, 2:, NewProfileDName, %DName%
+    GuiControl, 2:, NewProfileDDir, %DDir%
+    return
+}
+
+BrowsePoE() {
+    FileSelectFolder, PoEDir
+    GuiControl, 2:, NewProfilePoEDir, %PoEDir%
+    return
+}
+
 
 CreateProfile2() {
     Gui, 2: Submit, NoHide
@@ -136,17 +156,21 @@ CreateProfile2() {
     }
     else if (exit_code == "-1")
         MsgBox, How did you get here?
-    RunWait, %python_command% %kBackendCliPath% import_downloaded_filter %NewProfileName%,  , Hide
-    FileRead, exit_code, %kBackendCliExitCodePath%
-    if (exit_code == "1"){
-        GuiControl, , GUIStatusMsg , % "Filter Import Failed"
-        FileRead, error_log, %kBackendCliLogPath%
-        MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+    else {
+        RunWait, %python_command% %kBackendCliPath% import_downloaded_filter %NewProfileName%,  , Hide
+        FileRead, exit_code, %kBackendCliExitCodePath%
+        if (exit_code == "1"){
+            GuiControl, , GUIStatusMsg , % "Filter Import Failed"
+            FileRead, error_log, %kBackendCliLogPath%
+            MsgBox, % "Python backend_cli.py encountered error:`n" error_log
+        }
+        else if (exit_code == "-1")
+            MsgBox, How did you get here?
+        else {
+            Reload
+            ExitApp
+        }
     }
-    else if (exit_code == "-1")
-        MsgBox, How did you get here?
-    Reload
-    ExitApp
 }
 
 2GuiClose() {
