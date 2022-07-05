@@ -22,7 +22,6 @@ GetPythonCommand() {
 	for _, possible_python_command in kPossiblePythonCommands {
 		command_string := possible_python_command " --version > " python_version_output_path
 		exit_code := RunCommand(command_string)
-		DebugMessage(python_version_output_path)
 		if (exit_code != 0) {
 			continue
 		}
