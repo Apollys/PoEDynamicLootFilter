@@ -14,14 +14,15 @@ RunCommand(command_string) {
 
 GetPythonCommand() {
 	static python_command := ""
-	global kPossiblePythonCommands
+	global kPossiblePythonCommands, kCacheDirectory
 	if (python_command != "") {
 		return python_command
 	}
-	python_version_output_path := A_WorkingDir "\" kCacheDirectory "\python_version_output.txt"
+	python_version_output_path := kCacheDirectory "\python_version_output.txt"
 	for _, possible_python_command in kPossiblePythonCommands {
-		command_string := possible_python_command " --version > " Quoted(python_version_output_path)
+		command_string := possible_python_command " --version > " python_version_output_path
 		exit_code := RunCommand(command_string)
+		DebugMessage(python_version_output_path)
 		if (exit_code != 0) {
 			continue
 		}
