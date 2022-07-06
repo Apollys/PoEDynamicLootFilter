@@ -1,6 +1,6 @@
 # PoE Dynamic Loot Filter
 
-![DLF_UI_05_13_2022](https://user-images.githubusercontent.com/37650759/168293570-861da003-836d-4012-a0b2-09da2c8b037f.png)
+![DLF_UI_07_06_2022](https://user-images.githubusercontent.com/37650759/177500912-633690df-dc9a-4412-8427-75cb795476be.png)
 
 ## What is PoE Dynamic Loot Filter?
 
