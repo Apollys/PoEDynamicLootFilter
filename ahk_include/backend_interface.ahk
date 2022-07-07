@@ -32,7 +32,7 @@ GetPythonCommand() {
 			return python_command
 		}
 	}
-	MsgBox, % "Error: The commands [" ListToString(kPossiblePythonCommands) "] were all unable to launch Python 3."
+	MsgBox, % "Error: The commands " Repr(kPossiblePythonCommands) " were all unable to launch Python 3."
 			. "  Either Python 3 is not installed, Python 3 is not in the path, or the commands are aliased to other programs."
 	ExitApp
 }

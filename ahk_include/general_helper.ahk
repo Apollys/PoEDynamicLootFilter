@@ -1,20 +1,9 @@
+#Include language_util.ahk
+
 ; ========================== Generic Util ==========================
 
 DebugMessage(message) {
     MsgBox, , Debug Message, %message%
-}
-
-; ========================== String Util ==========================
-
-; AHK's object.Length() function is broken - in some scenarios it
-; returns 0 when the container has many elements. (I think it has
-; to do with nested containers.)
-Length(container) {
-	n := 0
-	for key, value in container {
-		n += 1
-	}
-	return n
 }
 
 ; Returns an array of consecutive integers from start to end (inclusive)
@@ -30,6 +19,19 @@ RangeArray(start_or_end, optional_end:="") {
 		result_list.push(start + A_Index - 1)  ; A_Index starts at 1
 	}
 	return result_list
+}
+
+; ========================== String Util ==========================
+
+; AHK's object.Length() function is broken - in some scenarios it
+; returns 0 when the container has many elements. (I think it has
+; to do with nested containers.)
+Length(container) {
+	n := 0
+	for key, value in container {
+		n += 1
+	}
+	return n
 }
 
 ; Returns the concatenation of two arrays
@@ -50,8 +52,7 @@ Find(target_value, container, return_index:=False) {
 			return return_index ? index : key
 		}
 	}
-	DebugMessage("Error: " target_value " not found in container")
-	DebugDictToString(container)
+	DebugMessage("Error: " target_value " not found in container " Repr(container))
 }
 
 Quoted(s) {
@@ -81,22 +82,6 @@ Join(array_or_dict, delimeter, join_keys:=False) {
 RemovedSpaces(s) {
 	s := StrReplace(s, " ")
 	return s
-}
-
-ListToString(list) {
-	return "[" Join(list, ", ") "]"
-}
-
-DebugDictToString(dict) {
-	if (Length(dict) == 0) {
-		return "empty container: {}"
-	}
-	result_string := "{"
-	for key, value in dict {
-		result_string .= "`n    " key ": " value
-	}
-	result_string .= "`n}"
-	DebugMessage(result_string)
 }
 
 ; ========================== File Util ==========================
