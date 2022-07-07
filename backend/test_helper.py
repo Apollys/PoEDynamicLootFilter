@@ -21,7 +21,8 @@ def SetUp(*, create_profile=True, profile_config_values=test_consts.kTestProfile
             profile_config_values['DownloadDirectory'], base_filter_filename))
     # Optionally, create test profile
     if (create_profile):
-        profile.CreateNewProfile(test_consts.kTestProfileName, profile_config_values)
+        profile_obj = profile.CreateNewProfile(test_consts.kTestProfileName, profile_config_values)
+        file_helper.CopyFile(test_consts.kTestProfileRulesFullpath, profile_obj.rules_path)
 # End SetUp
 
 def TearDown():

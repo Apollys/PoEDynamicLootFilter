@@ -35,6 +35,9 @@ kTestNonFilterBladeProfileConfigValues = {
     'PathOfExileDirectory' : kTestProfilePathOfExileDirectory,
     'DownloadedLootFilterFilename' : kTestNonFilterBladeBaseFilterFilename}
 
+# Test profile custom rules
+kTestProfileRulesFullpath = os.path.join(kTestResourcesDirectory, 'TestProfile.rules')
+
 # ================================ Item Consts ================================
 
 kTestItemDirectory = os.path.join(kTestResourcesDirectory, 'Items')

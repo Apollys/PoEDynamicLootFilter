@@ -150,14 +150,13 @@ WarlordItem | False
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Show # %DS3 $type->socketslinks $tier->6sockets
+Show # $type->untagged_rule $tier->3
 Sockets >= 6
 Rarity <= Rare
 SetFontSize 45
 SetTextColor 255 255 255 255
 SetBorderColor 255 255 255 255
-SetBackgroundColor 0 112 106 255
-PlayAlertSound 2 300
+SetBackgroundColor 59 59 59 255
 PlayEffect Grey
 MinimapIcon 2 Grey Hexagon
 
@@ -237,16 +236,15 @@ WeaponRange | 13
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Show # $type->6l $tier->wep
-LinkedSockets 6
+Show # $type->untagged_rule $tier->3
+Sockets >= 6
 Rarity <= Rare
 SetFontSize 45
 SetTextColor 255 255 255 255
 SetBorderColor 255 255 255 255
-SetBackgroundColor 200 0 0 255
-PlayAlertSound 1 300
-PlayEffect Red
-MinimapIcon 0 Red Diamond
+SetBackgroundColor 59 59 59 255
+PlayEffect Grey
+MinimapIcon 2 Grey Hexagon
 
 ================================================================================
 
