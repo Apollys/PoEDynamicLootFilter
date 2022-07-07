@@ -229,9 +229,7 @@ Main() {
 
 ; ================================== Hotkeys ==================================
 
-; Toggle GUI
-; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-ToggleGUIHotkey() {  ; $toggle_gui_hotkey_line
+ToggleGUIHotkey() {
     if (IsPoeActive()) {
         MakeDlfActive()
     } else if (IsDlfActive()) {
@@ -239,15 +237,11 @@ ToggleGUIHotkey() {  ; $toggle_gui_hotkey_line
     }
 }
 
-; Write Filter
-; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-WriteFilterHotkey() {  ; $write_filter_hotkey_line
+WriteFilterHotkey() {
     UpdateFilter()
 }
 
-; Reload Filter
-; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-ReloadFilterHotkey() {  ; $reload_filter_hotkey_line
+ReloadFilterHotkey() {
     if (IsPoeActive()) {
         SendChatMessage("/itemfilter DynamicLootFilter")
     }
