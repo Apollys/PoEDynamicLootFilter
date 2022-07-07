@@ -260,30 +260,34 @@ FindRuleMatchingClipboard() {
 	FileRead, backend_cli_output, %kBackendCliOutputPath%
 	if (backend_cli_output == "") {
 		GuiControlSetText("vStatusMessageEditBox", "Found no rule matching item")
+		GuiControl, Disable, ChangeMatchedRuleVisibilityButton
 		return
 	}
 	GuiControlSetText("vMatchedRuleTextBox", backend_cli_output)
 	target_visibility := InStr(backend_cli_output, "Show") ? "Hide" : "Show"
 	GuiControlSetText("vChangeMatchedRuleVisibilityButton", target_visibility " Rule")
+	enable_or_disable := (target_visibility == "Hide") ? "Disable" : "Enable"
+	GuiControl, Enable, ChangeMatchedRuleVisibilityButton
 	; Parse type and tier tags to be passed in to backend set_rule_visibility command
 	; The first two lines of output will be `type_tag:<type_tag>` and `tier_tag:<tier_tag>`
 	backend_cli_output_lines := ReadFileLines(kBackendCliOutputPath)
-	type_tag := StrSplit(backend_cli_output_lines[1], ";")[2]
-	tier_tag := StrSplit(backend_cli_output_lines[2], ";")[2]
+	type_tag := StrSplit(backend_cli_output_lines[1], ":")[2]
+	tier_tag := StrSplit(backend_cli_output_lines[2], ":")[2]
 	g_ui_data_dict["matched_rule_tags"] := [type_tag, tier_tag]
 }
 
 ; Command: set_rule_visibility <type_tag> <tier_tag> <visibility: {show, hide, disable}>
 ChangeMatchedRuleVisibility() {
 	global g_ui_data_dict, g_active_profile
-	button_text := GuiControlGetHelper(vChangeMatchedRuleVisibilityButton)
+	button_text := GuiControlGetHelper("vChangeMatchedRuleVisibilityButton")
 	target_visibility := InStr(button_text, "Show") ? "show" : "hide"
-	type_tag := g_ui_data_dict["matched_rule_tags"][0]
-	tier_tag := g_ui_data_dict["matched_rule_tags"][1]
-	command_string := "set_rule_visibility " type_tag " " tier_tag " " target_visibility
+	type_tag := g_ui_data_dict["matched_rule_tags"][1]
+	tier_tag := g_ui_data_dict["matched_rule_tags"][2]
+	command_string := "set_rule_visibility " Quoted(type_tag) " " Quoted(tier_tag) " " target_visibility
 	exit_code := RunBackendCliFunction(command_string " " g_active_profile)
-	status_message := (exit_code == 0) ? "Rule visibility updated!" : "Error updating rule visibility"
+	status_message := (exit_code == 0) ? "Rule " ((target_visibility == "Show") ? "shown!" : "hidden!") : "Error updating rule visibility"
 	GuiControlSetText("vStatusMessageEditBox", status_message)
+	FindRuleMatchingClipboard()
 }
 
 ; ========================== Filter Actions ==========================
