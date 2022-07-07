@@ -109,6 +109,9 @@ class Item:
         for line in self.text_lines:
             if (line in kAllBinaryProperties):
                 self.properties_map[line] = True
+        # Remove 'Superior' from BaseType for superior items
+        if (self.properties_map['BaseType'].startswith('Superior ')):
+            self.properties_map['BaseType'] = self.properties_map['BaseType'][len('Superior '):]
         # Check for Replica Unique
         if ((self.properties_map['Rarity'] == 'Unique') and
                 self.properties_map.get('Name', '').startswith('Replica ')):

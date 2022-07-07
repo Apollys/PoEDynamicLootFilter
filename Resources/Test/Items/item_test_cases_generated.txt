@@ -2424,3 +2424,63 @@ SetBackgroundColor 50 130 165
 PlayEffect Blue Temp
 
 ================================================================================
+
+Item Class: Maps
+Rarity: Normal
+Superior Tower Map
+--------
+Map Tier: 16
+Item Quantity: +8% (augmented)
+Quality: +8% (augmented)
+--------
+Item Level: 85
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Tower Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 85
+ItemQuantity | +8% (augmented)
+MapTier | 16
+Mirrored | False
+Quality | 8
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->untagged_rule $tier->4
+Class Maps
+BaseType == "Tower Map"
+MapTier == 16
+SetFontSize 45
+SetBackgroundColor 0 0 0 255
+MinimapIcon 1 Cyan Square
+PlayEffect Cyan
+SetBorderColor 0 224 255 255
+PlayAlertSound 3 300
+SetTextColor 59 215 245 255
+
+================================================================================

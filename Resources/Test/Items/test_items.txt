@@ -775,3 +775,17 @@ Item Level: 83
 Shaper Item
 
 ================================================================================
+
+Item Class: Maps
+Rarity: Normal
+Superior Tower Map
+--------
+Map Tier: 16
+Item Quantity: +8% (augmented)
+Quality: +8% (augmented)
+--------
+Item Level: 85
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+================================================================================
