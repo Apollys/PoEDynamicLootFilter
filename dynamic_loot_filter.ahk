@@ -207,27 +207,27 @@ Main() {
 
 ; Toggle GUI
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-F7::  ; $toggle_gui_hotkey_line
+ToggleGUIHotkey() {  ; $toggle_gui_hotkey_line
     if (IsPoeActive()) {
         MakeDlfActive()
     } else if (IsDlfActive()) {
         MakePoeActive()
     }
-    return
+}
 
 ; Write Filter
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-F8::  ; $write_filter_hotkey_line
+WriteFilterHotkey() {  ; $write_filter_hotkey_line
     UpdateFilter()
-    return
+}
 
 ; Reload Filter
 ; it must always be on the same line as the GUI toggle hotkey (and nowhere else).
-F9::  ; $reload_filter_hotkey_line
+ReloadFilterHotkey() {  ; $reload_filter_hotkey_line
     if (IsPoeActive()) {
         SendChatMessage("/itemfilter DynamicLootFilter")
     }
-    return
+}
 
 ; For efficient testing
 Numpad0::Reload
