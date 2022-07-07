@@ -34,15 +34,15 @@ Item Level: 81
 ''',
 
 '''Show # %DS3 $type->socketslinks $tier->6sockets
-	Sockets >= 6
-	Rarity <= Rare
-	SetFontSize 45
-	SetTextColor 255 255 255 255
-	SetBorderColor 255 255 255 255
-	SetBackgroundColor 0 112 106 255
-	PlayAlertSound 2 300
-	PlayEffect Grey
-	MinimapIcon 2 Grey Hexagon
+Sockets >= 6
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 0 112 106 255
+PlayAlertSound 2 300
+PlayEffect Grey
+MinimapIcon 2 Grey Hexagon
 ''',
 
 True),
@@ -363,13 +363,13 @@ Shaper Item
 Redeemer Item''',
 
 '''Show # %D3 $type->rare->any $tier->any
-	HasInfluence Crusader Elder Hunter Redeemer Shaper Warlord
-	Rarity <= Rare
-	SetFontSize 45
-	SetTextColor 255 255 255 255
-	SetBorderColor 255 255 255 255
-	SetBackgroundColor 50 130 165
-	PlayEffect Blue Temp''',
+HasInfluence Crusader Elder Hunter Redeemer Shaper Warlord
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 50 130 165
+PlayEffect Blue Temp''',
 
 True),
 
@@ -402,13 +402,13 @@ Shaper Item
 Redeemer Item''',
 
 '''Show # %D3 $type->rare->any $tier->any
-	HasInfluence Crusader Elder Hunter Warlord
-	Rarity <= Rare
-	SetFontSize 45
-	SetTextColor 255 255 255 255
-	SetBorderColor 255 255 255 255
-	SetBackgroundColor 50 130 165
-	PlayEffect Blue Temp''',
+HasInfluence Crusader Elder Hunter Warlord
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 50 130 165
+PlayEffect Blue Temp''',
 
 False),
 
@@ -441,13 +441,13 @@ Shaper Item
 Redeemer Item''',
 
 '''Show # %D3 $type->rare->any $tier->any
-	HasInfluence None
-	Rarity <= Rare
-	SetFontSize 45
-	SetTextColor 255 255 255 255
-	SetBorderColor 255 255 255 255
-	SetBackgroundColor 50 130 165
-	PlayEffect Blue Temp''',
+HasInfluence None
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 50 130 165
+PlayEffect Blue Temp''',
 
 False),
 
@@ -485,13 +485,13 @@ Adds 9 to 164 Lightning Damage
 Mirrored''',
 
 '''Show # %D3 $type->rare->any $tier->any
-	HasInfluence None
-	Rarity <= Rare
-	SetFontSize 45
-	SetTextColor 255 255 255 255
-	SetBorderColor 255 255 255 255
-	SetBackgroundColor 50 130 165
-	PlayEffect Blue Temp''',
+HasInfluence None
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 50 130 165
+PlayEffect Blue Temp''',
 
 True),
 ]
