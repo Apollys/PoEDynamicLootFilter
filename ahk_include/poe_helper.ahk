@@ -1,3 +1,5 @@
+#Include general_helper.ahk
+
 ; Returns the HWND ID of the active window if it is owned by the PoE process,
 ; or 0 if it does not. Thus, the return value can be used in boolean contex
 ; to determine if PoE is the currently active window.
@@ -31,9 +33,12 @@ RestoreClipboard() {
 SendChatMessage(message_text, reply_flag := false) {
    global backup_clipboard
    backup_clipboard := clipboard
-   clipboard := message_text
+   command_flag := StartsWith(message_text, "/")
+   clipboard := command_flag ? SubStr(message_text, 2) : message_text
    BlockInput, On
-   if (reply_flag) {
+   if (command_flag) {
+      Send {Enter}/^v{Enter}
+   } else if (reply_flag) {
       Send, ^{Enter}^v{Enter}
    } else {
       Send, {Enter}^v{Enter}
