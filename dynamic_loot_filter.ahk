@@ -59,7 +59,7 @@ InitializeProfiles() {
     global g_profiles, g_active_profile
     RunBackendCliFunction("get_all_profile_names")
     g_profiles := ReadFileLines(kBackendCliOutputPath)
-    if (g_profiles.Length() == 0) {
+    if (Length(g_profiles) == 0) {
         CreateProfile1()
         return False
     }
@@ -120,6 +120,7 @@ CreateProfile1() {
     ; Show UI
     Gui, 2: -Border
     Gui, 2: Show, w450 h378
+    GUi, 1: Hide
     Return
 }
 
@@ -175,6 +176,7 @@ CreateProfile2() {
 
 2GuiClose() {
     Gui, 2: Destroy
+    Gui, 1: Show
     return
 }
 
