@@ -178,8 +178,9 @@ CreateProfile2() {
     return
 }
 
+; Minimize the GUI on Escape
 GuiEscape() {
-    ExitApp
+    WinMinimize, A
 }
 
 GuiClose() {
