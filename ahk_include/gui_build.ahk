@@ -304,7 +304,8 @@ BuildGui(ui_data_dict) {
 	; ------------- End Section: [Tier Visibility] -------------
 
 	; ------------- Section: [Quality and RGB Items] ------------
-	anchor_x := 844, anchor_y := 298
+	; Shifted down to fill the blank space, packed value is anchor_y := 298
+	anchor_x := 844, anchor_y := 323
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
 	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h152, Quality and RGB Items
@@ -378,15 +379,20 @@ BuildGui(ui_data_dict) {
 	anchor_x := 1160, anchor_y := 144
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
-	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h128, Hotkeys
-	x := anchor_x + 8, y:= anchor_y + 28, x2 := anchor_x + 168
-	spacing_y := 30
-	for idx, hotkey_line in ui_data_dict["hotkeys"] {
-		Gui Font, c0x00e8b2 s13 Norm, Segoe UI
+	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h136, Hotkeys
+	x := anchor_x + 16, y:= anchor_y + 32, x2 := anchor_x + 168
+	right_edge_x := 1432, hotkey_w := 100
+	spacing_y := 32
+	hotkey_ws := [110, 108, 100]
+	for index, hotkey_line in ui_data_dict["hotkeys"] {
+		; Hotkey identifier text
+		Gui Font, c0x00e8b2 s12 Norm, Segoe UI
 		split_hotkey_line := StrSplit(hotkey_line, ";")
-		Gui Add, Text, vHotkeyText%idx% x%x% y%y% w160 h32, % split_hotkey_line[1] ":"
-		Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-		Gui Add, Hotkey, vHotkey%idx% x%x2% y%y% w110 gUpdateHotkey, % split_hotkey_line[2]
+		Gui Add, Text, vHotkeyText%index% x%x% y%y% w160 h28, % split_hotkey_line[1] ":"
+		; Hotkey input box
+		hotkey_w := hotkey_ws[index], hotkey_x := right_edge_x - hotkey_w
+		Gui Font, c0x00e8b2 s10 Norm, Segoe UI
+		Gui Add, Hotkey, vHotkey%index% x%hotkey_x% y%y% w%hotkey_w% h24 gUpdateHotkey, % split_hotkey_line[2]
 		function_name := RemovedSpaces(split_hotkey_line[1])
 		Hotkey, % split_hotkey_line[2], % function_name
 		y += spacing_y
@@ -394,7 +400,7 @@ BuildGui(ui_data_dict) {
 	; ------------- End Section: Hotkeys -------------
 
 	; ------------- Section: [Item-Rule Matching] -------------
-	anchor_x := 1160, anchor_y := 290
+	anchor_x := 1160, anchor_y := 296
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
 	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h290, Item-Rule Matching
