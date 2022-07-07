@@ -58,7 +58,7 @@ BuildGui(ui_data_dict) {
 	; Create Button
 	Gui Font, c0x00e8b2 s14 Bold, Segoe UI
 	x := anchor_x + 232, y := anchor_y + 0
-	Gui Add, Button, x%x% y%y% w80 h34 gCreateProfile1, Create
+	Gui Add, Button, x%x% y%y% w80 h34 gBuildCreateProfileGui, Create
 	; ------------- End Section: Profiles -------------
 
 	; ------------- Section: [Currency] -------------

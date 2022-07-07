@@ -6,6 +6,7 @@
 
 ; ========================== Profile ==========================
 
+; Sets the active profile and reloads the script
 ProfileDdlAction() {
 	global g_active_profile
 	target_profile := GuiControlGetHelper("vProfileDdl")

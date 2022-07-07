@@ -53,23 +53,23 @@ Return
 
 ; ============================= Profile Helper Functions =============================
 
-; Returns a flag indicating if there are any valid profiles
+; Returns the active profile, or None if there are no active profiles
 InitializeProfiles() {
     global kBackendCliOutputPath
     global g_profiles, g_active_profile
     RunBackendCliFunction("get_all_profile_names")
     g_profiles := ReadFileLines(kBackendCliOutputPath)
     if (Length(g_profiles) == 0) {
-        CreateProfile1()
-        return False
+        BuildCreateProfileGui()
+        return None()
     }
     g_active_profile := g_profiles[1]
-    return True
+    return g_active_profile
 }
 
 ; ============================= To Refactor - Profile Creation =============================
 
-CreateProfile1() {
+BuildCreateProfileGui() {
 	; Use global mode so vVariables and HWNDhIdentifiers created here end up global
 	global
     Gui, 2: Color, 0x111122
@@ -116,7 +116,7 @@ CreateProfile1() {
     ; Create Button
     y += spacing_y + 10
     Gui, 2: Font, s14 Bold, Segoe UI
-    Gui, 2: Add, Button, x145 y%y% w150 h36 gCreateProfile2, Create
+    Gui, 2: Add, Button, x145 y%y% w150 h36 gCreateProfileSubmit, Create
     ; Show UI
     Gui, 2: -Border
     Gui, 2: Show, w450 h378
@@ -136,7 +136,7 @@ BrowsePoeDirectory() {
     return
 }
 
-CreateProfile2() {
+CreateProfileSubmit() {
     global kBackendCliInputPath
     global NewProfileName, NewProfileDownloadedFilterPath, NewProfilePoeFiltersDirectory, RemoveDownloadedFilter
     Gui, 2: Submit, NoHide
@@ -189,16 +189,40 @@ GuiClose() {
     ExitApp
 }
 
+; ============================= Load/Import Filter =============================
+
+LoadOrImportFilter(active_profile) {
+    global kBackendCliOutputPath
+    CheckType(active_profile, "string")
+    RunBackendCliFunction("check_filters_exist " active_profile)
+    output_lines := ReadFileLines(kBackendCliOutputPath)
+    downloaded_filter_exists := output_lines[1]
+    input_filter_exists := output_lines[2]
+    ; output_filter_exists := output_lines[3]  ; unused for now
+    if (input_filter_exists) {
+        RunBackendCliFunction("load_input_filter " active_profile)
+    } else if (downloaded_filter_exists) {
+        RunBackendCliFunction("import_downloaded_filter " active_profile)
+    } else {
+        DebugMessage("Neither input nor downloaded filter found.  "
+                . "Please place your downloaded filter in your downloads directory.")
+        ExitApp
+    }
+}
+
 ; ============================= Main Thread =============================
 
 Main() {
-    global g_ui_data_dict, g_active_profile
-    profiles_exist_flag := InitializeProfiles()
+    global g_ui_data_dict
+    active_profile := InitializeProfiles()
     ; If no profiles exist, return from this thread and wait for profile creation GUI
-    if (!profiles_exist_flag) {
+    if (IsNone(active_profile)) {
         return
     }
-    g_ui_data_dict := QueryAllFilterData(g_active_profile)
+    ; Load input or import downloaded filter (displays error and exits if neither exist)
+    LoadOrImportFilter(active_profile)
+    ; Initialize GUI
+    g_ui_data_dict := QueryAllFilterData(active_profile)
     QueryHotkeys(g_ui_data_dict)
     BuildGui(g_ui_data_dict)
 }
