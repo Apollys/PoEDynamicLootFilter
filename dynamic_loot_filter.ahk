@@ -112,7 +112,7 @@ CreateProfile1() {
     ; Remove Downloaded Filter on Import
     y += spacing_y + 6
     Gui, 2: Font, c0x00e8b2 s14 Norm, Segoe UI
-    Gui, 2: Add, Checkbox, vRemoveDownloadedFilter checked x%x% y%y% h26 w%w%, Remove downloaded filter on import
+    Gui, 2: Add, Checkbox, vRemoveDownloadedFilter -Checked x%x% y%y% h26 w%w%, Remove downloaded filter on import
     ; Create Button
     y += spacing_y + 10
     Gui, 2: Font, s14 Bold, Segoe UI
