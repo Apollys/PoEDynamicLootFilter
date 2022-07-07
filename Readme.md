@@ -12,7 +12,7 @@
 
 There are only two requirements for DLF to run (see [below](https://github.com/Apollys/PoEDynamicLootFilter#what-setup-is-required) for more details):
 
-1. **[Autohotkey](https://www.autohotkey.com/)**
+1. **[AutoHotkey](https://www.autohotkey.com/)**
 2. **[Python 3](https://www.python.org/downloads/windows/)**
 
 Once you have the requirements, follow these steps to setup DLF:
@@ -25,10 +25,10 @@ Once this is complete, double click `dynamic_loot_filter.ahk` to launch PoE DLF.
 
 ## In-Game Usage
 
-1. While playing Path of Exile, press a hotkey (default: `F8`) to open the UI.
+1. While playing Path of Exile, press the **Toggle UI** hotkey (default: `F7`).
 2. Select your changes with just a couple mouse clicks.
-3. Click **Apply Changes** - the GUI will automatically close and your loot filter will automatically be updated.
-4. In-game, press `o` (options) and click the **Reload Filter** button - your changes are now visible immediately in-game!
+3. Press the **Write Filter** hotkey (default: `F8`).  Path of Exile will automatically be brought to the foreground.
+4. Press the **Reload Filter** hotkey (default: `F9`) - your changes are now immediately visible in-game!
 
 ## Why Use DLF?
 
@@ -60,24 +60,25 @@ Common highly valuable uses include:
 PoE DLF has minimal requirements and setup to make it as widely accessible as possible.  You need the following:
  * A **loot filter created from [Filterblade](https://www.filterblade.xyz/)** - using a builtin filter (e.g. Neversink Stable - Strict) is totally fine!
    In fact, the less you've moved things around or created custom rules in FilterBlade, the better (visual style changes are always okay though)
- * **[Autohotkey](https://www.autohotkey.com/)** - if you're playing PoE and don't have this already, you really should
+ * **[AutoHotkey](https://www.autohotkey.com/)** - If you get some error like `switch prog: command not found` when running DLF,
+      update your version.
  * **[Python 3](https://www.python.org/downloads/windows/)** - the version is important here, it needs to be **Python 3**
    * To verify your python is set up as required, open a command prompt and type `python`: it should launch Python 3.X)
+   * If `python` doesn't work, but one of `python3` or `py` work, then you're also okay!
    * No specific python packages are required, as long as Python 3 loads, you are good to go
- * **DLF config**: in your profile config file, tell DLF the path to your downloaded filter and the path to Path of Exile
 
 ## Under the Hood - How Does DLF Work?
 
 Firstly, since we are programmatically reading, analyzing, and writing filter files, note that this is all done *locally*
  - on the user's machine - rather than online.
 
-Filterblade formats its loot filters in a certain way, and PoE DLF leverages that format to parse the input filter into
-a structure that it can understand and manipulate.  For example, Filterblade places `type` and `tier` tags on the first
+FilterBlade formats its loot filters in a certain way, and PoE DLF leverages that format to parse the input filter into
+a structure that it can understand and manipulate.  For example, FilterBlade places `type` and `tier` tags on the first
 line of their rules, so the tier 1 currency rule can be found by looking for the tags `type->currency` and `tier->t1`.
 
 Whenever the user wants to make a change to the filter, the corresponding rules are modified, and the filter is re-saved.
 User profiles are also updated to save the changes the user has made to the filter, so the user can re-download a filter
-(if they want to make a change on the Neversink site), and all their DLF changes will be maintained.  Users can also maintain
+(if they want to make a change on the FilterBlade site), and all their DLF changes will be maintained.  Users can also maintain
 separate profiles (e.g. for different characters, for SSF/Trade leagues, etc) if desired.
 
 All filter parsing, modification, and saving is done by a Python backend.  An AHK frontend GUI presents the program's functionality
@@ -103,8 +104,10 @@ because of new items and loot filter attributes that are added to the game.
 ```
 
 The `profile_name` parameter is required in all cases except for:
- - `get_all_profile_names`
- - `set_active_profile`
+  - `is_first_launch`
+  - `set_hotkey <hotkey_identifier: str> <hotkey_string: str>`
+  - `get_all_hotkeys`
+  - `get_all_profile_names`
 
 - - -
 
@@ -116,12 +119,6 @@ I will just leave items that do not have a corresponding GitHub issue here for n
  - [ ] Skip unrecognized commands in Profile.changes file (with warning)
    - Likely cause is depracated feature from version update
    - Better not to fail in this case
- - [ ] Refactor frontend AHK script
-   - [x] Reorder and organize build GUI code
-   - [ ] Write helper functions to make GUI construction more concise.
-         For example, combining setting font with creating an item
-   - [x] Resolve minor questions in AHK script (ctr-f TODO)
-   - [ ] Refactor all of the code to be more modular
 
 - - -
 
