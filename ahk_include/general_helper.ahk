@@ -52,7 +52,7 @@ Find(target_value, container, return_index:=False) {
 			return return_index ? index : key
 		}
 	}
-	DebugMessage("Error: " target_value " not found in container " Repr(container))
+	DebugMessage(Traceback() "`n`nError: " Repr(target_value) " not found in container " Repr(container))
 }
 
 Quoted(s) {
