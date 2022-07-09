@@ -635,7 +635,11 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py get_flask_min_quality MyProfile
         '''
         CheckNumParams(function_params, 0)
-        output_string = str(loot_filter.GetFlaskMinQuality())
+        min_quality_int = loot_filter.GetFlaskMinQuality()
+        # Translate -1 (all quality rules disabled) into 21 for simplicity of UI code
+        if (min_quality_int == -1):
+            min_quality_int = 21
+        output_string = str(min_quality_int)
     # ========================================== Maps ==========================================
     elif (function_name == 'set_hide_maps_below_tier'):
         '''
