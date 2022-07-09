@@ -159,7 +159,7 @@ def TestWriteProfile():
     profile_name = test_consts.kTestProfileName
     created_profile = profile.CreateNewProfile(profile_name, test_consts.kTestProfileConfigValues)
     config_lines = file_helper.ReadFile(
-            profile.GetProfileConfigFullpath(profile_name), retain_newlines=False)
+            profile.GetProfileConfigFullpath(profile_name), strip=True)
     # Just verify the paths for simplicity (doesn't test everything):
     expected_download_directory_line = 'Download directory: {}'.format(
             test_consts.kTestProfileConfigValues['DownloadDirectory'])

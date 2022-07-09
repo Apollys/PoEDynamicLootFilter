@@ -61,7 +61,7 @@ def AddFunctionCallStringToChangesDict(function_call_string: str, changes_dict: 
 def ParseProfileChanges(profile_name) -> OrderedDict:
     changes_dict = OrderedDict()
     changes_lines = file_helper.ReadFile(profile.GetProfileChangesFullpath(profile_name),
-                                         strip=True)
+                                         strip=True, discard_empty_lines=True)
     for function_call_string in changes_lines:
         AddFunctionCallStringToChangesDict(function_call_string, changes_dict)
     return changes_dict

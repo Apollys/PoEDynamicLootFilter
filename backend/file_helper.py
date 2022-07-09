@@ -8,7 +8,7 @@ Note: we will still generate an error if the source file does not exist, as ther
 natural way to recover from such an error - the user must be notified their copy failed.
 
 File read/write functions:
- - ReadFile(filepath, retain_newlines=True) -> List[str]
+ - ReadFile(filepath: str, *, strip=False, discard_empty_lines=False) -> List[str]
  - ReadFileToDict(filepath) -> dict
  - WriteToFile(data, filepath)
  - NumLines(filepath) -> int
@@ -35,21 +35,27 @@ from type_checker import CheckType
 
 # ========================== File Reading/Writing ==========================
 
-# Read lines of a file to a list of strings
-# Safe against file not existing
-def ReadFile(filepath: str, *, retain_newlines=True, strip=False) -> List[str]:
+# Read lines of a file to a list of strings, such that joining this result with newlines
+# yields the exact file contents (as long as additional options are all False).
+# Safe against file not existing.
+def ReadFile(filepath: str, *, strip=False, discard_empty_lines=False) -> List[str]:
     CheckType(filepath, 'filepath', str)
-    CheckType(retain_newlines, 'retain_newlines', bool)
+    CheckType(strip, 'strip', bool)
+    CheckType(discard_empty_lines, 'discard_empty_lines', bool)
+    lines: List[str] = []
     try:
         with open(filepath, encoding='utf-8') as input_file:
-            lines = input_file.readlines()
-        if (not retain_newlines):
-            for i in range(len(lines)):
-                lines[i] = lines[i].rstrip('\n')
-        if (strip):
-            for i in range(len(lines)):
-                lines[i] = lines[i].strip()
-        return lines
+            ends_with_newline = True
+            for line in input_file:
+                ends_with_newline = line.endswith('\n')
+                line = line.rstrip('\n')
+                line = line.strip() if strip else line
+                if (not discard_empty_lines or (line != '')):
+                    lines.append(line)
+            # Append final blank line if file ends with newline
+            if (ends_with_newline and not discard_empty_lines):
+                lines.append('')
+            return lines
     except FileNotFoundError:
         return []
 # End ReadFile
