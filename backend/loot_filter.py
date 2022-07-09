@@ -144,7 +144,7 @@ class LootFilter:
         return int(tier_str)
     # End GetHideMapsBelowTierTier
 
-    # =========================== Generic BaseType Functions ==========================
+    # =========================== General BaseType Functions ==========================
 
     # The rare_only_flag should only be specified when enable_flag is True.
     # When enable_flag is False, base_type is removed from both rules.
@@ -234,7 +234,7 @@ class LootFilter:
         return rule.GetBaseTypeList()
     # End GetAllVisibleFlaskTypes
 
-    # =========================== Socketed Item Functions ==========================
+    # =========================== Socket Pattern Functions ==========================
 
     # Does nothing if socket string is invalid.
     def AddSocketRule(self, socket_string: str, item_slot: str):
@@ -912,6 +912,7 @@ class LootFilter:
                 stacked_rule.Enable()
     # End StandarizeCurrencyTiers
 
+    # TODO: remove AreaLevel condition from quality flasks rules
     # Apply changes that need to be made to the filter on import only
     def ApplyImportChanges(self):
         # Add DLF header

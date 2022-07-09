@@ -35,7 +35,26 @@ def TestParseWriteFilter():
     AssertTrue(num_output_filter_lines - num_input_filter_lines > 20)
     print('TestParseWriteFilter passed!')
 
-def TestMaps():
+# TODO: check rules with DLF tags all exist
+def TestAddDlfRules():
+    print('TestAddDlfRules TODO!')
+
+def TestAddDlfHeader():
+    test_helper.SetUp()
+    loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
+    loot_filter.SaveToFile()
+    output_filter_fullpath = loot_filter.profile_obj.config_values['OutputLootFilterFullpath']
+    loot_filter_lines = file_helper.ReadFile(output_filter_fullpath)
+    dlf_header_identifier = 'This filter has been modified by Dynamic Loot Filter version '
+    found_dlf_header_flag = False
+    for line in loot_filter_lines:
+        if (dlf_header_identifier in line):
+            found_dlf_header_flag = True
+            break
+    AssertTrue(found_dlf_header_flag)
+    print('TestAddDlfHeader passed!')
+
+def TestHideMapsBelowTier():
     test_helper.SetUp()
     loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
     # Apply change
@@ -45,7 +64,7 @@ def TestMaps():
     AssertEqual(loot_filter.GetHideMapsBelowTierTier(), tier)
     rule = loot_filter.GetRule(*consts.kHideMapsBelowTierTags)
     AssertEqual(rule.parsed_lines_hll['MapTier'], ('<', [str(tier)]))
-    print('TestMaps passed!')
+    print('TestHideMapsBelowTier passed!')
 
 def TestGeneralBaseTypes():
     test_helper.SetUp()
@@ -104,20 +123,10 @@ def TestFlaskBaseTypes():
     AssertTrue(flask_base_type in rule.GetBaseTypeList())
     print('TestFlaskBaseTypes passed!')
 
-def TestAddDlfHeader():
-    test_helper.SetUp()
-    loot_filter = LootFilter(test_consts.kTestProfileName, InputFilterSource.kDownload)
-    loot_filter.SaveToFile()
-    output_filter_fullpath = loot_filter.profile_obj.config_values['OutputLootFilterFullpath']
-    loot_filter_lines = file_helper.ReadFile(output_filter_fullpath)
-    dlf_header_identifier = 'This filter has been modified by Dynamic Loot Filter version '
-    found_dlf_header_flag = False
-    for line in loot_filter_lines:
-        if (dlf_header_identifier in line):
-            found_dlf_header_flag = True
-            break
-    AssertTrue(found_dlf_header_flag)
-    print('TestAddDlfHeader passed!')
+def TestSocketPatterns():
+    # TODO
+    # Make sure to test invalid socket pattern string - shouldn't crash.
+    print('TestSocketPatterns TODO!')
 
 # Handpicked examples of currency with mismatched tiers in input filter (NeversinkStrict):
 #  - Chromatic Orb: unstacked T7, stacked T5
@@ -207,6 +216,10 @@ def TestCurrencyStackSizeVisibility():
     AssertEqual(loot_filter.GetCurrencyTierMinVisibleStackSize(tier),
             consts.kCurrencyStackSizeStringToIntMap['hide_all'])
     print('TestCurrencyStackSizeVisibility passed!')
+
+def TestSplinters():
+    # TODO
+    print('TestSplinters TODO!')
 
 def TestEssences():
     test_helper.SetUp()
@@ -408,20 +421,23 @@ def TestImportNonFilterBladeFilter():
 
 def main():
     TestParseWriteFilter()
-    TestMaps()
+    TestAddDlfHeader()
+    TestAddDlfRules()
+    TestHideMapsBelowTier()
     TestGeneralBaseTypes()
     TestFlaskBaseTypes()
-    TestAddDlfHeader()
+    TestSocketPatterns()
     TestStandardizeCurrencyTiers()
     TestApplyDlfCurrencyStackSizes()
     TestCurrencyTiers()
     TestCurrencyStackSizeVisibility()
+    TestSplinters()
     TestEssences()
     TestDivCards()
     TestUniqueItems()
     TestUniqueMaps()
-    TestQualityGems()
     TestOils()
+    TestQualityGems()
     TestQualityFlasks()
     TestRgbItems()
     TestChaosRecipeItems()
