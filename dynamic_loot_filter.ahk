@@ -248,4 +248,4 @@ ReloadFilterHotkey() {
 }
 
 ; For efficient testing
-Numpad0::Reload
+; Numpad0::Reload

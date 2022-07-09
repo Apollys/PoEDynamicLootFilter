@@ -9,7 +9,7 @@
 kWindowWidth := 1470
 kWindowHeight := 866
 kWindowTitle := "PoE Dynamic Loot Filter"
-kBorderlessMode := True  ; disables drag-moving the window!
+kBorderlessMode := False  ; disables drag-moving the window!
 
 ; Note: TWD = TwoWayDict (see two_way_dict.ahk)
 ; StackSize note: Tiers 1-7 do not have the 6+ StackSize option
