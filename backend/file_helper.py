@@ -73,12 +73,13 @@ def ReadFileToDict(filepath: str, separator=':') -> dict:
         return {}
 # End ReadFile
 
-# Writes data to the file determined by filepath
-# Overwrites the given file if it already exists
-# If data is a non-string iterable type, then it is written as newline-separated items
-# Otherwise, str(data) is written directly to file
-# Safe against directory not existing (creates directory if missing)
+# Writes data to the file determined by filepath.
+# Overwrites the given file if it already exists.
+# If data is a non-string iterable type, then it is written as newline-separated items,
+# otherwise, str(data) is written directly to file.
+# Safe against directory not existing (creates directory if missing).
 def WriteToFile(data, filepath: str):
+    CheckType(filepath, 'filepath', str)
     parent_directory = os.path.dirname(filepath)
     if (parent_directory != ''):
         os.makedirs(parent_directory, exist_ok=True)
@@ -93,6 +94,27 @@ def WriteToFile(data, filepath: str):
             except TypeError:
                 f.write(str(data))
 # End WriteToFile
+
+# Appends data to the file determined by filepath.
+# If data is a non-string iterable type, then it is written as newline-separated items,
+# otherwise str(data) is written directly.
+# Safe against file or directory not existing (creates file or directory if missing).
+def AppendToFile(data, filepath):
+    CheckType(filepath, 'filepath', str)
+    parent_directory = os.path.dirname(filepath)
+    if (parent_directory != ''):
+        os.makedirs(parent_directory, exist_ok=True)
+    with open(filepath, 'a', encoding='utf-8') as f:
+        if (isinstance(data, str)):
+            f.write(data)
+        else:
+            try:
+                iter(data)
+                data_list = list(data)
+                f.write('\n'.join(str(x) for x in data_list))
+            except TypeError:
+                f.write(str(data))
+# End AppendToFile
 
 def NumLines(filepath) -> int:
     num_lines = 0
