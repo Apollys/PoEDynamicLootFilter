@@ -293,7 +293,7 @@ FindRuleMatchingClipboard() {
 	global g_ui_data_dict, g_active_profile
 	FileDelete, %kBackendCliInputPath%
 	FileDelete, %kBackendCliOutputPath%
-	FileAppend, %Clipboard%, %kBackendCliInputPath%, UTF-8
+	FileAppend, %Clipboard%, %kBackendCliInputPath%
 	RunBackendCliFunction("get_rule_matching_item " g_active_profile)
 	FileRead, backend_cli_output, %kBackendCliOutputPath%
 	if (backend_cli_output == "") {
