@@ -22,7 +22,7 @@ ProfileDdlAction() {
 ; Assuming an input from ahk gui Hotkey entry box, this function
 ; will return True IFF all characters in the given string are modifer keys (control, alt, or shift)
 ModifiersOnly(keys) {
-	last_key := SubStr(keys, 0, 1)
+	last_key := SubStr(keys, 0)
 	Return last_key == "!" or last_key == "^" or last_key == "+"
 }
 
@@ -30,22 +30,28 @@ ModifiersOnly(keys) {
 ; A_GuiControl will ALWAYS be HotkeyN (N = 1,2...) when entering this function, where N is the updated hotkey
 UpdateHotkey() {
 	global g_ui_data_dict
-	idx := SubStr(A_GuiControl, 0, 1) ; Last char of A_GuiControl
-	old_hotkey_split := StrSplit(g_ui_data_dict["hotkeys"][idx], ";")
+	hotkey_box_index := SubStr(A_GuiControl, 0) ; Last char of A_GuiControl
+	old_hotkey_split := StrSplit(g_ui_data_dict["hotkeys"][hotkey_box_index], ";")
 	GuiControlGet, pressed, , %A_GuiControl% ; New inputted hotkey is assigned to variable pressed
 	; If pressed blank, hotkey entry failed, restore Gui Entry with data from g_ui_data_dict
 	if (pressed == ""){
 		GuiControl, , %A_GuiControl%, % old_hotkey_split[2]
 	}
 	; confirm pressed is a complete hotkey then update g_ui_data_dict and call backend
-	else if not ModifiersOnly(pressed){
+	else if not ModifiersOnly(pressed) {
 		function_name := RemovedSpaces(old_hotkey_split[1])
 		; disable old hotkey, enable new hotkey, update dictionary and backend
 		Hotkey, % old_hotkey_split[2], , off
-		Hotkey, % pressed, % function_name
-		g_ui_data_dict["hotkeys"][idx] := old_hotkey_split[1] ";" pressed
+		Hotkey, %pressed%, %function_name%
+		g_ui_data_dict["hotkeys"][hotkey_box_index] := old_hotkey_split[1] ";" pressed
 		RunBackendCliFunction("set_hotkey " Quoted(old_hotkey_split[1]) " " Quoted(pressed))
+		ClearFocus()
 	}
+}
+
+ClearFocus() {
+	global hTitle
+	GuiControl, Focus, %hTitle%
 }
 
 ; ========================== Currency ==========================

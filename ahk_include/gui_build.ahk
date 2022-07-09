@@ -45,7 +45,7 @@ BuildGui(ui_data_dict) {
 	Gui Color, 0x111122, 0x111133
 	; Title
 	Gui Font, c0x00e8b2 s16 Bold, Segoe UI
-	Gui Add, Text, x386 y8 w556 h26 +0x200 +Center, %kWindowTitle%
+	Gui Add, Text, x386 y8 w556 h26 +0x200 +Center HWNDhTitle, %kWindowTitle%
 
 	; ------------- Section: Profiles ------------
 	anchor_x := 1140, anchor_y := 12
