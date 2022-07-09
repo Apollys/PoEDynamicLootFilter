@@ -52,11 +52,13 @@ from loot_filter import InputFilterSource, LootFilter
 from loot_filter_rule import RuleVisibility
 import profile
 import profile_changes
+import socket_helper
 from type_checker import CheckType
 
 kLogFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.log')
 kInputFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.input')
 kOutputFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.output')
+kInfoFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.info')
 
 def UsageMessage(function_name: str or None):
     usage_message = 'Usage synax:\n> python backend_cli.py '
@@ -90,8 +92,7 @@ def CheckNumParams(params_list: List[str], required_num_params: int):
 # function_output_string should be the whole string containing the given function call's output
 def AppendFunctionOutput(function_output_string: str):
     CheckType(function_output_string, 'function_output_string', str)
-    with open(kOutputFilename, 'a') as output_file:
-        output_file.write(function_output_string + '\n@\n')
+    file_helper.AppendToFile(function_output_string + '\n@\n', kOutputFilename)
 # End AppendFunctionOutput
 
 # Note: loot_filter is None iff the command does not have a profile name parameter.
@@ -177,6 +178,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Copies or moves the downloaded filter to the input directory (depending on profile
            config), parses the input filter, adds DLF-generated rules, applies profile changes,
            and writes the final result to the output filter
+         - Filters out invalid changes and updates profile .changes file accordingly
          - Output: None
          - Example: > python3 backend_cli.py import_downloaded_filter MyProfile
 
@@ -184,16 +186,28 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Parses the input filter, adds DLF-generated rules, applies profile changes,
            and writes the final result to the output filter
          - Output: None
-         - Example: > python3 baccontains_mutatorkend_cli.py load_input_filter MyProfile
+         - Example: > python3 bacend_cli.py load_input_filter MyProfile
         '''
         CheckNumParams(function_params, 0)
-        changes_lines: List[str] = file_helper.ReadFile(config_values['ChangesFullpath'])
+        changes_lines: List[str] = file_helper.ReadFile(config_values['ChangesFullpath'], strip=True)
         # Changes are applied in backend_cli rather than within the LootFilter class,
         # because they are formatted as backend_cli calls within the Profile.changes file.
+        valid_changes_lines = []
         for function_call_string in changes_lines:
+            if (function_call_string == ''):
+                continue
+            # need different variable names here to not overwrite the existing ones
             _function_name, *_function_params = shlex.split(function_call_string)
-            DelegateFunctionCall(loot_filter, _function_name, _function_params,
-                                 in_batch = True, suppress_output = True)
+            try:
+                DelegateFunctionCall(loot_filter, _function_name, _function_params,
+                                     in_batch = True, suppress_output = True)
+                valid_changes_lines.append(function_call_string)
+            except:
+                logger.Log('Warning: invalid line in {} skipped: {}'.format(
+                        config_values['ChangesFullpath'], function_call_string))
+                file_helper.AppendToFile(kInfoFilename, 'Invalid .changes line skipped')
+        # Update .changes file to only contain valid_changes_lines
+        file_helper.WriteToFile(valid_changes_lines, config_values['ChangesFullpath'])
         loot_filter.SaveToFile()
     # ======================================= Run Batch =======================================
     elif ((function_name == 'run_batch') and not in_batch):
@@ -209,16 +223,20 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         # Clear the output file, since we will be appending output in batch
         file_helper.WriteToFile('', kOutputFilename)
         contains_mutator = False
-        function_call_list: List[str] = file_helper.ReadFile(kInputFilename)
+        function_call_list: List[str] = file_helper.ReadFile(kInputFilename, strip=True)
         for function_call_string in function_call_list:
-            if (function_call_string.strip() == ''):
+            if (function_call_string == ''):
                 continue
             # need different variable names here to not overwrite the existing ones
             _function_name, *_function_params = shlex.split(function_call_string)
-            if (kFunctionInfoMap[_function_name]['ModifiesFilter']):
-                contains_mutator = True
-            DelegateFunctionCall(loot_filter, _function_name, _function_params,
-                                 in_batch = True, suppress_output = False)
+            contains_mutator = kFunctionInfoMap[_function_name].get('ModifiesFilter', False)
+            try:
+                DelegateFunctionCall(loot_filter, _function_name, _function_params,
+                                     in_batch = True, suppress_output = False)
+            except:
+                logger.Log('Warning: invalid line in run_batch input skipped: {}'.format(
+                        function_call_string))
+                file_helper.AppendToFile('Invalid batch line skipped', kInfoFilename)
         # Check if batch contained a mutator and save filter if so
         if (contains_mutator):
             loot_filter.SaveToFile()
@@ -292,7 +310,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
          - Example: > python3 backend_cli.py get_rule_matching_item MyProfile
         '''
         CheckNumParams(function_params, 0)
-        item_text_lines: List[str] = file_helper.ReadFile(kInputFilename)
+        item_text_lines: List[str] = file_helper.ReadFile(kInputFilename, strip=True)
         matched_rule = loot_filter.GetRuleMatchingItem(Item(item_text_lines))
         if (matched_rule != None):
             output_string = 'type_tag:{}\ntier_tag:{}\n'.format(
@@ -429,7 +447,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
             found_splinter_base_types.update(splinter_base_types)
             output_list += [(base_type, stack_size) for base_type in splinter_base_types]
         all_splinter_base_types = file_helper.ReadFile(
-                consts.kSplinterBaseTypesListFullpath, retain_newlines=False)
+                consts.kSplinterBaseTypesListFullpath, strip=True)
         for splinter_base_type in all_splinter_base_types:
             if (splinter_base_type not in found_splinter_base_types):
                 output_list.append((splinter_base_type, 1))
@@ -763,6 +781,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         CheckNumParams(function_params, 3)
         socket_string, item_slot, add_flag_string = function_params
         add_flag: bool = bool(int(add_flag_string))
+        if (not socket_helper.IsSocketStringValid(socket_string)):
+            raise RuntimeError('Given socket string is invalid: {}'.format(socket_string))
         if (add_flag):
             loot_filter.AddSocketRule(socket_string, item_slot)
         else:
@@ -891,6 +911,8 @@ def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
 def main_impl():
     # Initialize log
     logger.InitializeLog(kLogFilename)
+    # Clear info file
+    file_helper.WriteToFile('', kInfoFilename)
     argv_info_message: str = 'Info: sys.argv = ' + str(sys.argv)
     logger.Log(argv_info_message)
     function_name, function_params, profile_name = ValidateAndParseArguments()

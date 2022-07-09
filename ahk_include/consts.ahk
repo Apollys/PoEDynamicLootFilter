@@ -11,6 +11,7 @@ kResourcesDirectory := "resources"
 kBackendCliPath := kBackendDirectory "\backend_cli.py"
 kBackendCliInputPath := kCacheDirectory "\backend_cli.input"
 kBackendCliOutputPath := kCacheDirectory "\backend_cli.output"
+kBackendCliInfoPath := kCacheDirectory "\backend_cli.info"
 kBackendCliLogPath := kCacheDirectory "\backend_cli.log"
 
 ; Currency

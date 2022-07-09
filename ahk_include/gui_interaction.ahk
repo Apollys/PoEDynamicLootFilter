@@ -442,7 +442,8 @@ UpdateFilter() {
 	if (exit_code == 0) {
 		g_ui_changes := []
 	}
-    UpdateStatusMessage((exit_code == 0) ? "Filter updated!" : "Error updating filter")
+	status_message := (exit_code == 0) ? "Filter updated!" : "Error updating filter"
+    UpdateStatusMessage(status_message "`n" ParseInfoMessages())
     MakePoeActive()
     return
 }

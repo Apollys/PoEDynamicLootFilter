@@ -46,7 +46,7 @@ RunBackendCliFunction(function_call_string) {
     ; Handle nonzero exit code
     if (exit_code != 0) {
         FileRead, error_log, %kBackendCliLogPath%
-        MsgBox, % "Error running command: " command_string "`n`n" error_log
+        DebugMessage(Traceback() "`n`nError running command: " command_string "`n`nbackend_cli log:`n" error_log)
     }
     return exit_code
 }
@@ -166,4 +166,13 @@ QueryHotkeys(ByRef ui_data_dict) {
 	RunBackendCliFunction("get_all_hotkeys")
 	output_lines := ReadFileLines(kBackendCliOutputPath)
 	ui_data_dict["hotkeys"] := output_lines
+}
+
+ParseInfoMessages() {
+	global kBackendCliInfoPath
+	backend_cli_info_lines := ReadFileLines(kBackendCliInfoPath)
+	if (Length(backend_cli_info_lines) > 0) {
+		backend_cli_info_lines := " - " Join(backend_cli_info_lines, "`n - ")
+	}
+	return backend_cli_info_lines
 }

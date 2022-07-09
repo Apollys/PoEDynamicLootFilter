@@ -7,6 +7,11 @@ from type_checker import CheckType
 kValidSocketColorCharacters = 'RGBWDAX'
 kSeparatorCharacters = [' ', '-']
 
+def IsSocketStringValid(socket_string: str) -> bool:
+    CheckType(socket_string, 'socket_string', str)
+    return NormalizedSocketString(socket_string) != None
+# End IsSocketStringValid
+
 # Converts characters to upper case, and places spaces between socket groups.
 # Example: 'X-rA-xWw' -> 'X-R A-X W W'
 # Returns None if the socket string is invalid.
