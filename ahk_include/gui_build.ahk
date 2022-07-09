@@ -317,7 +317,7 @@ BuildGui(ui_data_dict) {
 	Gui Add, Edit, x%x% y%y% w50 h28 vGemQualityEditBox
 	x := anchor_x + 178, y := anchor_y + 32
 	gem_min_quality := ui_data_dict["gem_min_quality"]
-	Gui Add, UpDown, x%x% y%y% w20 h28 Range0-21, %gem_min_quality%
+	Gui Add, UpDown, x%x% y%y% w20 h28 Range1-21, %gem_min_quality%
 	; Quality flasks
 	x := anchor_x + 16, y := anchor_y + 72
 	Gui Add, Text, x%x% y%y% w120 h28 +0x200, Flask Min Quality:
@@ -325,7 +325,7 @@ BuildGui(ui_data_dict) {
 	Gui Add, Edit, x%x% y%y% w50 h28 vFlaskQualityEditBox,
 	x := anchor_x + 178, y := anchor_y + 72
 	flask_min_quality := ui_data_dict["flask_min_quality"]
-	Gui Add, UpDown, x%x% y%y% w20 h28 Range0-21, %flask_min_quality%
+	Gui Add, UpDown, x%x% y%y% w20 h28 Range1-21, %flask_min_quality%
 	; RGB items
 	x := anchor_x + 16, y := anchor_y + 112
 	Gui Add, Text, x%x% y%y% w136 h28 +0x200, RGB Item Max Size:
