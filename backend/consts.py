@@ -164,7 +164,7 @@ kEssenceTags = {
 
 # ================================ Div Cards =================================
 
-kDivCardTierTags = ['t1', 't2', 't3', 't4c', 't4', 't5c', 't5', 'restex']
+kDivCardTierTags = ['t1', 't2', 't3', 't4c', 't4', 't5c', 't5']
 kDivCardTags = {
         i + 1 : ('divination', kDivCardTierTags[i])
         for i in range(len(kDivCardTierTags))
