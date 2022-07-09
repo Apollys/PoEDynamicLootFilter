@@ -1,0 +1,791 @@
+================================================================================
+
+Item Class: Wands
+Rarity: Rare
+Phoenix Song
+Imbued Wand
+--------
+Wand
+Quality: +20% (augmented)
+Physical Damage: 35-64 (augmented)
+Elemental Damage: 60-103 (augmented), 49-85 (augmented), 9-164 (augmented)
+Critical Strike Chance: 9.66% (augmented)
+Attacks per Second: 1.68 (augmented)
+--------
+Requirements:
+Level: 72
+Str: 73
+Int: 188 (unmet)
+--------
+Sockets: B-B-R 
+--------
+Item Level: 85
+--------
+37% increased Spell Damage (implicit)
+--------
+Adds 60 to 103 Fire Damage
+Adds 49 to 85 Cold Damage
+Adds 9 to 164 Lightning Damage
+38% increased Critical Strike Chance
++38% to Global Critical Strike Multiplier
+12% increased Attack Speed (crafted)
+--------
+Mirrored
+
+================================================================================
+
+Item Class: Body Armours
+Rarity: Rare
+Morbid Carapace
+Saint's Hauberk
+--------
+Armour: 672 (augmented)
+Energy Shield: 134 (augmented)
+--------
+Requirements:
+Level: 67
+Str: 109
+Int: 94
+--------
+Sockets: B-B-B-B B-R 
+--------
+Item Level: 81
+--------
++5 to Armour
+50% increased Armour and Energy Shield
++13 to maximum Energy Shield
++15 to maximum Mana
++42% to Cold Resistance
+
+================================================================================
+
+Item Class: Two Hand Axes
+Rarity: Rare
+Wrath Beak
+Void Axe
+--------
+Two Handed Axe
+Physical Damage: 98-149 (augmented)
+Elemental Damage: 3-6 (augmented)
+Critical Strike Chance: 6.00%
+Attacks per Second: 1.25
+Weapon Range: 13
+--------
+Requirements:
+Level: 68
+Str: 149
+Dex: 76
+--------
+Sockets: G-R-R-R-R-R 
+--------
+Item Level: 81
+--------
+Adds 2 to 5 Physical Damage
+Adds 3 to 6 Cold Damage
++10% to Global Critical Strike Multiplier
++182 to Accuracy Rating
+--------
+Note: ~price 8 chaos
+
+================================================================================
+
+Item Class: Abyss Jewels
+Rarity: Rare
+Whispering Vision
+Searching Eye Jewel
+--------
+Abyss
+--------
+Requirements:
+Level: 30
+--------
+Item Level: 48
+--------
+6 to 12 Added Cold Damage with Wand Attacks (fractured)
+12% increased Damage over Time while holding a Shield
+30% increased Evasion Rating while moving
+--------
+Place into an Abyssal Socket on an Item or into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Corrupted
+--------
+Fractured Item
+
+================================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Chaos Orb
+--------
+Stack Size: 37/10
+--------
+Reforges a rare item with new random modifiers
+--------
+Right click this item then left click a rare item to apply it.
+Shift click to unstack.
+
+================================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Splinter of Uul-Netol
+--------
+Stack Size: 34/100
+--------
+Combine 100 Splinters to create Uul-Netol's Breachstone.
+Shift click to unstack.
+
+================================================================================
+
+Item Class: Boots
+Rarity: Rare
+Domination March
+Scholar Boots
+--------
+Energy Shield: 76 (augmented)
+--------
+Requirements:
+Level: 60
+Int: 59
+--------
+Sockets: R-B-B-B 
+--------
+Item Level: 72
+--------
+16% increased Attack and Cast Speed if you've Killed Recently (enchant)
+--------
++42 to maximum Energy Shield
+21% increased Energy Shield
+Regenerate 5.6 Life per second
+30% increased Movement Speed
+11% increased Stun and Block Recovery
+5% increased Movement Speed if you haven't been Hit Recently
++33% to Fire Resistance (crafted)
+
+================================================================================
+
+Item Class: Two Hand Swords
+Rarity: Normal
+Wraith Sword
+--------
+Two Handed Sword
+Physical Damage: 52-109
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.35
+Weapon Range: 13
+--------
+Requirements:
+Level: 54
+Str: 93
+Dex: 93
+--------
+Sockets: R-R G 
+--------
+Item Level: 69
+--------
+45% increased Global Accuracy Rating (implicit)
+
+================================================================================
+
+Item Class: Map Fragments
+Rarity: Normal
+Rusted Breach Scarab
+--------
+Area contains an additional Breach
+--------
+The Ember-dwellers sought to throw you to their volcanic god, young Omid,
+but we caught you instead. The Order of the Djinn is your tribe now.
+--------
+Can be used in a personal Map Device to add modifiers to a Map.
+
+================================================================================
+
+Item Class: Divination Cards
+Rarity: Divination Card
+Chaotic Disposition
+--------
+5x Chaos Orb
+--------
+Life isn't what you make of it, it's already been made for you.
+
+================================================================================
+
+Item Class: Gloves
+Rarity: Rare
+Mind Grip
+Conjurer Gloves
+--------
+Quality: +20% (augmented)
+Energy Shield: 178 (augmented)
+--------
+Requirements:
+Level: 70
+Str: 151
+Dex: 68
+Int: 155
+--------
+Sockets: R R-B-B 
+--------
+Item Level: 72
+--------
++39 to Intelligence
++42 to maximum Energy Shield
+37% increased Energy Shield
++19% to Cold Resistance
+15% increased Stun and Block Recovery
+74% increased Energy Shield (crafted)
+
+================================================================================
+
+Item Class: Belts
+Rarity: Unique
+Darkness Enthroned
+Stygian Vise
+--------
+Requirements:
+Level: 60
+--------
+Sockets: A A 
+--------
+Item Level: 79
+--------
+Has 1 Abyssal Socket (implicit)
+--------
+Has 1 Abyssal Socket
+75% increased Effect of Socketed Jewels
+--------
+Hold in your hand the darkness
+and never will the light blind you.
+
+================================================================================
+
+Item Class: Body Armours
+Rarity: Unique
+Replica Farrul's Fur
+Triumphant Lamellar
+--------
+Armour: 764 (augmented)
+Evasion Rating: 959 (augmented)
+--------
+Requirements:
+Level: 69
+Str: 95
+Dex: 116
+--------
+Sockets: R-R-G-R G 
+--------
+Item Level: 75
+--------
+101% increased Armour and Evasion
++98 to maximum Life
++2.00 seconds to Cat's Agility Duration
+Aspect of the Cat has no Reservation
+Gain up to your maximum number of Frenzy and Endurance Charges when you gain Cat's Agility
+You have Onslaught while you have Cat's Agility
+--------
+"Attempt #120: the prototype has finally achieved power similar to the original
+without breaking all the bones of the test subject. A rousing success."
+--------
+Note: ~price 20 exalted
+
+================================================================================
+
+Item Class: Shields
+Rarity: Rare
+Soul Weaver
+Titanium Spirit Shield
+--------
+Quality: +20% (augmented)
+Chance to Block: 25%
+Energy Shield: 157 (augmented)
+--------
+Requirements:
+Level: 70
+Dex: 155
+Int: 159
+--------
+Sockets: G-G-B 
+--------
+Item Level: 84
+--------
+Socketed Gems have 15% reduced Reservation
++109 to maximum Life
++48% to Fire Resistance
+10% increased effect of Non-Curse Auras from your Skills
++67 to maximum Energy Shield (crafted)
+--------
+Shaper Item
+Redeemer Item
+
+================================================================================
+
+Item Class: Utility Flasks
+Rarity: Magic
+Chemist's Quartz Flask of Grounding
+--------
+Quality: +20% (augmented)
+Lasts 4.80 (augmented) Seconds
+Consumes 25 (augmented) of 60 Charges on use
+Currently has 60 Charges
+6% chance to Dodge Attack Hits
+6% chance to Dodge Spell Hits
+Phasing
+--------
+Requirements:
+Level: 27
+--------
+Item Level: 81
+--------
+Used when you become Shocked (enchant)
+--------
+15% reduced Charges used
+Grants Immunity to Shock for 4 seconds if used while Shocked
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+
+================================================================================
+
+Item Class: Amulets
+Rarity: Rare
+Lapis Amulet
+--------
+Item Level: 60
+--------
++22 to Intelligence (implicit)
+--------
+Unidentified
+
+================================================================================
+
+Item Class: Daggers
+Rarity: Rare
+Gutting Knife
+--------
+Dagger
+Physical Damage: 19-76
+Critical Strike Chance: 6.50%
+Attacks per Second: 1.40
+Weapon Range: 10
+--------
+Requirements:
+Dex: 113
+Int: 78
+--------
+Sockets: G-B-B 
+--------
+Item Level: 75
+--------
+30% increased Global Critical Strike Chance (implicit)
+--------
+Unidentified
+
+================================================================================
+
+Item Class: Maps
+Rarity: Magic
+Twinned Marshes Map of Impotence
+--------
+Map Tier: 11
+Atlas Region: Glennach Cairns
+Item Quantity: +32% (augmented)
+Item Rarity: +19% (augmented)
+Monster Pack Size: +12% (augmented)
+--------
+Item Level: 82
+--------
+Area contains two Unique Bosses
+Players have 25% less Area of Effect
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+================================================================================
+
+Item Class: Map Fragments
+Rarity: Normal
+Fragment of Constriction
+--------
+Webs are torn, not untangled.
+--------
+Can be used in a personal Map Device.
+
+================================================================================
+
+Item Class: Maps
+Rarity: Rare
+Superior Maze of the Minotaur Map
+--------
+Map Tier: 16
+Item Quantity: +19% (augmented)
+Quality: +19% (augmented)
+--------
+Item Level: 82
+--------
+Area is influenced by The Shaper (implicit)
+--------
+Unidentified
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+================================================================================
+
+Item Class: Maps
+Rarity: Rare
+Terror Shadows
+Thicket Map
+--------
+Map Tier: 16
+Item Quantity: +69% (augmented)
+Item Rarity: +31% (augmented)
+Monster Pack Size: +20% (augmented)
+Quality: +17% (augmented)
+--------
+Item Level: 82
+--------
+Area is influenced by The Elder (implicit)
+Map is occupied by The Eradicator (implicit)
+--------
+23% increased number of Rare Monsters
+Monsters deal 102% extra Physical Damage as Fire
+Monsters steal Power, Frenzy and Endurance charges on Hit
+Players gain 50% reduced Flask Charges
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+================================================================================
+
+Item Class: Maps
+Rarity: Normal
+Terrace Map
+--------
+Map Tier: 16
+Atlas Region: Tirn's End
+--------
+Item Level: 83
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+================================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Enlighten Support
+--------
+Support
+Level: 1
+--------
+Requirements:
+Level: 1
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will apply a mana multiplier to supported gems. Cannot support skills that don't come from gems.
+--------
+Experience: 54217488/226854909
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+--------
+Note: ~price 1 exalted
+
+================================================================================
+
+Item Class: Active Skill Gems
+Rarity: Gem
+Vitality
+--------
+Aura, Spell, AoE
+Level: 1
+Reservation: 28 Mana
+Cooldown Time: 1.20 sec
+Cast Time: Instant
+Quality: +10% (augmented)
+--------
+Requirements:
+Level: 10
+Str: 22
+--------
+Casts an aura that grants life regeneration to you and your allies.
+--------
+20% increased Area of Effect
+You and nearby Allies Regenerate 10 Life per second
+--------
+Experience: 1/9569
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
+
+================================================================================
+
+Item Class: Active Skill Gems
+Rarity: Gem
+Divergent Fireball
+--------
+Projectile, Spell, AoE, Fire
+Level: 17
+Cost: 22 Mana
+Cast Time: 0.75 sec
+Critical Strike Chance: 6.00%
+Effectiveness of Added Damage: 240%
+Quality: +10% (augmented)
+Alternate Quality
+--------
+Requirements:
+Level: 60
+Int: 134
+--------
+Unleashes a ball of fire towards a target which explodes, damaging nearby foes.
+--------
+Deals 640 to 960 Fire Damage
+36% chance to Ignite enemies
+62% more Damage with Ignite
+Projectiles gain Radius as they travel farther, up to +8 Radius
+30% increased Effect of non-Damaging Ailments on Enemies
+--------
+Experience: 1692380/27792735
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
+--------
+Note: ~price 10 chaos
+
+================================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Awakened Fire Penetration Support
+--------
+Fire, Support
+Level: 1
+Cost & Reservation Multiplier: 130%
+--------
+Requirements:
+Level: 72
+Str: 114
+--------
+Supports any skill that hits enemies, making those hits penetrate enemy fire resistance.
+--------
+Supported Skills Penetrate 35% Fire Resistance
+--------
+Experience: 1/413615669
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Note: ~price 20 blessed
+
+================================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Enhance Support
+--------
+Exceptional, Support
+Level: 4 (Max)
+Cost & Reservation Multiplier: 120%
+--------
+Requirements:
+Level: 60
+Dex: 96
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will raise the quality of supported gems. Cannot support skills that don't come from gems.
+--------
++24% to Quality of Supported Active Skill Gems
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+
+================================================================================
+
+Item Class: Utility Flasks
+Rarity: Unique
+Bottled Faith
+Sulphur Flask
+--------
+Quality: +20% (augmented)
+Lasts 7.20 (augmented) Seconds
+Consumes 40 of 60 Charges on use
+Currently has 60 Charges
+40% increased Damage
+--------
+Requirements:
+Level: 35
+--------
+Item Level: 85
+--------
+Used when you Hit a Rare or Unique Enemy, if not already in effect (enchant)
+--------
+Creates Consecrated Ground on Use (implicit)
+--------
+30% reduced Duration
+Consecrated Ground created by this Flask has Tripled Radius
+Consecrated Ground created during Effect applies 10% increased Damage taken to Enemies
+150% increased Critical Strike Chance against Enemies on Consecrated Ground during Flask effect
+--------
+A tourniquet for the soul, squeezing ethereal into physical.
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+
+================================================================================
+
+Item Class: Rings
+Rarity: Rare
+Morbid Coil
+Two-Stone Ring
+--------
+Requirements:
+Level: 57
+--------
+Item Level: 80
+--------
++16% to Fire and Lightning Resistances (implicit)
+--------
++18 to Intelligence
+22% increased Cold Damage
+Adds 1 to 14 Lightning Damage to Attacks
++130 to Evasion Rating
++32 to maximum Energy Shield
+34% increased Mana Regeneration Rate
+--------
+Mirrored
+--------
+Corrupted
+
+================================================================================
+
+Item Class: Maps
+Rarity: Rare
+Crimson Township Map
+--------
+Map Tier: 13
+--------
+Item Level: 83
+--------
+Unidentified
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+--------
+Corrupted
+
+================================================================================
+
+Item Class: Amulets
+Rarity: Unique
+Onyx Amulet
+--------
+Item Level: 85
+--------
+While a Unique Enemy is in your Presence, 25% increased Armour (implicit)
+While a Unique Enemy is in your Presence, +20% to Chaos Damage over Time Multiplier (implicit)
+--------
+Unidentified
+Searing Exarch Item
+Eater of Worlds Item
+--------
+Note: ~price 5 chaos
+
+================================================================================
+
+Item Class: Amulets
+Rarity: Rare
+Rift Rosary
+Astrolabe Amulet
+--------
+Requirements:
+Level: 69
+--------
+Item Level: 80
+--------
+Implicit Modifiers Cannot Be Changed (implicit)
+Has Elder, Shaper and all Conqueror Influences (implicit)
+--------
++27% to Global Critical Strike Multiplier
++34 to maximum Life
++43% to Lightning Resistance
+Gain 9% of Physical Damage as Extra Cold Damage
++1 to maximum number of Skeletons
+--------
+Shaper Item
+Elder Item
+Crusader Item
+Redeemer Item
+Hunter Item
+Warlord Item
+--------
+Note: ~b/o 1 chaos
+
+================================================================================
+
+Item Class: Rings
+Rarity: Rare
+Damnation Eye
+Sapphire Ring
+--------
+Requirements:
+Level: 59
+--------
+Item Level: 84
+--------
++26% to Cold Resistance (implicit)
+--------
+Adds 6 to 13 Cold Damage to Attacks
++47 to maximum Energy Shield
++9% to Fire Resistance
+Veiled Suffix
+
+================================================================================
+
+Item Class: Sentinel
+Rarity: Rare
+Ominous Machine
+Cobalt Apex Sentinel
+--------
+Duration: 63 (augmented) seconds
+Empowers: 2 enemies
+Empowerment: 35
+--------
+Requirements:
+Level: 44
+--------
+Item Level: 84
+--------
+Can only empower Rare or Unique enemies (implicit)
+--------
++7 to Charge
+33% increased Duration
++18 seconds to Duration
+Character Gains Power Charges for 15 seconds on deployment
+--------
+Charge: 15/15 (augmented)
+--------
+Unmodifiable
+
+================================================================================
+
+Item Class: Rings
+Rarity: Magic
+The Shaper's Coral Ring of the Lynx
+--------
+Requirements:
+Level: 54
+--------
+Item Level: 83
+--------
++27 to maximum Life (implicit)
+--------
++15 to Dexterity
++8 Life gained for each Enemy hit by your Spells
+--------
+Shaper Item
+
+================================================================================
+
+Item Class: Maps
+Rarity: Normal
+Superior Tower Map
+--------
+Map Tier: 16
+Item Quantity: +8% (augmented)
+Quality: +8% (augmented)
+--------
+Item Level: 85
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+================================================================================

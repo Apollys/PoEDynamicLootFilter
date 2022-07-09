@@ -1,0 +1,36 @@
+# Highlight Humility up through T5 maps
+Show
+	Class "Divination"
+	BaseType == "Humility"
+	AreaLevel <= 72
+	SetFontSize 45
+	SetTextColor 0 255 255 255
+	SetBorderColor 0 255 255 255
+	SetBackgroundColor 0 0 118 255
+	PlayEffect Cyan
+	MinimapIcon 0 Cyan Star
+	PlayAlertSound 1 300
+
+# 6 Socketed Items
+Show
+	Sockets >= 6
+	Rarity <= Rare
+	SetFontSize 45
+	SetTextColor 255 255 255 255
+	SetBorderColor 255 255 255 255
+	SetBackgroundColor 59 59 59 255
+	PlayEffect Grey
+	MinimapIcon 2 Grey Hexagon
+
+# Show Desired T16 Maps
+Show
+	Class Maps
+	BaseType == "Tower Map"
+	MapTier == 16
+	SetFontSize 45
+	SetBackgroundColor 0 0 0 255
+	MinimapIcon 1 Cyan Square
+	PlayEffect Cyan
+	SetBorderColor 0 224 255 255
+	PlayAlertSound 3 300
+	SetTextColor 59 215 245 255

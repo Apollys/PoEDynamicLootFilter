@@ -1,0 +1,304 @@
+Normal copied text (Ctrl-C) versus alt-copied text (Ctrl-Alt-C) of same items.
+
+===============================================================================
+
+Item Class: Helmets
+Rarity: Rare
+Bramble Dome
+Magistrate Crown
+--------
+Quality: +20% (augmented)
+Armour: 192 (augmented)
+Energy Shield: 66 (augmented)
+--------
+Requirements:
+Level: 70
+Str: 64
+Dex: 98
+Int: 68
+--------
+Sockets: G-G-G-B 
+--------
+Item Level: 80
+--------
+Barrage fires an additional Projectile (enchant)
+--------
+15% increased Global Accuracy Rating
++22 to maximum Energy Shield
++32 to maximum Life
++60 to maximum Mana
++42% to Cold Resistance
+10% increased Light Radius
+Nearby Enemies have -9% to Cold Resistance
++69 to maximum Life (crafted)
+
+• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •
+
+Item Class: Helmets
+Rarity: Rare
+Bramble Dome
+Magistrate Crown
+--------
+Quality: +20% (augmented)
+Armour: 192 (augmented)
+Energy Shield: 66 (augmented)
+--------
+Requirements:
+Level: 70
+Str: 64
+Dex: 98
+Int: 68
+--------
+Sockets: G-G-G-B 
+--------
+Item Level: 80
+--------
+Barrage fires an additional Projectile (enchant)
+--------
+{ Prefix Modifier "Abbot's" (Tier: 1) — Life, Defences }
++22(16-25) to maximum Energy Shield
++32(29-33) to maximum Life
+{ Prefix Modifier "Mazarine" (Tier: 3) — Mana }
++60(60-64) to maximum Mana
+{ Master Crafted Prefix Modifier "Upgraded" (Rank: 4) — Life }
++69(56-70) to maximum Life (crafted)
+{ Suffix Modifier "of the Ice" (Tier: 2) — Elemental, Cold, Resistance }
++42(42-45)% to Cold Resistance
+{ Suffix Modifier "of the Underground" (Tier: 1) — Damage, Elemental, Cold, Resistance }
+Nearby Enemies have -9% to Cold Resistance — Unscalable Value
+{ Suffix Modifier "of Light" (Tier: 2) — Attack }
+15(12-15)% increased Global Accuracy Rating
+10% increased Light Radius
+
+===============================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Enhance Support
+--------
+Exceptional, Support
+Level: 4 (Max)
+Cost & Reservation Multiplier: 120%
+--------
+Requirements:
+Level: 60
+Dex: 96
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will raise the quality of supported gems. Cannot support skills that don't come from gems.
+--------
++24% to Quality of Supported Active Skill Gems
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+
+• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Enhance Support
+--------
+Exceptional, Support
+Level: 4 (Max)
+Cost & Reservation Multiplier: 120%
+--------
+Requirements:
+Level: 60
+Dex: 96
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will raise the quality of supported gems. Cannot support skills that don't come from gems.
+--------
++24% to Quality of Supported Active Skill Gems
+
+Additional Effects From Quality:
+This Gem gains 0(0-100)% increased Experience
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+
+===============================================================================
+
+Item Class: Utility Flasks
+Rarity: Magic
+Physician's Diamond Flask of the Impala
+--------
+Quality: +20% (augmented)
+Lasts 7.20 (augmented) Seconds
+Consumes 20 of 40 Charges on use
+Currently has 40 Charges
+100% increased Global Critical Strike Chance
+--------
+Requirements:
+Level: 67
+--------
+Item Level: 85
+--------
+Reused at the end of this Flask's effect (enchant)
+--------
+19% chance to gain a Flask Charge when you deal a Critical Strike
+58% increased Evasion Rating during Flask effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+
+• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •
+
+Item Class: Utility Flasks
+Rarity: Magic
+Physician's Diamond Flask of the Impala
+--------
+Quality: +20% (augmented)
+Lasts 7.20 (augmented) Seconds
+Consumes 20 of 40 Charges on use
+Currently has 40 Charges
+100% increased Global Critical Strike Chance
+--------
+Requirements:
+Level: 67
+--------
+Item Level: 85
+--------
+Reused at the end of this Flask's effect (enchant)
+--------
+{ Prefix Modifier "Physician's" (Tier: 4) — Critical }
+19(16-20)% chance to gain a Flask Charge when you deal a Critical Strike
+{ Suffix Modifier "of the Impala" (Tier: 1) — Defences }
+58(56-60)% increased Evasion Rating during Flask effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+
+===============================================================================
+
+Item Class: Maps
+Rarity: Rare
+Spectre Refuge
+Beach Map
+--------
+Map Tier: 6
+Item Quantity: +57% (augmented)
+Item Rarity: +31% (augmented)
+Monster Pack Size: +20% (augmented)
+Quality: +5% (augmented)
+--------
+Item Level: 73
+--------
+Monsters' skills Chain 2 additional times
+Monsters take 32% reduced Extra Damage from Critical Strikes
+Monsters have a 15% chance to cause Elemental Ailments on Hit
+Monsters have +45% chance to Suppress Spell Damage
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •
+
+Item Class: Maps
+Rarity: Rare
+Spectre Refuge
+Beach Map
+--------
+Map Tier: 6
+Item Quantity: +57% (augmented)
+Item Rarity: +31% (augmented)
+Monster Pack Size: +20% (augmented)
+Quality: +5% (augmented)
+--------
+Item Level: 73
+--------
+{ Prefix Modifier "Empowered" (Tier: 1) — Elemental, Fire, Cold, Lightning, Ailment }
+Monsters have a 15% chance to cause Elemental Ailments on Hit
+(Elemental Ailments are Ignited, Scorched, Chilled, Frozen, Brittle, Shocked, and Sapped)
+{ Prefix Modifier "Chaining" (Tier: 1) }
+Monsters' skills Chain 2 additional times
+{ Prefix Modifier "Oppressive" (Tier: 1) }
+Monsters have +45% chance to Suppress Spell Damage
+(50% of Damage from Suppressed Hits and Ailments they inflict is prevented)
+{ Suffix Modifier "of Toughness" (Tier: 1) — Damage, Critical }
+Monsters take 32(31-35)% reduced Extra Damage from Critical Strikes
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+===============================================================================
+
+Item Class: Amulets
+Rarity: Unique
+Crystallised Omniscience
+Onyx Amulet
+--------
+Quality (Attribute Modifiers): +20% (augmented)
+--------
+Requirements:
+Level: 61
+--------
+Item Level: 85
+--------
+Allocates Utmost Intellect (enchant)
+--------
++19 to all Attributes (implicit)
+--------
+Modifiers to Attributes instead apply to Omniscience
++1% to all Elemental Resistances per 10 Omniscience
+Penetrate 1% Elemental Resistances per 10 Omniscience
+Attribute Requirements can be satisfied by 25% of Omniscience
+--------
+That winter, scorched refugees emerged from the shrine,
+speaking only in strange tongues. They prayed to a new
+symbol of power, not out of love, but out of fear.
+
+• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •
+
+Item Class: Amulets
+Rarity: Unique
+Crystallised Omniscience
+Onyx Amulet
+--------
+Quality (Attribute Modifiers): +20% (augmented)
+--------
+Requirements:
+Level: 61
+--------
+Item Level: 85
+--------
+Allocates Utmost Intellect (enchant)
+--------
+{ Implicit Modifier — Attribute — 20% Increased }
++16(10-16) to all Attributes (implicit)
+(Attributes are Strength, Dexterity, and Intelligence) (implicit)
+--------
+{ Unique Modifier — Attribute  — 20% Increased }
+Modifiers to Attributes instead apply to Omniscience
+{ Unique Modifier — Elemental, Resistance }
++1% to all Elemental Resistances per 10 Omniscience
+{ Unique Modifier — Damage, Elemental }
+Penetrate 1% Elemental Resistances per 10 Omniscience
+{ Unique Modifier }
+Attribute Requirements can be satisfied by 25(15-25)% of Omniscience
+--------
+That winter, scorched refugees emerged from the shrine,
+speaking only in strange tongues. They prayed to a new
+symbol of power, not out of love, but out of fear.
+
+===============================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Orb of Fusing
+--------
+Stack Size: 2,517/20
+--------
+Reforges the links between sockets on an item
+--------
+Right click this item then left click a socketed item to apply it. The item's quality increases the chances of obtaining more links.
+Shift click to unstack.
+
+• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •
+
+Item Class: Stackable Currency
+Rarity: Currency
+Orb of Fusing
+--------
+Stack Size: 2,517/20
+--------
+Right click this item then left click a socketed item to apply it. The item's quality increases the chances of obtaining more links.
+Shift click to unstack.
+
+===============================================================================

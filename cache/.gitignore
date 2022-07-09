@@ -1,0 +1,4 @@
+# Ignore all files here, but force the directory to exist
+# so AHK can use it without additional checks.
+*.*
+!.gitignore

@@ -1,0 +1,2486 @@
+================================================================================
+
+Item Class: Wands
+Rarity: Rare
+Phoenix Song
+Imbued Wand
+--------
+Wand
+Quality: +20% (augmented)
+Physical Damage: 35-64 (augmented)
+Elemental Damage: 60-103 (augmented), 49-85 (augmented), 9-164 (augmented)
+Critical Strike Chance: 9.66% (augmented)
+Attacks per Second: 1.68 (augmented)
+--------
+Requirements:
+Level: 72
+Str: 73
+Int: 188 (unmet)
+--------
+Sockets: B-B-R
+--------
+Item Level: 85
+--------
+37% increased Spell Damage (implicit)
+--------
+Adds 60 to 103 Fire Damage
+Adds 49 to 85 Cold Damage
+Adds 9 to 164 Lightning Damage
+38% increased Critical Strike Chance
++38% to Global Critical Strike Multiplier
+12% increased Attack Speed (crafted)
+--------
+Mirrored
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+AttacksperSecond | 1.68 (augmented)
+BaseType | Imbued Wand
+Class | Wands
+Corrupted | False
+CriticalStrikeChance | 9.66% (augmented)
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+ElementalDamage | 60-103 (augmented), 49-85 (augmented), 9-164 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 85
+LinkedSockets | 3
+Mirrored | True
+Name | Phoenix Song
+NumSockets | 3
+PhysicalDamage | 35-64 (augmented)
+Quality | 20
+Rarity | Rare
+RedeemerItem | False
+RequiredInt | 188
+RequiredLevel | 72
+RequiredStr | 73
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'B', 'B', 'R'}]
+Sockets | {'B', 'B', 'R'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr $tier->t1weapons
+ItemLevel >= 68
+Rarity Rare
+BaseType "Convoking Wand" "Copper Kris" "Gemini Claw" "Golden Kris" "Imbued Wand" "Imperial Claw" "Opal Sceptre" "Opal Wand" "Platinum Kris" "Primal Arrow Quiver" "Profane Wand" "Short Bow" "Spine Bow" "Thicket Bow" "Void Sceptre"
+SetFontSize 45
+SetBackgroundColor 31 0 75 255
+
+================================================================================
+
+Item Class: Body Armours
+Rarity: Rare
+Morbid Carapace
+Saint's Hauberk
+--------
+Armour: 672 (augmented)
+Energy Shield: 134 (augmented)
+--------
+Requirements:
+Level: 67
+Str: 109
+Int: 94
+--------
+Sockets: B-B-B-B B-R
+--------
+Item Level: 81
+--------
++5 to Armour
+50% increased Armour and Energy Shield
++13 to maximum Energy Shield
++15 to maximum Mana
++42% to Cold Resistance
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+Armour | 672 (augmented)
+BaseType | Saint's Hauberk
+Class | Body Armours
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 134 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 81
+LinkedSockets | 4
+Mirrored | False
+Name | Morbid Carapace
+NumSockets | 6
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredInt | 94
+RequiredLevel | 67
+RequiredStr | 109
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'B', 'B', 'B', 'B'}, {'B', 'R'}]
+Sockets | {'B', 'B', 'B', 'B', 'B', 'R'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->untagged_rule $tier->3
+Sockets >= 6
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 59 59 59 255
+PlayEffect Grey
+MinimapIcon 2 Grey Hexagon
+
+================================================================================
+
+Item Class: Two Hand Axes
+Rarity: Rare
+Wrath Beak
+Void Axe
+--------
+Two Handed Axe
+Physical Damage: 98-149 (augmented)
+Elemental Damage: 3-6 (augmented)
+Critical Strike Chance: 6.00%
+Attacks per Second: 1.25
+Weapon Range: 13
+--------
+Requirements:
+Level: 68
+Str: 149
+Dex: 76
+--------
+Sockets: G-R-R-R-R-R
+--------
+Item Level: 81
+--------
+Adds 2 to 5 Physical Damage
+Adds 3 to 6 Cold Damage
++10% to Global Critical Strike Multiplier
++182 to Accuracy Rating
+--------
+Note: ~price 8 chaos
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+AttacksperSecond | 1.25
+BaseType | Void Axe
+Class | Two Hand Axes
+Corrupted | False
+CriticalStrikeChance | 6.00%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+ElementalDamage | 3-6 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 81
+LinkedSockets | 6
+Mirrored | False
+Name | Wrath Beak
+Note | ~price 8 chaos
+NumSockets | 6
+PhysicalDamage | 98-149 (augmented)
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredDex | 76
+RequiredLevel | 68
+RequiredStr | 149
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'G', 'R', 'R', 'R', 'R', 'R'}]
+Sockets | {'G', 'R', 'R', 'R', 'R', 'R'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+WeaponRange | 13
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->untagged_rule $tier->3
+Sockets >= 6
+Rarity <= Rare
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 59 59 59 255
+PlayEffect Grey
+MinimapIcon 2 Grey Hexagon
+
+================================================================================
+
+Item Class: Abyss Jewels
+Rarity: Rare
+Whispering Vision
+Searching Eye Jewel
+--------
+Abyss
+--------
+Requirements:
+Level: 30
+--------
+Item Level: 48
+--------
+6 to 12 Added Cold Damage with Wand Attacks (fractured)
+12% increased Damage over Time while holding a Shield
+30% increased Evasion Rating while moving
+--------
+Place into an Abyssal Socket on an Item or into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.
+--------
+Corrupted
+--------
+Fractured Item
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Searching Eye Jewel
+Class | Abyss Jewels
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | True
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 48
+Mirrored | False
+Name | Whispering Vision
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 30
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D5 $type->exotic->fractured $tier->fractclasses
+FracturedItem True
+Rarity <= Rare
+Class "Amulets" "Boots" "Bows" "Gloves" "Jewel" "Maps" "Quivers" "Rings" "Rune Daggers" "Sceptres" "Wands"
+SetFontSize 45
+SetBorderColor 0 240 190 255
+PlayAlertSound 3 300
+PlayEffect Blue
+MinimapIcon 2 Blue Diamond
+
+================================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Chaos Orb
+--------
+Stack Size: 37/10
+--------
+Reforges a rare item with new random modifiers
+--------
+Right click this item then left click a rare item to apply it.
+Shift click to unstack.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Chaos Orb
+Class | Stackable Currency
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Currency
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+StackSize | 37
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->currency->stackedsix $tier->t4
+StackSize >= 4
+Class Currency
+BaseType == "Accelerating Catalyst" "Astragali" "Awakened Sextant" "Chaos Orb" "Charged Compass" "Delirious Scouting Report" "Eldritch Orb of Annulment" "Enkindling Orb" "Fertile Catalyst" "Grand Eldritch Ember" "Greater Eldritch Ember" "Greater Eldritch Ichor" "Harbinger's Orb" "Lesser Eldritch Ember" "Operative's Scouting Report" "Orb of Regret" "Orb of Unmaking" "Ritual Splinter" "Singular Scouting Report" "Stacked Deck" "Tainted Chromatic Orb" "Tempering Catalyst" "Veiled Chaos Orb"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBorderColor 0 0 0 255
+SetBackgroundColor 130 214 255 255
+PlayAlertSound 2 300
+PlayEffect White
+MinimapIcon 2 White Circle
+
+================================================================================
+
+Item Class: Stackable Currency
+Rarity: Currency
+Splinter of Uul-Netol
+--------
+Stack Size: 34/100
+--------
+Combine 100 Splinters to create Uul-Netol's Breachstone.
+Shift click to unstack.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Splinter of Uul-Netol
+Class | Stackable Currency
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Currency
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+StackSize | 34
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->currency->stackedsplintershigh $tier->t1
+StackSize >= 10
+Class "Currency"
+BaseType "Splinter of Chayula" "Splinter of Uul-Netol" "Timeless Maraketh Splinter" "Timeless Templar Splinter"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBorderColor 0 0 0 255
+SetBackgroundColor 130 214 255 255
+PlayAlertSound 2 300
+PlayEffect Yellow
+MinimapIcon 1 Yellow Circle
+
+================================================================================
+
+Item Class: Boots
+Rarity: Rare
+Domination March
+Scholar Boots
+--------
+Energy Shield: 76 (augmented)
+--------
+Requirements:
+Level: 60
+Int: 59
+--------
+Sockets: R-B-B-B
+--------
+Item Level: 72
+--------
+16% increased Attack and Cast Speed if you've Killed Recently (enchant)
+--------
++42 to maximum Energy Shield
+21% increased Energy Shield
+Regenerate 5.6 Life per second
+30% increased Movement Speed
+11% increased Stun and Block Recovery
+5% increased Movement Speed if you haven't been Hit Recently
++33% to Fire Resistance (crafted)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Scholar Boots
+Class | Boots
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 76 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 72
+LinkedSockets | 4
+Mirrored | False
+Name | Domination March
+NumSockets | 4
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredInt | 59
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R', 'B', 'B', 'B'}]
+Sockets | {'R', 'B', 'B', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr $tier->identifieditemhandling
+Identified True
+Corrupted False
+Mirrored False
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Belts" "Body Armours" "Boots" "Bows" "Claws" "Daggers" "Gloves" "Helmets" "One Hand" "Quivers" "Rings" "Rune Dagger" "Sceptres" "Shields" "Staves" "Two Hand" "Wands" "Warstaves"
+SetFontSize 40
+SetBorderColor 0 240 190 180
+PlayEffect Blue Temp
+
+================================================================================
+
+Item Class: Two Hand Swords
+Rarity: Normal
+Wraith Sword
+--------
+Two Handed Sword
+Physical Damage: 52-109
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.35
+Weapon Range: 13
+--------
+Requirements:
+Level: 54
+Str: 93
+Dex: 93
+--------
+Sockets: R-R G
+--------
+Item Level: 69
+--------
+45% increased Global Accuracy Rating (implicit)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+AttacksperSecond | 1.35
+BaseType | Wraith Sword
+Class | Two Hand Swords
+Corrupted | False
+CriticalStrikeChance | 5.00%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 69
+LinkedSockets | 2
+Mirrored | False
+NumSockets | 3
+PhysicalDamage | 52-109
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+RequiredDex | 93
+RequiredLevel | 54
+RequiredStr | 93
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R', 'R'}, {'G'}]
+Sockets | {'R', 'R', 'G'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+WeaponRange | 13
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hide # $type->hidelayer $tier->final
+Class "Amulets" "Belts" "Body Armour" "Boots" "Bows" "Claws" "Daggers" "Flask" "Gloves" "Heist Brooch" "Heist Cloak" "Heist Gear" "Heist Tool" "Helmets" "Jewel" "One Hand" "Quivers" "Rings" "Rune Dagger" "Sceptre" "Sentinel Drone" "Shields" "Staves" "Two Hand" "Wand" "Warstaves"
+SetFontSize 18
+SetBorderColor 0 0 0 0
+SetBackgroundColor 0 0 0 0
+DisableDropSound True
+
+================================================================================
+
+Item Class: Map Fragments
+Rarity: Normal
+Rusted Breach Scarab
+--------
+Area contains an additional Breach
+--------
+The Ember-dwellers sought to throw you to their volcanic god, young Omid,
+but we caught you instead. The Order of the Djinn is your tribe now.
+--------
+Can be used in a personal Map Device to add modifiers to a Map.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Rusted Breach Scarab
+Class | Map Fragments
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %HS4 $type->fragments->scarabs $tier->t4
+Class "Map Fragments"
+BaseType == "Polished Abyss Scarab" "Polished Bestiary Scarab" "Polished Blight Scarab" "Polished Breach Scarab" "Polished Elder Scarab" "Polished Legion Scarab" "Polished Metamorph Scarab" "Polished Reliquary Scarab" "Polished Shaper Scarab" "Polished Sulphite Scarab" "Polished Torment Scarab" "Rusted Abyss Scarab" "Rusted Bestiary Scarab" "Rusted Blight Scarab" "Rusted Breach Scarab" "Rusted Cartography Scarab" "Rusted Elder Scarab" "Rusted Legion Scarab" "Rusted Metamorph Scarab" "Rusted Reliquary Scarab" "Rusted Shaper Scarab" "Rusted Sulphite Scarab" "Rusted Torment Scarab"
+SetFontSize 45
+SetTextColor 225 111 255 255
+SetBorderColor 225 111 255 255
+SetBackgroundColor 0 0 0 255
+PlayAlertSound 2 300
+PlayEffect White
+MinimapIcon 2 White Hexagon
+
+================================================================================
+
+Item Class: Divination Cards
+Rarity: Divination Card
+Chaotic Disposition
+--------
+5x Chaos Orb
+--------
+Life isn't what you make of it, it's already been made for you.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Chaotic Disposition
+Class | Divination Cards
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Divination Card
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->divination $tier->t2
+Class "Divination"
+BaseType == "Beauty Through Death" "Broken Promises" "Chaotic Disposition" "Deadly Joy" "Home" "Imperfect Memories" "Judging Voices" "Justified Ambition" "Keeper's Corruption" "Luminous Trove" "Magnum Opus" "Monochrome" "Nook's Crown" "Pride of the First Ones" "The Academic" "The Artist" "The Aspirant" "The Brawny Battle Mage" "The Damned" "The Destination" "The Gulf" "The Hoarder" "The Hook" "The Long Con" "The One That Got Away" "The Patient" "The Sacrifice" "The Saint's Treasure" "The Spoiled Prince" "The Strategist" "The Void" "Winter's Embrace"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 100 250 155 245
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Triangle
+
+================================================================================
+
+Item Class: Gloves
+Rarity: Rare
+Mind Grip
+Conjurer Gloves
+--------
+Quality: +20% (augmented)
+Energy Shield: 178 (augmented)
+--------
+Requirements:
+Level: 70
+Str: 151
+Dex: 68
+Int: 155
+--------
+Sockets: R R-B-B
+--------
+Item Level: 72
+--------
++39 to Intelligence
++42 to maximum Energy Shield
+37% increased Energy Shield
++19% to Cold Resistance
+15% increased Stun and Block Recovery
+74% increased Energy Shield (crafted)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Conjurer Gloves
+Class | Gloves
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 178 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 72
+LinkedSockets | 3
+Mirrored | False
+Name | Mind Grip
+NumSockets | 4
+Quality | 20
+Rarity | Rare
+RedeemerItem | False
+RequiredDex | 68
+RequiredInt | 155
+RequiredLevel | 70
+RequiredStr | 151
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R'}, {'R', 'B', 'B'}]
+Sockets | {'R', 'R', 'B', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr $tier->identifieditemhandling
+Identified True
+Corrupted False
+Mirrored False
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Belts" "Body Armours" "Boots" "Bows" "Claws" "Daggers" "Gloves" "Helmets" "One Hand" "Quivers" "Rings" "Rune Dagger" "Sceptres" "Shields" "Staves" "Two Hand" "Wands" "Warstaves"
+SetFontSize 40
+SetBorderColor 0 240 190 180
+PlayEffect Blue Temp
+
+================================================================================
+
+Item Class: Belts
+Rarity: Unique
+Darkness Enthroned
+Stygian Vise
+--------
+Requirements:
+Level: 60
+--------
+Sockets: A A
+--------
+Item Level: 79
+--------
+Has 1 Abyssal Socket (implicit)
+--------
+Has 1 Abyssal Socket
+75% increased Effect of Socketed Jewels
+--------
+Hold in your hand the darkness
+and never will the light blind you.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Stygian Vise
+Class | Belts
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 79
+LinkedSockets | 1
+Mirrored | False
+Name | Darkness Enthroned
+NumSockets | 2
+Quality | 0
+Rarity | Unique
+RedeemerItem | False
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'A'}, {'A'}]
+Sockets | {'A', 'A'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %H4 $type->uniques $tier->t3
+Rarity Unique
+BaseType == "Agate Amulet" "Amber Amulet" "Ambush Mitts" "Ancient Gauntlets" "Ancient Spirit Shield" "Arcanist Slippers" "Assassin's Mitts" "Astral Plate" "Blood Raiment" "Blood Sceptre" "Blunt Arrow Quiver Piece" "Bone Circlet" "Bone Helmet" "Brass Spirit Shield" "Butcher Axe" "Callous Mask Piece" "Carnal Boots" "Carnal Mitts" "Chain Belt" "Citadel Bow" "Cloth Belt" "Cloth Belt Piece" "Coiled Staff" "Colossal Tower Shield" "Coral Ring" "Crimson Round Shield" "Crusader Plate" "Crystal Sceptre" "Deerskin Gloves" "Eternal Sword" "Ezomyte Dagger" "Ezomyte Spiked Shield" "Ezomyte Tower Shield" "Festival Mask" "Gavel" "Gemstone Sword" "Gladiator Plate" "Gladius" "Glorious Plate" "Goathide Boots" "Gold Amulet" "Granite Flask" "Hallowed Hybrid Flask" "Harlequin Mask" "Highborn Staff" "Hubris Circlet" "Hydrascale Boots" "Imperial Bow" "Imperial Maul" "Imperial Staff" "Iron Circlet" "Iron Gauntlets" "Iron Ring" "Jade Amulet" "Judgement Staff" "Lacquered Helmet" "Large Hybrid Flask" "Leather Cap" "Legion Gloves" "Legion Sword Piece" "Maelström Staff" "Mirrored Spiked Shield" "Moonstone Ring" "Murder Boots" "Necromancer Silks" "Nubuck Gloves" "Paua Amulet" "Paua Ring" "Pinnacle Tower Shield" "Praetor Crown" "Primal Arrow Quiver" "Quarterstaff" "Quartz Flask" "Rawhide Tower Shield" "Royal Skean" "Runic Crown" "Runic Helm" "Runic Sabatons" "Rustic Sash" "Sacrificial Garb" "Sage Wand" "Shackled Boots" "Sharktooth Arrow Quiver" "Silken Hood" "Silver Flask" "Sinner Tricorne" "Solaris Circlet" "Soldier Gloves" "Sovereign Spiked Shield" "Steelscale Gauntlets" "Strapped Mitts" "Stygian Vise" "Topaz Flask" "Tornado Wand" "Vaal Axe" "Vaal Mask" "Vaal Regalia" "Vaal Spirit Shield" "Variscite Blade" "Void Axe" "Widowsilk Robe" "Wyrmscale Boots" "Zodiac Leather"
+SetFontSize 45
+SetTextColor 175 96 37 255
+SetBorderColor 175 96 37 255
+SetBackgroundColor 53 13 13 255
+PlayAlertSound 3 300
+PlayEffect Brown
+MinimapIcon 2 Brown Star
+
+================================================================================
+
+Item Class: Body Armours
+Rarity: Unique
+Replica Farrul's Fur
+Triumphant Lamellar
+--------
+Armour: 764 (augmented)
+Evasion Rating: 959 (augmented)
+--------
+Requirements:
+Level: 69
+Str: 95
+Dex: 116
+--------
+Sockets: R-R-G-R G
+--------
+Item Level: 75
+--------
+101% increased Armour and Evasion
++98 to maximum Life
++2.00 seconds to Cat's Agility Duration
+Aspect of the Cat has no Reservation
+Gain up to your maximum number of Frenzy and Endurance Charges when you gain Cat's Agility
+You have Onslaught while you have Cat's Agility
+--------
+"Attempt #120: the prototype has finally achieved power similar to the original
+without breaking all the bones of the test subject. A rousing success."
+--------
+Note: ~price 20 exalted
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+"Attempt#120 | the prototype has finally achieved power similar to the original
+AlternateQuality | False
+Armour | 764 (augmented)
+BaseType | Triumphant Lamellar
+Class | Body Armours
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EvasionRating | 959 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 75
+LinkedSockets | 4
+Mirrored | False
+Name | Replica Farrul's Fur
+Note | ~price 20 exalted
+NumSockets | 5
+Quality | 0
+Rarity | Unique
+RedeemerItem | False
+Replica | True
+RequiredDex | 116
+RequiredLevel | 69
+RequiredStr | 95
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'R', 'R', 'G', 'R'}, {'G'}]
+Sockets | {'R', 'R', 'G', 'R', 'G'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->uniques->replicas $tier->t1
+Replica True
+Rarity Unique
+BaseType == "Chain Belt" "Cloth Belt" "Great Crown" "Leather Belt" "Ornate Quiver" "Relic Chambers Map" "Soldier Boots" "Synthesised Map" "Triumphant Lamellar"
+SetFontSize 45
+SetTextColor 175 96 37 255
+SetBorderColor 175 96 37 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
+
+================================================================================
+
+Item Class: Shields
+Rarity: Rare
+Soul Weaver
+Titanium Spirit Shield
+--------
+Quality: +20% (augmented)
+Chance to Block: 25%
+Energy Shield: 157 (augmented)
+--------
+Requirements:
+Level: 70
+Dex: 155
+Int: 159
+--------
+Sockets: G-G-B
+--------
+Item Level: 84
+--------
+Socketed Gems have 15% reduced Reservation
++109 to maximum Life
++48% to Fire Resistance
+10% increased effect of Non-Curse Auras from your Skills
++67 to maximum Energy Shield (crafted)
+--------
+Shaper Item
+Redeemer Item
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Titanium Spirit Shield
+ChancetoBlock | 25%
+Class | Shields
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+EnergyShield | 157 (augmented)
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Redeemer', 'Shaper']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 84
+LinkedSockets | 3
+Mirrored | False
+Name | Soul Weaver
+NumSockets | 3
+Quality | 20
+Rarity | Rare
+RedeemerItem | True
+RequiredDex | 155
+RequiredInt | 159
+RequiredLevel | 70
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | True
+SocketGroups | [{'G', 'G', 'B'}]
+Sockets | {'G', 'G', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D5 $type->rare->shaper $tier->t21
+HasInfluence Shaper
+ItemLevel >= 80
+Rarity <= Rare
+BaseType "Amethyst Ring" "Dragonscale Gauntlets" "Ezomyte Tower Shield" "Imbued Wand" "Imperial Claw" "Ornate Quiver" "Pinnacle Tower Shield" "Slink Gloves" "Sorcerer Boots" "Titanium Spirit Shield"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 20 110 220
+PlayAlertSound 1 300
+PlayEffect Yellow
+MinimapIcon 1 Yellow Cross
+
+================================================================================
+
+Item Class: Utility Flasks
+Rarity: Magic
+Chemist's Quartz Flask of Grounding
+--------
+Quality: +20% (augmented)
+Lasts 4.80 (augmented) Seconds
+Consumes 25 (augmented) of 60 Charges on use
+Currently has 60 Charges
+6% chance to Dodge Attack Hits
+6% chance to Dodge Spell Hits
+Phasing
+--------
+Requirements:
+Level: 27
+--------
+Item Level: 81
+--------
+Used when you become Shocked (enchant)
+--------
+15% reduced Charges used
+Grants Immunity to Shock for 4 seconds if used while Shocked
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Chemist's Quartz Flask of Grounding
+Class | Utility Flasks
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 81
+Mirrored | False
+Quality | 20
+Rarity | Magic
+RedeemerItem | False
+RequiredLevel | 27
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->leveling->flasks->utility $tier->asortedutility
+BaseType "Amethyst Flask" "Aquamarine Flask" "Basalt Flask" "Bismuth Flask" "Diamond Flask" "Granite Flask" "Iron Flask" "Jade Flask" "Quartz Flask" "Quicksilver Flask" "Ruby Flask" "Sapphire Flask" "Silver Flask" "Stibnite Flask" "Sulphur Flask" "Topaz Flask"
+SetFontSize 45
+SetBorderColor 50 200 125
+SetBackgroundColor 25 100 75
+PlayEffect Grey Temp
+MinimapIcon 2 Grey Raindrop
+
+================================================================================
+
+Item Class: Amulets
+Rarity: Rare
+Lapis Amulet
+--------
+Item Level: 60
+--------
++22 to Intelligence (implicit)
+--------
+Unidentified
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Lapis Amulet
+Class | Amulets
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 60
+Mirrored | False
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->dlf_chaos_recipe_rares $tier->amulets
+ItemLevel >= 60
+ItemLevel < 75
+Rarity Rare
+Class "Amulets"
+Identified False
+SetBorderColor 0 255 255 255
+SetBackgroundColor 120 20 20 80
+SetFontSize 40
+MinimapIcon 0 Cyan Moon
+
+================================================================================
+
+Item Class: Daggers
+Rarity: Rare
+Gutting Knife
+--------
+Dagger
+Physical Damage: 19-76
+Critical Strike Chance: 6.50%
+Attacks per Second: 1.40
+Weapon Range: 10
+--------
+Requirements:
+Dex: 113
+Int: 78
+--------
+Sockets: G-B-B
+--------
+Item Level: 75
+--------
+30% increased Global Critical Strike Chance (implicit)
+--------
+Unidentified
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+AttacksperSecond | 1.40
+BaseType | Gutting Knife
+Class | Daggers
+Corrupted | False
+CriticalStrikeChance | 6.50%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 75
+LinkedSockets | 3
+Mirrored | False
+NumSockets | 3
+PhysicalDamage | 19-76
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredDex | 113
+RequiredInt | 78
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+SocketGroups | [{'G', 'B', 'B'}]
+Sockets | {'G', 'B', 'B'}
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+WeaponRange | 10
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->dlf_regal_recipe_rares $tier->weapons_any_height
+ItemLevel >= 75
+Rarity Rare
+Class "Daggers" "Rune Daggers" "Wands"
+Identified False
+SetBorderColor 200 0 0 255
+SetBackgroundColor 22 22 111 130
+SetFontSize 40
+MinimapIcon 1 Red Moon
+
+================================================================================
+
+Item Class: Maps
+Rarity: Magic
+Twinned Marshes Map of Impotence
+--------
+Map Tier: 11
+Atlas Region: Glennach Cairns
+Item Quantity: +32% (augmented)
+Item Rarity: +19% (augmented)
+Monster Pack Size: +12% (augmented)
+--------
+Item Level: 82
+--------
+Area contains two Unique Bosses
+Players have 25% less Area of Effect
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+AtlasRegion | Glennach Cairns
+BaseType | Twinned Marshes Map of Impotence
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 82
+ItemQuantity | +32% (augmented)
+ItemRarity | +19% (augmented)
+MapTier | 11
+Mirrored | False
+MonsterPackSize | +12% (augmented)
+Quality | 0
+Rarity | Magic
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %H5 $type->maps $tier->maps_b_t11
+MapTier 11
+Class "Maps"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 200 200 200 255
+PlayAlertSound 5 300
+PlayEffect Yellow
+MinimapIcon 1 Red Square
+
+================================================================================
+
+Item Class: Map Fragments
+Rarity: Normal
+Fragment of Constriction
+--------
+Webs are torn, not untangled.
+--------
+Can be used in a personal Map Device.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Fragment of Constriction
+Class | Map Fragments
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->fragments $tier->t2
+Class "Map Fragments"
+BaseType == "Al-Hezmin's Crest" "Baran's Crest" "Chayula's Breachstone" "Chayula's Charged Breachstone" "Drox's Crest" "Esh's Breachstone" "Esh's Charged Breachstone" "Esh's Enriched Breachstone" "Esh's Pure Breachstone" "Fragment of Constriction" "Fragment of Enslavement" "Fragment of Eradication" "Fragment of Knowledge" "Fragment of Purification" "Fragment of Shape" "Mortal Ignorance" "Sacred Blossom" "Simulacrum" "Timeless Templar Emblem" "Tul's Breachstone" "Tul's Charged Breachstone" "Tul's Enriched Breachstone" "Tul's Pure Breachstone" "Unrelenting Timeless Eternal Emblem" "Unrelenting Timeless Karui Emblem" "Unrelenting Timeless Templar Emblem" "Unrelenting Timeless Vaal Emblem" "Uul-Netol's Breachstone" "Uul-Netol's Charged Breachstone" "Uul-Netol's Enriched Breachstone" "Veritania's Crest" "Xoph's Breachstone" "Xoph's Charged Breachstone" "Xoph's Enriched Breachstone" "Xoph's Pure Breachstone"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 225 111 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Hexagon
+
+================================================================================
+
+Item Class: Maps
+Rarity: Rare
+Superior Maze of the Minotaur Map
+--------
+Map Tier: 16
+Item Quantity: +19% (augmented)
+Quality: +19% (augmented)
+--------
+Item Level: 82
+--------
+Area is influenced by The Shaper (implicit)
+--------
+Unidentified
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Maze of the Minotaur Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Shaper']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 82
+ItemQuantity | +19% (augmented)
+MapTier | 16
+Mirrored | False
+Quality | 19
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->maps->influenced $tier->infshaper
+HasInfluence Shaper
+Rarity <= Rare
+Class "Maps"
+SetFontSize 45
+SetTextColor 100 0 122 255
+SetBorderColor 100 0 122 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Square
+
+================================================================================
+
+Item Class: Maps
+Rarity: Rare
+Terror Shadows
+Thicket Map
+--------
+Map Tier: 16
+Item Quantity: +69% (augmented)
+Item Rarity: +31% (augmented)
+Monster Pack Size: +20% (augmented)
+Quality: +17% (augmented)
+--------
+Item Level: 82
+--------
+Area is influenced by The Elder (implicit)
+Map is occupied by The Eradicator (implicit)
+--------
+23% increased number of Rare Monsters
+Monsters deal 102% extra Physical Damage as Fire
+Monsters steal Power, Frenzy and Endurance charges on Hit
+Players gain 50% reduced Flask Charges
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Thicket Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Elder']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 82
+ItemQuantity | +69% (augmented)
+ItemRarity | +31% (augmented)
+MapTier | 16
+Mirrored | False
+MonsterPackSize | +20% (augmented)
+Name | Terror Shadows
+Quality | 17
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->maps->influenced $tier->infelder
+HasInfluence Elder
+Rarity <= Rare
+Class "Maps"
+SetFontSize 45
+SetTextColor 100 0 122 255
+SetBorderColor 100 0 122 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Square
+
+================================================================================
+
+Item Class: Maps
+Rarity: Normal
+Terrace Map
+--------
+Map Tier: 16
+Atlas Region: Tirn's End
+--------
+Item Level: 83
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+AtlasRegion | Tirn's End
+BaseType | Terrace Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 83
+MapTier | 16
+Mirrored | False
+Quality | 0
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->maps $tier->maps_a_t16
+MapTier >= 16
+Class "Maps"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 235 235 235 255
+PlayAlertSound 5 300
+PlayEffect Yellow
+MinimapIcon 1 Red Square
+
+================================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Enlighten Support
+--------
+Support
+Level: 1
+--------
+Requirements:
+Level: 1
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will apply a mana multiplier to supported gems. Cannot support skills that don't come from gems.
+--------
+Experience: 54217488/226854909
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+--------
+Note: ~price 1 exalted
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Enlighten Support
+Class | Support Skill Gems
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+Experience | 54217488
+FracturedItem | False
+GemLevel | 1
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Note | ~price 1 exalted
+Quality | 0
+Rarity | Gem
+RedeemerItem | False
+RequiredLevel | 1
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-exceptional $tier->specialworlddrops
+Class "Gems"
+BaseType "Empower Support" "Enlighten Support"
+SetFontSize 45
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
+
+================================================================================
+
+Item Class: Active Skill Gems
+Rarity: Gem
+Vitality
+--------
+Aura, Spell, AoE
+Level: 1
+Reservation: 28 Mana
+Cooldown Time: 1.20 sec
+Cast Time: Instant
+Quality: +10% (augmented)
+--------
+Requirements:
+Level: 10
+Str: 22
+--------
+Casts an aura that grants life regeneration to you and your allies.
+--------
+20% increased Area of Effect
+You and nearby Allies Regenerate 10 Life per second
+--------
+Experience: 1/9569
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Vitality
+CastTime | Instant
+Class | Active Skill Gems
+CooldownTime | 1.20 sec
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+Experience | 1
+FracturedItem | False
+GemLevel | 1
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 10
+Rarity | Gem
+RedeemerItem | False
+RequiredLevel | 10
+RequiredStr | 22
+Reservation | 28 Mana
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hide # %H0 $type->gems-generic $tier->any
+Class "Gems"
+SetFontSize 30
+SetTextColor 40 130 130 255
+SetBorderColor 0 0 0
+
+================================================================================
+
+Item Class: Active Skill Gems
+Rarity: Gem
+Divergent Fireball
+--------
+Projectile, Spell, AoE, Fire
+Level: 17
+Cost: 22 Mana
+Cast Time: 0.75 sec
+Critical Strike Chance: 6.00%
+Effectiveness of Added Damage: 240%
+Quality: +10% (augmented)
+Alternate Quality
+--------
+Requirements:
+Level: 60
+Int: 134
+--------
+Unleashes a ball of fire towards a target which explodes, damaging nearby foes.
+--------
+Deals 640 to 960 Fire Damage
+36% chance to Ignite enemies
+62% more Damage with Ignite
+Projectiles gain Radius as they travel farther, up to +8 Radius
+30% increased Effect of non-Damaging Ailments on Enemies
+--------
+Experience: 1692380/27792735
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.
+--------
+Note: ~price 10 chaos
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | True
+BaseType | Fireball
+CastTime | 0.75 sec
+Class | Active Skill Gems
+Corrupted | False
+Cost | 22 Mana
+CriticalStrikeChance | 6.00%
+CrusaderItem | False
+EaterofWorldsItem | False
+EffectivenessofAddedDamage | 240%
+ElderItem | False
+Experience | 1692380
+FracturedItem | False
+GemLevel | 17
+GemQualityType | Divergent
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Note | ~price 10 chaos
+Quality | 10
+Rarity | Gem
+RedeemerItem | False
+RequiredInt | 134
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-exceptional $tier->divt1
+GemQualityType Divergent
+Class "Gems"
+BaseType "Added Cold Damage Support" "Advanced Traps Support" "Anger" "Animate Guardian" "Arc" "Arcane Cloak" "Arcane Surge Support" "Arcanist Brand" "Armageddon Brand" "Assassin's Mark" "Ball Lightning" "Ballista Totem Support" "Barrage Support" "Berserk" "Blade Vortex" "Bladestorm" "Blastchain Mine Support" "Blazing Salvo" "Blight" "Blood Rage" "Bone Offering" "Bonechill Support" "Boneshatter" "Burning Damage Support" "Cast when Damage Taken Support" "Chance to Poison Support" "Charged Mines Support" "Clarity" "Close Combat Support" "Cobra Lash" "Convocation" "Corrupting Fever" "Creeping Frost" "Cruelty Support" "Culling Strike Support" "Cyclone" "Dash" "Defiance Banner" "Desecrate" "Determination" "Detonate Dead" "Discharge" "Divine Ire" "Dread Banner" "Elemental Hit" "Elemental Weakness" "Energy Leech Support" "Ensnaring Arrow" "Eternal Blessing Support" "Exsanguinate" "Eye of Winter" "Faster Projectiles Support" "Fire Trap" "Fireball" "Flame Link" "Flammability" "Flesh Offering" "Flicker Strike" "Forbidden Rite" "Fortify Support" "Frost Blades" "Frost Shield" "Frostbite" "Frostblink" "Glacial Cascade" "Grace" "Haste" "Hatred" "Herald of Agony" "Herald of Ash" "Herald of Ice" "Herald of Thunder" "Hexblast" "Hypothermia Support" "Ice Spear" "Ignite Proliferation Support" "Increased Critical Damage Support" "Innervate Support" "Inspiration Support" "Kinetic Blast" "Kinetic Bolt" "Less Duration Support" "Lesser Multiple Projectiles Support" "Lifetap Support" "Lightning Arrow" "Lightning Spire Trap" "Malevolence" "Mark On Hit Support" "Meat Shield Support" "Melee Splash Support" "Minion Damage Support" "Mirage Archer Support" "Molten Shell" "Multiple Totems Support" "Multistrike Support" "Onslaught Support" "Phase Run" "Pierce Support" "Plague Bearer" "Poisonous Concoction" "Power Charge On Critical Support" "Precision" "Predator Support" "Pulverise Support" "Puncture" "Purifying Flame" "Purity of Elements" "Purity of Ice" "Pyroclast Mine" "Rage Support" "Raise Zombie" "Reckoning" "Righteous Fire" "Second Wind Support" "Seismic Trap" "Shield Crush" "Siphoning Trap" "Smite" "Sniper's Mark" "Spark" "Spectral Throw" "Spellslinger" "Spirit Offering" "Storm Burst" "Storm Call" "Stun Support" "Summon Holy Relic" "Summon Ice Golem" "Summon Phantasm Support" "Summon Skitterbots" "Sunder" "Tectonic Slam" "Tempest Shield" "Tornado Shot" "Trap and Mine Damage Support" "Urgent Orders Support" "Venom Gyre" "Vicious Projectiles Support" "Viper Strike" "Vitality" "Volatile Dead" "Vortex" "Wild Strike" "Winter Orb" "Withering Step" "Withering Touch Support" "Wrath"
+SetFontSize 45
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
+
+================================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Awakened Fire Penetration Support
+--------
+Fire, Support
+Level: 1
+Cost & Reservation Multiplier: 130%
+--------
+Requirements:
+Level: 72
+Str: 114
+--------
+Supports any skill that hits enemies, making those hits penetrate enemy fire resistance.
+--------
+Supported Skills Penetrate 35% Fire Resistance
+--------
+Experience: 1/413615669
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Note: ~price 20 blessed
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Awakened Fire Penetration Support
+Class | Support Skill Gems
+Corrupted | False
+Cost&ReservationMultiplier | 130%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+Experience | 1
+FracturedItem | False
+GemLevel | 1
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Note | ~price 20 blessed
+Quality | 0
+Rarity | Gem
+RedeemerItem | False
+RequiredLevel | 72
+RequiredStr | 114
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-exceptional $tier->awaany
+Class "Gems"
+BaseType "Awakened"
+SetFontSize 45
+SetTextColor 20 240 240 255
+SetBorderColor 240 0 0 255
+SetBackgroundColor 70 0 20 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Triangle
+
+================================================================================
+
+Item Class: Support Skill Gems
+Rarity: Gem
+Enhance Support
+--------
+Exceptional, Support
+Level: 4 (Max)
+Cost & Reservation Multiplier: 120%
+--------
+Requirements:
+Level: 60
+Dex: 96
+--------
+Supports any skill gem. Once this gem reaches level 2 or above, will raise the quality of supported gems. Cannot support skills that don't come from gems.
+--------
++24% to Quality of Supported Active Skill Gems
+--------
+This is a Support Gem. It does not grant a bonus to your character, but to skills in sockets connected to it. Place into an item socket connected to a socket containing the Active Skill Gem you wish to augment. Right click to remove from a socket.
+--------
+Corrupted
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Enhance Support
+Class | Support Skill Gems
+Corrupted | True
+Cost&ReservationMultiplier | 120%
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+GemLevel | 4
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+Mirrored | False
+Quality | 0
+Rarity | Gem
+RedeemerItem | False
+RequiredDex | 96
+RequiredLevel | 60
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->gems-special $tier->exspeciale4
+GemLevel >= 4
+Class "Gems"
+BaseType "Empower" "Enhance" "Enlighten"
+SetFontSize 45
+SetTextColor 0 0 125 255
+SetBorderColor 0 0 125 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 6 300
+PlayEffect Red
+MinimapIcon 0 Red Star
+
+================================================================================
+
+Item Class: Utility Flasks
+Rarity: Unique
+Bottled Faith
+Sulphur Flask
+--------
+Quality: +20% (augmented)
+Lasts 7.20 (augmented) Seconds
+Consumes 40 of 60 Charges on use
+Currently has 60 Charges
+40% increased Damage
+--------
+Requirements:
+Level: 35
+--------
+Item Level: 85
+--------
+Used when you Hit a Rare or Unique Enemy, if not already in effect (enchant)
+--------
+Creates Consecrated Ground on Use (implicit)
+--------
+30% reduced Duration
+Consecrated Ground created by this Flask has Tripled Radius
+Consecrated Ground created during Effect applies 10% increased Damage taken to Enemies
+150% increased Critical Strike Chance against Enemies on Consecrated Ground during Flask effect
+--------
+A tourniquet for the soul, squeezing ethereal into physical.
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Sulphur Flask
+Class | Utility Flasks
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 85
+Mirrored | False
+Name | Bottled Faith
+Quality | 20
+Rarity | Unique
+RedeemerItem | False
+RequiredLevel | 35
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->uniques $tier->t3boss
+Rarity Unique
+BaseType == "Ambusher" "Assassin's Boots" "Carnal Armour" "Crusader Gloves" "Ezomyte Burgonet" "Ezomyte Staff" "Golden Plate" "Goliath Greaves" "Great Crown" "Infernal Sword" "Iron Flask" "Legion Sword" "Magistrate Crown" "Necromancer Circlet" "Opal Ring" "Prophet Crown" "Royal Burgonet" "Ruby Ring" "Sapphire Ring" "Sentinel Jacket" "Serpentine Staff" "Slink Boots" "Sorcerer Boots" "Sulphur Flask" "Titan Gauntlets" "Titan Greaves" "Topaz Ring" "Triumphant Lamellar" "Unset Ring" "Vaal Gauntlets" "Void Sceptre"
+SetFontSize 45
+SetTextColor 175 96 37 255
+SetBorderColor 175 96 37 255
+SetBackgroundColor 53 13 13 255
+PlayAlertSound 3 300
+PlayEffect Brown
+MinimapIcon 2 Brown Star
+
+================================================================================
+
+Item Class: Rings
+Rarity: Rare
+Morbid Coil
+Two-Stone Ring
+--------
+Requirements:
+Level: 57
+--------
+Item Level: 80
+--------
++16% to Fire and Lightning Resistances (implicit)
+--------
++18 to Intelligence
+22% increased Cold Damage
+Adds 1 to 14 Lightning Damage to Attacks
++130 to Evasion Rating
++32 to maximum Energy Shield
+34% increased Mana Regeneration Rate
+--------
+Mirrored
+--------
+Corrupted
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Two-Stone Ring
+Class | Rings
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 80
+Mirrored | True
+Name | Morbid Coil
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 57
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D4 $type->rr->amuring $tier->t1
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Rings"
+BaseType "Agate Amulet" "Amethyst Ring" "Blue Pearl Amulet" "Cerulean Ring" "Citrine Amulet" "Iolite Ring" "Marble Amulet" "Onyx Amulet" "Opal Ring" "Prismatic Ring" "Seaglass Amulet" "Steel Ring" "Turquoise Amulet" "Two-Stone Ring" "Vermillion Ring"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 121 70 225 255
+
+================================================================================
+
+Item Class: Maps
+Rarity: Rare
+Crimson Township Map
+--------
+Map Tier: 13
+--------
+Item Level: 83
+--------
+Unidentified
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+--------
+Corrupted
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Crimson Township Map
+Class | Maps
+Corrupted | True
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | False
+ItemLevel | 83
+MapTier | 13
+Mirrored | False
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %H5 $type->maps $tier->maps_b_t13
+MapTier 13
+Class "Maps"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 200 200 200 255
+PlayAlertSound 5 300
+PlayEffect Yellow
+MinimapIcon 1 Red Square
+
+================================================================================
+
+Item Class: Amulets
+Rarity: Unique
+Onyx Amulet
+--------
+Item Level: 85
+--------
+While a Unique Enemy is in your Presence, 25% increased Armour (implicit)
+While a Unique Enemy is in your Presence, +20% to Chaos Damage over Time Multiplier (implicit)
+--------
+Unidentified
+Searing Exarch Item
+Eater of Worlds Item
+--------
+Note: ~price 5 chaos
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Onyx Amulet
+Class | Amulets
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | True
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | True
+HasInfluence | ['None']
+HasSearingExarchImplicit | True
+HunterItem | False
+Identified | False
+ItemLevel | 85
+Mirrored | False
+Note | ~price 5 chaos
+Quality | 0
+Rarity | Unique
+RedeemerItem | False
+SearingExarchItem | True
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | True
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->uniques $tier->multispecial
+Rarity Unique
+BaseType == "Amethyst Ring" "Archon Kite Shield" "Carved Wand" "Fiend Dagger" "Gold Ring" "Heavy Belt" "Hydrascale Gauntlets" "Leather Belt" "Long Staff" "Medium Cluster Jewel" "Onyx Amulet" "Sadist Garb" "Saint's Hauberk" "Small Cluster Jewel" "Stealth Boots" "Stibnite Flask" "Studded Belt" "Turquoise Amulet" "Two-Point Arrow Quiver" "Two-Stone Ring"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBorderColor 0 0 0 255
+SetBackgroundColor 175 96 37 255
+PlayAlertSound 2 300
+PlayEffect Blue
+MinimapIcon 1 Blue Star
+
+================================================================================
+
+Item Class: Amulets
+Rarity: Rare
+Rift Rosary
+Astrolabe Amulet
+--------
+Requirements:
+Level: 69
+--------
+Item Level: 80
+--------
+Implicit Modifiers Cannot Be Changed (implicit)
+Has Elder, Shaper and all Conqueror Influences (implicit)
+--------
++27% to Global Critical Strike Multiplier
++34 to maximum Life
++43% to Lightning Resistance
+Gain 9% of Physical Damage as Extra Cold Damage
++1 to maximum number of Skeletons
+--------
+Shaper Item
+Elder Item
+Crusader Item
+Redeemer Item
+Hunter Item
+Warlord Item
+--------
+Note: ~b/o 1 chaos
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Astrolabe Amulet
+Class | Amulets
+Corrupted | False
+CrusaderItem | True
+EaterofWorldsItem | False
+ElderItem | True
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Crusader', 'Elder', 'Hunter', 'Redeemer', 'Shaper', 'Warlord']
+HasSearingExarchImplicit | False
+HunterItem | True
+Identified | True
+ItemLevel | 80
+Mirrored | False
+Name | Rift Rosary
+Note | ~b/o 1 chaos
+Quality | 0
+Rarity | Rare
+RedeemerItem | True
+RequiredLevel | 69
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | True
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | True
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->influenced->common $tier->t1_exo
+HasInfluence Crusader Elder Hunter Redeemer Shaper Warlord
+Rarity <= Rare
+BaseType "Accumulator Wand" "Aetherwind Gloves" "Alternating Sceptre" "Anarchic Spiritblade" "Apex Cleaver" "Archdemon Crown" "Assembler Wand" "Astrolabe Amulet" "Atonement Mask" "Banishing Blade" "Basemetal Treads" "Battery Staff" "Blasting Blade" "Blizzard Crown" "Blunt Force Condenser" "Boom Mace" "Brimstone Treads" "Capacity Rod" "Capricious Spiritblade" "Cloudwhisper Boots" "Cogwork Ring" "Cold-attuned Buckler" "Congregator Wand" "Crack Mace" "Crushing Force Magnifier" "Darksteel Treads" "Debilitation Gauntlets" "Demon Crown" "Disapprobation Axe" "Dreamquest Slippers" "Duskwalk Slippers" "Endothermic Buckler" "Eventuality Rod" "Exhausting Spirit Shield" "Exothermic Tower Shield" "Fickle Spiritblade" "Flare Mace" "Flashfire Blade" "Flickerflame Blade" "Foundry Bow" "Gale Crown" "Gauche Gloves" "Geodesic Ring" "Gruelling Gauntlets" "Heat-attuned Tower Shield" "Hedron Bow" "Hollowpoint Dagger" "Honed Cleaver" "Imp Crown" "Impact Force Propagator" "Infernal Blade" "Leyline Gloves" "Magmatic Tower Shield" "Malign Fangs" "Maltreatment Axe" "Mechalarm Belt" "Micro-Distillery Belt" "Nexus Gloves" "Nightwind Slippers" "Oscillating Sceptre" "Penitent Mask" "Pneumatic Dagger" "Polar Buckler" "Potentiality Rod" "Pressurised Dagger" "Prime Cleaver" "Psychotic Axe" "Rebuking Blade" "Reciprocation Staff" "Runic Crest" "Runic Crown" "Runic Gages" "Runic Gauntlets" "Runic Gloves" "Runic Greaves" "Runic Helm" "Runic Sabatons" "Runic Sollerets" "Shadow Fangs" "Simplex Amulet" "Sinistral Gloves" "Solarine Bow" "Sorrow Mask" "Southswing Gloves" "Stabilising Sceptre" "Stormrider Boots" "Subsuming Spirit Shield" "Taxing Gauntlets" "Transfer-attuned Spirit Shield" "Transformer Staff" "Void Fangs" "Windbreak Boots" "Winter Crown"
+SetFontSize 45
+SetTextColor 50 130 165 255
+SetBorderColor 50 130 165 255
+SetBackgroundColor 255 255 255 255
+PlayAlertSound 1 300
+PlayEffect Red
+MinimapIcon 0 Red Cross
+
+================================================================================
+
+Item Class: Rings
+Rarity: Rare
+Damnation Eye
+Sapphire Ring
+--------
+Requirements:
+Level: 59
+--------
+Item Level: 84
+--------
++26% to Cold Resistance (implicit)
+--------
+Adds 6 to 13 Cold Damage to Attacks
++47 to maximum Energy Shield
++9% to Fire Resistance
+Veiled Suffix
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Sapphire Ring
+Class | Rings
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 84
+Mirrored | False
+Name | Damnation Eye
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 59
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | True
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D3 $type->rr->amuring $tier->t2
+ItemLevel >= 68
+Rarity Rare
+Class "Amulets" "Rings"
+BaseType "Amber Amulet" "Coral Ring" "Diamond Ring" "Jade Amulet" "Lapis Amulet" "Ruby Ring" "Sapphire Ring" "Topaz Ring" "Unset Ring"
+SetFontSize 45
+SetTextColor 0 0 0 255
+SetBackgroundColor 103 34 163 255
+
+================================================================================
+
+Item Class: Sentinel
+Rarity: Rare
+Ominous Machine
+Cobalt Apex Sentinel
+--------
+Duration: 63 (augmented) seconds
+Empowers: 2 enemies
+Empowerment: 35
+--------
+Requirements:
+Level: 44
+--------
+Item Level: 84
+--------
+Can only empower Rare or Unique enemies (implicit)
+--------
++7 to Charge
+33% increased Duration
++18 seconds to Duration
+Character Gains Power Charges for 15 seconds on deployment
+--------
+Charge: 15/15 (augmented)
+--------
+Unmodifiable
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Cobalt Apex Sentinel
+Charge | 15/15 (augmented)
+Class | Sentinel Drone
+Corrupted | False
+CrusaderItem | False
+Duration | 63 (augmented) seconds
+EaterofWorldsItem | False
+ElderItem | False
+Empowerment | 35
+Empowers | 2 enemies
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 84
+Mirrored | False
+Name | Ominous Machine
+Quality | 0
+Rarity | Rare
+RedeemerItem | False
+RequiredLevel | 44
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D5 $type->sentinel->drones $tier->apexr
+Rarity Rare
+Class "Sentinel Drone"
+BaseType == "Ancient Apex Sentinel" "Brimstone Apex Sentinel" "Bronze Apex Sentinel" "Cobalt Apex Sentinel" "Cosmic Apex Sentinel" "Cryptic Apex Sentinel" "Emberstone Apex Sentinel" "Obsidian Apex Sentinel" "Primeval Apex Sentinel"
+SetFontSize 45
+SetBorderColor 150 0 255 255
+SetBackgroundColor 33 0 64 255
+PlayAlertSound 2 300
+PlayEffect Cyan
+MinimapIcon 1 Cyan Pentagon
+
+================================================================================
+
+Item Class: Rings
+Rarity: Magic
+The Shaper's Coral Ring of the Lynx
+--------
+Requirements:
+Level: 54
+--------
+Item Level: 83
+--------
++27 to maximum Life (implicit)
+--------
++15 to Dexterity
++8 Life gained for each Enemy hit by your Spells
+--------
+Shaper Item
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | The Shaper's Coral Ring of the Lynx
+Class | Rings
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['Shaper']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 83
+Mirrored | False
+Quality | 0
+Rarity | Magic
+RedeemerItem | False
+RequiredLevel | 54
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | True
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # %D4 $type->rare->any $tier->anytrinket
+HasInfluence Crusader Elder Hunter Redeemer Shaper Warlord
+Rarity <= Rare
+Class "Amulet" "Belts" "Rings"
+SetFontSize 45
+SetTextColor 255 255 255 255
+SetBorderColor 255 255 255 255
+SetBackgroundColor 50 130 165
+PlayEffect Blue Temp
+
+================================================================================
+
+Item Class: Maps
+Rarity: Normal
+Superior Tower Map
+--------
+Map Tier: 16
+Item Quantity: +8% (augmented)
+Quality: +8% (augmented)
+--------
+Item Level: 85
+--------
+Travel to this Map by using it in a personal Map Device. Maps can only be used once.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AlternateQuality | False
+BaseType | Tower Map
+Class | Maps
+Corrupted | False
+CrusaderItem | False
+EaterofWorldsItem | False
+ElderItem | False
+FracturedItem | False
+HasEaterOfWorldsImplicit | False
+HasInfluence | ['None']
+HasSearingExarchImplicit | False
+HunterItem | False
+Identified | True
+ItemLevel | 85
+ItemQuantity | +8% (augmented)
+MapTier | 16
+Mirrored | False
+Quality | 8
+Rarity | Normal
+RedeemerItem | False
+SearingExarchItem | False
+ShapedMap | False
+ShaperItem | False
+Split | False
+SynthesisedItem | False
+Unidentified | False
+VeiledPrefix | False
+VeiledSuffix | False
+WarlordItem | False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show # $type->untagged_rule $tier->4
+Class Maps
+BaseType == "Tower Map"
+MapTier == 16
+SetFontSize 45
+SetBackgroundColor 0 0 0 255
+MinimapIcon 1 Cyan Square
+PlayEffect Cyan
+SetBorderColor 0 224 255 255
+PlayAlertSound 3 300
+SetTextColor 59 215 245 255
+
+================================================================================
