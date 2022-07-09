@@ -8,7 +8,10 @@ IsPoeActive() {
 }
 
 MakePoeActive() {
-   WinActivate, ahk_exe PathOfExile.exe
+   if (WinExist("ahk_exe PathOfExileSteam.exe"))
+      WinActivate, ahk_exe PathOfExileSteam.exe
+   else
+      WinActivate, ahk_exe PathOfExile.exe
 }
 
 IsDlfActive() {
