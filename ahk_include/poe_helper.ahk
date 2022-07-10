@@ -4,11 +4,14 @@
 ; or 0 if it does not. Thus, the return value can be used in boolean contex
 ; to determine if PoE is the currently active window.
 IsPoeActive() {
-   return WinActive("ahk_exe PathOfExile.exe")
+   return (WinActive("ahk_exe PathOfExile.exe") or WinActive("ahk_exe PathOfExileSteam.exe"))
 }
 
 MakePoeActive() {
-   WinActivate, ahk_exe PathOfExile.exe
+   if (WinExist("ahk_exe PathOfExileSteam.exe"))
+      WinActivate, ahk_exe PathOfExileSteam.exe
+   else
+      WinActivate, ahk_exe PathOfExile.exe
 }
 
 IsDlfActive() {
