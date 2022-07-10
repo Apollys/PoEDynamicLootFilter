@@ -101,6 +101,36 @@ def ParseEnclosedBy(line: str, start_seq: str, end_seq: str = None) -> List[str]
     return token_list
 # End ParseEnclosedBy
 
+# Example: parsing the string '"Leather Belt" Amulet Boots "Two-Stone Ring"' with
+# enclosed_by = '"', split_by = ' ' yields ['Leather Belt', 'Amulet', 'Boots', 'Two-Stone Ring'].
+# Note: each delimeter must be a single character.
+def ParseEnclosedByOrSplitBy(line: str, enclosed_by_char:str, split_by_char:str) -> List[str]:
+    CheckType(line, 'line', str)
+    CheckType(enclosed_by_char, 'enclosed_by_char', str)
+    CheckType(split_by_char, 'split_by_char', str)
+    if (line == ''):
+        return []
+    split_result = line.split(split_by_char)
+    token_list = []
+    in_token_flag = False
+    for s in split_result:
+        if (in_token_flag):
+            if (s.endswith(enclosed_by_char)):
+                s = s[:-1]
+                in_token_flag = False
+            token_list[-1] += split_by_char + s
+        elif (s.startswith(enclosed_by_char)):
+            s = s[1:]
+            if (s.endswith(enclosed_by_char)):
+                token_list.append(s[:-1])
+            else:
+                token_list.append(s)
+                in_token_flag = True
+        else:
+            token_list.append(s)
+    return token_list
+# End ParseEnclosedByOrSplitBy
+
 def IsInt(s: str or int) -> bool:
     if (isinstance(s, int)):
         return s

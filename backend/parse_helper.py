@@ -200,27 +200,26 @@ def ParseTypeTierTags(rule_text_lines: List[str]) -> Tuple[str, str]:
     return tuple(tag_list) if success else None
 # End ParseTypeTierTags
 
-# Convert a list of string values to a single string.  For example:
+# Convert a string of values to a list of strings.  For example:
 #  - '"Orb of Chaos" "Orb of Alchemy"' -> ['Orb of Chaos', 'Orb of Alchemy']
-#  = 'Boots Gloves Helmets' -> ['Boots', 'Gloves', 'Helmets']
-# Assumes either all or none of the items in values_string are enclosed in quotes.
+#  - 'Boots Gloves Helmets "Body Armours"' -> ['Boots', 'Gloves', 'Helmets', "Body Armours"]
+#  - '"Alteration.mp3" 300' -> ['Alteration.mp3', '300']
 def ConvertValuesStringToList(values_string: str) -> List[str]:
     CheckType(values_string, 'values_string', str)
-    if (len(values_string) == 0):
-        return []
-    if ('"' in values_string):  # assume all values are enclosed in quotes
-        values_list = simple_parser.ParseEnclosedBy(values_string, '"')
-    else:
-        values_list = values_string.split(' ')
-    return values_list
+    return simple_parser.ParseEnclosedByOrSplitBy(values_string, '"', ' ')
 # End ConvertValuesStringToList
+
+# Returns double-quoted string if s contrains any of period, single quote, or space.
+# Otherwise, returns s.
+def QuoteStringIfRequired(s: str) -> str:
+    CheckType(s, 's', str)
+    return '"' + s + '"' if any(c in s for c in ".' ") else s
+# End QuoteStringIfRequired
 
 # Convert a list of string values to a single string.  For example:
 #  - ['Orb of Chaos', 'Orb of Alchemy'] -> '"Orb of Chaos" "Orb of Alchemy"'
-#  = ['Boots', 'Gloves', 'Helmets'] -> 'Boots Gloves Helmets'
-# Returned string always either encloses all or none of its values in quotes.
+#  - ['Helmets', 'Body Armours'] -> 'Helmets "Body Armours"'
+#  - ['Alteration.mp3', '300'] -> '"Alteration.mp3" 300'
 def ConvertValuesListToString(values_list: List[str]) -> str:
-    if (any(' ' in s for s in values_list)):
-        return '"' + '" "'.join(values_list) + '"'
-    return ' '.join(values_list)
+    return ' '.join(QuoteStringIfRequired(s) for s in values_list)
 # ConvertValuesListToString

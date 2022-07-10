@@ -85,6 +85,17 @@ def TestParseEnclosedBy():
     print('TestParseEnclosedBy passed!')
 # End TestParseEnclosedBy
 
+def TestParseEnclosedByOrSplitBy():
+    # Empty string case
+    result = simple_parser.ParseEnclosedByOrSplitBy('', '%', ':')
+    AssertEqual(result, [])
+    # Mixed quotes and spaces case
+    text = '"Leather Belt" Amulet Boots "Two-Stone Ring" "Orb of Alchemy"'
+    result = simple_parser.ParseEnclosedByOrSplitBy(text, '"', ' ')
+    AssertEqual(result, ['Leather Belt', 'Amulet', 'Boots', 'Two-Stone Ring', 'Orb of Alchemy'])
+    print('ParseEnclosedByOrSplitBy passed!')
+# End TestParseEnclosedByOrSplitBy
+
 def TestIsInt():
     AssertTrue(simple_parser.IsInt('-5'))
     AssertFalse(simple_parser.IsInt('1.2'))
@@ -119,6 +130,7 @@ def TestParseValueDynamic():
 def main():
     TestParseFromTemplate()
     TestParseEnclosedBy()
+    TestParseEnclosedByOrSplitBy()
     TestIsInt()
     TestParseInts()
     TestParseValueDynamic()

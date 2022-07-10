@@ -1,6 +1,8 @@
 from loot_filter_rule import RuleVisibility, LootFilterRule
 from test_assertions import AssertEqual, AssertTrue, AssertFalse
 
+import parse_helper
+
 kCommentBlockText = \
 '''#===============================================================================================================
 # NeverSink's Indepth Loot Filter - for Path of Exile
@@ -64,6 +66,17 @@ SetBorderColor 0 255 255 255
 SetBackgroundColor 120 20 20 80
 SetFontSize 40
 MinimapIcon 0 Cyan Moon'''
+
+kCustomDropSoundRuleText = \
+'''Show  # $type->currency $tier->t5
+Class "Currency"
+SetFontSize 45
+SetTextColor 30 200 200 255
+SetBorderColor 30 200 200 255
+SetBackgroundColor 0 0 69
+MinimapIcon 2 Cyan Raindrop
+CustomAlertSound "Alteration.mp3" 300
+DisableDropSound True'''
 
 def TestIsParsableAsRule():
     AssertFalse(LootFilterRule.IsParsableAsRule(kCommentBlockText))
@@ -174,6 +187,13 @@ def TestRepeatedKeyword():
     rule = LootFilterRule(kRepeatedKeywordRuleText)
     print('TestRepeatedKeyword passed!')
 
+def TestCustomDropSound():
+    rule = LootFilterRule(kCustomDropSoundRuleText)
+    rule.AddBaseType('Orb of Alteration')
+    rule.Hide()
+    AssertTrue(parse_helper.IsSubstringInLines('"Alteration.mp3"', rule.GetTextLines()))
+    print('TestCustomDropSound passed!')
+
 # TODO:
 #  - Test header_comment_lines and rule_text_lines are parsed correctly
 #  - Test GetConditions
@@ -188,6 +208,7 @@ def main():
     TestModifyLine()
     TestEmptyBaseTypeList()
     TestRepeatedKeyword()
+    TestCustomDropSound()
     print('All tests passed!')
 
 if (__name__ == '__main__'):

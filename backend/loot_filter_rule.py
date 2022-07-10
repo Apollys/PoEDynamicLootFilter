@@ -163,7 +163,7 @@ class LootFilterRule:
         self.rule_text_lines.append(tag_line)
         # Construct and append all lines from hll
         # If rule is Hide, disable beams, minimap icons, and drop sounds
-        keywords_to_disable = (['PlayEffect', 'MinimapIcon', 'PlayAlertSound']
+        keywords_to_disable = (['PlayEffect', 'MinimapIcon', 'PlayAlertSound', 'CustomAlertSound']
                 if self.visibility == RuleVisibility.kHide else [])
         for keyword, (operator, values_list) in self.parsed_lines_hll:
             line = ('# ' if RuleVisibility.IsDisabled(self.visibility)

@@ -47,7 +47,23 @@ def TestFindShowHideLineIndex():
         AssertEqual(show_hide_line_index, expected_index)
     print('TestFindShowHideLineIndex passed!')
 
-# TODO: Add more test cases
+kValuesStringListTestCases = [
+        ('"Orb of Chaos" "Orb of Alchemy"', ['Orb of Chaos', 'Orb of Alchemy']),
+        ('Boots Gloves Helmets "Body Armours"', ['Boots', 'Gloves', 'Helmets', "Body Armours"]),
+        ('"Alteration.mp3" 300', ['Alteration.mp3', '300'])]
+
+def TestConvertValuesStringToList():
+    for values_string, values_list in kValuesStringListTestCases:
+        result_values_list = parse_helper.ConvertValuesStringToList(values_string)
+        AssertEqual(result_values_list, values_list)
+    print('TestConvertValuesStringToList passed!')
+
+def TestConvertValuesListToString():
+    for values_string, values_list in kValuesStringListTestCases:
+        result_values_string = parse_helper.ConvertValuesListToString(values_list)
+        AssertEqual(result_values_string, values_string)
+    print('TestConvertValuesListToString passed!')
+
 def TestParseRuleLineGeneric():
     # Standard rule line
     rule_line = '# BaseType == "Hubris Circlet" "Sorcerer\'s Gloves"'
@@ -64,6 +80,11 @@ def TestParseRuleLineGeneric():
     # Keyword only
     rule_line = 'Hide'
     expected_parse_result =  ('Hide', '', [])
+    AssertEqual(parse_helper.ParseRuleLineGeneric(rule_line), expected_parse_result)
+    # Mixed quoted and unquoted items
+    rule_line = 'CustomAlertSound "Fusing.mp3" 300 "Alteration.mp3" 200 100 "Orb of Chaos.mp3"'
+    expected_parse_result = ('CustomAlertSound', '',
+            ['Fusing.mp3', '300', 'Alteration.mp3', '200', '100', 'Orb of Chaos.mp3'])
     AssertEqual(parse_helper.ParseRuleLineGeneric(rule_line), expected_parse_result)
     print('TestParseRuleLineGeneric passed!')
 
