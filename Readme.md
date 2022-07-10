@@ -18,10 +18,8 @@ There are only two requirements for DLF to run (see [below](https://github.com/A
 Once you have the requirements, follow these steps to setup DLF:
 
 1. Download any [FilterBlade](https://www.filterblade.xyz/) loot filter (you can leave it in your Downloads directory).
-2. Download this repository anywhere on your PC.
-3. Open this PoEDynamicLootFilter directory in command prompt, and run `python setup.py`.
-
-Once this is complete, double click `dynamic_loot_filter.ahk` to launch PoE DLF.
+2. Download this repository anywhere on your PC (Click the green "Code" drop-down menu in the top right, then click "Download ZIP", and extract it anywhere).
+3. Double click `dynamic_loot_filter.ahk` to launch PoE DLF (setup is integrated into the GUI).
 
 ## In-Game Usage
 
