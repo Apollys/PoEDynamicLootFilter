@@ -89,5 +89,9 @@ RemovedSpaces(s) {
 ; Returns an array of strings containing the lines in the file (newlines removed)
 ReadFileLines(filepath) {
     FileRead, file_contents, %filepath%
-    return StrSplit(file_contents, "`r`n")
+	lines := StrSplit(file_contents, "`n")
+	for i, line in lines {
+		lines[i] := Trim(line, OmitChars:=" `t`r`n")
+	}
+    return lines
 }
