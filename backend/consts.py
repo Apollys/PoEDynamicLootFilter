@@ -250,6 +250,10 @@ SetBorderColor 106 0 255
 MinimapIcon 2 Purple Square
 PlayEffect Purple Temp'''
 
+kWeaponItemClasses = ['Claws', 'Daggers', 'Rune Daggers', 'Sceptres', 'Wands', 'One Hand Swords',
+        'Thrusting One Hand Swords', 'One Hand Axes', 'One Hand Maces', 'Bows', 'Staves',
+        'Warstaves', 'Two Hand Swords', 'Two Hand Axes', 'Two Hand Maces', 'Quivers', 'Shields']
+
 # =============================== Chaos Recipe ===============================
 
 kChaosRecipeTypeTag = 'dlf_chaos_recipe_rares'

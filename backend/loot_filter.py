@@ -249,17 +249,19 @@ class LootFilter:
             return
         rule_template_lines = consts.kSocketsRuleTemplate.format(
                 consts.kSocketsTypeTag, tier_tag).split('\n')
-        condition_lines = socket_helper.GenerateSocketConditions(socket_string, item_slot)
+        class_and_socket_condition_lines = socket_helper.GenerateClassAndSocketConditions(
+                socket_string, item_slot)
         # Insert comment as first line, and conditions after Show line
         normalized_socket_string = socket_helper.NormalizedSocketString(socket_string)
         comment_line = '# Socketed {}: {}'.format(
                 'items' if item_slot.lower() == 'any' else item_slot.strip('"'),
                 normalized_socket_string)
-        rule_lines = [comment_line] + [rule_template_lines[0]] + condition_lines + rule_template_lines[1:]
+        rule_lines = ([comment_line] + [rule_template_lines[0]] + class_and_socket_condition_lines +
+                rule_template_lines[1:])
         self.AddBlockToHll(rule_lines, self.dlf_rules_successor_key)
     # End AddSocketRule
 
-    # Does nothig if the socket string is invalid or the socket rule does not exist.
+    # Does nothing if the socket string is invalid or the socket rule does not exist.
     # (Need to be robust to removing nonexistent rule, because profile changes
     # will collapse add then remove rule into remove rule.)
     def RemoveSocketRule(self, socket_string: str, item_slot: str):

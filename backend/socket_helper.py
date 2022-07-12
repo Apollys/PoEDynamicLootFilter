@@ -2,6 +2,7 @@ import string_helper
 from typing import List, Tuple
 
 import consts
+import parse_helper
 from type_checker import CheckType
 
 kValidSocketColorCharacters = 'RGBWDAX'
@@ -67,7 +68,7 @@ def DecodeTierTag(tier_tag: str) -> Tuple[str, str]:
 # item_slot is case insensitive, and is either 'any' or the name a specific item slot.
 # Returns a list of rules condition strings, which combine to match the given socket_string.
 # Note: 'RGB-X' is equivalent to 'RG B-X' is equivalent to 'R G B-X'
-def GenerateSocketConditions(socket_string: str, item_slot: str) -> List[str]:
+def GenerateClassAndSocketConditions(socket_string: str, item_slot: str) -> List[str]:
     CheckType(socket_string, 'socket_string', str)
     normalized_socket_string = NormalizedSocketString(socket_string)
     if (normalized_socket_string == None):
@@ -98,7 +99,11 @@ def GenerateSocketConditions(socket_string: str, item_slot: str) -> List[str]:
     if (item_slot_title_case != 'Any'):
         if (item_slot_title_case not in consts.kItemSlots):
             raise RuntimeError('Invalid item slot: {}'.format(item_slot))
-        condition_lines += ['Class "{}"'.format(item_slot_title_case)]
+        # Use 'Weapon' to match 'One Handed Weapon' and 'Two Handed Weapon' (must be singular)
+        item_classes = (consts.kWeaponItemClasses if (item_slot_title_case == 'Weapons')
+                else [item_slot_title_case])
+        condition_lines += ['Class == {}'.format(
+                parse_helper.ConvertValuesListToString(item_classes))]
     # Next, create the Sockets condition
     socket_colors = [c for c in normalized_socket_string if (c in kValidSocketColorCharacters)]
     socket_condition_socket_string = (str(len(socket_colors)) +
