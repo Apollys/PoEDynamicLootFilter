@@ -436,6 +436,12 @@ BuildGui(ui_data_dict) {
 	Gui Add, Button, x%x% y%y% w224 h31 gUpdateFilter, [&W]rite Filter
 	; ------------- End Section: [Filter Actions] -------------
 
+	; Set up System Tray
+	Menu, Tray, Add, Minimize to System Tray, MinimizeToTray
+	Menu, Tray, Default, 1&  ; 1& indicates first item
+	Menu, Tray, Add  ; adds separator line
+	Menu, Tray, Add, Exit, Exit
+	; Borderless mode
 	if (kBorderlessMode) {
 		Gui -Border  ; disables drag-moving the window!
 	}

@@ -24,8 +24,9 @@ SetBatchLines -1  ; Run at full speed (do not sleep every n lines)
 #Include gui_placeholder.ahk
 #Include poe_helper.ahk
 
-; Give script the DLF Icon
+; Set system tray icon and clear standard menu options
 Menu, Tray, Icon, %kDlfIconPath%
+Menu, Tray, NoStandard
 
 ; ============================= Global Variables =============================
 
@@ -180,13 +181,12 @@ CreateProfileSubmit() {
     return
 }
 
-; Minimize the GUI on Escape
 GuiEscape() {
-    WinMinimize, A
+    MinimizeToTray()
 }
 
 GuiClose() {
-    ExitApp
+    MinimizeToTray()
 }
 
 ; ============================= Load/Import Filter =============================
@@ -231,14 +231,18 @@ Main() {
 
 ToggleGUIHotkey() {
     if (IsPoeActive()) {
+        RestoreFromTray()
         MakeDlfActive()
     } else if (IsDlfActive()) {
+        MinimizeToTray()
         MakePoeActive()
     }
 }
 
 WriteFilterHotkey() {
     UpdateFilter()
+    MinimizeToTray()
+    MakePoeActive()
 }
 
 ReloadFilterHotkey() {

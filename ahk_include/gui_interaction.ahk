@@ -465,3 +465,21 @@ ImportFilter() {
 ReloadUi() {
 	Reload
 }
+
+MinimizeToTray() {
+	Gui, Hide
+	Menu, Tray, Delete, 1&  ; 1& indicates first item
+	Menu, Tray, Insert, 1&, Restore from System Tray, RestoreFromTray
+	Menu, Tray, Default, 1&
+}
+
+RestoreFromTray() {
+	Gui, Show
+	Menu, Tray, Delete, 1&  ; 1& indicates first item
+	Menu, Tray, Insert, 1&, Minimize to System Tray, MinimizeToTray
+	Menu, Tray, Default, 1&
+}
+
+Exit() {
+	ExitApp
+}
