@@ -42,6 +42,7 @@ import sys
 import traceback
 from typing import List, Tuple
 
+from backend import update_helper
 from backend_cli_function_info import kFunctionInfoMap
 import consts
 import file_helper
@@ -123,6 +124,14 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         profile_names_list = profile.GetAllProfileNames()
         is_first_launch_flag: bool = (len(profile_names_list) == 0)
         output_string = str(int(is_first_launch_flag))
+    elif (function_name == 'check_for_update'):
+        '''
+        check_for_update
+         - Output: "1" if there is an update available, "0" otherwise
+         - Example: > python3 backend_cli.py check_for_update
+        '''
+        CheckNumParams(function_params, 0)
+        output_string = str(update_helper.check_for_update())
     # ===================================== General Config =====================================
     elif (function_name == 'set_hotkey'):
         '''

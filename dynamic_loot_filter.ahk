@@ -68,6 +68,14 @@ InitializeProfiles() {
     return g_active_profile
 }
 
+; ============================= Update Checker Functions =============================
+
+CheckForUpdate() {
+    RunBackendCliFunction("check_for_update")
+    needs_update := ReadFile(kBackendCliOutputPath)
+    return needs_update
+}
+
 ; ============================= To Refactor - Profile Creation =============================
 
 BuildCreateProfileGui() {
@@ -214,6 +222,7 @@ LoadOrImportFilter(active_profile) {
 
 Main() {
     global g_ui_data_dict
+    needs_update := CheckForUpdate()
     active_profile := InitializeProfiles()
     ; If no profiles exist, return from this thread and wait for profile creation GUI
     if (IsNone(active_profile)) {
@@ -225,6 +234,9 @@ Main() {
     g_ui_data_dict := QueryAllFilterData(active_profile)
     QueryHotkeys(g_ui_data_dict)
     BuildGui(g_ui_data_dict)
+    if (needs_update) {
+        UpdateStatusMessage("Update Available, Download from Github")
+    }
 }
 
 ; ================================== Hotkeys ==================================
