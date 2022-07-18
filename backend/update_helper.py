@@ -1,7 +1,9 @@
 import os
+import random
 
-from backend import consts, web_helper
-from backend.file_helper import ReadFile
+import consts
+import file_helper
+import web_helper
 
 
 def check_for_update() -> int:
@@ -18,7 +20,7 @@ def check_for_update() -> int:
         # If the server returns a 404, there is no update available.
         return 0
 
-    current_update_file = ReadFile(os.path.join(consts.kConfigDirectory, ".update"))
+    current_update_file = file_helper.ReadFile(os.path.join(consts.kConfigDirectory, ".update"))
     if len(current_update_file) <= 0:
         # If the current update file is empty, there is an update available.
         return 1

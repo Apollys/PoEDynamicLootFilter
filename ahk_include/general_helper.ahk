@@ -6,6 +6,10 @@ DebugMessage(message) {
     MsgBox, , Debug Message, %message%
 }
 
+InfoPopup(message) {
+    MsgBox, , Information, %message%
+}
+
 ; Returns an array of consecutive integers from start to end (inclusive)
 ; If only one parameter is passed, yields the range from 1 to given value.
 RangeArray(start_or_end, optional_end:="") {

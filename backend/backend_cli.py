@@ -42,7 +42,7 @@ import sys
 import traceback
 from typing import List, Tuple
 
-from backend import update_helper
+import update_helper
 from backend_cli_function_info import kFunctionInfoMap
 import consts
 import file_helper
@@ -57,6 +57,7 @@ import socket_helper
 from type_checker import CheckType
 
 kLogFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.log')
+kFullLogFilename = os.path.join(consts.kCacheDirectory, 'backend_cli_full.log')
 kInputFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.input')
 kOutputFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.output')
 kInfoFilename = os.path.join(consts.kCacheDirectory, 'backend_cli.info')
@@ -882,6 +883,7 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         # If function was not run_batch, write output
         if (function_name != 'run_batch'):
             file_helper.WriteToFile(output_string, kOutputFilename)
+            file_helper.AppendToFile(function_name + ":" + output_string + "\n", kFullLogFilename)
         # Save loot filter if we called a mutator function
         if (kFunctionInfoMap[function_name]['ModifiesFilter']):
             loot_filter.SaveToFile()
