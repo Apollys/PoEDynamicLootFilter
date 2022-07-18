@@ -1,3 +1,8 @@
+"""
+Credit:
+https://dev.to/bowmanjd/http-calls-in-python-without-requests-or-other-external-dependencies-5aj1
+"""
+
 import json
 import typing
 import urllib.error
