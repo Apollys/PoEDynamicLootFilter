@@ -72,7 +72,7 @@ InitializeProfiles() {
 
 CheckForUpdate() {
     RunBackendCliFunction("check_for_update")
-    needs_update := ReadFile(kBackendCliOutputPath)
+    needs_update := ReadFileLines(kBackendCliOutputPath)[1]
     return needs_update
 }
 
