@@ -450,7 +450,6 @@ UpdateFilter() {
 	}
 	status_message := (exit_code == 0) ? "Filter updated!" : "Error updating filter"
     UpdateStatusMessage(status_message "`n" ParseInfoMessages())
-    MakePoeActive()
     return
 }
 
