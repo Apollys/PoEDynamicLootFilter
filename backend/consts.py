@@ -10,7 +10,7 @@ def InvertedDict(input_dict):
 kDlfVersion = '1.1.0'
 
 #================================Update=============================================
-kUpdateURL = 'https://raw.githubusercontent.com/Apollys/PoEDynamicLootFilter/master/config/.update'
+kUpdateURL = 'https://raw.githubusercontent.com/Apollys/PoEDynamicLootFilter/master/Resources/.update'
 
 #=================================== Directories ===================================
 
