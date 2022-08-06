@@ -13,7 +13,7 @@ ProfileDdlAction() {
 	if (target_profile == g_active_profile) {
 		return
 	}
-	RunBackendCliFunction("set_active_profile " target_profile)
+	RunBackendCliFunction("set_active_profile " Quoted(target_profile))
 	Reload
 }
 
@@ -294,7 +294,7 @@ FindRuleMatchingClipboard() {
 	FileDelete, %kBackendCliInputPath%
 	FileDelete, %kBackendCliOutputPath%
 	FileAppend, %Clipboard%, %kBackendCliInputPath%
-	RunBackendCliFunction("get_rule_matching_item " g_active_profile)
+	RunBackendCliFunction("get_rule_matching_item " Quoted(g_active_profile))
 	FileRead, backend_cli_output, %kBackendCliOutputPath%
 	if (backend_cli_output == "") {
 		GuiControlSetText("vStatusMessageEditBox", "Found no rule matching item")
@@ -322,7 +322,7 @@ ChangeMatchedRuleVisibility() {
 	type_tag := g_ui_data_dict["matched_rule_tags"][1]
 	tier_tag := g_ui_data_dict["matched_rule_tags"][2]
 	command_string := "set_rule_visibility " Quoted(type_tag) " " Quoted(tier_tag) " " target_visibility
-	exit_code := RunBackendCliFunction(command_string " " g_active_profile)
+	exit_code := RunBackendCliFunction(command_string " " Quoted(g_active_profile))
 	status_message := (exit_code == 0) ? "Rule " ((target_visibility == "Show") ? "shown!" : "hidden!") : "Error updating rule visibility"
 	GuiControlSetText("vStatusMessageEditBox", status_message)
 	FindRuleMatchingClipboard()
@@ -444,7 +444,7 @@ UpdateFilter() {
     for i, function_call_string in g_ui_changes {
         AddFunctionCallToBatch(function_call_string)
     }
-    exit_code := RunBackendCliFunction("run_batch " g_active_profile)
+    exit_code := RunBackendCliFunction("run_batch " Quoted(g_active_profile))
 	if (exit_code == 0) {
 		g_ui_changes := []
 	}
@@ -456,7 +456,7 @@ UpdateFilter() {
 ; TODO: If downloaded filter is missing, check if input filter is present and load that if so.
 ImportFilter() {
 	global g_active_profile
-    exit_code := RunBackendCliFunction("import_downloaded_filter " g_active_profile)
+    exit_code := RunBackendCliFunction("import_downloaded_filter " Quoted(g_active_profile))
     UpdateStatusMessage((exit_code == 0) ? "Imported downloaded filter!" : "Error importing downloaded filter")
     Reload  ; TODO: this will lose the status messages we just created here, ideally we shouldn't reload
 }

@@ -163,8 +163,7 @@ CreateProfileSubmit() {
 
     }
     Gui, 2: Destroy
-    backend_cli_command := "create_new_profile " NewProfileName
-    exit_code := RunBackendCliFunction("create_new_profile " NewProfileName)
+    exit_code := RunBackendCliFunction("create_new_profile " Quoted(NewProfileName))
     if (exit_code != 0){
         UpdateStatusMessage("Profile Creation Failed")
     }
@@ -194,15 +193,15 @@ GuiClose() {
 LoadOrImportFilter(active_profile) {
     global kBackendCliOutputPath
     CheckType(active_profile, "string")
-    RunBackendCliFunction("check_filters_exist " active_profile)
+    RunBackendCliFunction("check_filters_exist " Quoted(active_profile))
     output_lines := ReadFileLines(kBackendCliOutputPath)
     downloaded_filter_exists := output_lines[1]
     input_filter_exists := output_lines[2]
     ; output_filter_exists := output_lines[3]  ; unused for now
     if (input_filter_exists) {
-        RunBackendCliFunction("load_input_filter " active_profile)
+        RunBackendCliFunction("load_input_filter " Quoted(active_profile))
     } else if (downloaded_filter_exists) {
-        RunBackendCliFunction("import_downloaded_filter " active_profile)
+        RunBackendCliFunction("import_downloaded_filter " Quoted(active_profile))
     } else {
         DebugMessage("Neither input nor downloaded filter found.  "
                 . "Please place your downloaded filter in your downloads directory.")

@@ -120,7 +120,7 @@ QueryAllFilterData(profile) {
 	AddFunctionCallToBatch("get_flask_min_quality")
 	AddFunctionCallToBatch("get_rgb_item_max_size")
 	; Call run_batch
-	exit_code := RunBackendCliFunction("run_batch " profile)
+	exit_code := RunBackendCliFunction("run_batch " Quoted(profile))
 	if (exit_code != 0) {
 		ExitApp
 	}
