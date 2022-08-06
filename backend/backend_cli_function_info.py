@@ -55,8 +55,8 @@ kFunctionInfoMap = {
     },
     # Check Filters Exist
     'check_filters_exist' : {
-        'NumParamsOptions' : [0],
-        'HasProfileParam' : True,
+        'NumParamsOptions' : [1],
+        'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
     # Import and Reload

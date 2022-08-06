@@ -63,6 +63,22 @@ class LootFilter:
 
     # ================================= Public API =================================
 
+    @staticmethod
+    def InputFilterExists(profile_param: Profile or str,
+                          input_filter_source: InputFilterSource) -> bool:
+        CheckType(profile_param, 'profile_param', (Profile, str))
+        CheckType(input_filter_source, 'input_filter_source', InputFilterSource)
+        profile_obj = (profile_param if isinstance(profile_param, Profile)
+                else Profile(profile_param))
+        if (input_filter_source == InputFilterSource.kDownload):
+            return os.path.isfile(profile_obj.config_values['DownloadedLootFilterFullpath'])
+        elif (input_filter_source == InputFilterSource.kInput):
+            return os.path.isfile(profile_obj.config_values['InputLootFilterFullpath'])
+        elif (input_filter_source == InputFilterSource.kOutput):
+            return os.path.isfile(profile_obj.config_values['OutputFilterFullpath'])
+        return False
+    # End InputFilterExists
+
     # Construct the LootFilter, parsing the file indicated by the config values of
     # the given profile and the value of input_filter_source.
     def __init__(self, profile_param: Profile or str, input_filter_source: InputFilterSource):

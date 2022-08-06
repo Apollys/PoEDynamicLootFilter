@@ -165,7 +165,8 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
             - Output filter
          - Example: > python3 backend_cli.py check_filters_exist MyProfile
         '''
-        CheckNumParams(function_params, 0)
+        CheckNumParams(function_params, 1)
+        config_values = profile.Profile(function_params[0]).config_values
         downloaded_filter_exists = os.path.isfile(config_values['DownloadedLootFilterFullpath'])
         input_filter_exists = os.path.isfile(config_values['InputLootFilterFullpath'])
         output_filter_exists = os.path.isfile(config_values['OutputLootFilterFullpath'])
