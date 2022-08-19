@@ -152,8 +152,8 @@ SplinterStackSizeDdlAction() {
 ; ========================== General BaseTypes ==========================
 
 ; Helper function
-AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag) {
-    list_box_line := "[" (rare_only_flag ? "Rare" : "Any") "] " base_type
+AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag, min_ilvl, max_ilvl) {
+    list_box_line := "[" min_ilvl "-" max_ilvl "] [" (rare_only_flag ? "Rare" : "Any") "] " base_type
 	GuiControlAddItem("HWNDhGeneralBaseTypesListBox", list_box_line)
 }
 
@@ -162,14 +162,15 @@ GeneralBaseTypesAdd() {
 	global g_ui_changes
 	base_type := Trim(GuiControlGetHelper("HWNDhGeneralBaseTypesEditBox"))
 	rare_only_flag := GuiControlGetHelper("HWNDhGeneralBaseTypesRareCheckBox")
+	min_ilvl := GuiControlGetHelper("HWNDhGeneralBaseTypesMinIlvlEdit")
+	max_ilvl := GuiControlGetHelper("HWNDhGeneralBaseTypesMaxIlvlEdit")
     if ((base_type == "") or StartsWith(base_type, "Enter ")) {
         return
     }
     ; Convert to corresponding backend function call and store it
-    show_flag := 1
-    backend_function_call := "set_basetype_visibility " Quoted(base_type) " " show_flag " " rare_only_flag
+    backend_function_call := "show_basetype " Quoted(base_type) " " rare_only_flag " " min_ilvl " " max_ilvl
     g_ui_changes.push(backend_function_call)
-	AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag)
+	AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag, min_ilvl, max_ilvl)
 }
 
 GeneralBaseTypesRemove() {
@@ -179,14 +180,13 @@ GeneralBaseTypesRemove() {
         return
     }
     ; Parse text into base_type, rare_only_flag
-    ; "[Rare] Hubris Circlet" -> ["", "Rare", " Hubris Circlet"]
+    ; "[84-100] [Rare] Hubris Circlet" -> ["", "84-100", " ", "Rare", " Hubris Circlet"]
     split_result := StrSplit(selected_item_text, ["[","]"])
-    ; rare_only_flag := (split_result[2] != "Any")  ; AHK arrays are 1-indexed
-    base_type := SubStr(split_result[3], 2)  ; substring starting at second character
+	min_max_ilvl := StrSplit(split_result[2], "-")
+    rare_only_flag := (split_result[4] != "Any")
+    base_type := SubStr(split_result[5], 2)  ; substring starting at second character
     ; Convert to corresponding backend function call and store it
-    ; Note: rare_only_flag is omitted when disabling a BaseType
-    show_flag := 0
-    backend_function_call := "set_basetype_visibility " Quoted(base_type) " " show_flag
+    backend_function_call := "disable_basetype " Quoted(base_type) " " rare_only_flag " " Join(min_max_ilvl, " ")
     g_ui_changes.push(backend_function_call)
 	GuiControlRemoveSelectedItem("HWNDhGeneralBaseTypesListBox")
 }

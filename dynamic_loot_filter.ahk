@@ -13,6 +13,14 @@ builds the chaos recipe rares section of the GUI.
 SetWorkingDir %A_ScriptDir%
 SetBatchLines -1  ; Run at full speed (do not sleep every n lines)
 
+; TODO: For now, this doesn't work - also have to find out how to run python backend as admin.
+; Uncomment this to run as Admin, if having problems accessing files
+/*
+if (not A_IsAdmin) {
+	Run, *RunAs "%A_ScriptFullPath%"
+}
+*/
+
 ; Includes: note that we first include the ahk_include subdirectory
 #Include %A_ScriptDir%\ahk_include
 #Include backend_interface.ahk
@@ -58,7 +66,10 @@ Return
 InitializeProfiles() {
     global kBackendCliOutputPath
     global g_profiles, g_active_profile
-    RunBackendCliFunction("get_all_profile_names")
+    exit_code := RunBackendCliFunction("get_all_profile_names")
+    if (exit_code != 0) {
+        ExitApp
+    }
     g_profiles := ReadFileLines(kBackendCliOutputPath)
     if (Length(g_profiles) == 0) {
         BuildCreateProfileGui()

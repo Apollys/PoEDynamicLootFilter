@@ -183,8 +183,8 @@ for the detailed documentation of all available function calls.
   - `set_lowest_visible_oil <oil_name: str>`
   - `get_lowest_visible_oil`
 
-  - `set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>`
-  - `get_basetype_visibility <base_type: str>`
+  - `show_basetype <base_type: str> <rare_only_flag: int> <min_ilvl: int> <max_ilvl: int>`
+  - `disable_basetype <base_type: str> <rare_only_flag: int> <min_ilvl: int> <max_ilvl: int>`
   - `get_all_visible_basetypes`
   - `set_flask_visibility <base_type: str> <visibility_flag: int> <(optional) high_ilvl_flag: int>`
   - `get_flask_visibility <base_type: str>`

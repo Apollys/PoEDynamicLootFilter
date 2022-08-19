@@ -39,8 +39,8 @@ GetPythonCommand() {
 
 RunBackendCliFunction(function_call_string) {
     global kBackendCliPath, kBackendCliLogPath
+	FileDelete, %kBackendCliLogPath%
 	command_string := GetPythonCommand() " " kBackendCliPath " " function_call_string
-	; DebugMessage(command_string)
 	RunWait, %command_string%, , Hide UseErrorLevel
 	exit_code := ErrorLevel  ; other commands may modify ErrorLevel at any time
     ; Handle nonzero exit code
@@ -90,7 +90,7 @@ ParseBackendOutputLinesAsDict(output_lines, ByRef line_index:=1, separator=";", 
 ;  - "hide_unique_items_above_tier" -> tier
 ;  - "hide_unique_maps_above_tier" -> tier
 ;  - "lowest_visible_oil" -> oil_name
-;  - "visible_basetypes" -> dict: {base_type -> rare_only_flag}
+;  - "visible_basetypes" -> dict: {base_type;rare_only_flag;min_ilvl;max_ilvl -> True}  (because I don't see a builtin set type)
 ;  - "visible_flasks" -> dict: {base_type -> high_ilvl_only_flag}
 ;  - "socket_rules" -> dict: {socket_string + ";" + item_slot -> True}  (because I don't see a builtin set type)
 ;  - "gem_min_quality" -> gem_min_quality
@@ -145,10 +145,11 @@ QueryAllFilterData(profile) {
 	line_index += 2
 	filter_data["lowest_visible_oil"] := output_lines[line_index]
 	line_index += 2
-	; BaseTypes
-	filter_data["visible_basetypes"] := ParseBackendOutputLinesAsDict(output_lines, line_index)
+	; BaseTypes: use a separator we know doesn't exist to make full line the key
+	filter_data["visible_basetypes"] := ParseBackendOutputLinesAsDict(output_lines, line_index, separator:="*")
+	; Flasks BaseTypes
 	filter_data["visible_flasks"] := ParseBackendOutputLinesAsDict(output_lines, line_index)
-	; For socket patterns, use a separator we know doesn't exist - (socket_string, item_slot) pair is the key
+	; Socket patterns: use a separator we know doesn't exist to make full line the key
 	filter_data["socket_rules"] := ParseBackendOutputLinesAsDict(output_lines, line_index, separator:="*")
 	; Quality thresholds
 	filter_data["gem_min_quality"] := output_lines[line_index]

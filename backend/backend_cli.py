@@ -661,55 +661,36 @@ def DelegateFunctionCall(loot_filter: LootFilter or None,
         CheckNumParams(function_params, 0)
         output_string = str(loot_filter.GetHideMapsBelowTierTier())
     # ==================================== Generic BaseTypes ====================================
-    elif (function_name == 'set_basetype_visibility'):
+    elif (function_name in ('show_basetype', 'disable_basetype')):
         '''
-        set_basetype_visibility <base_type: str> <visibility_flag: int> <(optional) rare_only_flag: int>
-         - This function never hides BaseTypes, it only modifies its own "Show" rule.
-         - visibility_flag is 1 for True (visible), 0 for False (not included in DLF rule)
+        show_basetype <base_type: str> <rare_only_flag: int> <min_ilvl: int> <max_ilvl: int>
+        disable_basetype <base_type: str> <rare_only_flag: int> <min_ilvl: int> <max_ilvl: int>
+         - Note: disable_basetype never hides anything, only disables the associated DLF-added rule
          - rare_only_flag is 1 for only rare items, 0 for any non-unique items
-         - rare_only_flag should *only* be specified when visibility_flag is 1;
-           when visibility_flag is 0, the base_type is removed from both rules.
          - Output: None
-         - Example: > python3 backend_cli.py set_basetype_visibility "Hubris Circlet" 1 0 MyProfile
+         - Example: > python3 backend_cli.py show_basetype "Hubris Circlet" 1 84 100 MyProfile
+         - Example: > python3 backend_cli.py disable_basetype "Hubris Circlet" 1 84 100 MyProfile
         '''
+        CheckNumParams(function_params, 4)
         base_type: str = function_params[0]
-        enable_flag: bool = bool(int(function_params[1]))
-        if (not enable_flag):
-            loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag)
-        else:
-            CheckNumParams(function_params, 3)
-            rare_only_flag: bool = bool(int(function_params[2]))
-            loot_filter.SetBaseTypeRuleEnabledFor(base_type, enable_flag, rare_only_flag)
-    elif (function_name == 'get_basetype_visibility'):
-        '''
-        get_basetype_visibility <base_type: str>
-         - rare_flag is 1 for rare items, 0 for any non-unique items
-         - Output: a space-separated pair of boolean ints, e.g. "0 1"
-            - The first value corresponds to any non-unique, the second corresponds to rares only
-            - 1 indicates visible, 0 indicates not present in DLF rule
-         - Example: > python3 backend_cli.py get_basetype_visibility "Hubris Circlet" MyProfile
-        '''
-        CheckNumParams(function_params, 1)
-        base_type: str = function_params[0]
-        any_visibility_flag = loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=False)
-        rare_visibility_flag = loot_filter.IsBaseTypeRuleEnabledFor(base_type, rare_flag=True)
-        output_string = '{} {}'.format(int(any_visibility_flag), int(rare_visibility_flag))
+        rare_only_flag: bool = bool(int(function_params[1]))
+        min_ilvl: int = int(function_params[2])
+        max_ilvl: int = int(function_params[3])
+        dispatch_function = (loot_filter.AddBaseTypeRule if function_name == 'show_basetype'
+                else loot_filter.RemoveBaseTypeRule)
+        dispatch_function(base_type, rare_only_flag, min_ilvl, max_ilvl)
     elif (function_name == 'get_all_visible_basetypes'):
         '''
         get_all_visible_basetypes
-         - Output: newline-separated sequence of <base_type>;<rare_only_flag: int>
+         - Output: newline-separated sequence of:
+            <base_type>;<rare_only_flag: int>;<min_ilvl>;<max_ilvl>
          - rare_only_flag is 1 for only rare items, 0 for any non-unique items
          - Example: > python3 backend_cli.py get_all_visible_basetypes MyProfile
         '''
         CheckNumParams(function_params, 0)
-        visible_base_types_any = loot_filter.GetAllVisibleBaseTypes(rare_flag=False)
-        visible_base_types_rare = loot_filter.GetAllVisibleBaseTypes(rare_flag=True)
-        # Compute rare BaseTypes that are not also in any
-        visible_base_types_rare_only = list(set(visible_base_types_rare) - set(visible_base_types_any))
-        for base_type in visible_base_types_any:
-            output_string += '{};0\n'.format(base_type)
-        for base_type in visible_base_types_rare_only:
-            output_string += '{};1\n'.format(base_type)
+        for base_type, rare_only_flag, min_ilvl, max_ilvl in loot_filter.GetAllVisibleBaseTypes():
+            output_string += '{};{};{};{}\n'.format(
+                    base_type, int(rare_only_flag), min_ilvl, max_ilvl)
         if ((len(output_string) > 0) and (output_string[-1] == '\n')):
             output_string = output_string[:-1]  # remove final newline
     # ========================================= Flasks =========================================
@@ -892,6 +873,8 @@ def ValidateAndParseArguments() -> Tuple[str, List[str], str]:
     if (len(sys.argv) < 2):
         Error('No function specified\n' + UsageMessage(None))
     _, function_name, *remaining_params = sys.argv
+    if (function_name not in kFunctionInfoMap):
+        Error('backend function does not exist: ' + function_name)
     function_params = []
     requires_profile_param = kFunctionInfoMap[function_name]['HasProfileParam']
     # Separate remaining_params into function_params and profile_name

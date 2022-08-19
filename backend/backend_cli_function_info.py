@@ -256,14 +256,20 @@ kFunctionInfoMap = {
         'ModifiesFilter' : False,
     },
     # Generic BaseTypes
-    'set_basetype_visibility' : {
-        'NumParamsOptions' : [2, 3],
+    'show_basetype' : {
+        'NumParamsOptions' : [4],
+        'HasProfileParam' : True,
+        'ModifiesFilter' : True,
+        'NumParamsForMatch' : 1,
+    },
+    'disable_basetype' : {
+        'NumParamsOptions' : [4],
         'HasProfileParam' : True,
         'ModifiesFilter' : True,
         'NumParamsForMatch' : 1,
     },
     'get_basetype_visibility' : {
-        'NumParamsOptions' : [1],
+        'NumParamsOptions' : [4],
         'HasProfileParam' : True,
         'ModifiesFilter' : False,
     },

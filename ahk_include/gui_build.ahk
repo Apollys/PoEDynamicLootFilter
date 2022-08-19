@@ -185,54 +185,55 @@ BuildGui(ui_data_dict) {
 	}
 	; ------------- End Section: [Chaos Recipe Rares] -------------
 
-	; ------------- Section: [Hide Maps Below Tier] -------------
+	; ------------- Section: [General BaseTypes] ------------
 	anchor_x := 528, anchor_y := 233
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
-	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h74, Non-Unique Maps
-	; Text
-	Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-	x := anchor_x + 16, y := anchor_y + 32
-	Gui Add, Text, x%x% y%y% w152 h28 +0x200, Hide Maps Below Tier:
-	; Edit & UpDown
-	x := anchor_x + 172, y := anchor_y + 32
-	Gui Add, Edit, x%x% y%y% w50 h28 HWNDhHideMapsEditBox
-	x := anchor_x + 214, y := anchor_y + 32
-	Gui Add, UpDown, x%x% y%y% w20 h28 Range0-17, % ui_data_dict["hide_maps_below_tier"]
-	; ------------- End Section: [Hide Maps Below Tier] -------------
-
-	; ------------- Section: [General BaseTypes] ------------
-	anchor_x := 528, anchor_y := 323
-	; GroupBox
-	Gui Font, c0x00e8b2 s10 Bold
-	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h256, General BaseTypes
+	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h336, General BaseTypes
 	; DDL
 	Gui Font, c0x00e8b2 s11 Norm, Segoe UI
 	x := anchor_x + 18, y := anchor_y + 36
 	Gui Add, Edit, x%x% y%y% w250 HWNDhGeneralBaseTypesEditBox
 	Placeholder(hGeneralBaseTypesEditBox, "Enter BaseType...")
-	; High ilvl checkbox and Add button
+	; Min ilvl selection
 	Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-	x := anchor_x + 20, y := anchor_y + 68
+	x := anchor_x + 20, y += 36, text_y := y+2
+	Gui Add, Text, x%x% y%text_y% h26, Min ilvl:
+	x += 56
+	Gui Add, Edit, x%x% y%y% w56 h28 HWNDhGeneralBaseTypesMinIlvlEdit
+	x += 50
+	Gui Add, UpDown, x%x% y%y% w56 h28 Range0-100, 0
+	; Max ilvl selection
+	Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+	x += 26
+	Gui Add, Text, x%x% y%text_y% h26, Max ilvl:
+	x += 60
+	Gui Add, Edit, x%x% y%y% w56 h28 HWNDhGeneralBaseTypesMaxIlvlEdit
+	x += 50
+	Gui Add, UpDown, x%x% y%y% w56 h28 Range0-100, 100
+	; Rare checkbox and Add button
+	Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+	x := anchor_x + 20, y += 36
 	Gui Add, CheckBox, x%x% y%y% h26 HWNDhGeneralBaseTypesRareCheckBox, Rare items only
 	Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-	x := anchor_x + 202, y := anchor_y + 68
-	Gui Add, Button, x%x% y%y% w66 h26 gGeneralBaseTypesAdd, Add
+	x := anchor_x + 178
+	Gui Add, Button, x%x% y%y% w90 h26 gGeneralBaseTypesAdd, Add
 	; Text box and Remove button
 	Gui Font, c0x00e8b2 s11 Norm, Segoe UI
-	x := anchor_x + 14, y := anchor_y + 102
-	Gui Add, ListBox, x%x% y%y% w257 h110 HWNDhGeneralBaseTypesListBox +Sort
+	x := anchor_x + 14, y += 34
+	Gui Add, ListBox, x%x% y%y% w257 h150 HWNDhGeneralBaseTypesListBox +Sort
 	Gui Font, c0x00e8b2 s10 Bold, Segoe UI
-	x := anchor_x + 68, y := anchor_y + 212
+	x := anchor_x + 68, y += 150
 	Gui Add, Button, x%x% y%y% w144 h31 gGeneralBaseTypesRemove, Remove Selected
-	; Populate ListBox from filter_data["visible_basetypes"] -> dict: {base_type -> rare_only_flag}
-	for base_type, rare_only_flag in ui_data_dict["visible_basetypes"] {
-		AddLineToGeneralBaseTypesListBox(base_type, rare_only_flag)
+	; Populate ListBox from filter_data["visible_basetypes"] -> dict: {base_type;rare_only_flag;min_ilvl;max_ilvl -> True}
+	for base_type_info, _ in ui_data_dict["visible_basetypes"] {
+		split_result := StrSplit(base_type_info, ";")
+		AddLineToGeneralBaseTypesListBox(split_result*)
 	}
 	; ------------- End Section: [General BaseTypes] ------------
 
 	; ------------- Section: [Flask BaseTypes] ------------
-	anchor_x := 528, anchor_y := 595
+	anchor_x := 528, anchor_y := 585
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
 	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h236, Flask BaseTypes
@@ -260,8 +261,24 @@ BuildGui(ui_data_dict) {
 	}
 	; ------------- End Section: [Flask BaseTypes] ------------
 
-	; ------------- Section: [Tier Visibility] -------------
+	; ------------- Section: [Hide Maps Below Tier] -------------
 	anchor_x := 844, anchor_y := 48
+	; GroupBox
+	Gui Font, c0x00e8b2 s10 Bold
+	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h74, Non-Unique Maps
+	; Text
+	Gui Font, c0x00e8b2 s11 Norm, Segoe UI
+	x := anchor_x + 16, y := anchor_y + 32
+	Gui Add, Text, x%x% y%y% w152 h28 +0x200, Hide Maps Below Tier:
+	; Edit & UpDown
+	x := anchor_x + 172, y := anchor_y + 32
+	Gui Add, Edit, x%x% y%y% w50 h28 HWNDhHideMapsEditBox
+	x := anchor_x + 214, y := anchor_y + 32
+	Gui Add, UpDown, x%x% y%y% w20 h28 Range0-17, % ui_data_dict["hide_maps_below_tier"]
+	; ------------- End Section: [Hide Maps Below Tier] -------------
+
+	; ------------- Section: [Tier Visibility] -------------
+	anchor_x := 844, anchor_y := 138
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
 	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h234, Tier Visibility
@@ -304,8 +321,7 @@ BuildGui(ui_data_dict) {
 	; ------------- End Section: [Tier Visibility] -------------
 
 	; ------------- Section: [Quality and RGB Items] ------------
-	; Shifted down to fill the blank space, packed value is anchor_y := 298
-	anchor_x := 844, anchor_y := 323
+	anchor_x := 844, anchor_y := 388
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
 	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h152, Quality and RGB Items
@@ -336,7 +352,7 @@ BuildGui(ui_data_dict) {
 	; ------------- End Section: [Quality and RGB Items] ------------
 
 	; ------------- Section: [Socket Patterns] ------------
-	anchor_x := 844, anchor_y := 575
+	anchor_x := 844, anchor_y := 556
 	; GroupBox
 	Gui Font, c0x00e8b2 s10 Bold
 	Gui Add, GroupBox, x%anchor_x% y%anchor_y% w288 h256, Socket Patterns

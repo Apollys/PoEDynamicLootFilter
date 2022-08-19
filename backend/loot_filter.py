@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Tuple
 
+import base_type_helper
 import consts
 import file_helper
 from hash_linked_list import HllNode, HashLinkedList
@@ -10,6 +11,7 @@ from loot_filter_rule import RuleVisibility, LootFilterRule
 import os.path
 import parse_helper
 from profile import Profile
+import simple_parser
 import socket_helper
 from type_checker import CheckType
 
@@ -21,6 +23,11 @@ class InputFilterSource(Enum):
     kInput = 2
     kOutput = 3
 # End class InputFilterSource
+
+class DlFCustomRuleType(Enum):
+    kBaseType = 1
+    kSocketPattern = 2
+# End class DlfCustomRuleType
 
 # Holds either a LootFilterRule or a list of strings
 class RuleOrTextBlock:
@@ -52,7 +59,11 @@ class LootFilter:
         - in the case of a LootFilterRule, the key is (type_tag, tier_tag)
         - in the case of text block, the key is (kTextBlockKey, id) where id is a unique integer
      - self.dlf_rules_successor_key: (type_tag, tier_tag) of item in rule_or_text_block_hll
-       before which DLF rules should be added.
+        before which DLF rules should be added.
+     - self.base_type_section_key: str
+     - self.base_type_tier_tags: List[str]
+     - self.socket_pattern_section_key: str
+     - self.socket_pattern_tier_tags: List[str]
      - self.num_raw_text_blocks: int
         - used to create unique keys for raw text blocks
      - self.num_untagged_rules: int
@@ -97,9 +108,12 @@ class LootFilter:
         # Initialize remaining member variables and parse input filter
         self.rule_or_text_block_hll = HashLinkedList()
         self.dlf_rules_successor_key = None
+        self.base_type_section_key = None
+        self.base_type_rule_tier_tags = []
+        self.socket_pattern_section_key = None
+        self.socket_rule_tier_tags = []
         self.num_raw_text_blocks = 0
         self.num_untagged_rules = 0
-        self.socket_rule_tier_tags = []
         self.ParseInputFilterFile()
     # End __init__
 
@@ -162,49 +176,75 @@ class LootFilter:
 
     # =========================== General BaseType Functions ==========================
 
-    # The rare_only_flag should only be specified when enable_flag is True.
-    # When enable_flag is False, base_type is removed from both rules.
-    def SetBaseTypeRuleEnabledFor(
-            self, base_type: str, enable_flag: bool, rare_only_flag: bool = False):
+    # Adds a rule to show the given base type, or does nothing if the rule already exists.
+    def AddBaseTypeRule(self, base_type: str, rare_only_flag: bool, min_ilvl: int, max_ilvl: int):
         CheckType(base_type, 'base_type', str)
-        CheckType(enable_flag, 'enable_flag', bool)
         CheckType(rare_only_flag, 'rare_only_flag', bool)
-        any_rarity_rule = self.GetRule(consts.kBaseTypeTypeTag, consts.kBaseTypeTierTagAny)
-        rare_rule = self.GetRule(consts.kBaseTypeTypeTag, consts.kBaseTypeTierTagRare)
-        # Start by disabling from all rules for a clean slate
-        any_rarity_rule.RemoveBaseType(base_type)
-        rare_rule.RemoveBaseType(base_type)
-        if (enable_flag):
-            rare_rule.AddBaseType(base_type)
-            rare_rule.Enable()
-            if (not rare_only_flag):
-                any_rarity_rule.AddBaseType(base_type)
-                any_rarity_rule.Enable()
-    # End SetBaseTypeRuleEnabledFor
+        CheckType(min_ilvl, 'min_ilvl', int)
+        CheckType(max_ilvl, 'mimax_ilvlvl', int)
+        tier_tag = base_type_helper.NormalizedBaseTypeTierTag(
+                base_type, min_ilvl, max_ilvl, rare_only_flag)
+        # If rule already exists, return immediately
+        if ((consts.kBaseTypeTypeTag, tier_tag) in self.rule_or_text_block_hll):
+            return
+        comment_line = '# BaseType: {} ilvl {}-{} {}'.format(
+                'rare' if rare_only_flag else 'any non-unique', min_ilvl, max_ilvl, base_type)
+        rule_template = (consts.kBaseTypeRuleTemplateRare if rare_only_flag
+                else consts.kBaseTypeRuleTemplateAny)
+        rule_lines = [comment_line] + rule_template.format(
+                consts.kBaseTypeTypeTag, tier_tag, base_type, min_ilvl, max_ilvl).split('\n')
+        self.AddBlockToHllAfter(rule_lines, self.base_type_section_key)
+        self.base_type_rule_tier_tags.append(tier_tag)
+    # End AddBaseTypeRule
 
-    # If rare_flag is True, checks the rare rule.
-    # If rare_flag is False, checks the any non-unique rule.
-    def IsBaseTypeRuleEnabledFor(self, base_type: str, rare_flag: bool) -> bool:
+    # Does nothing if the specified rule does not exist.
+    def RemoveBaseTypeRule(self, base_type: str, rare_only_flag: bool, min_ilvl: int, max_ilvl: int):
         CheckType(base_type, 'base_type', str)
-        CheckType(rare_flag, 'rare_flag', bool)
+        CheckType(rare_only_flag, 'rare_only_flag', bool)
+        CheckType(min_ilvl, 'min_ilvl', int)
+        CheckType(max_ilvl, 'mimax_ilvlvl', int)
+        tier_tag = base_type_helper.NormalizedBaseTypeTierTag(
+                base_type, min_ilvl, max_ilvl, rare_only_flag)
+        if ((consts.kBaseTypeTypeTag, tier_tag) in self.rule_or_text_block_hll):
+            self.rule_or_text_block_hll.remove((consts.kBaseTypeTypeTag, tier_tag))
+    # End RemoveBaseTypeRule
+
+    def IsBaseTypeRuleEnabledFor(
+            self, base_type: str, rare_only_flag: bool,  min_ilvl: int, max_ilvl: int) -> bool:
+        CheckType(base_type, 'base_type', str)
+        CheckType(rare_only_flag, 'rare_only_flag', bool)
+        CheckType(min_ilvl, 'min_ilvl', int)
+        CheckType(max_ilvl, 'mimax_ilvlvl', int)
         type_tag = consts.kBaseTypeTypeTag
-        tier_tag = consts.kBaseTypeTierTagRare if rare_flag else consts.kBaseTypeTierTagAny
-        rule = self.GetRule(type_tag, tier_tag)
-        if (rule.visibility != RuleVisibility.kShow):
-            return False
-        return base_type in rule.GetBaseTypeList()
+        tier_tag = consts.kBaseTypeTierTagRare if rare_only_flag else consts.kBaseTypeTierTagAny
+        return (consts.kBaseTypeTypeTag, tier_tag) in self.rule_or_text_block_hll
     # End IsBaseTypeRuleEnabledFor
 
-    # If rare_flag is True, checks the rare rule.
-    # If rare_flag is False, checks the any non-unique rule.
-    def GetAllVisibleBaseTypes(self, rare_flag: bool) -> List[str]:
-        CheckType(rare_flag, 'rare_flag', bool)
+    # Returns a list of (base_type, rare_only_flag, min_ilvl, max_ilvl) tuples.
+    def GetAllVisibleBaseTypes(self) -> List[Tuple[str, bool, int, int]]:
         type_tag = consts.kBaseTypeTypeTag
-        tier_tag = consts.kBaseTypeTierTagRare if rare_flag else consts.kBaseTypeTierTagAny
-        rule = self.GetRule(type_tag, tier_tag)
-        if (rule.visibility != RuleVisibility.kShow):
-            return []
-        return rule.GetBaseTypeList()
+        base_type_info_list = []
+        for tier_tag in self.base_type_rule_tier_tags:
+            rule = self.GetRule(type_tag, tier_tag)
+            if (rule.visibility == RuleVisibility.kShow):
+                raw_rule_text = '\n'.join(rule.rule_text_lines)
+                # Try to parse rare rule
+                rare_only_flag = True
+                parse_success, parse_result = simple_parser.ParseFromTemplate(
+                        raw_rule_text, consts.kBaseTypeRuleTemplateRare)
+                # If failed, try to parse any non-unique rule
+                if (not parse_success):
+                    rare_only_flag = False
+                    parse_success, parse_result = simple_parser.ParseFromTemplate(
+                            raw_rule_text, consts.kBaseTypeRuleTemplateAny)
+                    if (not parse_success):
+                        logger.Log('Warning: GetAllVisibleBaseTypes failed to parse rule:'
+                                '\n{}\n'.format(raw_rule_text))
+                        continue
+                # Parse succeeded
+                [_, _, base_type, min_ilvl, max_ilvl] = parse_result
+                base_type_info_list.append((base_type, rare_only_flag, min_ilvl, max_ilvl))
+        return base_type_info_list
     # End GetAllVisibleBaseTypes
 
     # =========================== Flask BaseType Functions ==========================
@@ -274,7 +314,8 @@ class LootFilter:
                 normalized_socket_string)
         rule_lines = ([comment_line] + [rule_template_lines[0]] + class_and_socket_condition_lines +
                 rule_template_lines[1:])
-        self.AddBlockToHll(rule_lines, self.dlf_rules_successor_key)
+        self.AddBlockToHllAfter(rule_lines, self.socket_pattern_section_key)
+        self.socket_rule_tier_tags.append(tier_tag)
     # End AddSocketRule
 
     # Does nothing if the socket string is invalid or the socket rule does not exist.
@@ -295,6 +336,7 @@ class LootFilter:
     # Returns a list of pairs of (socket_string, item_slot)
     def GetAllAddedSocketRules(self) -> List[Tuple[str, str]]:
         socket_rule_pairs = []
+        # TODO: does this actaully work? I don't see socket_rule_tier_tags updated in Add function
         for tier_tag in self.socket_rule_tier_tags:
             socket_rule_pairs.append(socket_helper.DecodeTierTag(tier_tag))
         return socket_rule_pairs
@@ -767,10 +809,30 @@ class LootFilter:
 
     # ======================== Private Parser Methods ========================
 
-    def AddBlockToHll(self, block: List[str], successor_key=None):
+    # Returns the key of the inserted block, or None if block is empty.
+    def AddBlockToHllBefore(self, block: List[str], successor_key=None) -> Tuple[str, str]:
         CheckType(block, 'block', list, str)
+        return self.AddBlockToHllImpl(block, successor_key, insert_before_flag=True)
+    # End AddBlockToHllBefore
+
+    # Returns the key of the inserted block, or None if block is empty.
+    def AddBlockToHllAfter(self, block: List[str], predecessor_key=None) -> Tuple[str, str]:
+        CheckType(block, 'block', list, str)
+        return self.AddBlockToHllImpl(block, predecessor_key, insert_before_flag=False)
+    # End AddBlockToHllAfter
+
+    # Inserts the given text block into self.rule_or_text_block_hll.
+    # If insert_before_flag is true, inserts before the node with adjacent_key,
+    # otherwise inserts after.
+    # Returns the key of the inserted node: a (str, str) pair.
+    def AddBlockToHllImpl(self, block: List[str], adjacent_key, insert_before_flag: bool) \
+            -> Tuple[str, str]:
+        CheckType(block, 'block', list, str)
+        CheckType(insert_before_flag, 'insert_before_flag', bool)
+        insert_function = (self.rule_or_text_block_hll.insert_before if insert_before_flag
+                else self.rule_or_text_block_hll.insert_after)
         if (len(block) == 0):
-            return
+            return None
         elif (LootFilterRule.IsParsableAsRule(block)):
             rule = LootFilterRule(block)
             key = rule.type_tag, rule.tier_tag
@@ -779,14 +841,14 @@ class LootFilter:
                 rule.SetTypeTierTags(consts.kUntaggedRuleTypeTag, str(self.num_untagged_rules))
             elif (rule.type_tag == consts.kSocketsTypeTag):
                 self.socket_rule_tier_tags.append(rule.tier_tag)
-            self.rule_or_text_block_hll.insert_before(
-                    key, RuleOrTextBlock(rule, is_rule=True), successor_key)
+            insert_function(key, RuleOrTextBlock(rule, is_rule=True), adjacent_key)
+            return key
         else:  # not parsable as rule
             self.num_raw_text_blocks += 1
             key = kTextBlockKey, str(self.num_raw_text_blocks)
-            self.rule_or_text_block_hll.insert_before(
-                    key, RuleOrTextBlock(block, is_rule=False), successor_key)
-    # End AddBlockToHll
+            insert_function(key, RuleOrTextBlock(block, is_rule=False), adjacent_key)
+            return key
+        # End AddBlockToHllImpl
 
     def ParseInputFilterFile(self) -> None:
         input_filter_fullpath = self.profile_obj.config_values[
@@ -807,7 +869,7 @@ class LootFilter:
         current_block = []
         for input_line in input_lines:
             if (input_line == ''):
-                self.AddBlockToHll(current_block)
+                self.AddBlockToHllBefore(current_block, successor_key=None)
                 current_block = []
             else:
                 current_block.append(input_line)
@@ -816,6 +878,13 @@ class LootFilter:
         # Apply import changes if needed
         if (self.input_filter_source != InputFilterSource.kOutput):
             self.ApplyImportChanges()
+        # Update self.base_type_rule_tier_tags and self.socket_rule_tier_tags
+        for (type_tag, tier_tag), rule_or_text_block in self.rule_or_text_block_hll:
+            if rule_or_text_block.is_rule:
+                if (type_tag == consts.kBaseTypeTypeTag):
+                    self.base_type_rule_tier_tags.append(tier_tag)
+                elif (type_tag == consts.kSocketsTypeTag):
+                    self.socket_rule_tier_tags.append(tier_tag)
     # End ParseLootFilterFile()
 
     # Returns the key pair for the comment block indicating the start of FilterBlade rules.
@@ -831,50 +900,63 @@ class LootFilter:
                 rules_start_identifier))
     # End FindTableOfContentsBlock
 
-    def GenerateDlfRuleText(self) -> List[str]:
-        text = ''
-        current_section_id_int = int(consts.kDlfAddedRulesSectionGroupId)
+    # Returns a list of (rule_type, text_lines) pairs (where rule_type may also be None).
+    # Note: a single element may contain multiple text blocks (separated by an empty line).
+    def GenerateDlfRuleText(self) -> List[Tuple[DlFCustomRuleType, List[str]]]:
+        rule_type_text_lines_pairs = []
         # Add section group header
-        text += consts.kSectionGroupHeaderTemplate.format(current_section_id_int,
-                consts.kDlfAddedRulesSectionGroupName) + '\n\n'
+        current_section_id_int = int(consts.kDlfAddedRulesSectionGroupId)
+        text = consts.kSectionGroupHeaderTemplate.format(current_section_id_int,
+                consts.kDlfAddedRulesSectionGroupName)
+        rule_type_text_lines_pairs.append((None, text.strip('\n').split('\n')))
         # Add custom user-defined rules
         current_section_id_int += 1
         section_title_string = 'Custom rules from "{}"'.format(
                 self.profile_obj.config_values['RulesFullpath'])
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, section_title_string) + '\n\n'
+        text = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, section_title_string)
         custom_rules_lines = file_helper.ReadFile(
                 self.profile_obj.config_values['RulesFullpath'], strip=True)
-        text += '\n'.join(custom_rules_lines) + '\n\n'
+        text += '\n\n' + '\n'.join(custom_rules_lines)
+        rule_type_text_lines_pairs.append((None, text.strip('\n').split('\n')))
         # Add Hide Splinter rules
         current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Hide Splinters below specific stack sizes') + '\n\n'
+        text = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Hide Splinters below specific stack sizes')
         for stack_size in consts.kDlfSplinterStackSizes:
-            text += consts.kDlfHideSplintersRuleTemplate.format(
-                    stack_size, consts.kDlfSplintersTypeTag) + '\n\n'
+            text += '\n\n' + consts.kDlfHideSplintersRuleTemplate.format(
+                    stack_size, consts.kDlfSplintersTypeTag)
+        rule_type_text_lines_pairs.append((None, text.strip('\n').split('\n')))
         # Add "Hide maps below tier" rule
         current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Hide maps below tier') + '\n\n'
-        text += consts.kHideMapsBelowTierRuleTemplate.format(
-                self.profile_obj.config_values['HideMapsBelowTier']) + '\n\n'
-        # Add BaseType rules
+        text = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Hide maps below tier')
+        text += '\n\n' + consts.kHideMapsBelowTierRuleTemplate.format(
+                self.profile_obj.config_values['HideMapsBelowTier'])
+        rule_type_text_lines_pairs.append((None, text.strip('\n').split('\n')))
+        # Add BaseType section
         current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Show specific BaseTypes') + '\n\n'
-        text += consts.kBaseTypeRuleTemplateRare + '\n\n'
-        text += consts.kBaseTypeRuleTemplateAny + '\n\n'
+        text = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show specific BaseTypes')
+        rule_type_text_lines_pairs.append(
+                (DlFCustomRuleType.kBaseType, text.strip('\n').split('\n')))
         # Add flask BaseType rules
         current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Show specific flask BaseTypes') + '\n\n'
-        text += consts.kFlaskRuleTemplateAnyIlvl + '\n\n'
-        text += consts.kFlaskRuleTemplateHighIlvl + '\n\n'
+        text = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show specific flask BaseTypes')
+        text += '\n\n' + consts.kFlaskRuleTemplateAnyIlvl
+        text += '\n\n' + consts.kFlaskRuleTemplateHighIlvl
+        rule_type_text_lines_pairs.append((None, text.strip('\n').split('\n')))
+        # Add socket pattern section
+        current_section_id_int += 1
+        text = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show items with specific sockets and links')
+        rule_type_text_lines_pairs.append(
+                (DlFCustomRuleType.kSocketPattern, text.strip('\n').split('\n')))
         # Add chaos/regal recipe rules
         current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Show chaos recipe rares by item slot') + '\n\n'
+        text = consts.kSectionHeaderTemplate.format(
+                current_section_id_int, 'Show chaos recipe rares by item slot')
         chaos_regal_recipe_rule_strings = []
         # Handle weapons separately, since config tells us which classes to use
         item_slot='WeaponsX'
@@ -888,14 +970,9 @@ class LootFilter:
         # Add non-weapon rules
         chaos_regal_recipe_rule_strings.extend(consts.kChaosRegalRecipeRuleStrings)
         # Append all chaos/regal recipe rule strings to `text` variable
-        text += '\n\n'.join(chaos_regal_recipe_rule_strings) + '\n\n'
-        # Add Socket rules last so they can be dynamically added using self.dlf_rules_successor_key
-        # Add BaseType rules
-        current_section_id_int += 1
-        text += consts.kSectionHeaderTemplate.format(
-                current_section_id_int, 'Show items with specific sockets and links') + '\n\n'
-        # Return list of lines. Important: returned lines cannot end with blank lines.
-        return text.rstrip().split('\n')
+        text += '\n\n' + '\n\n'.join(chaos_regal_recipe_rule_strings)
+        rule_type_text_lines_pairs.append((None, text.strip('\n').split('\n')))
+        return rule_type_text_lines_pairs
     # End GenerateDlfRuleText
 
     # Insert the DLF rules immediately after the Table of Contents text block.
@@ -904,15 +981,25 @@ class LootFilter:
         if (consts.kHideMapsBelowTierTags in self.rule_or_text_block_hll):
             return
         # Add DLF rules - very similar to ParseInputFilterFile code
-        dlf_rule_text = self.GenerateDlfRuleText()
-        current_block = []
-        dlf_rule_text.append('')  # add blank line to handle last rule uniformly
-        for line in dlf_rule_text:
-            if (line == ''):
-                self.AddBlockToHll(current_block, self.dlf_rules_successor_key)
-                current_block = []
-            else:
-                current_block.append(line)
+        rule_type_text_lines_pairs = self.GenerateDlfRuleText()
+        for rule_type, text_lines in rule_type_text_lines_pairs:
+            current_text_block = []
+            text_lines.append('')  # add blank line to handle last rule uniformly
+            for line in text_lines:
+                if (line == ''):
+                    inserted_key = self.AddBlockToHllBefore(
+                            current_text_block, self.dlf_rules_successor_key)
+                    current_text_block = []
+                    # On the first text block of each type (corresponds to the section header),
+                    # save the corresponding keys needed for lookup later.
+                    if ((rule_type == DlFCustomRuleType.kBaseType) and
+                            (self.base_type_section_key == None)):
+                        self.base_type_section_key = inserted_key
+                    if ((rule_type == DlFCustomRuleType.kSocketPattern) and
+                            (self.socket_pattern_section_key == None)):
+                        self.socket_pattern_section_key = inserted_key
+                else:
+                    current_text_block.append(line)
     # End AddDlfRules
 
     # Standardizes all stacked currency tiers to their unstacked counterparts.

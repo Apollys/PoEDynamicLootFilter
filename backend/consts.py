@@ -50,7 +50,7 @@ kSectionGroupHeaderTemplate = \
 # 1: Section name
 kSectionHeaderTemplate = \
 '''#-------------------------------------------------------------------------------
-#   [{0}] {1}
+#   [{}] {}
 #-------------------------------------------------------------------------------'''
 
 kSectionRePattern = re.compile(r'\[\d+\]+ .*')
@@ -192,22 +192,24 @@ kNumUniqueMapTiers = len(kUniqueMapTierTags)
 # ================================== BaseTypes ==================================
 
 kBaseTypeTypeTag = 'dlf_base_types'
-kBaseTypeTierTagRare = 'rare'
-kBaseTypeTierTagAny = 'any_non_unique'
 
 kBaseTypeRuleTemplateRare = \
-'''# Specific BaseTypes: Rare items
-# Show # $type->{} $tier->{}
-# Rarity == Rare
-# SetFontSize 44
-# PlayEffect Yellow Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagRare)
+'''Show # $type->{} $tier->{}
+BaseType == "{}"
+Rarity == Rare
+ItemLevel >= {}
+ItemLevel <= {}
+SetFontSize 44
+PlayEffect Yellow Temp'''
 
 kBaseTypeRuleTemplateAny = \
-'''# Specific BaseTypes: Any non-unique Items
-# Show # $type->{} $tier->{}
-# Rarity ! Unique
-# SetFontSize 44
-# PlayEffect White Temp'''.format(kBaseTypeTypeTag, kBaseTypeTierTagAny)
+'''Show # $type->{} $tier->{}
+BaseType == "{}"
+Rarity ! Unique
+ItemLevel >= {}
+ItemLevel <= {}
+SetFontSize 44
+PlayEffect White Temp'''
 
 # ================================== Flasks ==================================
 
