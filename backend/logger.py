@@ -9,7 +9,7 @@ g_log_filename = ''
 def InitializeLog(log_filename: str = kDefaultLogFilename):
     global g_log_filename
     g_log_filename = log_filename
-    open(g_log_filename, 'w').close()
+    open(g_log_filename, 'w', encoding='utf-8').close()
 # End InitializeLog()
 
 # Used to log any errors, warnings, or debug information
@@ -19,6 +19,6 @@ def Log(item):
     if (g_log_filename == ''):
         InitializeLog(kDefaultLogFilename)
     message: str = item if isinstance(item, str) else str(item)
-    with open(g_log_filename, 'a') as log_file:
+    with open(g_log_filename, 'a', encoding='utf-8') as log_file:
         log_file.write(message + '\n\n')
 # End Log()

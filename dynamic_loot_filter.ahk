@@ -10,8 +10,9 @@ builds the chaos recipe rares section of the GUI.
 ; General AHK boilerplate settings
 #SingleInstance Force
 #NoEnv
-SetWorkingDir %A_ScriptDir%
-SetBatchLines -1  ; Run at full speed (do not sleep every n lines)
+SetWorkingDir, %A_ScriptDir%
+SetBatchLines, -1  ; Run at full speed (do not sleep every n lines)
+FileEncoding, UTF-8-RAW
 
 ; TODO: For now, this doesn't work - also have to find out how to run python backend as admin.
 ; Uncomment this to run as Admin, if having problems accessing files
@@ -86,7 +87,7 @@ BuildCreateProfileGui() {
 	global
     Gui, 2: Color, 0x111122
     anchor_x := 8, anchor_y := 8
-    h := 28, w := 434, button_w := 70, edit_w := w - button_w - 10
+    h := 28, w := 574, button_w := 70, edit_w := w - button_w - 10
     spacing_y := h + 12
     x := anchor_x, y := anchor_y
     ; Title
@@ -105,7 +106,7 @@ BuildCreateProfileGui() {
     Gui, 2: Add, Text, x%x% y%y% h%h% w%w%, Downloaded Filter Path
     y += h
     Gui, 2: Font, cBlack s12 Norm, Segoe UI
-    placeholder_text := "C:\Users\...\Downloads\NeversinkStrict.Filter"
+    placeholder_text := "Example: C:\Users\UserName\Downloads\NeversinkStrict.Filter"
     Gui, 2: Add, Edit, x%x% y%y% h%h% w%edit_w% vNewProfileDownloadedFilterPath HWNDhNewProfileDownloadedFilterEdit, %placeholder_text%
     button_x := x + w - button_w
     Gui, 2: Font, c0x00e8b2 s10 Bold, Segoe UI
@@ -116,7 +117,7 @@ BuildCreateProfileGui() {
     Gui, 2: Add, Text, x%x% y%y% h%h%, Path of Exile Filters Directory
     y += h
     Gui, 2: Font, cBlack s12 Norm, Segoe UI
-    placeholder_text := "C:\Users\...\Documents\My Games\Path of Exile"
+    placeholder_text := "Example: C:\Users\UserName\Documents\My Games\Path of Exile"
     Gui, 2: Add, Edit, x%x% y%y% h%h% w%edit_w% vNewProfilePoeFiltersDirectory HWNDhNewProfilePoeFiltersDirectoryEdit, %placeholder_text%
     button_x := x + w - button_w
     Gui, 2: Font, c0x00e8b2 s10 Bold, Segoe UI
@@ -128,10 +129,11 @@ BuildCreateProfileGui() {
     ; Create Button
     y += spacing_y + 10
     Gui, 2: Font, s14 Bold, Segoe UI
-    Gui, 2: Add, Button, x145 y%y% w150 h36 gCreateProfileSubmit, Create
+    Gui, 2: Add, Button, x145 y%y% w250 h36 gCreateProfileSubmit, Create
     ; Show UI
+    window_w := w + 16
     Gui, 2: -Border
-    Gui, 2: Show, w450 h378
+    Gui, 2: Show, w%window_w% h378
     GUi, 1: Hide
     Return
 }
