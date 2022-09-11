@@ -147,11 +147,11 @@ kHideMapsBelowTierTags = ('dlf_hide_maps_below_tier', 'dlf_hide_maps_below_tier'
 
 # No idea if the ShapedMap matters, but NeverSink used it in his filters
 kHideMapsBelowTierRuleTemplate = \
-'''# Hide non-unique Maps below specified tier
+'''# Hide non-unique, non-blighted Maps below specified tier
 Hide # $type->{} $tier->{}
 Class Maps
-ShapedMap False
 Rarity ! Unique
+BlightedMap False
 MapTier < {}'''.format(*kHideMapsBelowTierTags, '{}')
 
 # ================================= Essences =================================
