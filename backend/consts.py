@@ -151,6 +151,7 @@ kHideMapsBelowTierRuleTemplate = \
 Hide # $type->{} $tier->{}
 Class Maps
 Rarity ! Unique
+HasInfluence None
 BlightedMap False
 MapTier < {}'''.format(*kHideMapsBelowTierTags, '{}')
 
