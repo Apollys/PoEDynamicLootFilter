@@ -16,6 +16,11 @@ kFunctionInfoMap = {
         'HasProfileParam' : False,
         'ModifiesFilter' : False,
     },
+    'check_for_update': {
+        'NumParamsOptions' : [0],
+        'HasProfileParam' : False,
+        'ModifiesFilter' : False,
+    },
     # General config
     'set_hotkey' : {
         'NumParamsOptions' : [2],
